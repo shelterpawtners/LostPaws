@@ -52,6 +52,18 @@ The marketplace is not a coupon scraper. Quality, clarity, relevance, freshness,
 | Affiliate link | ShelterPawtners may receive compensation from a tracked referral | Clearly disclose before use and follow provider terms |
 | Community or event offer | A benefit tied to a real participating campaign, event, or vendor | Display only with confirmed authorization, dates, and scope |
 
+## Marketplace channels
+
+Use a shared offer foundation with distinct channels:
+
+- **ShelterPawtners marketplace:** pet products, pet services, care, medication, adoption support, and guardian savings.
+- **LostPaws / Rave Shelter marketplace:** human apparel, accessories, art, food, wellness, festival preparation, music-community services, and other lawful attendee-focused offers.
+- **Shared or community:** offers that legitimately serve more than one audience.
+
+Rave Shelter partners may self-publish during the MVP. The platform must preserve organization attribution, audience and channel selection, terms, timestamps, reporting, edit and unpublish capability, team monitoring, and suspension controls. Registration or publication does not mean the partner is verified or officially affiliated with a named festival.
+
+See [Festival MVP and adoption verification](FESTIVAL-MVP-AND-VERIFICATION.md).
+
 ## MVP guardian experience
 
 After account creation or login, the guardian home should present two useful paths:
@@ -79,7 +91,7 @@ A public savings catalog needs an operational process from launch:
 1. Research from the provider's official page whenever possible.
 2. Record the provider, source URL, classification, summary, important conditions, geography, start and end dates when known, and verification timestamp.
 3. Review language for accuracy and avoid copying promotional text unnecessarily.
-4. Require a human publication decision.
+4. Require a human publication decision for curated third-party public offers. Authenticated partner listings may self-publish under the separate monitored MVP rules.
 5. Recheck time-limited offers before their displayed expiration and ongoing programs on a defined cadence.
 6. Unpublish broken, expired, materially changed, or unverifiable entries.
 7. Preserve revision history for material offer changes.
