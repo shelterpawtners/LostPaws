@@ -32,13 +32,25 @@ The implementation must support cancellation or invalidation of pending claims a
 
 Preserve historical provenance. Shelter creation of a Passport is not a permanent access grant to the adopting guardian's private information. Exact claim delivery, identity matching, disputed-transfer resolution, and non-adoption transfer policies remain to be decided before those flows are built.
 
+## External adoption confirmation links
+
+Guardian-initiated shelter outreach creates an external trust boundary. A shelter confirmation link must be limited to one request and must never provide general access to the guardian account or Passport.
+
+Use long random claim material, expiration, one-time completion, cancellation, replay prevention, rate limiting, and request-specific authorization. Avoid storing usable tokens where a database disclosure would make them immediately reusable. Never place usable tokens in analytics, routine application logs, support exports, or email-delivery metadata beyond what the delivery provider necessarily processes.
+
+The email should contain minimal pet and guardian information. The linked experience should explain ShelterPawtners and the requested action before disclosing matching details. A response confirms only the stated adoption facts and supplied history. It does not automatically verify the responder's organization account or every pet record.
+
+Adoption papers, medical documents, and shelter notes are sensitive. Store them privately, validate file type and size, restrict metadata exposure, preserve source and timestamps, and separate adoption evidence from clinical assertions. Define guardian access, correction, disputes, retention, deletion, and support access before launch.
+
+Outbound email requires guardian consent, accurate sender identity, delivery and failure handling, restrained reminders, and abuse controls. SMS requires separate consent, opt-out, carrier, sender-registration, cost, and compliance decisions before use.
+
 ## Contributions, uploads, and privileged actions
 
 Provider contributions require current, scoped authorization and source attribution. Distinguish permission to contribute from permission to change another contributor's historical assertions. Determine correction and revocation behavior before provider workflows ship.
 
 Validate inputs server-side for privileged actions and enforce file access policies. Define acceptable upload types and sizes, validate content, and prevent unauthorized file reads or writes. Keep private files private; use appropriately limited access rather than public storage as a convenience. Add rate limiting where abuse risk warrants it.
 
-Offer eligibility, verification, transfer completion, administrative changes, and redemption recording require server-side authorization. Any elevated server capability must perform its own explicit checks; its credential is not a substitute for end-user authorization.
+Offer eligibility, adoption confirmation, transfer completion, administrative changes, and redemption recording require server-side authorization. Partner self-publication still requires organization-scoped authorization, input validation, link safety, rate limits, reporting, audit history, and platform suspension controls. Any elevated server capability must perform its own explicit checks; its credential is not a substitute for end-user authorization.
 
 ## Audit and validation
 
