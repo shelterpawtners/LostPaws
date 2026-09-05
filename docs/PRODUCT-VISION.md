@@ -48,7 +48,7 @@ LostPaws is a distinct initiative within the broader ecosystem and the name of t
 
 Possible participation includes deeper discounts, special products, purchase-linked donations, adoption incentives, or other benefits. These are possibilities, not existing offers or commitments.
 
-Rave Shelter is the rave-community marketplace and participation expression within LostPaws. Unlike the main pet marketplace, its offers may be human, music, apparel, art, food, wellness, festival, or other attendee-focused products and services. It uses community participation and the values commonly described as peace, love, unity, and respect to support the ShelterPawtners mission.
+RAVE Shelter means **Rescue and Adoption Vendor Ecosystem**. Its approved tagline is **Deals for ravers. Support for shelter pets.** It is the rave-community marketplace and participation expression within LostPaws. Unlike the main pet marketplace, its offers may be human, music, apparel, art, food, wellness, festival, or other attendee-focused products and services. It uses community participation and the values commonly described as peace, love, unity, and respect to support the ShelterPawtners mission.
 
 LostPaws illustrates that animal welfare support can come from communities beyond traditional animal welfare organizations. It must scale independently across festivals and communities. It may support Lost Lands and other festivals in the future, but no official affiliation with Lost Lands Music Festival, Excision, any other festival, artist, promoter, or vendor may be implied without a formal relationship.
 
