@@ -37,7 +37,8 @@ The MVP includes:
 - shelter and rescue registration with organization profile details and an explicit unverified or pending-review state;
 - partner registration with organization details, service categories, service areas, and monitored self-publication of services and offers;
 - a Rave Shelter marketplace channel for human, music, and festival-related products and services that support the mission;
-- guardian-initiated adoption verification with shelter contact capture, secure email outreach, status tracking, and a limited shelter confirmation link;
+- guardian-initiated adoption verification with shelter contact capture, secure email outreach, a 30-day response window, reminders on days 10, 20, and 27, guardian notification on day 30, status tracking, and a limited shelter confirmation link;
+- a post-confirmation shelter conversion experience explaining the free shelter account, Digital Pet Passports, Shelter Report Cards, adoption support, guardian savings, and continuity of information;
 - campaign-specific QR destinations and source tracking for festival card distribution;
 - a curated savings marketplace with search, categories, filters, source links, classifications, conditions, expiration or ongoing status, and last-verified dates;
 - an internal dashboard for verification requests, organization activity, newly published or changed offers, reports, delivery failures, correction, expiration, suspension, and removal;
@@ -118,7 +119,7 @@ Every phase must account for the following. They are not end-of-roadmap cleanup 
 | Supply authoritative logo assets and confirm the public relationship between ShelterPawtners and LostPaws branding | Determines final palette and front-door messaging | M0 |
 | Choose launch geography, audiences, age eligibility, consent, privacy, retention, deletion, and export expectations | Affects onboarding and data handling | M0 and M2 |
 | Approve minimum shelter and partner registration fields, self-publication rules, prohibited content, monitoring ownership, and status language | Determines onboarding scope and marketplace trust | M0 and M5 |
-| Approve email sender domain and provider, verification-link expiration, reminder cadence, shelter response fields, evidence upload limits, and dispute handling | Determines whether automated adoption confirmation can launch safely | Before M3 |
+| Approve email mailbox and transactional provider, shelter response fields, evidence upload limits, dispute handling, and final shelter conversion copy | Determines whether automated adoption confirmation can launch safely | Before M3 |
 | Select the minimum Passport fields and default privacy choices | Prevents overcollection and accidental disclosure | M0 and M3 |
 | Decide the MVP guardianship rule, including whether co-guardianship is deferred | Changes authority and RLS | Before schema design |
 | Approve MVP marketplace classifications, seed categories, freshness cadence, and whether login is required for all deal details | Determines useful scope and operations | M0 and M4 |
