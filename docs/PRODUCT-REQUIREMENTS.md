@@ -2,7 +2,24 @@
 
 ## Status and scope
 
-All capabilities here are planned. [Roadmap](ROADMAP.md) defines sequencing, and explicit foundation approval is required before implementation. These requirements define behavior without prescribing a database schema. Permissions are further defined in [User roles](USER-ROLES.md) and [Security and privacy](SECURITY-AND-PRIVACY.md).
+All capabilities here are planned. [Roadmap](ROADMAP.md) defines sequencing, and explicit MVP approval is required before implementation. These requirements define behavior without prescribing a database schema. Permissions are further defined in [User roles](USER-ROLES.md) and [Security and privacy](SECURITY-AND-PRIVACY.md).
+
+## Guardian entry and post-login home
+
+The guardian experience is the primary product priority. After account creation or login, the product should present two clear paths:
+
+1. **Set up your pet**, displayed as the recommended primary action.
+2. **Browse savings**, available immediately so the account provides value even before a Passport is complete.
+
+The home should explain why pet setup is useful without blocking generally available savings behind unnecessary data collection. It should show setup progress and truthful capability status. Personalization must use only approved data and must not imply that a guardian or pet qualifies for shelter-verified benefits.
+
+Acceptance expectations:
+
+- A new guardian understands the two paths without onboarding instructions.
+- Pet setup is encouraged but not coercive.
+- A guardian can browse public marketplace entries without completing unrelated Passport fields.
+- Signed-in state, errors, recovery, and sign-out behavior are clear.
+- Calls to action lead only to working destinations.
 
 ## Digital Pet Passport
 
@@ -51,15 +68,62 @@ A transfer is a controlled workflow, not a simply editable `owner_id` field. The
 
 Acceptance expectations: unauthorized or reused claims cannot transfer a pet; a failed claim leaves guardianship unchanged; success removes inappropriate previous access; historical provenance remains; private former-guardian data does not automatically transfer to the new guardian. Disputed transfers and non-adoption cases need policy decisions before those paths ship.
 
-## Savings and rewards
+## Savings marketplace
+
+The savings marketplace is an MVP guardian capability, not only a later partner-network feature. It should begin with responsibly curated public savings programs and offers, then expand to ShelterPawtners exclusives, verified-adoption benefits, and measurable partner participation after real agreements and controls exist.
+
+[Marketplace research and savings strategy](MARKETPLACE-RESEARCH.md) defines the initial source map, offer classifications, and freshness process. Potential categories include veterinary services, food, medication, grooming, training, walking, sitting, boarding, daycare, supplies, insurance, transportation, photography, events, festival vendors, local businesses, and national brands.
+
+### MVP marketplace behavior
+
+Each entry should include, when applicable:
+
+- provider and program or offer name;
+- concise value summary written by ShelterPawtners;
+- classification as public offer, public program, ShelterPawtners exclusive, verified-adoption benefit, sponsored placement, affiliate link, or community offer;
+- category and useful search terms;
+- eligibility, enrollment, membership, prescription, location, purchase, or subscription requirements;
+- geographic scope;
+- start and expiration dates, or an explicitly ongoing status;
+- direct provider source;
+- last-verified date;
+- clear action to review current terms;
+- publication, expiration, and correction status controlled through an internal curation workflow.
+
+The MVP may use a human-curated seed catalog. Automated discovery, feeds, or scraping must not auto-publish entries. Public offer browsing should not require a completed Passport. Search and filters should prioritize practical usefulness over a large offer count.
+
+Acceptance expectations:
+
+- Users can distinguish public opportunities from ShelterPawtners relationships.
+- Expired, unpublished, or materially unverified entries are not presented as active.
+- Promotional amounts and terms are not hard-coded without a verification and expiration strategy.
+- Broken or inaccurate entries can be reported and corrected.
+- Medical and prescription savings do not imply veterinary advice.
+- The source page is accessible before a user acts on the offer.
+- Sponsored or affiliate relationships are clearly disclosed.
+- Marketplace ranking does not silently represent paid placement as relevance.
+
+### Later savings capabilities
+
+Offers may eventually vary by location, species, shelter adoption status, business category, eligibility, campaign, date, and partner. Later capabilities may include saved offers, pet-aware relevance, partner submissions, provider feeds, exclusive benefits, redemption validation, estimated savings, annual and lifetime savings, partner participation, and mission impact.
 
 ShelterCARD and ReWards are related savings concepts. Lifetime access to savings and support for adopted shelter pets is a long-term goal, not an unconditional present promise.
 
-Potential categories include veterinary services, food, medication, grooming, training, walking, sitting, boarding, daycare, supplies, insurance, transportation, photography, events, festival vendors, local businesses, and national brands.
+Acceptance expectations for controlled benefits: terms and eligibility are visible and enforced on the server; expired or ineligible offers cannot be redeemed; verified adoption requirements cannot be satisfied by unverified guardian assertions; redemptions are auditable. Estimated savings must be labeled and use a documented calculation that avoids double counting. Views, outbound clicks, redemptions, and savings are distinct measures; none alone proves adoption impact. Commercial terms and measurement definitions remain open until confirmed.
 
-Offers may vary by location, species, shelter adoption status, business category, eligibility, campaign, date, and partner. Later capabilities should track offer views, redemptions, estimated savings, annual savings, lifetime savings, partner participation, and mission impact.
+## Marketplace curation and operations
 
-Acceptance expectations: terms and eligibility are visible and enforced on the server; expired or ineligible offers cannot be redeemed; verified adoption requirements cannot be satisfied by unverified guardian assertions; redemptions are auditable. Estimated savings must be labeled and use a documented calculation that avoids double counting. Views, redemptions, and savings are distinct measures; none alone proves adoption impact. Commercial terms and measurement definitions remain open until confirmed.
+A useful marketplace requires ongoing ownership. Authorized internal users should eventually research, draft, review, publish, reverify, unpublish, expire, and correct entries. Material changes should preserve revision history and source provenance.
+
+Acceptance expectations:
+
+- Publication is a deliberate human action.
+- A source and verification timestamp are required for public entries.
+- Time-limited promotions have expiration handling.
+- Ongoing programs have a defined recheck cadence.
+- User and provider corrections have an operational destination.
+- Curation permissions do not grant unrelated access to guardian records.
+- Offer content summarizes factual terms without copying excessive proprietary text.
 
 ## Community and LostPaws
 
@@ -76,5 +140,7 @@ Insights, reporting, AI assistance, and animal welfare intelligence are later ca
 ## Homepage and major pages
 
 The first screen should answer the five visitor questions in [Product vision](PRODUCT-VISION.md), communicate ecosystem value, and provide a clear next action appropriate to what actually works. Every major page needs a strong opening hook. Use credible marketing, behavioral science, social media, UX, or conversion research when it informs a real design choice; record the source and avoid invented findings or manipulative tactics.
+
+The public experience should preview marketplace value without claiming every listed provider is a partner. The authenticated marketplace needs its own strong hook, clear filter hierarchy, trustworthy offer labeling, and practical next actions.
 
 Acceptance expectations: the value is understandable without a long business explanation; the page conveys benefits beyond discounts; calls to action match functional destinations; claims and affiliations are substantiated; responsive and accessible behavior is reviewed in a browser. Follow the staged design workflow in [Brand design system](BRAND-DESIGN-SYSTEM.md).
