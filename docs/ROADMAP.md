@@ -14,9 +14,10 @@ The MVP is a multi-sided foundation with guardians as the primary product priori
 
 1. **Guardians** create an account, are encouraged to set up a pet, and can browse savings immediately.
 2. **Shelters and rescues** register an organization and complete its account details so later verification and adoption workflows have a credible starting point.
-3. **Pet businesses and service partners** register an organization, describe their services, and submit offers for ShelterPawtners review.
+3. **Pet businesses and service partners** register an organization, describe their services, and publish offers under monitored MVP rules.
+4. **Rave Shelter partners and festival visitors** use a LostPaws-branded, human-focused marketplace channel that connects rave-community participation with the ShelterPawtners mission.
 
-Registration is not verification. A registered shelter or partner remains unverified until an authorized review process approves it. Partner-submitted services and offers remain drafts or pending review until ShelterPawtners publishes them. Registration alone grants no access to guardian or private Passport data.
+Registration is not verification. A registered shelter or partner remains unverified until an authorized review process approves it. During the MVP, authenticated partners may publish services and offers without preapproval, while ShelterPawtners monitors activity and retains suspension and removal controls. Registration alone grants no access to guardian or private Passport data.
 
 The initial marketplace may include public offers without partner agreements when their source and classification are clear. Exclusive, sponsored, affiliate, and verified-adoption benefits require their own approvals and controls.
 
@@ -34,17 +35,19 @@ The MVP includes:
 - a deliberately limited guardian-created Passport for an existing or adopted pet;
 - one pet photo with private storage controls if photo upload is approved for the first release;
 - shelter and rescue registration with organization profile details and an explicit unverified or pending-review state;
-- partner registration with organization details, service categories, service areas, and draft or pending-review offer submission;
+- partner registration with organization details, service categories, service areas, and monitored self-publication of services and offers;
+- a Rave Shelter marketplace channel for human, music, and festival-related products and services that support the mission;
+- guardian-initiated adoption verification with shelter contact capture, secure email outreach, status tracking, and a limited shelter confirmation link;
+- campaign-specific QR destinations and source tracking for festival card distribution;
 - a curated savings marketplace with search, categories, filters, source links, classifications, conditions, expiration or ongoing status, and last-verified dates;
-- internal human review for organization verification, offer publication, correction, expiration, and removal;
+- an internal dashboard for verification requests, organization activity, newly published or changed offers, reports, delivery failures, correction, expiration, suspension, and removal;
 - clear distinction among public offers, public programs, ShelterPawtners exclusives, verified-adoption benefits, sponsored placements, affiliate links, and community offers;
 - baseline accessibility, privacy, authorization, error handling, observability, analytics definitions, moderation, and release checks.
 
 The MVP excludes until separately approved:
 
-- completed shelter verification rules or automated verification;
+- full shelter-account verification, automated social outreach, or SMS verification outreach;
 - shelter-created pet records, adoption records, and Passport transfer;
-- direct self-publication of partner offers;
 - self-attested access to verified-adoption benefits;
 - exclusive offer claims without agreements;
 - financial impact or savings totals without defined calculations;
@@ -61,12 +64,12 @@ The MVP excludes until separately approved:
 | M0: Decisions and design foundation | The team agrees on exactly what the MVP promises | Confirm brand assets, front-door naming, launch jurisdiction, age and consent assumptions, onboarding paths, minimum registration fields, minimum Passport fields, privacy defaults, marketplace classification, initial source set, success measures, and deployment approach | User approves the MVP brief, wireframes, copy direction, organization boundaries, and protected data decisions before implementation |
 | M1: Public experience | Visitors understand ShelterPawtners, LostPaws, Care, Savings, Community, and the next action for guardians, shelters, or partners | Information architecture, homepage, how it works, savings preview, shelter registration entry, partner registration entry, about or mission, privacy and terms placeholders with appropriate legal review flags, responsive design, accessibility | Browser review on desktop and mobile; every claim and call to action matches reality |
 | M2: Authentication and role-aware entry | Guardians, shelters, and partners can create accounts, sign in, sign out, recover access, and reach the correct onboarding path | Supabase Auth, secure sessions, minimal personal profile, participant-type selection, organization creation boundary, protected routes, error and recovery states | Authentication, role, and cross-organization denial tests; no private data leakage; user approves onboarding |
-| M3: Passport Lite | A guardian can set up and manage the minimum useful pet profile | Approved launch fields, one active guardian policy, optional photo if approved, edit flow, privacy defaults, deletion and correction behavior appropriate to MVP | Field-by-field review, RLS denial tests, storage-policy tests, browser and accessibility review |
-| M4: Marketplace Discovery | A guardian can browse trustworthy savings even before completing a pet profile | Curated public catalog, offer classification, categories, search, filters, details, source and freshness display, outbound navigation, issue reporting, internal curation | Seed offers reverified; stale and expired behavior tested; no false partnership or savings claims |
-| M5: Shelter and Partner Registration | Shelters and partners can complete organization profiles; partners can submit services and offers without publishing them directly | Organization onboarding, contact and location or service-area details, service categories, offer drafts, submission status, internal review queue, correction and resubmission | Cross-organization isolation, least-privilege tests, moderation review, truthful verification and publication states |
-| M6: MVP hardening and launch | All three onboarding journeys are reliable enough for controlled release | Cross-device QA, accessibility review, security and performance advisors, analytics with defined events, monitoring, backup and recovery expectations, content and review operations, launch checklist | User accepts a release candidate; production project and deployment require separate authorization |
+| M3: Passport Lite and Adoption Request | A guardian can manage a minimum pet profile and start adoption verification | Approved fields, adoption question, shelter contact capture, secure email request, status tracking, one-time shelter response, optional private evidence, privacy and correction behavior | Field review, RLS and storage denial tests, expired and reused link tests, email delivery and failure review |
+| M4: Marketplace Channels | Guardians and ravers can browse the correct savings experience | Shared offer foundation, pet and human audience classifications, ShelterPawtners marketplace, LostPaws / Rave Shelter filtered marketplace, search, filters, source and terms display, issue reporting | Mobile review, seed data check, no false partnership or festival affiliation claims |
+| M5: Shelter and Partner Registration | Shelters and partners complete profiles; partners publish monitored services and offers | Organization onboarding, service areas, audience and channel selection, immediate partner publication, edit and unpublish, reporting, internal activity dashboard, suspension controls | Cross-organization isolation, abuse controls, auditability, truthful organization and listing states |
+| M6: Festival release hardening | The QR-card and all critical signup journeys are reliable for festival use | Campaign QR destinations, mobile and cellular QA, cross-device accessibility, end-to-end database validation, email deliverability, monitoring, Supabase advisors, rollback and support plan | User accepts the festival release candidate; production project and deployment require separate authorization |
 
-M2 through M5 may be delivered as smaller vertical increments. Marketplace and registration interface work can proceed with reviewed fixtures before persistence models are approved. Passport, organization, verification, and transfer implementation must not force unresolved later policy decisions into the schema.
+Use [Festival MVP and adoption verification](FESTIVAL-MVP-AND-VERIFICATION.md) as the deadline-specific acceptance plan. M2 through M5 may be delivered as smaller vertical increments. Marketplace and registration interface work can proceed with reviewed fixtures before persistence models are approved. Passport, organization, verification, and transfer implementation must not force unresolved later policy decisions into the schema.
 
 ## Beyond-MVP roadmap
 
@@ -111,10 +114,11 @@ Every phase must account for the following. They are not end-of-roadmap cleanup 
 
 | Decision | Why it matters | Needed by |
 | --- | --- | --- |
-| Approve this revised three-participant MVP | Authorizes detailed design without authorizing implementation | Before M0 completion |
+| Approve the festival-focused, multi-channel MVP | Authorizes detailed design without authorizing implementation | Before M0 completion |
 | Supply authoritative logo assets and confirm the public relationship between ShelterPawtners and LostPaws branding | Determines final palette and front-door messaging | M0 |
 | Choose launch geography, audiences, age eligibility, consent, privacy, retention, deletion, and export expectations | Affects onboarding and data handling | M0 and M2 |
-| Approve minimum shelter and partner registration fields, who reviews submissions, and what status language users see | Determines onboarding scope and trust | M0 and M5 |
+| Approve minimum shelter and partner registration fields, self-publication rules, prohibited content, monitoring ownership, and status language | Determines onboarding scope and marketplace trust | M0 and M5 |
+| Approve email sender domain and provider, verification-link expiration, reminder cadence, shelter response fields, evidence upload limits, and dispute handling | Determines whether automated adoption confirmation can launch safely | Before M3 |
 | Select the minimum Passport fields and default privacy choices | Prevents overcollection and accidental disclosure | M0 and M3 |
 | Decide the MVP guardianship rule, including whether co-guardianship is deferred | Changes authority and RLS | Before schema design |
 | Approve MVP marketplace classifications, seed categories, freshness cadence, and whether login is required for all deal details | Determines useful scope and operations | M0 and M4 |
