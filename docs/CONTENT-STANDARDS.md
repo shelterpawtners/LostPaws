@@ -12,7 +12,7 @@ Avoid em dashes, unnecessary dashed sentence constructions, generic AI phrasing,
 | --- | --- |
 | ShelterPawtners | Business and broader ecosystem; preserve spelling and capitalization. |
 | LostPaws | Distinct initiative and this application repository; not shorthand for an official festival relationship. |
-| Rave Shelter | Related historical concept; not the new application's implementation source. |
+| RAVE Shelter | Rescue and Adoption Vendor Ecosystem; the LostPaws rave-community vendor marketplace. Use the approved tagline “Deals for ravers. Support for shelter pets.” |
 | Digital Pet Passport | Core pet record concept; shorten to Passport after introducing it. |
 | Guardian | Preferred term for the person caring for a pet. |
 | Pet owner | Use only for search, public familiarity, legal meaning, or necessary clarification. |
