@@ -1,5 +1,13 @@
 # Festival MVP and adoption verification
 
+## Approved RAVE Shelter identity
+
+**RAVE Shelter** means **Rescue and Adoption Vendor Ecosystem**.
+
+Approved tagline:
+
+> Deals for ravers. Support for shelter pets.
+
 ## Purpose and deadline
 
 This document defines the urgent MVP direction for festival outreach approximately ten days after September 5, 2026. It preserves the broader ShelterPawtners roadmap while identifying the smallest reliable experience needed for QR-card distribution, account capture, partner participation, marketplace discovery, and automated shelter confirmation.
