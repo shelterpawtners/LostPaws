@@ -104,8 +104,9 @@ Acceptance expectations:
 - Tokens are one-time, expiring, cancelable, replay-resistant, rate-limited, and restricted to one request.
 - Adoption papers and medical documents are private by default and stored with restrictive access.
 - Verification and medical-history contributions preserve separate provenance.
-- Automated reminders stop after terminal status and follow an approved cadence.
+- The response window lasts 30 days. Reminders are sent on days 10, 20, and 27 unless a terminal status or repeated delivery failure stops them. An unresolved request expires on day 30 and the guardian is notified.
 - Delivery failures and exceptions appear in the team dashboard without making Jim the normal approval step.
+- After responding, the shelter sees a concise, compelling, truthful explanation of the free ShelterPawtners shelter account, Digital Pet Passports, Shelter Report Cards, adoption support, guardian savings, continuity of information, and future insights, with an optional signup action.
 - SMS and automated social outreach remain later channels unless their consent, compliance, cost, and delivery requirements are approved.
 
 Detailed requirements are in [Festival MVP and adoption verification](FESTIVAL-MVP-AND-VERIFICATION.md).
