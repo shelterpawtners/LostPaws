@@ -2,7 +2,7 @@
 
 ## Status
 
-This document preserves the established ShelterPawtners brand direction. Logo assets have not been added or reviewed. Permanent hex values, final typography, and asset-specific visual tokens are not established. Derive final colors from the actual ShelterPawtners logo assets when available, with accessible functional variants where necessary.
+This document preserves the established ShelterPawtners brand direction. ShelterPawtners black-text, white-text, and icon-only PNG assets and a LostPaws PNG asset were supplied and visually reviewed on September 5, 2026. They have not yet been committed as production assets. Permanent hex values, final typography, vector masters, and asset-specific visual tokens are not established. Derive final colors from the actual ShelterPawtners logo assets when available, with accessible functional variants where necessary.
 
 ## Visual character
 
@@ -38,6 +38,27 @@ Future reviews should include text over imagery and gradients, color-independent
 12. Iterate on the observed result.
 
 Do not jump from requirements directly to finished pages. A compiling page is not a completed design. Reuse coherent components while keeping the primary audiences and purpose of each page visible.
+
+## RAVE Shelter brand
+
+RAVE Shelter means **Rescue and Adoption Vendor Ecosystem**.
+
+Approved tagline:
+
+> Deals for ravers. Support for shelter pets.
+
+RAVE Shelter should bridge the ShelterPawtners iridescent purple, blue, and teal palette with the bolder music-community energy of LostPaws. It should feel mature, premium, energetic, and credible. Use original sound, connection, heart, shelter, exchange, or event geometry rather than cartoon animals or generic paw-print clip art.
+
+The complete lockup should support:
+
+- full logo with RAVE Shelter, expansion, and tagline;
+- simplified horizontal website header;
+- compact marketplace and social mark;
+- one-color and high-contrast variants;
+- transparent-background production files;
+- legibility on printed festival signup cards.
+
+Do not mimic the identity of Lost Lands, Excision, another festival, artist, promoter, or vendor.
 
 ## Homepage application
 
