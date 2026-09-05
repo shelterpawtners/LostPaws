@@ -74,18 +74,41 @@ Candidate MVP partner information includes:
 - requested classification, including public, ShelterPawtners exclusive, verified-adoption, sponsored, affiliate, or community offer;
 - draft, submission, review, correction, approval, publication, expiration, suspension, and rejection status.
 
-Partners may save draft services and offers, but they cannot publish directly in the MVP. ShelterPawtners review determines whether an organization profile, service, or offer becomes visible and how it is classified. Submission does not prove a formal partnership or authorize use of another organization's trademarks beyond approved terms.
+Partners may save drafts and publish services and offers directly during the MVP. Publication must record the organization, responsible account, timestamps, audience, channel, terms, and material edits. ShelterPawtners must have dashboard visibility plus suspension and removal controls. Self-publication does not create verified, exclusive, sponsored, affiliate, or adoption-qualified status, prove a formal partnership, or authorize use of another organization's trademarks.
 
 Acceptance expectations:
 
 - A partner can maintain organization details without seeing another partner's drafts.
 - Required offer terms and dates are validated before submission.
-- Publication is a separate authorized action.
+- Publication is available to an authenticated partner within its own organization, subject to monitoring, reporting, audit, and suspension controls.
 - Changes to a published offer return through an appropriate review path when material.
 - Expired or suspended offers stop appearing as active.
 - Exclusive and verified-adoption classifications require evidence and approval.
 - Partner registration grants no private Passport or guardian access.
 - Duplicate businesses and unauthorized business claims are routed for review.
+
+## Guardian-initiated adoption verification
+
+When a guardian creates or edits a pet, ask whether the pet was adopted. If yes, offer a verification request that collects shelter name plus the best available email, phone, website, social profile, contact name, location, pet name at adoption, approximate adoption date, guardian matching information, and consent to contact the organization.
+
+The MVP should use email as the automated delivery channel. The request moves through explicit statuses such as draft, submitted, delivery pending, sent, viewed, confirmed, unable to confirm, more information requested, delivery failed, expired, or canceled.
+
+The shelter receives a secure, expiring, single-purpose link. It must open only the submitted verification request, not the guardian's full account or unrelated Passport data. The responder may confirm or decline the adoption, add or correct the adoption date, provide their name and role, add a shelter report, optionally upload adoption papers, and optionally contribute known history or medical and care information.
+
+A successful response produces a **shelter-confirmed adoption** status with recorded scope, responder, organization contact, timestamp, delivery target, and evidence. It does not automatically create a verified shelter administrator or certify every Passport field.
+
+Acceptance expectations:
+
+- Guardian self-report and shelter confirmation remain visibly distinct.
+- Unsent, pending, failed, expired, declined, and disputed requests do not unlock confirmed-adoption benefits.
+- Tokens are one-time, expiring, cancelable, replay-resistant, rate-limited, and restricted to one request.
+- Adoption papers and medical documents are private by default and stored with restrictive access.
+- Verification and medical-history contributions preserve separate provenance.
+- Automated reminders stop after terminal status and follow an approved cadence.
+- Delivery failures and exceptions appear in the team dashboard without making Jim the normal approval step.
+- SMS and automated social outreach remain later channels unless their consent, compliance, cost, and delivery requirements are approved.
+
+Detailed requirements are in [Festival MVP and adoption verification](FESTIVAL-MVP-AND-VERIFICATION.md).
 
 ## Digital Pet Passport
 
@@ -134,6 +157,21 @@ A transfer is a controlled workflow, not a simply editable `owner_id` field. The
 
 Acceptance expectations: unauthorized or reused claims cannot transfer a pet; a failed claim leaves guardianship unchanged; success removes inappropriate previous access; historical provenance remains; private former-guardian data does not automatically transfer to the new guardian. Disputed transfers and non-adoption cases need policy decisions before those paths ship.
 
+## Rave Shelter and LostPaws marketplace
+
+The MVP needs a distinct Rave Shelter experience within LostPaws for human, music, festival, and rave-community products and services. These offers do not need to be pet-related. They support the ShelterPawtners mission by giving community participants useful value and a practical way to participate.
+
+Use the same underlying marketplace concepts with explicit audience and channel classification. The public experience may use different branding, navigation, categories, and filters for ShelterPawtners pet offers versus LostPaws / Rave Shelter human offers.
+
+Acceptance expectations:
+
+- A user can clearly tell whether an offer is for pets or people.
+- Partner-created content appears in the intended channel.
+- Rave Shelter language may reflect peace, love, unity, and respect without making unsupported safety, charitable, or affiliation claims.
+- Lost Lands and other festival names are used only factually and never imply sponsorship or endorsement.
+- The mobile journey from a festival QR card to signup and relevant offers is fast and reliable.
+- Both marketplace channels preserve organization attribution, timestamps, terms, reporting, audit history, and platform suspension controls.
+
 ## Savings marketplace
 
 The savings marketplace is an MVP guardian capability, not only a later partner-network feature. It should begin with responsibly curated public savings programs and offers, plus approved partner submissions when available. It can then expand to ShelterPawtners exclusives, verified-adoption benefits, and measurable partner participation after real agreements and controls exist.
@@ -156,7 +194,7 @@ Each entry should include, when applicable:
 - clear action to review current terms;
 - publication, expiration, and correction status controlled through an internal curation workflow.
 
-The MVP may use a human-curated seed catalog and approved partner submissions. Automated discovery, feeds, or scraping must not auto-publish entries. Public offer browsing should not require a completed Passport. Search and filters should prioritize practical usefulness over a large offer count.
+The MVP may use a human-curated seed catalog and monitored partner self-publication. Automated discovery, feeds, or scraping must not auto-publish entries. Public offer browsing should not require a completed Passport. Search and filters should prioritize practical usefulness over a large offer count.
 
 Acceptance expectations:
 
@@ -179,7 +217,7 @@ Acceptance expectations for controlled benefits: terms and eligibility are visib
 
 ## Marketplace curation and operations
 
-A useful marketplace requires ongoing ownership. Authorized internal users should research, draft, review, publish, reverify, unpublish, expire, and correct entries. They should also review partner profiles, services, and submitted offers. Material changes should preserve revision history and source provenance.
+A useful marketplace requires ongoing ownership. Authorized internal users should research, draft, review, publish, reverify, unpublish, expire, and correct entries. They should also monitor partner profiles, services, and self-published offers through an activity dashboard. Material changes should preserve revision history and source provenance.
 
 Acceptance expectations:
 
