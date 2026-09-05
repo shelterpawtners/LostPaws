@@ -19,6 +19,7 @@ Read [README.md](README.md) for current state and [.agents/skills/shelterpawtner
 | Mission, ecosystem, audiences | [Product vision](docs/PRODUCT-VISION.md) |
 | Product behavior and acceptance expectations | [Product requirements](docs/PRODUCT-REQUIREMENTS.md) |
 | Marketplace research, classification, freshness | [Marketplace research](docs/MARKETPLACE-RESEARCH.md) |
+| Festival deadline, Rave Shelter channel, adoption verification | [Festival MVP and adoption verification](docs/FESTIVAL-MVP-AND-VERIFICATION.md) |
 | Roles, organization membership, scope | [User roles](docs/USER-ROLES.md) |
 | Visual direction and design process | [Brand design system](docs/BRAND-DESIGN-SYSTEM.md) |
 | Terminology, claims, customer copy | [Content standards](docs/CONTENT-STANDARDS.md) |
