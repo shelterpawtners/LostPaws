@@ -2,7 +2,9 @@
 
 ## Scope and authority
 
-This is the new, clean application repository for ShelterPawtners and its LostPaws initiative. The current deliverable is a documentation foundation only. Do not scaffold application code, install packages, create database schemas, connect Supabase, or begin implementation until the user explicitly approves this foundation and authorizes the next work.
+This is the new, clean application repository for ShelterPawtners and its LostPaws initiative. The current deliverable is a documentation and planning foundation only. Do not scaffold application code, install packages, create database schemas, configure authentication, or begin implementation until the user explicitly approves the MVP scope and authorizes the next work.
+
+Read-only discovery of the `shelterpawtners-dev` Supabase project has been authorized and completed. Do not treat connection or inspection as permission to apply changes. Do not connect to or create production infrastructure without explicit user instruction.
 
 Do not copy code, CSS, HTML, components, or architecture from Core or RaveShelter. Do not modify another ShelterPawtners repository. Inspect a specific legacy item only when explicitly instructed; permission to inspect does not imply permission to copy.
 
@@ -16,6 +18,7 @@ Read [README.md](README.md) for current state and [.agents/skills/shelterpawtner
 | --- | --- |
 | Mission, ecosystem, audiences | [Product vision](docs/PRODUCT-VISION.md) |
 | Product behavior and acceptance expectations | [Product requirements](docs/PRODUCT-REQUIREMENTS.md) |
+| Marketplace research, classification, freshness | [Marketplace research](docs/MARKETPLACE-RESEARCH.md) |
 | Roles, organization membership, scope | [User roles](docs/USER-ROLES.md) |
 | Visual direction and design process | [Brand design system](docs/BRAND-DESIGN-SYSTEM.md) |
 | Terminology, claims, customer copy | [Content standards](docs/CONTENT-STANDARDS.md) |
@@ -29,13 +32,14 @@ Keep detailed guidance in its canonical document and link to it elsewhere. Resol
 
 - Prefer small, testable changes and reusable components. Avoid unnecessary dependencies and premature enterprise complexity.
 - Run relevant tests and builds before declaring implementation complete. Review frontend changes in a browser, including responsive behavior, keyboard use, focus states, and accessibility. Compilation alone is insufficient.
-- For this documentation-only foundation, validate structure, links, consistency, spelling, grammar, and skill metadata. There is no application test suite or build yet; do not install tooling merely to simulate one.
+- For the documentation-only foundation, validate structure, links, consistency, spelling, grammar, and skill metadata. There is no application test suite or build yet; do not install tooling merely to simulate one.
 - Keep database schema changes in committed migrations. Never fix authorization only in the frontend, expose credentials, commit secrets, or bypass or weaken RLS to make a feature work.
-- Use only the development Supabase project, `shelterpawtners-dev`, once connection is authorized. Production connection or creation requires explicit user instruction.
-- Preserve provenance and auditability for verification, transfers, guardianship, provider contributions, redemptions, and administrative actions.
+- Use only the development Supabase project, `shelterpawtners-dev`, once the specific implementation action is authorized. Production connection or creation requires explicit user instruction.
+- Preserve provenance and auditability for verification, transfers, guardianship, provider contributions, marketplace entries, redemptions, and administrative actions.
+- Treat marketplace source, classification, eligibility, freshness, expiration, disclosure, and human publication as product requirements. Never imply a public provider is a ShelterPawtners partner.
 - Do not claim unfinished capabilities are functional. Do not fabricate statistics, partnerships, testimonials, discounts, research findings, or official affiliations.
 - Follow the content and brand documents for customer-facing material. Preserve accessibility and privacy through implementation and browser review.
 
 ## Completion reporting
 
-State what changed, what was checked, material limitations, and unresolved decisions. Keep README current state accurate. Do not advance to the next roadmap phase merely because documentation describes it. The foundation approval gate remains in force until explicitly lifted by the user.
+State what changed, what was checked, material limitations, and unresolved decisions. Keep README current state accurate. Do not advance to the next roadmap slice merely because documentation describes it. The MVP approval gate remains in force until explicitly lifted by the user.
