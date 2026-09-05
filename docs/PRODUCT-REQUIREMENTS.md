@@ -4,6 +4,12 @@
 
 All capabilities here are planned. [Roadmap](ROADMAP.md) defines sequencing, and explicit MVP approval is required before implementation. These requirements define behavior without prescribing a database schema. Permissions are further defined in [User roles](USER-ROLES.md) and [Security and privacy](SECURITY-AND-PRIVACY.md).
 
+## Participant registration and account entry
+
+The MVP supports account entry for guardians, shelters or rescues, and pet businesses or service partners. A person may eventually participate in more than one capacity. Participant selection is onboarding context, not a permanent single-role label.
+
+Registration, organization verification, offer approval, and publication are separate states. Creating an account or organization must not automatically confer verified status, privileged permissions, public endorsement, or access to private guardian and Passport data.
+
 ## Guardian entry and post-login home
 
 The guardian experience is the primary product priority. After account creation or login, the product should present two clear paths:
@@ -20,6 +26,66 @@ Acceptance expectations:
 - A guardian can browse public marketplace entries without completing unrelated Passport fields.
 - Signed-in state, errors, recovery, and sign-out behavior are clear.
 - Calls to action lead only to working destinations.
+
+## Shelter and rescue registration
+
+A shelter or rescue representative should be able to create a personal account, establish or request access to an organization profile, and populate the minimum information needed for a credible organizational presence and later verification.
+
+Candidate MVP organization information includes:
+
+- legal and public-facing organization names;
+- organization type;
+- primary contact name, role, email, and phone;
+- website and public social links;
+- physical address and service area;
+- public description and mission;
+- adoption or public contact information;
+- logo and selected public imagery if upload scope is approved;
+- nonprofit or registration information when voluntarily supplied;
+- requested membership and administrator relationship;
+- registration, review, correction, and verification status.
+
+Shelter registration does not require shelter verification to be completed in the first release. An unverified organization must be clearly labeled internally and wherever status is relevant. Registration alone does not authorize shelter-created Passports, adoption verification, transfers, access to guardian records, or unrestricted invitation of organization members.
+
+Acceptance expectations:
+
+- Duplicate organization claims are detected or routed for review rather than silently creating competing verified identities.
+- A representative cannot approve their own organization verification.
+- Public and internal-only fields are distinguishable.
+- A shelter can save progress and correct a returned submission.
+- Status language distinguishes draft, submitted, under review, changes requested, approved for account use, verified when later supported, suspended, and rejected as applicable.
+- Organization membership and verification remain separate concepts.
+
+## Partner registration, services, and offers
+
+A pet business or service partner representative should be able to create a personal account, establish or request access to a business organization, complete its profile, describe pet-related services, and submit offers for ShelterPawtners review.
+
+Candidate MVP partner information includes:
+
+- legal and public-facing business names;
+- business type and service categories;
+- primary contact name, role, email, and phone;
+- website, booking, and public social links;
+- physical locations, online availability, and service areas;
+- species served;
+- description, logo, and selected imagery if upload scope is approved;
+- services offered, delivery method, pricing context when supplied, and geographic availability;
+- offer title, summary, benefit, eligibility, exclusions, redemption instructions, start and expiration dates, locations, and source or supporting terms;
+- requested classification, including public, ShelterPawtners exclusive, verified-adoption, sponsored, affiliate, or community offer;
+- draft, submission, review, correction, approval, publication, expiration, suspension, and rejection status.
+
+Partners may save draft services and offers, but they cannot publish directly in the MVP. ShelterPawtners review determines whether an organization profile, service, or offer becomes visible and how it is classified. Submission does not prove a formal partnership or authorize use of another organization's trademarks beyond approved terms.
+
+Acceptance expectations:
+
+- A partner can maintain organization details without seeing another partner's drafts.
+- Required offer terms and dates are validated before submission.
+- Publication is a separate authorized action.
+- Changes to a published offer return through an appropriate review path when material.
+- Expired or suspended offers stop appearing as active.
+- Exclusive and verified-adoption classifications require evidence and approval.
+- Partner registration grants no private Passport or guardian access.
+- Duplicate businesses and unauthorized business claims are routed for review.
 
 ## Digital Pet Passport
 
@@ -70,7 +136,7 @@ Acceptance expectations: unauthorized or reused claims cannot transfer a pet; a 
 
 ## Savings marketplace
 
-The savings marketplace is an MVP guardian capability, not only a later partner-network feature. It should begin with responsibly curated public savings programs and offers, then expand to ShelterPawtners exclusives, verified-adoption benefits, and measurable partner participation after real agreements and controls exist.
+The savings marketplace is an MVP guardian capability, not only a later partner-network feature. It should begin with responsibly curated public savings programs and offers, plus approved partner submissions when available. It can then expand to ShelterPawtners exclusives, verified-adoption benefits, and measurable partner participation after real agreements and controls exist.
 
 [Marketplace research and savings strategy](MARKETPLACE-RESEARCH.md) defines the initial source map, offer classifications, and freshness process. Potential categories include veterinary services, food, medication, grooming, training, walking, sitting, boarding, daycare, supplies, insurance, transportation, photography, events, festival vendors, local businesses, and national brands.
 
@@ -79,18 +145,18 @@ The savings marketplace is an MVP guardian capability, not only a later partner-
 Each entry should include, when applicable:
 
 - provider and program or offer name;
-- concise value summary written by ShelterPawtners;
+- concise value summary written or reviewed by ShelterPawtners;
 - classification as public offer, public program, ShelterPawtners exclusive, verified-adoption benefit, sponsored placement, affiliate link, or community offer;
 - category and useful search terms;
 - eligibility, enrollment, membership, prescription, location, purchase, or subscription requirements;
 - geographic scope;
 - start and expiration dates, or an explicitly ongoing status;
-- direct provider source;
+- direct provider source or approved partner-supplied terms;
 - last-verified date;
 - clear action to review current terms;
 - publication, expiration, and correction status controlled through an internal curation workflow.
 
-The MVP may use a human-curated seed catalog. Automated discovery, feeds, or scraping must not auto-publish entries. Public offer browsing should not require a completed Passport. Search and filters should prioritize practical usefulness over a large offer count.
+The MVP may use a human-curated seed catalog and approved partner submissions. Automated discovery, feeds, or scraping must not auto-publish entries. Public offer browsing should not require a completed Passport. Search and filters should prioritize practical usefulness over a large offer count.
 
 Acceptance expectations:
 
@@ -99,13 +165,13 @@ Acceptance expectations:
 - Promotional amounts and terms are not hard-coded without a verification and expiration strategy.
 - Broken or inaccurate entries can be reported and corrected.
 - Medical and prescription savings do not imply veterinary advice.
-- The source page is accessible before a user acts on the offer.
+- The source or applicable terms are accessible before a user acts on the offer.
 - Sponsored or affiliate relationships are clearly disclosed.
 - Marketplace ranking does not silently represent paid placement as relevance.
 
 ### Later savings capabilities
 
-Offers may eventually vary by location, species, shelter adoption status, business category, eligibility, campaign, date, and partner. Later capabilities may include saved offers, pet-aware relevance, partner submissions, provider feeds, exclusive benefits, redemption validation, estimated savings, annual and lifetime savings, partner participation, and mission impact.
+Offers may eventually vary by location, species, shelter adoption status, business category, eligibility, campaign, date, and partner. Later capabilities may include saved offers, pet-aware relevance, provider feeds, exclusive benefits, redemption validation, estimated savings, annual and lifetime savings, partner participation, and mission impact.
 
 ShelterCARD and ReWards are related savings concepts. Lifetime access to savings and support for adopted shelter pets is a long-term goal, not an unconditional present promise.
 
@@ -113,12 +179,12 @@ Acceptance expectations for controlled benefits: terms and eligibility are visib
 
 ## Marketplace curation and operations
 
-A useful marketplace requires ongoing ownership. Authorized internal users should eventually research, draft, review, publish, reverify, unpublish, expire, and correct entries. Material changes should preserve revision history and source provenance.
+A useful marketplace requires ongoing ownership. Authorized internal users should research, draft, review, publish, reverify, unpublish, expire, and correct entries. They should also review partner profiles, services, and submitted offers. Material changes should preserve revision history and source provenance.
 
 Acceptance expectations:
 
 - Publication is a deliberate human action.
-- A source and verification timestamp are required for public entries.
+- A source or approved partner-supplied terms and a verification timestamp are required.
 - Time-limited promotions have expiration handling.
 - Ongoing programs have a defined recheck cadence.
 - User and provider corrections have an operational destination.
@@ -139,8 +205,8 @@ Insights, reporting, AI assistance, and animal welfare intelligence are later ca
 
 ## Homepage and major pages
 
-The first screen should answer the five visitor questions in [Product vision](PRODUCT-VISION.md), communicate ecosystem value, and provide a clear next action appropriate to what actually works. Every major page needs a strong opening hook. Use credible marketing, behavioral science, social media, UX, or conversion research when it informs a real design choice; record the source and avoid invented findings or manipulative tactics.
+The first screen should answer the five visitor questions in [Product vision](PRODUCT-VISION.md), communicate ecosystem value, and provide a clear next action appropriate to guardians, shelters, and partners. Every major page needs a strong opening hook. Use credible marketing, behavioral science, social media, UX, or conversion research when it informs a real design choice; record the source and avoid invented findings or manipulative tactics.
 
-The public experience should preview marketplace value without claiming every listed provider is a partner. The authenticated marketplace needs its own strong hook, clear filter hierarchy, trustworthy offer labeling, and practical next actions.
+The public experience should preview marketplace value without claiming every listed provider is a partner. Shelter and partner registration pages require distinct value propositions and accurate explanations of review status. The authenticated marketplace needs its own strong hook, clear filter hierarchy, trustworthy offer labeling, and practical next actions.
 
 Acceptance expectations: the value is understandable without a long business explanation; the page conveys benefits beyond discounts; calls to action match functional destinations; claims and affiliations are substantiated; responsive and accessible behavior is reviewed in a browser. Follow the staged design workflow in [Brand design system](BRAND-DESIGN-SYSTEM.md).
