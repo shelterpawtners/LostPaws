@@ -128,6 +128,20 @@ The confirmation mechanism must include:
 
 A shelter responder using the link is not automatically a verified shelter account administrator. The response confirms a specific adoption request within its evidence limits. Stronger organization verification can later connect repeated responses to a verified shelter account.
 
+## Shelter conversion after confirmation
+
+A responder should be able to complete confirmation without creating an account. After the response is safely recorded, present a strong shelter-specific invitation that explains:
+
+- ShelterPawtners is free for participating shelters during the MVP;
+- shelters can create and maintain Digital Pet Passports and Shelter Report Cards;
+- useful history can follow a pet into adoption with appropriate privacy controls;
+- guardians can receive post-adoption savings and support;
+- automated confirmation can reduce repetitive follow-up work;
+- shelter participation can strengthen post-adoption relationships and future outcome insights;
+- later capabilities may support community partners, resources, reporting, and adoption promotion.
+
+The invitation must be truthful about what is currently available. It should offer **Create your free shelter account** and **Learn how ShelterPawtners helps shelters** without blocking the completed response.
+
 ## Email and SMS automation
 
 Email is the recommended festival MVP channel. Supabase Edge Functions can initiate transactional email through a configured provider, and delivery results should update request status. Provider credentials must remain server-side.
@@ -137,8 +151,10 @@ Recommended automation:
 - send the initial request after guardian confirmation;
 - record provider message identifiers and delivery failures;
 - allow limited manual resend;
-- send a reminder only under an approved cadence;
-- stop reminders after confirmation, decline, cancellation, expiration, or repeated failure;
+- keep the request active for 30 days;
+- send automated reminders on days 10, 20, and 27 when no terminal response exists;
+- stop reminders after confirmation, decline, cancellation, expiration, or repeated delivery failure;
+- on day 30, expire an unresolved request and notify the guardian that the shelter could not be reached or did not confirm within the verification period;
 - notify the guardian when status materially changes;
 - route exceptions to the team dashboard instead of making Jim the normal approval step.
 
@@ -172,7 +188,7 @@ Adoption verification can invite useful history, but confirmation and clinical h
 ### Include only if safely completed
 
 - Guardian Passport Lite.
-- Email-based adoption verification with one-time shelter response link.
+- Email-based adoption verification with a one-time shelter response link, 30-day response window, and defined reminders.
 - Private adoption-document upload.
 - Basic ShelterPawtners pet marketplace seed data.
 
