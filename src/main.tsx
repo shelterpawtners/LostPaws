@@ -29,8 +29,13 @@ import {
   UserRound,
   X,
 } from "lucide-react";
-import { createClient, type Session } from "@supabase/supabase-js";
+import type { Session } from "@supabase/supabase-js";
 import { accountRegistrationPath, legacyRegistrationTarget } from "./domain";
+import { googleAuthEnabled, supabase as db } from "./lib/supabase";
+import {
+  roleLabels as phaseOneRoleLabels,
+  type UserRole,
+} from "./types/personas";
 import "./styles.css";
 type Kind = "guardian" | "shelter" | "petbiz" | "rave_vendor";
 const choices: { kind: Kind; title: string; copy: string }[] = [
@@ -61,10 +66,6 @@ const icons = {
   petbiz: Store,
   rave_vendor: Music2,
 };
-const url = import.meta.env.VITE_SUPABASE_URL,
-  key = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
-const db = url && key ? createClient(url, key) : null;
-const googleEnabled = import.meta.env.VITE_GOOGLE_AUTH_ENABLED === "true";
 type AuthState = { session: Session | null; loading: boolean };
 const AuthContext = createContext<AuthState>({ session: null, loading: true });
 function AuthProvider({ children }: { children: React.ReactNode }) {
@@ -377,9 +378,9 @@ function Signup({ c }: { c: (typeof choices)[number] }) {
           className="btn quiet full"
           type="button"
           onClick={google}
-          disabled={!googleEnabled}
+          disabled={!googleAuthEnabled}
         >
-          {googleEnabled
+          {googleAuthEnabled
             ? "Continue with Google"
             : "Google sign-in coming soon"}
         </button>
@@ -687,6 +688,92 @@ function Marketplace() {
     </Page>
   );
 }
+const publicFoundations: Record<
+  string,
+  { eyebrow: string; title: string; copy: string }
+> = {
+  passport: {
+    eyebrow: "Digital Pet Passport",
+    title: "A private record that can grow with your pet.",
+    copy: "Identity, guardianship, adoption history, and future care records stay connected without making private information public.",
+  },
+  partners: {
+    eyebrow: "PetBiz and community partners",
+    title: "Give guardians practical value after adoption.",
+    copy: "Create an organization profile, locations, and offers using one account that can support multiple team members.",
+  },
+  shelters: {
+    eyebrow: "Shelters and rescues",
+    title: "Help each adoption carry trusted history forward.",
+    copy: "ShelterPawtners is free for shelters. The foundation supports adoption confirmation, report cards, transfers, and future imports.",
+  },
+  lostpaws: {
+    eyebrow: "LostPaws",
+    title: "Music community energy for shelter pets.",
+    copy: "An independent community activation connecting ravers and vendors with ShelterPawtners’ adoption mission.",
+  },
+  about: {
+    eyebrow: "Care. Savings. Community.",
+    title: "Built to support the full life after adoption.",
+    copy: "ShelterPawtners connects guardians, shelters, providers, and businesses around better continuity of care and measurable support.",
+  },
+};
+function FoundationPage({ name }: { name: keyof typeof publicFoundations }) {
+  const page = publicFoundations[name];
+  return (
+    <Page>
+      <section className="section shell formPage">
+        <span className="eyebrow">{page.eyebrow}</span>
+        <h1>{page.title}</h1>
+        <p className="lead">{page.copy}</p>
+        <div className="actions">
+          <Link className="btn" to="/register">
+            Choose how to participate
+          </Link>
+          <Link className="btn quiet" to="/marketplace">
+            Preview savings
+          </Link>
+        </div>
+      </section>
+    </Page>
+  );
+}
+function AppFoundation({ title, copy }: { title: string; copy: string }) {
+  return (
+    <Page>
+      <section className="dashboardHero">
+        <div className="shell dashboardTitle">
+          <div>
+            <span className="eyebrow">Phase 1 foundation</span>
+            <h1>{title}</h1>
+            <p>{copy}</p>
+          </div>
+        </div>
+      </section>
+      <section className="section shell">
+        <nav className="appNav" aria-label="Account sections">
+          <Link to="/dashboard">Dashboard</Link>
+          <Link to="/my-pets">My Pets</Link>
+          <Link to="/savings">Savings</Link>
+          <Link to="/community">Community</Link>
+          <Link to="/business">Business</Link>
+          <Link to="/offers">Offers</Link>
+          <Link to="/locations">Locations</Link>
+          <Link to="/adoptions">Adoptions</Link>
+          <Link to="/transfers">Transfers</Link>
+          <Link to="/administration">Administration</Link>
+        </nav>
+        <div className="panel">
+          <h2>Foundation ready</h2>
+          <p>
+            This route is connected to the shared authenticated shell. Its
+            complete workflow belongs to a later approved phase.
+          </p>
+        </div>
+      </section>
+    </Page>
+  );
+}
 function Login() {
   const [status, setStatus] = useState("");
   const navigate = useNavigate();
@@ -726,9 +813,9 @@ function Login() {
               className="btn quiet full"
               type="button"
               onClick={google}
-              disabled={!googleEnabled}
+              disabled={!googleAuthEnabled}
             >
-              {googleEnabled
+              {googleAuthEnabled
                 ? "Continue with Google"
                 : "Google sign-in coming soon"}
             </button>
@@ -837,12 +924,11 @@ function Protected({ children }: { children: React.ReactNode }) {
     );
   return session ? children : <Navigate to="/login" replace />;
 }
-const roleLabels: Record<Kind | "platform_admin", string> = {
-  guardian: "Pet Guardian",
-  shelter: "Shelter or Rescue",
-  petbiz: "Pet Business",
-  rave_vendor: "RAVE Shelter Vendor",
-  platform_admin: "ShelterPawtners Team",
+const onboardingRole: Record<Kind, UserRole> = {
+  guardian: "guardian",
+  shelter: "shelter_member",
+  petbiz: "partner_member",
+  rave_vendor: "partner_member",
 };
 function Dashboard() {
   const { session } = useAuth();
@@ -852,12 +938,13 @@ function Dashboard() {
   const navigate = useNavigate();
   useEffect(() => {
     if (!db || !session) return;
-    db.from("participant_roles")
-      .select("participant_type")
+    db.from("user_roles")
+      .select("role_code")
       .eq("user_id", session.user.id)
+      .is("revoked_at", null)
       .then(({ data, error }) => {
         if (error) return setStatus(error.message);
-        const list = (data || []).map((row) => row.participant_type as string);
+        const list = (data || []).map((row) => row.role_code as string);
         setRoles(list);
         const saved = localStorage.getItem("sp_active_role");
         setActiveRole(
@@ -872,18 +959,26 @@ function Dashboard() {
   async function addRole(kind: Kind) {
     if (!db || !session) return;
     const { error } = await db
-      .from("participant_roles")
-      .insert({ user_id: session.user.id, participant_type: kind });
+      .from("user_roles")
+      .insert({ user_id: session.user.id, role_code: onboardingRole[kind] });
     if (error && error.code !== "23505") return setStatus(error.message);
-    if (!roles.includes(kind)) setRoles([...roles, kind]);
-    switchRole(kind);
+    const role = onboardingRole[kind];
+    if (!roles.includes(role)) setRoles([...roles, role]);
+    switchRole(role);
     navigate(`/onboarding/${kind}`);
   }
   async function signOut() {
     await db?.auth.signOut();
     navigate("/", { replace: true });
   }
-  const kind = (activeRole || "guardian") as Kind | "platform_admin";
+  const active = (activeRole || "guardian") as UserRole;
+  const kind: Kind | "platform_admin" = active.startsWith("shelter")
+    ? "shelter"
+    : active.startsWith("partner")
+      ? "petbiz"
+      : active === "platform_admin"
+        ? "platform_admin"
+        : "guardian";
   const name =
     session?.user.user_metadata.full_name ||
     session?.user.email?.split("@")[0] ||
@@ -915,13 +1010,13 @@ function Dashboard() {
               onClick={() => switchRole(role)}
             >
               <UserRound />
-              {roleLabels[role as keyof typeof roleLabels]}
+              {phaseOneRoleLabels[role as UserRole] || role}
             </button>
           ))}
           <details>
             <summary>Add another role</summary>
             {choices
-              .filter((c) => !roles.includes(c.kind))
+              .filter((c) => !roles.includes(onboardingRole[c.kind]))
               .map((c) => (
                 <button
                   className="role"
@@ -934,7 +1029,7 @@ function Dashboard() {
           </details>
         </aside>
         <div className="dashboardMain">
-          <span className="eyebrow">{roleLabels[kind]}</span>
+          <span className="eyebrow">{phaseOneRoleLabels[active]}</span>
           <h2>
             {kind === "guardian"
               ? "Your pet journey starts here"
@@ -962,14 +1057,7 @@ function Dashboard() {
               </div>
               <ArrowRight />
             </Link>
-            <Link
-              className="next"
-              to={
-                kind === "rave_vendor"
-                  ? "/marketplace?channel=rave"
-                  : "/marketplace"
-              }
-            >
+            <Link className="next" to="/marketplace">
               <Search />
               <div>
                 <b>
@@ -993,12 +1081,20 @@ function App() {
     <Routes>
       <Route path="/" element={<Home />} />
       <Route path="/rave" element={<Rave />} />
+      <Route path="/rave-shelter" element={<Rave />} />
+      <Route path="/passport" element={<FoundationPage name="passport" />} />
+      <Route path="/partners" element={<FoundationPage name="partners" />} />
+      <Route path="/shelters" element={<FoundationPage name="shelters" />} />
+      <Route path="/lostpaws" element={<FoundationPage name="lostpaws" />} />
+      <Route path="/about" element={<FoundationPage name="about" />} />
       <Route path="/register" element={<Register />} />
       <Route
         path="/register.html"
         element={<Navigate to={legacyRegistrationTarget} replace />}
       />
       <Route path="/login" element={<Login />} />
+      <Route path="/sign-in" element={<Navigate to="/login" replace />} />
+      <Route path="/sign-up" element={<Navigate to="/register" replace />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password" element={<ResetPassword />} />
       <Route
@@ -1026,6 +1122,63 @@ function App() {
         }
       />
       <Route path="/marketplace" element={<Marketplace />} />
+      {[
+        [
+          "/my-pets",
+          "My Pets",
+          "Manage pet identity and guardianship foundations.",
+        ],
+        [
+          "/savings",
+          "Savings",
+          "Review future claims, redemptions, and tracked value.",
+        ],
+        [
+          "/community",
+          "Community",
+          "Connect without granting access to private Passport data.",
+        ],
+        [
+          "/business",
+          "Business",
+          "Manage organization details and memberships.",
+        ],
+        [
+          "/offers",
+          "Offers",
+          "Prepare campaigns with immutable published versions.",
+        ],
+        [
+          "/locations",
+          "Locations",
+          "Manage physical, online, service-area, regional, and national reach.",
+        ],
+        [
+          "/adoptions",
+          "Adoptions",
+          "Prepare shelter-confirmed adoption workflows.",
+        ],
+        [
+          "/transfers",
+          "Transfers",
+          "Prepare secure, expiring shelter transfer flows.",
+        ],
+        [
+          "/administration",
+          "Administration",
+          "Restricted platform oversight foundation.",
+        ],
+      ].map(([path, title, copy]) => (
+        <Route
+          key={path}
+          path={path}
+          element={
+            <Protected>
+              <AppFoundation title={title} copy={copy} />
+            </Protected>
+          }
+        />
+      ))}
       <Route path="*" element={<Navigate to="/" />} />
     </Routes>
   );

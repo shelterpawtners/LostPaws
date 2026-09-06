@@ -8,24 +8,24 @@ Small contributions from many participants can create meaningful benefits for sh
 
 ## Connected value areas
 
-| Area | Intended value |
-| --- | --- |
-| Care | Pet identity and history, continuity across adoption, relevant information shared with authorized caregivers, and useful guardian support. |
-| Savings | Practical offers and support that can reduce the cost of caring for pets, with eligibility and terms made clear. |
-| Community | Shelters, businesses, providers, and wider communities contributing in practical, measurable ways. |
+| Area      | Intended value                                                                                                                             |
+| --------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| Care      | Pet identity and history, continuity across adoption, relevant information shared with authorized caregivers, and useful guardian support. |
+| Savings   | Practical offers and support that can reduce the cost of caring for pets, with eligibility and terms made clear.                           |
+| Community | Shelters, businesses, providers, and wider communities contributing in practical, measurable ways.                                         |
 
 Data and intelligence support these areas rather than replace them. The long-term platform combines identity, pet history, savings, partner participation, shelter validation, community support, and insights.
 
 ## Ecosystem value
 
-| Participant | Value the platform should create |
-| --- | --- |
-| Guardians and prospective adopters | Useful pet information, savings, support, and easier continuity of care. |
-| Shelters and rescues | Adoption support, stronger post-adoption relationships, improved records, community participation, and future insights. |
-| Pet businesses | Customer acquisition, community visibility, mission participation, and measurable engagement. |
-| Veterinarians and service providers | Relevant pet history when authorized and stronger guardian relationships. |
-| Sponsors, brands, event vendors, community partners | Practical animal welfare participation without requiring traditional charitable donations. |
-| Shelter pets | Better support before, during, and after adoption. |
+| Participant                                         | Value the platform should create                                                                                        |
+| --------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| Guardians and prospective adopters                  | Useful pet information, savings, support, and easier continuity of care.                                                |
+| Shelters and rescues                                | Adoption support, stronger post-adoption relationships, improved records, community participation, and future insights. |
+| Pet businesses                                      | Customer acquisition, community visibility, mission participation, and measurable engagement.                           |
+| Veterinarians and service providers                 | Relevant pet history when authorized and stronger guardian relationships.                                               |
+| Sponsors, brands, event vendors, community partners | Practical animal welfare participation without requiring traditional charitable donations.                              |
+| Shelter pets                                        | Better support before, during, and after adoption.                                                                      |
 
 These are intended outcomes. Do not present them as demonstrated results without evidence.
 

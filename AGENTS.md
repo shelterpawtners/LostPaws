@@ -25,12 +25,12 @@ Read [README.md](README.md) for current state and [.agents/skills/shelterpawtner
 | Terminology, claims, customer copy                             | [Content standards](docs/CONTENT-STANDARDS.md)                                  |
 | Technical direction and engineering choices                    | [Architecture](docs/ARCHITECTURE.md)                                            |
 | Phasing, dependencies, unresolved decisions                    | [Roadmap](docs/ROADMAP.md)                                                      |
-| Autonomous implementation decisions                            | [Autonomous decision log](docs/AUTONOMOUS-DECISIONS.md)                         |
+| Autonomous implementation decisions                            | [Phase 1 decision log](docs/DECISION-LOG.md)                                    |
 | Privacy, authorization, transfer safeguards                    | [Security and privacy](docs/SECURITY-AND-PRIVACY.md)                            |
 
 Keep detailed guidance in its canonical document and link to it elsewhere. Resolve contradictions instead of adding competing instructions. Preserve the distinction between required behavior, preferred technology, proposed implementation choices, and deferred decisions.
 
-Record every meaningful product, design, technical, security, sequencing, or operational decision made without direct user approval in the [Autonomous decision log](docs/AUTONOMOUS-DECISIONS.md). Add the entry in the same change that implements the decision, including rationale, alternatives, consequences, impact, and implementation location. Do not use the log as permission to decide matters requiring user authority.
+Record every meaningful product, design, technical, security, sequencing, or operational decision made without direct user approval in the [Phase 1 decision log](docs/DECISION-LOG.md). Add the entry in the same change that implements the decision, including rationale and consequences. Do not use the log as permission to decide matters requiring user authority.
 
 ## Engineering conduct
 

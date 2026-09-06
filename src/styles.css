@@ -9,6 +9,31 @@
   --purple: #7c3aed;
   --teal: #0e9f9a;
   --shadow: 0 22px 65px #1d23441d;
+  --background: #fbfcff;
+  --surface: #ffffff;
+  --text: #17213a;
+  --muted-text: #5f6b82;
+  --primary: #654ab7;
+  --secondary: #0e9f9a;
+  --accent: #d94fa8;
+  --success: #157a63;
+  --warning: #9a5b00;
+  --error: #b42318;
+  --border: #dfe5ee;
+  --focus: #14b8a6;
+}
+.appNav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 22px;
+  color: var(--text);
+}
+.appNav a {
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 9px 13px;
+  background: var(--surface);
 }
 * {
   box-sizing: border-box;

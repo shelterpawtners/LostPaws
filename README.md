@@ -43,6 +43,7 @@ The frontend uses React, TypeScript, and Vite with a small custom CSS design sys
 - [Content standards](docs/CONTENT-STANDARDS.md): terminology, writing, and truthful claims.
 - [Architecture](docs/ARCHITECTURE.md): technical direction and engineering standards.
 - [Roadmap](docs/ROADMAP.md): MVP slices, later phases, approval gates, and human decisions.
-- [Autonomous decision log](docs/AUTONOMOUS-DECISIONS.md): reviewable choices made by Codex without asking Jim first.
+- [Phase 1 decision log](docs/DECISION-LOG.md): canonical, reviewable implementation choices.
+- [Phase 1 execution](docs/PHASE-1-EXECUTION.md): rebuild order, migrations, and remaining configuration.
 - [Security and privacy](docs/SECURITY-AND-PRIVACY.md): data protection and authorization requirements.
 - [Project skill](.agents/skills/shelterpawtners/SKILL.md): task-specific document routing for Codex.

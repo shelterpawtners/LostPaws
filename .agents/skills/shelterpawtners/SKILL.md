@@ -20,7 +20,7 @@ Paths below are relative to this skill directory. Load the documents needed for 
 | Marketing page                     | [Product vision](../../../docs/PRODUCT-VISION.md), [Brand design system](../../../docs/BRAND-DESIGN-SYSTEM.md), [Content standards](../../../docs/CONTENT-STANDARDS.md).                                                        |
 | Shelter workflow or transfer       | [Product requirements](../../../docs/PRODUCT-REQUIREMENTS.md), [User roles](../../../docs/USER-ROLES.md), [Architecture](../../../docs/ARCHITECTURE.md), [Security and privacy](../../../docs/SECURITY-AND-PRIVACY.md).         |
 | Planning or context changes        | [Product vision](../../../docs/PRODUCT-VISION.md), [Roadmap](../../../docs/ROADMAP.md), and the canonical document for the affected topic.                                                                                      |
-| Autonomous implementation decision | [Autonomous decision log](../../../docs/AUTONOMOUS-DECISIONS.md) and the canonical document for the affected topic.                                                                                                             |
+| Autonomous implementation decision | [Phase 1 decision log](../../../docs/DECISION-LOG.md) and the canonical document for the affected topic.                                                                                                                        |
 
 For mixed tasks, combine the relevant routes. Before an architectural change, read architecture and security context even if the task began as a UI request.
 

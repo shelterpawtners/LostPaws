@@ -123,12 +123,12 @@ The Passport is a core platform asset associated with a pet. A shelter or rescue
 
 Potential information includes:
 
-| Area | Candidate information |
-| --- | --- |
-| Identity | Name, species, breed or mix, birth date or estimated age, sex, photos, microchip information. |
-| Origin and adoption | Shelter origin, adoption history, guardianship history with appropriate privacy boundaries. |
-| Health | Medical history, vaccinations, medications, allergies, provider notes, documents. |
-| Behavior and daily care | Behavior, commands, training, likes, dislikes, compatibility, food information, care routines. |
+| Area                      | Candidate information                                                                           |
+| ------------------------- | ----------------------------------------------------------------------------------------------- |
+| Identity                  | Name, species, breed or mix, birth date or estimated age, sex, photos, microchip information.   |
+| Origin and adoption       | Shelter origin, adoption history, guardianship history with appropriate privacy boundaries.     |
+| Health                    | Medical history, vaccinations, medications, allergies, provider notes, documents.               |
+| Behavior and daily care   | Behavior, commands, training, likes, dislikes, compatibility, food information, care routines.  |
 | Contributions and sharing | Authorized provider contributions, selected publicly shareable fields, private guardian fields. |
 
 This is a candidate inventory, not a requirement to collect every field at launch. Minimize collection and choose phase-specific fields before implementing them. Passport content must not imply that ShelterPawtners is a veterinarian or medical authority.
