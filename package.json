@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "preview": "vite preview",
-    "test": "vitest run",
+    "test": "vitest run --exclude e2e/**",
+    "test:e2e": "playwright test",
     "lint": "prettier --check src docs README.md AGENTS.md",
     "typecheck": "tsc -b --pretty false",
     "check": "npm run lint && npm run typecheck && npm test"
@@ -20,10 +21,12 @@
     "react-router-dom": "7.18.3"
   },
   "devDependencies": {
+    "@playwright/test": "^1.63.0",
     "@tailwindcss/vite": "^4.3.3",
     "@types/react": "19.2.14",
     "@types/react-dom": "19.2.3",
     "@vitejs/plugin-react": "6.0.1",
+    "@playwright/test": "^1.55.0",
     "prettier": "3.9.6",
     "tailwindcss": "^4.3.3",
     "typescript": "7.0.2",
