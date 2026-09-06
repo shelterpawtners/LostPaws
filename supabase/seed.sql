@@ -11,6 +11,17 @@ insert into auth.users (
  ('00000000-0000-0000-0000-000000000000','10000000-0000-0000-0000-000000000005','authenticated','authenticated','platform-admin@example.invalid',crypt('Demo-only-Platform!',gen_salt('bf')),now(),'{}','{"full_name":"Platform Admin","onboarding_type":"guardian"}',now(),now())
 on conflict(id) do nothing;
 
+-- GoTrue scans these token fields as strings during password authentication.
+-- Directly seeded users must use empty strings rather than nullable defaults.
+update auth.users
+set confirmation_token = coalesce(confirmation_token, ''),
+    recovery_token = coalesce(recovery_token, ''),
+    email_change_token_new = coalesce(email_change_token_new, ''),
+    email_change = coalesce(email_change, ''),
+    email_change_token_current = coalesce(email_change_token_current, ''),
+    reauthentication_token = coalesce(reauthentication_token, '')
+where email like '%@example.invalid';
+
 insert into public.user_roles(user_id,role_code,assigned_by) values
  ('10000000-0000-0000-0000-000000000003','partner_admin','10000000-0000-0000-0000-000000000005'),
  ('10000000-0000-0000-0000-000000000004','shelter_admin','10000000-0000-0000-0000-000000000005'),

@@ -1008,8 +1008,8 @@ function Dashboard() {
     navigate(`/onboarding/${kind}`);
   }
   async function signOut() {
-    await db?.auth.signOut();
     navigate("/", { replace: true });
+    await db?.auth.signOut();
   }
   const active = (activeRole || "guardian") as UserRole;
   const kind: Kind | "platform_admin" = active.startsWith("shelter")
