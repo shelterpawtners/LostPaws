@@ -14,20 +14,23 @@ The documents capture authoritative user requirements. Explicit subsequent user 
 
 Read [README.md](README.md) for current state and [.agents/skills/shelterpawtners/SKILL.md](.agents/skills/shelterpawtners/SKILL.md) for task-specific document routing. Read relevant documents before architectural changes. Each topic has a canonical home:
 
-| Topic | Authoritative document |
-| --- | --- |
-| Mission, ecosystem, audiences | [Product vision](docs/PRODUCT-VISION.md) |
-| Product behavior and acceptance expectations | [Product requirements](docs/PRODUCT-REQUIREMENTS.md) |
-| Marketplace research, classification, freshness | [Marketplace research](docs/MARKETPLACE-RESEARCH.md) |
+| Topic                                                          | Authoritative document                                                          |
+| -------------------------------------------------------------- | ------------------------------------------------------------------------------- |
+| Mission, ecosystem, audiences                                  | [Product vision](docs/PRODUCT-VISION.md)                                        |
+| Product behavior and acceptance expectations                   | [Product requirements](docs/PRODUCT-REQUIREMENTS.md)                            |
+| Marketplace research, classification, freshness                | [Marketplace research](docs/MARKETPLACE-RESEARCH.md)                            |
 | Festival deadline, Rave Shelter channel, adoption verification | [Festival MVP and adoption verification](docs/FESTIVAL-MVP-AND-VERIFICATION.md) |
-| Roles, organization membership, scope | [User roles](docs/USER-ROLES.md) |
-| Visual direction and design process | [Brand design system](docs/BRAND-DESIGN-SYSTEM.md) |
-| Terminology, claims, customer copy | [Content standards](docs/CONTENT-STANDARDS.md) |
-| Technical direction and engineering choices | [Architecture](docs/ARCHITECTURE.md) |
-| Phasing, dependencies, unresolved decisions | [Roadmap](docs/ROADMAP.md) |
-| Privacy, authorization, transfer safeguards | [Security and privacy](docs/SECURITY-AND-PRIVACY.md) |
+| Roles, organization membership, scope                          | [User roles](docs/USER-ROLES.md)                                                |
+| Visual direction and design process                            | [Brand design system](docs/BRAND-DESIGN-SYSTEM.md)                              |
+| Terminology, claims, customer copy                             | [Content standards](docs/CONTENT-STANDARDS.md)                                  |
+| Technical direction and engineering choices                    | [Architecture](docs/ARCHITECTURE.md)                                            |
+| Phasing, dependencies, unresolved decisions                    | [Roadmap](docs/ROADMAP.md)                                                      |
+| Autonomous implementation decisions                            | [Autonomous decision log](docs/AUTONOMOUS-DECISIONS.md)                         |
+| Privacy, authorization, transfer safeguards                    | [Security and privacy](docs/SECURITY-AND-PRIVACY.md)                            |
 
 Keep detailed guidance in its canonical document and link to it elsewhere. Resolve contradictions instead of adding competing instructions. Preserve the distinction between required behavior, preferred technology, proposed implementation choices, and deferred decisions.
+
+Record every meaningful product, design, technical, security, sequencing, or operational decision made without direct user approval in the [Autonomous decision log](docs/AUTONOMOUS-DECISIONS.md). Add the entry in the same change that implements the decision, including rationale, alternatives, consequences, impact, and implementation location. Do not use the log as permission to decide matters requiring user authority.
 
 ## Engineering conduct
 
