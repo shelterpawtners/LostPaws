@@ -112,7 +112,11 @@ function Header() {
         >
           {o ? <X /> : <Menu />}
         </button>
-        <nav id="primary-navigation" className={o ? "open" : ""}>
+        <nav
+          id="primary-navigation"
+          className={o ? "open" : ""}
+          aria-label="Primary navigation"
+        >
           <Link to="/marketplace">Marketplace</Link>
           <Link to="/rave">RAVE Shelter</Link>
           <Link to="/register">Join</Link>
@@ -145,7 +149,7 @@ function Page({ children }: { children: React.ReactNode }) {
   return (
     <>
       <Header />
-      <main id="main" className="min-h-screen">
+      <main id="main" className="min-h-screen" tabIndex={-1}>
         {children}
       </main>
       <Footer />
@@ -427,7 +431,9 @@ function Signup({ c }: { c: (typeof choices)[number] }) {
           the Privacy Notice.
         </label>
         <button className="btn full">Create account</button>
-        <p aria-live="polite">{status}</p>
+        <p role="status" aria-live="polite" aria-atomic="true">
+          {status}
+        </p>
       </form>
     </div>
   );
@@ -671,7 +677,9 @@ function Onboard() {
             </div>
           )}
           <button className="btn">Save and continue</button>
-          <p aria-live="polite">{status}</p>
+          <p role="status" aria-live="polite" aria-atomic="true">
+            {status}
+          </p>
         </form>
       </section>
     </Page>
@@ -860,7 +868,9 @@ function Login() {
               />
             </label>
             <button className="btn full">Sign in</button>
-            <p aria-live="polite">{status}</p>
+            <p role="status" aria-live="polite" aria-atomic="true">
+              {status}
+            </p>
             <Link to="/forgot-password">Forgot your password?</Link>
             <Link to="/register">New here? Choose an account type</Link>
           </form>
@@ -896,7 +906,9 @@ function ForgotPassword() {
             <input name="email" type="email" required autoComplete="email" />
           </label>
           <button className="btn">Send recovery email</button>
-          <p aria-live="polite">{status}</p>
+          <p role="status" aria-live="polite" aria-atomic="true">
+            {status}
+          </p>
           <Link to="/login">Back to sign in</Link>
         </form>
       </section>
@@ -932,7 +944,9 @@ function ResetPassword() {
             />
           </label>
           <button className="btn">Update password</button>
-          <p aria-live="polite">{status}</p>
+          <p role="status" aria-live="polite" aria-atomic="true">
+            {status}
+          </p>
         </form>
       </section>
     </Page>
@@ -1096,7 +1110,9 @@ function Dashboard() {
               <ArrowRight />
             </Link>
           </div>
-          <p aria-live="polite">{status}</p>
+          <p role="status" aria-live="polite" aria-atomic="true">
+            {status}
+          </p>
         </div>
       </section>
     </Page>
