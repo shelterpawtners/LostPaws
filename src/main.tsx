@@ -94,6 +94,8 @@ function useAuth() {
 function Header() {
   const [o, setO] = useState(false);
   const { session } = useAuth();
+  const location = useLocation();
+  useEffect(() => setO(false), [location.pathname, location.search]);
   return (
     <header>
       <div className="shell head">
@@ -101,10 +103,16 @@ function Header() {
           <img src="/brand/shelterpawtners.png" alt="" />
           ShelterPawtners
         </Link>
-        <button className="menu" onClick={() => setO(!o)} aria-label="Menu">
+        <button
+          className="menu"
+          onClick={() => setO(!o)}
+          aria-expanded={o}
+          aria-controls="primary-navigation"
+          aria-label={o ? "Close menu" : "Open menu"}
+        >
           {o ? <X /> : <Menu />}
         </button>
-        <nav className={o ? "open" : ""}>
+        <nav id="primary-navigation" className={o ? "open" : ""}>
           <Link to="/marketplace">Marketplace</Link>
           <Link to="/rave">RAVE Shelter</Link>
           <Link to="/register">Join</Link>
