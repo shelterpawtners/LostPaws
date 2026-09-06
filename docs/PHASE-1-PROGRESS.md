@@ -38,7 +38,7 @@ Last audited: 2026-09-06. This document resumes the approved Phase 1 Definition 
 | Clean migration + seed reproducibility             | Complete | Two full local resets, matching schema dumps, and both pgTAP runs passed; see resume-audit evidence below.                                                   |
 | Desktop/mobile/accessibility review                | Blocked  | Requires a functioning interactive browser preview; the environment blocks the approved preview URL before rendering.                                        |
 | Documentation updates                              | Complete | `PHASE-1-EXECUTION.md`, data/financial standards, decision log, and this current evidence ledger are updated.                                                |
-| Checkpoint commit/push                             | Blocked  | Local checkpoints `7b91795` and `eb258fa` exist; shell push is blocked because this environment has no GitHub credential.                                    |
+| Checkpoint commit/push                             | Complete | Validation evidence checkpoint `cfa5bd0` was pushed to `origin/build/festival-mvp`.                                                                          |
 
 ## Resume-audit findings
 
@@ -50,6 +50,7 @@ Last audited: 2026-09-06. This document resumes the approved Phase 1 Definition 
 - **RLS validation:** all 9 pgTAP assertions passed remotely in a transaction that rolled back test writes. Remote inspection shows 0 public tables without RLS and 0 private browser policies.
 - **Clean local reproducibility validation:** Supabase CLI 2.116.0 ran against Docker Desktop 4.89.0 with Docker engine 29.7.2 and PostgreSQL 17 from `supabase/config.toml`. Two complete local resets independently replayed the same seven migrations in filename order and applied `supabase/seed.sql`. The resulting `public` and `private` schema dumps were byte-identical (2,832 lines, 105,694 bytes, SHA-256 `01e1a294547021e891cfbc9b9cae49cd3cf468223bbf30b73a044d3394ffb1e7`). Both post-reset pgTAP runs passed all 9 assertions. The recreated foundation contains 40 public tables with RLS enabled on all 40, 2 private tables with no browser policies, 75 public policies, 131 public/private indexes, and 4 append-only triggers. Seed verification found 5 auth users/profiles, 8 active role assignments, 2 demo pets, 2 demo organizations, 2 active guardianships, and 2 active organization memberships. No migration defect was found, and no remote database was changed.
 - **Post-reproducibility application validation:** `npm run check` passed Prettier, TypeScript, and 5/5 Vitest assertions; `npm run build` passed with Vite 8.2.2 and 1,887 modules transformed.
+- **Checkpoint delivery:** validation evidence checkpoint `cfa5bd0` was pushed successfully to `origin/build/festival-mvp`.
 - **Remote development data:** 7 profiles, 10 active role assignments, 2 demo pets, and 2 demo organizations; all demo records are explicitly marked.
 - **Platform administrator:** no `jim@shelterpawtners.com` Supabase user exists yet, so no privileged bootstrap was performed against a substitute identity.
 - **Browser limitation:** the Sites preview reports healthy, but the approved cloud browser fails before page render with `ERR_BLOCKED_BY_CLIENT`; this blocks E2E, desktop, mobile, and manual accessibility acceptance only.
