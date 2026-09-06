@@ -6,15 +6,19 @@ The development architecture is implemented in its first vertical slice. Product
 
 ## Preferred stack
 
-| Layer | Direction |
-| --- | --- |
-| Frontend | React, TypeScript, Vite, accessible CSS tokens, reusable components. |
-| Backend | Supabase PostgreSQL, authentication, private and public storage, RLS, and APIs. |
+| Layer                 | Direction                                                                                    |
+| --------------------- | -------------------------------------------------------------------------------------------- |
+| Frontend              | React, TypeScript, Vite, accessible CSS tokens, reusable components.                         |
+| Backend               | Supabase PostgreSQL, authentication, private and public storage, RLS, and APIs.              |
 | Optional capabilities | Supabase Realtime where useful; Edge Functions for appropriate privileged server-side logic. |
-| Development project | `shelterpawtners-dev`, only when connection is authorized. |
-| Production | Do not connect to or create a production project without explicit instruction. |
+| Development project   | `shelterpawtners-dev`, only when connection is authorized.                                   |
+| Production            | Do not connect to or create a production project without explicit instruction.               |
 
 Avoid unnecessary dependencies. Document the reason before introducing a large framework. Prefer low initial cost, fast iteration, maintainability, security, and reasonable future scale. Do not add microservices or paid infrastructure when a reliable free or inexpensive approach meets the stage's needs. Avoid shortcuts that would require a wholesale rewrite after adoption grows.
+
+## Authentication implementation
+
+The client subscribes to Supabase authentication state and protects dashboard and onboarding routes from anonymous access. Email and password registration, sign-in, sign-out, and password recovery are implemented. Participant roles are stored relationally and selected as an interface context; switching the active role never grants permissions by itself. Google authentication remains feature-disabled until its provider credentials and hosted redirect URLs are configured in the development project.
 
 ## Conceptual boundaries
 

@@ -6,7 +6,7 @@ LostPaws is the new application repository for the ShelterPawtners business and 
 
 MVP implementation was authorized on September 6, 2026. The repository now contains a React and TypeScript application plus a committed Supabase migration applied to `shelterpawtners-dev`.
 
-The current implementation includes responsive public pages, permanent QR entry routing, four account-entry choices, email and Google authentication entry, role-specific onboarding shells, Passport Lite and adoption-confirmation intake, pet and RAVE marketplace channels, and protected data foundations for organization connections, offer comments, and direct conversations. Forms beyond account creation remain UI foundations until their persistence services and end-to-end tests are completed. Nothing has been deployed to production.
+The current implementation includes responsive public pages, permanent QR entry routing, four account-entry choices, email authentication, session-aware protected routes, sign-out, password recovery, a multi-role dashboard, role-specific onboarding, Passport Lite and adoption-confirmation intake, pet and RAVE marketplace channels, and protected data foundations for organization connections, offer comments, and direct conversations. Google sign-in remains disabled until provider credentials and approved redirect URLs are configured. Nothing has been deployed to the public ShelterPawtners domain.
 
 ## Planned capabilities
 

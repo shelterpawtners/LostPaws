@@ -1,4 +1,10 @@
-import { StrictMode, useState } from "react";
+import {
+  StrictMode,
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import { createRoot } from "react-dom/client";
 import {
   BrowserRouter,
@@ -7,6 +13,7 @@ import {
   Route,
   Routes,
   useLocation,
+  useNavigate,
 } from "react-router-dom";
 import {
   ArrowRight,
@@ -19,9 +26,10 @@ import {
   Search,
   ShieldCheck,
   Store,
+  UserRound,
   X,
 } from "lucide-react";
-import { createClient } from "@supabase/supabase-js";
+import { createClient, type Session } from "@supabase/supabase-js";
 import { accountRegistrationPath, legacyRegistrationTarget } from "./domain";
 import "./styles.css";
 type Kind = "guardian" | "shelter" | "petbiz" | "rave_vendor";
@@ -56,8 +64,35 @@ const icons = {
 const url = import.meta.env.VITE_SUPABASE_URL,
   key = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
 const db = url && key ? createClient(url, key) : null;
+const googleEnabled = import.meta.env.VITE_GOOGLE_AUTH_ENABLED === "true";
+type AuthState = { session: Session | null; loading: boolean };
+const AuthContext = createContext<AuthState>({ session: null, loading: true });
+function AuthProvider({ children }: { children: React.ReactNode }) {
+  const [state, setState] = useState<AuthState>({
+    session: null,
+    loading: true,
+  });
+  useEffect(() => {
+    if (!db) {
+      setState({ session: null, loading: false });
+      return;
+    }
+    db.auth
+      .getSession()
+      .then(({ data }) => setState({ session: data.session, loading: false }));
+    const { data } = db.auth.onAuthStateChange((_event, session) =>
+      setState({ session, loading: false }),
+    );
+    return () => data.subscription.unsubscribe();
+  }, []);
+  return <AuthContext.Provider value={state}>{children}</AuthContext.Provider>;
+}
+function useAuth() {
+  return useContext(AuthContext);
+}
 function Header() {
   const [o, setO] = useState(false);
+  const { session } = useAuth();
   return (
     <header>
       <div className="shell head">
@@ -72,8 +107,8 @@ function Header() {
           <Link to="/marketplace">Marketplace</Link>
           <Link to="/rave">RAVE Shelter</Link>
           <Link to="/register">Join</Link>
-          <Link className="btn quiet" to="/login">
-            Sign in
+          <Link className="btn quiet" to={session ? "/dashboard" : "/login"}>
+            {session ? "My dashboard" : "Sign in"}
           </Link>
         </nav>
       </div>
@@ -290,6 +325,7 @@ function Register() {
 }
 function Signup({ c }: { c: (typeof choices)[number] }) {
   const [status, setStatus] = useState("");
+  const navigate = useNavigate();
   async function submit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (!db) {
@@ -297,12 +333,14 @@ function Signup({ c }: { c: (typeof choices)[number] }) {
       return;
     }
     const fd = new FormData(e.currentTarget);
-    const { error } = await db.auth.signUp({
+    const { data, error } = await db.auth.signUp({
       email: String(fd.get("email")),
       password: String(fd.get("password")),
       options: { data: { full_name: fd.get("name"), onboarding_type: c.kind } },
     });
-    setStatus(error ? error.message : "Check your email to continue.");
+    if (error) return setStatus(error.message);
+    if (data.session) navigate(`/onboarding/${c.kind}`);
+    else setStatus("Check your email to confirm your account, then sign in.");
   }
   async function google() {
     if (!db)
@@ -335,8 +373,15 @@ function Signup({ c }: { c: (typeof choices)[number] }) {
       <form onSubmit={submit}>
         <Link to="/register">← Choose another account type</Link>
         <h2>Create your free account</h2>
-        <button className="btn quiet full" type="button" onClick={google}>
-          Continue with Google
+        <button
+          className="btn quiet full"
+          type="button"
+          onClick={google}
+          disabled={!googleEnabled}
+        >
+          {googleEnabled
+            ? "Continue with Google"
+            : "Google sign-in coming soon"}
         </button>
         <hr />
         <label>
@@ -420,6 +465,7 @@ function Onboard() {
           ? "Pet saved. Adoption confirmation is submitted."
           : "Pet Passport started.",
       );
+      window.setTimeout(() => (location.href = "/dashboard"), 700);
       return;
     }
     const orgType =
@@ -442,30 +488,25 @@ function Onboard() {
       .single();
     if (error || !org)
       return setStatus(error?.message || "Unable to save organization.");
-    const { error: mError } = await db
-      .from("organization_memberships")
-      .insert({
-        organization_id: org.id,
-        user_id: user.id,
-        role: "administrator",
-      });
+    const { error: mError } = await db.from("organization_memberships").insert({
+      organization_id: org.id,
+      user_id: user.id,
+      role: "administrator",
+    });
     if (mError) return setStatus(mError.message);
     const offer = String(f.get("offer") || "").trim();
     if (offer) {
-      const { error: oError } = await db
-        .from("offers")
-        .insert({
-          organization_id: org.id,
-          created_by: user.id,
-          channel: k === "rave_vendor" ? "rave" : "pet",
-          title: offer,
-          summary: String(f.get("offer_summary") || offer),
-          category:
-            k === "rave_vendor" ? "Festival marketplace" : "Pet services",
-          expires_at: f.get("expires") || null,
-          status: "active",
-          published_at: new Date().toISOString(),
-        });
+      const { error: oError } = await db.from("offers").insert({
+        organization_id: org.id,
+        created_by: user.id,
+        channel: k === "rave_vendor" ? "rave" : "pet",
+        title: offer,
+        summary: String(f.get("offer_summary") || offer),
+        category: k === "rave_vendor" ? "Festival marketplace" : "Pet services",
+        expires_at: f.get("expires") || null,
+        status: "active",
+        published_at: new Date().toISOString(),
+      });
       if (oError) return setStatus(oError.message);
     }
     setStatus(
@@ -473,6 +514,7 @@ function Onboard() {
         ? "Shelter registration submitted."
         : "Organization and listing saved.",
     );
+    window.setTimeout(() => (location.href = "/dashboard"), 700);
   }
   return (
     <Page>
@@ -647,6 +689,7 @@ function Marketplace() {
 }
 function Login() {
   const [status, setStatus] = useState("");
+  const navigate = useNavigate();
   async function login(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (!db) return setStatus("Development connection is unavailable.");
@@ -655,7 +698,8 @@ function Login() {
         email: String(f.get("email")),
         password: String(f.get("password")),
       });
-    setStatus(error ? error.message : "Signed in successfully.");
+    if (error) return setStatus(error.message);
+    navigate("/dashboard", { replace: true });
   }
   async function google() {
     if (!db) return setStatus("Development connection is unavailable.");
@@ -678,8 +722,15 @@ function Login() {
             </p>
           </aside>
           <form onSubmit={login}>
-            <button className="btn quiet full" type="button" onClick={google}>
-              Continue with Google
+            <button
+              className="btn quiet full"
+              type="button"
+              onClick={google}
+              disabled={!googleEnabled}
+            >
+              {googleEnabled
+                ? "Continue with Google"
+                : "Google sign-in coming soon"}
             </button>
             <hr />
             <label>
@@ -697,8 +748,241 @@ function Login() {
             </label>
             <button className="btn full">Sign in</button>
             <p aria-live="polite">{status}</p>
+            <Link to="/forgot-password">Forgot your password?</Link>
             <Link to="/register">New here? Choose an account type</Link>
           </form>
+        </div>
+      </section>
+    </Page>
+  );
+}
+function ForgotPassword() {
+  const [status, setStatus] = useState("");
+  async function submit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    if (!db) return setStatus("Development connection is unavailable.");
+    const email = String(new FormData(e.currentTarget).get("email"));
+    const { error } = await db.auth.resetPasswordForEmail(email, {
+      redirectTo: `${location.origin}/reset-password`,
+    });
+    setStatus(
+      error
+        ? error.message
+        : "If that address has an account, a recovery email is on its way.",
+    );
+  }
+  return (
+    <Page>
+      <section className="section shell formPage">
+        <form className="panel" onSubmit={submit}>
+          <span className="eyebrow">Account recovery</span>
+          <h1>Reset your password</h1>
+          <p>Enter the email used for your ShelterPawtners account.</p>
+          <label>
+            Email address
+            <input name="email" type="email" required autoComplete="email" />
+          </label>
+          <button className="btn">Send recovery email</button>
+          <p aria-live="polite">{status}</p>
+          <Link to="/login">Back to sign in</Link>
+        </form>
+      </section>
+    </Page>
+  );
+}
+function ResetPassword() {
+  const [status, setStatus] = useState("");
+  const navigate = useNavigate();
+  async function submit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    if (!db) return setStatus("Development connection is unavailable.");
+    const password = String(new FormData(e.currentTarget).get("password"));
+    const { error } = await db.auth.updateUser({ password });
+    if (error) return setStatus(error.message);
+    setStatus("Password updated.");
+    window.setTimeout(() => navigate("/dashboard", { replace: true }), 700);
+  }
+  return (
+    <Page>
+      <section className="section shell formPage">
+        <form className="panel" onSubmit={submit}>
+          <span className="eyebrow">Account recovery</span>
+          <h1>Choose a new password</h1>
+          <label>
+            New password
+            <input
+              name="password"
+              type="password"
+              minLength={8}
+              required
+              autoComplete="new-password"
+            />
+          </label>
+          <button className="btn">Update password</button>
+          <p aria-live="polite">{status}</p>
+        </form>
+      </section>
+    </Page>
+  );
+}
+function Protected({ children }: { children: React.ReactNode }) {
+  const { session, loading } = useAuth();
+  if (loading)
+    return (
+      <Page>
+        <section className="section shell">
+          <p>Loading your account…</p>
+        </section>
+      </Page>
+    );
+  return session ? children : <Navigate to="/login" replace />;
+}
+const roleLabels: Record<Kind | "platform_admin", string> = {
+  guardian: "Pet Guardian",
+  shelter: "Shelter or Rescue",
+  petbiz: "Pet Business",
+  rave_vendor: "RAVE Shelter Vendor",
+  platform_admin: "ShelterPawtners Team",
+};
+function Dashboard() {
+  const { session } = useAuth();
+  const [roles, setRoles] = useState<string[]>([]);
+  const [activeRole, setActiveRole] = useState("");
+  const [status, setStatus] = useState("");
+  const navigate = useNavigate();
+  useEffect(() => {
+    if (!db || !session) return;
+    db.from("participant_roles")
+      .select("participant_type")
+      .eq("user_id", session.user.id)
+      .then(({ data, error }) => {
+        if (error) return setStatus(error.message);
+        const list = (data || []).map((row) => row.participant_type as string);
+        setRoles(list);
+        const saved = localStorage.getItem("sp_active_role");
+        setActiveRole(
+          saved && list.includes(saved) ? saved : list[0] || "guardian",
+        );
+      });
+  }, [session]);
+  function switchRole(role: string) {
+    localStorage.setItem("sp_active_role", role);
+    setActiveRole(role);
+  }
+  async function addRole(kind: Kind) {
+    if (!db || !session) return;
+    const { error } = await db
+      .from("participant_roles")
+      .insert({ user_id: session.user.id, participant_type: kind });
+    if (error && error.code !== "23505") return setStatus(error.message);
+    if (!roles.includes(kind)) setRoles([...roles, kind]);
+    switchRole(kind);
+    navigate(`/onboarding/${kind}`);
+  }
+  async function signOut() {
+    await db?.auth.signOut();
+    navigate("/", { replace: true });
+  }
+  const kind = (activeRole || "guardian") as Kind | "platform_admin";
+  const name =
+    session?.user.user_metadata.full_name ||
+    session?.user.email?.split("@")[0] ||
+    "there";
+  return (
+    <Page>
+      <section className="dashboardHero">
+        <div className="shell dashboardTitle">
+          <div>
+            <span className="eyebrow">Your ShelterPawtners home</span>
+            <h1>Welcome, {name}</h1>
+            <p>
+              Choose the role you are using today. Your login and private
+              information stay the same.
+            </p>
+          </div>
+          <button className="btn quiet" onClick={signOut}>
+            Sign out
+          </button>
+        </div>
+      </section>
+      <section className="section shell dashboardGrid">
+        <aside className="rolePanel">
+          <h2>Your roles</h2>
+          {roles.map((role) => (
+            <button
+              key={role}
+              className={activeRole === role ? "role active" : "role"}
+              onClick={() => switchRole(role)}
+            >
+              <UserRound />
+              {roleLabels[role as keyof typeof roleLabels]}
+            </button>
+          ))}
+          <details>
+            <summary>Add another role</summary>
+            {choices
+              .filter((c) => !roles.includes(c.kind))
+              .map((c) => (
+                <button
+                  className="role"
+                  key={c.kind}
+                  onClick={() => addRole(c.kind)}
+                >
+                  {c.title}
+                </button>
+              ))}
+          </details>
+        </aside>
+        <div className="dashboardMain">
+          <span className="eyebrow">{roleLabels[kind]}</span>
+          <h2>
+            {kind === "guardian"
+              ? "Your pet journey starts here"
+              : kind === "shelter"
+                ? "Build your shelter presence"
+                : "Manage your organization and offers"}
+          </h2>
+          <div className="nextCards">
+            <Link
+              className="next primary"
+              to={kind === "guardian" ? "/pets/new" : `/onboarding/${kind}`}
+            >
+              <PawPrint />
+              <div>
+                <b>
+                  {kind === "guardian"
+                    ? "Set up your pet"
+                    : "Complete your organization"}
+                </b>
+                <p>
+                  {kind === "guardian"
+                    ? "Start a private Digital Pet Passport and adoption story."
+                    : "Add the details people need to understand your work."}
+                </p>
+              </div>
+              <ArrowRight />
+            </Link>
+            <Link
+              className="next"
+              to={
+                kind === "rave_vendor"
+                  ? "/marketplace?channel=rave"
+                  : "/marketplace"
+              }
+            >
+              <Search />
+              <div>
+                <b>
+                  {kind === "guardian"
+                    ? "Browse savings"
+                    : "View the marketplace"}
+                </b>
+                <p>Explore active listings in the marketplace.</p>
+              </div>
+              <ArrowRight />
+            </Link>
+          </div>
+          <p aria-live="polite">{status}</p>
         </div>
       </section>
     </Page>
@@ -715,10 +999,31 @@ function App() {
         element={<Navigate to={legacyRegistrationTarget} replace />}
       />
       <Route path="/login" element={<Login />} />
-      <Route path="/onboarding/:type" element={<Onboard />} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Route path="/reset-password" element={<ResetPassword />} />
+      <Route
+        path="/dashboard"
+        element={
+          <Protected>
+            <Dashboard />
+          </Protected>
+        }
+      />
+      <Route
+        path="/onboarding/:type"
+        element={
+          <Protected>
+            <Onboard />
+          </Protected>
+        }
+      />
       <Route
         path="/pets/new"
-        element={<Navigate to="/onboarding/guardian" />}
+        element={
+          <Protected>
+            <Navigate to="/onboarding/guardian" />
+          </Protected>
+        }
       />
       <Route path="/marketplace" element={<Marketplace />} />
       <Route path="*" element={<Navigate to="/" />} />
@@ -728,7 +1033,9 @@ function App() {
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <BrowserRouter>
-      <App />
+      <AuthProvider>
+        <App />
+      </AuthProvider>
     </BrowserRouter>
   </StrictMode>,
 );

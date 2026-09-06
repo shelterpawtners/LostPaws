@@ -28,6 +28,10 @@ select {
 button {
   cursor: pointer;
 }
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.58;
+}
 svg {
   width: 22px;
 }
@@ -541,6 +545,121 @@ select:focus {
   margin: 0;
   color: var(--muted);
 }
+.formPage {
+  max-width: 600px;
+}
+.formPage form {
+  display: grid;
+  gap: 18px;
+}
+.formPage h1 {
+  font-family: Outfit;
+  font-size: clamp(2.2rem, 5vw, 3.5rem);
+  margin: 5px 0;
+}
+.formPage p {
+  color: var(--muted);
+}
+.dashboardHero {
+  padding: 58px 0;
+  background: linear-gradient(135deg, #eef0ff, #e7faf6);
+}
+.dashboardTitle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 30px;
+}
+.dashboardTitle h1 {
+  font-family: Outfit;
+  font-size: clamp(2.6rem, 5vw, 4.5rem);
+  margin: 10px 0;
+}
+.dashboardTitle p {
+  color: var(--muted);
+  max-width: 650px;
+}
+.dashboardGrid {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 35px;
+  align-items: start;
+}
+.rolePanel {
+  display: grid;
+  gap: 10px;
+  padding: 22px;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: #fff;
+}
+.rolePanel h2,
+.dashboardMain h2 {
+  font-family: Outfit;
+}
+.role,
+.rolePanel summary {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 11px 12px;
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  background: #fff;
+  color: var(--navy);
+  font-weight: 700;
+  text-align: left;
+}
+.role.active {
+  color: #fff;
+  border-color: var(--navy);
+  background: var(--navy);
+}
+.rolePanel details {
+  margin-top: 10px;
+}
+.rolePanel summary {
+  cursor: pointer;
+}
+.rolePanel details .role {
+  margin-top: 8px;
+}
+.dashboardMain h2 {
+  font-size: clamp(2rem, 4vw, 3.2rem);
+  margin: 10px 0 25px;
+}
+.nextCards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+}
+.next {
+  min-height: 190px;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: start;
+  gap: 14px;
+  padding: 24px;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: #fff;
+}
+.next.primary {
+  border-color: #b9a5e7;
+  background: linear-gradient(145deg, #f6f2ff, #ecfbf8);
+}
+.next > svg {
+  color: var(--purple);
+}
+.next b {
+  font-family: Outfit;
+  font-size: 1.2rem;
+}
+.next p {
+  color: var(--muted);
+  line-height: 1.55;
+}
 footer {
   padding: 55px 0;
   background: #0d172b;
@@ -604,8 +723,14 @@ footer {
   .offers,
   .connect,
   .fields,
-  .foot {
+  .foot,
+  .dashboardGrid,
+  .nextCards {
     grid-template-columns: 1fr;
+  }
+  .dashboardTitle {
+    align-items: flex-start;
+    flex-direction: column;
   }
   .section {
     padding: 60px 0;
