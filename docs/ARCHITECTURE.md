@@ -2,14 +2,14 @@
 
 ## Status
 
-This is conceptual direction, not an implemented architecture or database schema. No application scaffolding, packages, Supabase connection, or production infrastructure belongs in the current foundation work. See [Roadmap](ROADMAP.md) for the approval gate.
+The development architecture is implemented in its first vertical slice. Production infrastructure remains unapproved. See [Roadmap](ROADMAP.md) for delivery boundaries.
 
 ## Preferred stack
 
 | Layer | Direction |
 | --- | --- |
-| Frontend | React, TypeScript, Vite, Tailwind CSS; reusable components. |
-| Backend | Supabase PostgreSQL, authentication, storage, RLS, and APIs. |
+| Frontend | React, TypeScript, Vite, accessible CSS tokens, reusable components. |
+| Backend | Supabase PostgreSQL, authentication, private and public storage, RLS, and APIs. |
 | Optional capabilities | Supabase Realtime where useful; Edge Functions for appropriate privileged server-side logic. |
 | Development project | `shelterpawtners-dev`, only when connection is authorized. |
 | Production | Do not connect to or create a production project without explicit instruction. |

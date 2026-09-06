@@ -10,6 +10,12 @@ The MVP supports account entry for guardians, shelters or rescues, and pet busin
 
 Registration, organization verification, offer approval, and publication are separate states. Creating an account or organization must not automatically confer verified status, privileged permissions, public endorsement, or access to private guardian and Passport data.
 
+The shared login and registration entry asks how the person wants to participate: Pet Guardian, Shelter or Rescue, Pet Business, or RAVE Shelter Vendor. This selects onboarding context, not a permanent exclusive identity. One person can add participant types and organization relationships later.
+
+The printed guardian QR destination, `/register.html`, remains available and routes to guardian-first onboarding with campaign attribution. The printed RAVE Shelter QR points to Instagram; the `@raveshelter` bio should link to the permanent `/rave` landing page.
+
+MVP authentication uses email and Google. Instagram is collected only as an optional profile link. Facebook sign-in, approved Instagram media connection, and WhatsApp communication are Phase 2 because they require separate Meta configuration, consent, and review.
+
 ## Guardian entry and post-login home
 
 The guardian experience is the primary product priority. After account creation or login, the product should present two clear paths:
