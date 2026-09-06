@@ -31,8 +31,10 @@ create unique index user_roles_active_unique on public.user_roles(user_id, role_
 insert into public.user_roles(user_id, role_code, assigned_at)
 select user_id,
   case participant_type::text
+    when 'shelter' then 'shelter_member'
     when 'petbiz' then 'partner_member'
     when 'rave_vendor' then 'partner_member'
+    when 'platform_admin' then 'platform_admin'
     else participant_type::text
   end,
   created_at

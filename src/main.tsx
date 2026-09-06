@@ -137,7 +137,9 @@ function Page({ children }: { children: React.ReactNode }) {
   return (
     <>
       <Header />
-      <main id="main">{children}</main>
+      <main id="main" className="min-h-screen">
+        {children}
+      </main>
       <Footer />
     </>
   );
@@ -272,7 +274,16 @@ function Rave() {
     <Page>
       <section className="raveHero">
         <div className="shell">
-          <img src="/brand/rave-shelter.gif" alt="RAVE Shelter" />
+          <picture>
+            <source
+              media="(prefers-reduced-motion: reduce)"
+              srcSet="/brand/rave-shelter-logo-static-v2.png"
+            />
+            <img
+              src="/brand/rave-shelter-logo-animated-v2.gif"
+              alt="RAVE Shelter"
+            />
+          </picture>
           <span className="eyebrow">Rescue and Adoption Vendor Ecosystem</span>
           <h1>
             Deals for ravers.
@@ -475,11 +486,18 @@ function Onboard() {
         : k === "rave_vendor"
           ? "rave_vendor"
           : "pet_business";
+    const organizationTypeCode =
+      k === "shelter"
+        ? "shelter"
+        : k === "rave_vendor"
+          ? "community_partner"
+          : "pet_business";
     const { data: org, error } = await db
       .from("organizations")
       .insert({
         created_by: user.id,
         organization_type: orgType,
+        organization_type_code: organizationTypeCode,
         public_name: f.get("name"),
         public_email: f.get("email") || null,
         instagram_handle: f.get("instagram") || null,
@@ -492,7 +510,7 @@ function Onboard() {
     const { error: mError } = await db.from("organization_memberships").insert({
       organization_id: org.id,
       user_id: user.id,
-      role: "administrator",
+      role: "owner",
     });
     if (mError) return setStatus(mError.message);
     const offer = String(f.get("offer") || "").trim();

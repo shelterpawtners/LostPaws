@@ -21,6 +21,8 @@ No production credentials belong in Git. The browser receives only the Supabase 
 - `20260906085115_lock_private_audit_events_rls.sql` locks the private audit store.
 - `20260906091449_phase_1_platform_data_foundation.sql` adds normalized Phase 1 structures without deleting prototype records.
 - `20260906092500_phase_1_identity_bridge.sql` bridges signup and persona selection to normalized roles.
+- `20260906093000_record_remote_prototype_baseline.sql` records the pre-existing remote prototype without replaying it.
+- `20260906193500_phase_1_foreign_key_indexes.sql` and `20260906195000_complete_phase_1_foreign_key_indexes.sql` complete the advisory-led foreign-key index pass.
 
 ## Compatibility
 
@@ -30,5 +32,5 @@ Prototype columns and tables remain available during transition. New features us
 
 - Enable leaked-password protection in Supabase Auth before public launch.
 - Configure Google OAuth and enable its UI only after redirect URLs are verified.
-- Supply the approved RAVE Shelter V2 asset family before final brand acceptance.
+- Create the first real `jim@shelterpawtners.com` Supabase user, then assign the deliberately privileged `platform_admin` role through an authorized database-administration action.
 - Configure transactional email credentials in a later server-side delivery slice.
