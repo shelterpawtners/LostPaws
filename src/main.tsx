@@ -1,16 +1,734 @@
-import{StrictMode,useState}from'react';import{createRoot}from'react-dom/client';import{BrowserRouter,Link,Navigate,Route,Routes,useLocation}from'react-router-dom';import{ArrowRight,BadgeCheck,HeartHandshake,Menu,MessageCircle,Music2,PawPrint,Search,ShieldCheck,Store,X}from'lucide-react';import{createClient}from'@supabase/supabase-js';import{accountRegistrationPath,legacyRegistrationTarget}from'./domain';import'./styles.css';
-type Kind='guardian'|'shelter'|'petbiz'|'rave_vendor';const choices:{kind:Kind;title:string;copy:string}[]=[{kind:'guardian',title:'Pet Guardian',copy:'Create a Pet Passport, request adoption confirmation, and find useful savings.'},{kind:'shelter',title:'Shelter or Rescue',copy:'Create a free organization profile and help pets carry their history forward.'},{kind:'petbiz',title:'Pet Business',copy:'List services and publish offers for pets and guardians.'},{kind:'rave_vendor',title:'RAVE Shelter Vendor',copy:'Share products and deals through the Rescue and Adoption Vendor Ecosystem.'}];const icons={guardian:PawPrint,shelter:HeartHandshake,petbiz:Store,rave_vendor:Music2};
-const url=import.meta.env.VITE_SUPABASE_URL,key=import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;const db=url&&key?createClient(url,key):null;
-function Header(){const[o,setO]=useState(false);return <header><div className="shell head"><Link className="brand" to="/"><img src="/brand/shelterpawtners.png" alt=""/>ShelterPawtners</Link><button className="menu" onClick={()=>setO(!o)} aria-label="Menu">{o?<X/>:<Menu/>}</button><nav className={o?'open':''}><Link to="/marketplace">Marketplace</Link><Link to="/rave">RAVE Shelter</Link><Link to="/register">Join</Link><Link className="btn quiet" to="/login">Sign in</Link></nav></div></header>}
-function Footer(){return <footer><div className="shell foot"><div><b>ShelterPawtners</b><p>Care, savings, and community supporting shelter adoption.</p></div><div><a href="mailto:contact@shelterpawtners.com">General questions</a><a href="mailto:adoptions@shelterpawtners.com">Adoption support</a><a href="mailto:petbiz@shelterpawtners.com">PetBiz and vendors</a></div></div></footer>}
-function Page({children}:{children:React.ReactNode}){return <><Header/><main id="main">{children}</main><Footer/></>}
-function Cards(){return <div className="cards">{choices.map(c=>{const I=icons[c.kind];return <Link className="card" key={c.kind} to={accountRegistrationPath(c.kind)}><I/><h3>{c.title}</h3><p>{c.copy}</p><b>Get started <ArrowRight/></b></Link>})}</div>}
-function Home(){return <Page><section className="hero"><div className="shell heroGrid"><div><span className="eyebrow">Built for life after adoption</span><h1>Better pet care starts with a connected community.</h1><p className="lead">Create a Digital Pet Passport, find practical savings, and connect with shelters and businesses helping pets thrive.</p><div className="actions"><Link className="btn" to="/register?type=guardian">Tell us about your pet <ArrowRight/></Link><Link className="btn quiet" to="/marketplace">Browse savings</Link></div><small><ShieldCheck/> Private by default</small></div><div className="passport"><div><b>Digital Pet Passport</b><BadgeCheck/></div><span className="paw"><PawPrint/></span><small>Meet</small><h2>Your best friend</h2><p>One evolving home for identity, care history, and the adoption story.</p></div></div></section><section className="section shell"><span className="eyebrow">Choose your path</span><h2>One mission. A place for everyone.</h2><p className="lead">Start with the role that fits today. Add another role later using the same login.</p><Cards/></section><section className="dark section"><div className="shell"><span className="eyebrow">Savings with context</span><h2>Useful offers for pets and people.</h2><Offers/></div></section><section className="section shell connect"><div><MessageCircle/><h2>Community, with boundaries.</h2><p>Follow organizations, save preferred providers, ask questions, and start direct conversations. Connections never grant access to private Passport information.</p></div><div><p><BadgeCheck/> Verified relationships are labeled</p><p><ShieldCheck/> Private data remains permission controlled</p></div></section></Page>}
-const offerData=[['For pets','Everyday pet care savings','Public savings preview'],['For ravers','Festival products and services','RAVE Shelter preview'],['Shared value','Community-supported offers','Shared community']];function Offers(){return <div className="offers">{offerData.map((o,i)=><article className={i===1?'rave':''} key={o[0]}><em>{o[0]}</em>{i===1?<Music2/>:<PawPrint/>}<small>{o[2]}</small><h3>{o[1]}</h3><p>Explore clearly labeled opportunities and review the provider’s current terms.</p></article>)}</div>}
-function Rave(){return <Page><section className="raveHero"><div className="shell"><img src="/brand/rave-shelter.gif" alt="RAVE Shelter"/><span className="eyebrow">Rescue and Adoption Vendor Ecosystem</span><h1>Deals for ravers.<br/><i>Support for shelter pets.</i></h1><p>Festival-ready products and services from vendors joining a community that wants its energy to mean something beyond the dance floor.</p><div className="actions"><Link className="btn" to="/marketplace?channel=rave">Find RAVE deals</Link><Link className="btn quiet" to="/register?type=rave_vendor">Join as a vendor</Link></div><small>Independent LostPaws initiative. No festival affiliation is implied.</small></div></section></Page>}
-function Register(){const k=new URLSearchParams(useLocation().search).get('type')as Kind|null,c=choices.find(x=>x.kind===k);return <Page><section className="section shell narrow">{!c?<><div className="center"><span className="eyebrow">Create your account</span><h1>How would you like to participate?</h1><p>Choose a starting point. You can add another role later.</p></div><Cards/></>:<Signup c={c}/>}</section></Page>}
-function Signup({c}:{c:typeof choices[number]}){const[status,setStatus]=useState('');async function submit(e:React.FormEvent<HTMLFormElement>){e.preventDefault();if(!db){setStatus('The development connection will be added during deployment.');return}const fd=new FormData(e.currentTarget);const{error}=await db.auth.signUp({email:String(fd.get('email')),password:String(fd.get('password')),options:{data:{full_name:fd.get('name'),onboarding_type:c.kind}}});setStatus(error?error.message:'Check your email to continue.')}async function google(){if(!db)return setStatus('The development connection will be added during deployment.');localStorage.setItem('sp_kind',c.kind);const{error}=await db.auth.signInWithOAuth({provider:'google',options:{redirectTo:`${location.origin}/onboarding/${c.kind}`}});if(error)setStatus(error.message)}const I=icons[c.kind];return <div className="signup"><aside><I/><span className="eyebrow">{c.title}</span><h1>{c.kind==='guardian'?'Tell us about your pet':`Join as a ${c.title}`}</h1><p>{c.copy}</p><small><ShieldCheck/> One login can support multiple roles.</small></aside><form onSubmit={submit}><Link to="/register">← Choose another account type</Link><h2>Create your free account</h2><button className="btn quiet full" type="button" onClick={google}>Continue with Google</button><hr/><label>Full name<input name="name" required autoComplete="name"/></label><label>Email address<input name="email" required type="email" autoComplete="email"/></label><label>Password<input name="password" required type="password" minLength={8} autoComplete="new-password"/></label><label className="check"><input required type="checkbox"/>I agree to the Terms and acknowledge the Privacy Notice.</label><button className="btn full">Create account</button><p aria-live="polite">{status}</p></form></div>}
-function Onboard(){const k=useLocation().pathname.split('/').pop()as Kind,c=choices.find(x=>x.kind===k)||choices[0];const[adopted,setAdopted]=useState(false),[status,setStatus]=useState('');async function save(e:React.FormEvent<HTMLFormElement>){e.preventDefault();if(!db)return setStatus('Development connection is unavailable.');setStatus('Saving…');const{data:{user}}=await db.auth.getUser();if(!user)return setStatus('Please sign in before saving.');const f=new FormData(e.currentTarget);if(k==='guardian'){const{data:pet,error}=await db.from('pets').insert({created_by:user.id,name:f.get('name'),species:f.get('species'),adopted_self_reported:adopted}).select('id').single();if(error||!pet)return setStatus(error?.message||'Unable to save pet.');const{error:gError}=await db.from('guardianships').insert({pet_id:pet.id,guardian_id:user.id});if(gError)return setStatus(gError.message);if(adopted){const{error:vError}=await db.from('adoption_verification_requests').insert({pet_id:pet.id,requested_by:user.id,shelter_name:f.get('shelter_name'),shelter_email:f.get('shelter_email')||null,shelter_phone:f.get('shelter_phone')||null,shelter_website_or_social:f.get('shelter_social')||null,approximate_adoption_date:f.get('adoption_date')||null,pet_name_at_adoption:f.get('adoption_name')||null,contact_consent_at:new Date().toISOString(),status:'submitted'});if(vError)return setStatus(vError.message)}setStatus(adopted?'Pet saved. Adoption confirmation is submitted.':'Pet Passport started.');return}const orgType=k==='shelter'?'shelter':k==='rave_vendor'?'rave_vendor':'pet_business';const{data:org,error}=await db.from('organizations').insert({created_by:user.id,organization_type:orgType,public_name:f.get('name'),public_email:f.get('email')||null,instagram_handle:f.get('instagram')||null,status:k==='shelter'?'submitted':'active'}).select('id').single();if(error||!org)return setStatus(error?.message||'Unable to save organization.');const{error:mError}=await db.from('organization_memberships').insert({organization_id:org.id,user_id:user.id,role:'administrator'});if(mError)return setStatus(mError.message);const offer=String(f.get('offer')||'').trim();if(offer){const{error:oError}=await db.from('offers').insert({organization_id:org.id,created_by:user.id,channel:k==='rave_vendor'?'rave':'pet',title:offer,summary:String(f.get('offer_summary')||offer),category:k==='rave_vendor'?'Festival marketplace':'Pet services',expires_at:f.get('expires')||null,status:'active',published_at:new Date().toISOString()});if(oError)return setStatus(oError.message)}setStatus(k==='shelter'?'Shelter registration submitted.':'Organization and listing saved.')}return <Page><section className="section shell narrow"><span className="eyebrow">{c.title} setup</span><h1>{k==='guardian'?'Tell us about your pet':'Tell us about your organization'}</h1><form className="detail" onSubmit={save}><div className="panel"><h2>{k==='guardian'?'Pet basics':'Organization profile'}</h2><div className="fields"><label>{k==='guardian'?'Pet name':'Public name'}<input name="name" required/></label><label>{k==='guardian'?'Species':'Organization type'}<select name="species" required><option value="">Select one</option><option value={k==='guardian'?'dog':k==='shelter'?'shelter':k==='rave_vendor'?'rave_vendor':'pet_business'}>{k==='guardian'?'Dog':k==='shelter'?'Shelter or rescue':k==='rave_vendor'?'Festival vendor':'Pet business'}</option>{k==='guardian'&&<><option value="cat">Cat</option><option value="other">Other</option></>}</select></label><label>Contact email<input name="email" type="email"/></label><label>Instagram profile<input name="instagram" placeholder="@username"/></label></div></div>{k==='guardian'&&<div className="panel"><h2>Was this pet adopted?</h2><button type="button" className="btn quiet" onClick={()=>setAdopted(!adopted)}>{adopted?'Remove confirmation request':'Yes, request shelter confirmation'}</button>{adopted&&<div className="fields inset"><label>Shelter name<input name="shelter_name" required/></label><label>Shelter email<input name="shelter_email" type="email"/></label><label>Phone<input name="shelter_phone" type="tel"/></label><label>Website or social profile<input name="shelter_social"/></label><label>Approximate adoption date<input name="adoption_date" type="date"/></label><label>Pet name at adoption<input name="adoption_name"/></label><label className="check"><input required type="checkbox"/>I authorize ShelterPawtners to contact this shelter.</label></div>}</div>}{k!=='guardian'&&k!=='shelter'&&<div className="panel"><h2>Your first listing</h2><p>Publish once required terms are complete. Publication does not imply endorsement.</p><div className="fields"><label>Offer title<input name="offer"/></label><label>Short description<input name="offer_summary"/></label><label>Expiration date<input name="expires" type="date"/></label></div></div>}<button className="btn">Save and continue</button><p aria-live="polite">{status}</p></form></section></Page>}
-function Marketplace(){const rave=new URLSearchParams(useLocation().search).get('channel')==='rave';return <Page><section className="market"><div className="shell"><span className="eyebrow">ShelterPawtners marketplace</span><h1>Find value that fits your world.</h1><div className="search"><Search/><input aria-label="Search marketplace" placeholder="Search products, services, or vendors"/></div></div></section><section className="section shell"><div className="filters"><button>All offers</button><button>Pet savings</button><button className={rave?'active':''}>RAVE Shelter</button></div><Offers/><div className="notice"><ShieldCheck/><p>Public programs are not presented as ShelterPawtners partnerships. Partner-published offers identify the responsible organization and can be reported or suspended.</p></div></section></Page>}
-function Login(){const[status,setStatus]=useState('');async function login(e:React.FormEvent<HTMLFormElement>){e.preventDefault();if(!db)return setStatus('Development connection is unavailable.');const f=new FormData(e.currentTarget),{error}=await db.auth.signInWithPassword({email:String(f.get('email')),password:String(f.get('password'))});setStatus(error?error.message:'Signed in successfully.')}async function google(){if(!db)return setStatus('Development connection is unavailable.');const{error}=await db.auth.signInWithOAuth({provider:'google',options:{redirectTo:location.origin}});if(error)setStatus(error.message)}return <Page><section className="section shell narrow"><div className="signup"><aside><span className="eyebrow">Welcome back</span><h1>Sign in to ShelterPawtners</h1><p>One login works across guardian, shelter, PetBiz, and RAVE Shelter experiences.</p></aside><form onSubmit={login}><button className="btn quiet full" type="button" onClick={google}>Continue with Google</button><hr/><label>Email address<input name="email" required type="email" autoComplete="email"/></label><label>Password<input name="password" required type="password" autoComplete="current-password"/></label><button className="btn full">Sign in</button><p aria-live="polite">{status}</p><Link to="/register">New here? Choose an account type</Link></form></div></section></Page>}
-function App(){return <Routes><Route path="/" element={<Home/>}/><Route path="/rave" element={<Rave/>}/><Route path="/register" element={<Register/>}/><Route path="/register.html" element={<Navigate to={legacyRegistrationTarget} replace/>}/><Route path="/login" element={<Login/>}/><Route path="/onboarding/:type" element={<Onboard/>}/><Route path="/pets/new" element={<Navigate to="/onboarding/guardian"/>}/><Route path="/marketplace" element={<Marketplace/>}/><Route path="*" element={<Navigate to="/"/>}/></Routes>}createRoot(document.getElementById('root')!).render(<StrictMode><BrowserRouter><App/></BrowserRouter></StrictMode>);
+import { StrictMode, useState } from "react";
+import { createRoot } from "react-dom/client";
+import {
+  BrowserRouter,
+  Link,
+  Navigate,
+  Route,
+  Routes,
+  useLocation,
+} from "react-router-dom";
+import {
+  ArrowRight,
+  BadgeCheck,
+  HeartHandshake,
+  Menu,
+  MessageCircle,
+  Music2,
+  PawPrint,
+  Search,
+  ShieldCheck,
+  Store,
+  X,
+} from "lucide-react";
+import { createClient } from "@supabase/supabase-js";
+import { accountRegistrationPath, legacyRegistrationTarget } from "./domain";
+import "./styles.css";
+type Kind = "guardian" | "shelter" | "petbiz" | "rave_vendor";
+const choices: { kind: Kind; title: string; copy: string }[] = [
+  {
+    kind: "guardian",
+    title: "Pet Guardian",
+    copy: "Create a Pet Passport, request adoption confirmation, and find useful savings.",
+  },
+  {
+    kind: "shelter",
+    title: "Shelter or Rescue",
+    copy: "Create a free organization profile and help pets carry their history forward.",
+  },
+  {
+    kind: "petbiz",
+    title: "Pet Business",
+    copy: "List services and publish offers for pets and guardians.",
+  },
+  {
+    kind: "rave_vendor",
+    title: "RAVE Shelter Vendor",
+    copy: "Share products and deals through the Rescue and Adoption Vendor Ecosystem.",
+  },
+];
+const icons = {
+  guardian: PawPrint,
+  shelter: HeartHandshake,
+  petbiz: Store,
+  rave_vendor: Music2,
+};
+const url = import.meta.env.VITE_SUPABASE_URL,
+  key = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+const db = url && key ? createClient(url, key) : null;
+function Header() {
+  const [o, setO] = useState(false);
+  return (
+    <header>
+      <div className="shell head">
+        <Link className="brand" to="/">
+          <img src="/brand/shelterpawtners.png" alt="" />
+          ShelterPawtners
+        </Link>
+        <button className="menu" onClick={() => setO(!o)} aria-label="Menu">
+          {o ? <X /> : <Menu />}
+        </button>
+        <nav className={o ? "open" : ""}>
+          <Link to="/marketplace">Marketplace</Link>
+          <Link to="/rave">RAVE Shelter</Link>
+          <Link to="/register">Join</Link>
+          <Link className="btn quiet" to="/login">
+            Sign in
+          </Link>
+        </nav>
+      </div>
+    </header>
+  );
+}
+function Footer() {
+  return (
+    <footer>
+      <div className="shell foot">
+        <div>
+          <b>ShelterPawtners</b>
+          <p>Care, savings, and community supporting shelter adoption.</p>
+        </div>
+        <div>
+          <a href="mailto:contact@shelterpawtners.com">General questions</a>
+          <a href="mailto:adoptions@shelterpawtners.com">Adoption support</a>
+          <a href="mailto:petbiz@shelterpawtners.com">PetBiz and vendors</a>
+        </div>
+      </div>
+    </footer>
+  );
+}
+function Page({ children }: { children: React.ReactNode }) {
+  return (
+    <>
+      <Header />
+      <main id="main">{children}</main>
+      <Footer />
+    </>
+  );
+}
+function Cards() {
+  return (
+    <div className="cards">
+      {choices.map((c) => {
+        const I = icons[c.kind];
+        return (
+          <Link
+            className="card"
+            key={c.kind}
+            to={accountRegistrationPath(c.kind)}
+          >
+            <I />
+            <h3>{c.title}</h3>
+            <p>{c.copy}</p>
+            <b>
+              Get started <ArrowRight />
+            </b>
+          </Link>
+        );
+      })}
+    </div>
+  );
+}
+function Home() {
+  return (
+    <Page>
+      <section className="hero">
+        <div className="shell heroGrid">
+          <div>
+            <span className="eyebrow">Built for life after adoption</span>
+            <h1>Better pet care starts with a connected community.</h1>
+            <p className="lead">
+              Create a Digital Pet Passport, find practical savings, and connect
+              with shelters and businesses helping pets thrive.
+            </p>
+            <div className="actions">
+              <Link className="btn" to="/register?type=guardian">
+                Tell us about your pet <ArrowRight />
+              </Link>
+              <Link className="btn quiet" to="/marketplace">
+                Browse savings
+              </Link>
+            </div>
+            <small>
+              <ShieldCheck /> Private by default
+            </small>
+          </div>
+          <div className="passport">
+            <div>
+              <b>Digital Pet Passport</b>
+              <BadgeCheck />
+            </div>
+            <span className="paw">
+              <PawPrint />
+            </span>
+            <small>Meet</small>
+            <h2>Your best friend</h2>
+            <p>
+              One evolving home for identity, care history, and the adoption
+              story.
+            </p>
+          </div>
+        </div>
+      </section>
+      <section className="section shell">
+        <span className="eyebrow">Choose your path</span>
+        <h2>One mission. A place for everyone.</h2>
+        <p className="lead">
+          Start with the role that fits today. Add another role later using the
+          same login.
+        </p>
+        <Cards />
+      </section>
+      <section className="dark section">
+        <div className="shell">
+          <span className="eyebrow">Savings with context</span>
+          <h2>Useful offers for pets and people.</h2>
+          <Offers />
+        </div>
+      </section>
+      <section className="section shell connect">
+        <div>
+          <MessageCircle />
+          <h2>Community, with boundaries.</h2>
+          <p>
+            Follow organizations, save preferred providers, ask questions, and
+            start direct conversations. Connections never grant access to
+            private Passport information.
+          </p>
+        </div>
+        <div>
+          <p>
+            <BadgeCheck /> Verified relationships are labeled
+          </p>
+          <p>
+            <ShieldCheck /> Private data remains permission controlled
+          </p>
+        </div>
+      </section>
+    </Page>
+  );
+}
+const offerData = [
+  ["For pets", "Everyday pet care savings", "Public savings preview"],
+  ["For ravers", "Festival products and services", "RAVE Shelter preview"],
+  ["Shared value", "Community-supported offers", "Shared community"],
+];
+function Offers() {
+  return (
+    <div className="offers">
+      {offerData.map((o, i) => (
+        <article className={i === 1 ? "rave" : ""} key={o[0]}>
+          <em>{o[0]}</em>
+          {i === 1 ? <Music2 /> : <PawPrint />}
+          <small>{o[2]}</small>
+          <h3>{o[1]}</h3>
+          <p>
+            Explore clearly labeled opportunities and review the provider’s
+            current terms.
+          </p>
+        </article>
+      ))}
+    </div>
+  );
+}
+function Rave() {
+  return (
+    <Page>
+      <section className="raveHero">
+        <div className="shell">
+          <img src="/brand/rave-shelter.gif" alt="RAVE Shelter" />
+          <span className="eyebrow">Rescue and Adoption Vendor Ecosystem</span>
+          <h1>
+            Deals for ravers.
+            <br />
+            <i>Support for shelter pets.</i>
+          </h1>
+          <p>
+            Festival-ready products and services from vendors joining a
+            community that wants its energy to mean something beyond the dance
+            floor.
+          </p>
+          <div className="actions">
+            <Link className="btn" to="/marketplace?channel=rave">
+              Find RAVE deals
+            </Link>
+            <Link className="btn quiet" to="/register?type=rave_vendor">
+              Join as a vendor
+            </Link>
+          </div>
+          <small>
+            Independent LostPaws initiative. No festival affiliation is implied.
+          </small>
+        </div>
+      </section>
+    </Page>
+  );
+}
+function Register() {
+  const k = new URLSearchParams(useLocation().search).get(
+      "type",
+    ) as Kind | null,
+    c = choices.find((x) => x.kind === k);
+  return (
+    <Page>
+      <section className="section shell narrow">
+        {!c ? (
+          <>
+            <div className="center">
+              <span className="eyebrow">Create your account</span>
+              <h1>How would you like to participate?</h1>
+              <p>Choose a starting point. You can add another role later.</p>
+            </div>
+            <Cards />
+          </>
+        ) : (
+          <Signup c={c} />
+        )}
+      </section>
+    </Page>
+  );
+}
+function Signup({ c }: { c: (typeof choices)[number] }) {
+  const [status, setStatus] = useState("");
+  async function submit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    if (!db) {
+      setStatus("The development connection will be added during deployment.");
+      return;
+    }
+    const fd = new FormData(e.currentTarget);
+    const { error } = await db.auth.signUp({
+      email: String(fd.get("email")),
+      password: String(fd.get("password")),
+      options: { data: { full_name: fd.get("name"), onboarding_type: c.kind } },
+    });
+    setStatus(error ? error.message : "Check your email to continue.");
+  }
+  async function google() {
+    if (!db)
+      return setStatus(
+        "The development connection will be added during deployment.",
+      );
+    localStorage.setItem("sp_kind", c.kind);
+    const { error } = await db.auth.signInWithOAuth({
+      provider: "google",
+      options: { redirectTo: `${location.origin}/onboarding/${c.kind}` },
+    });
+    if (error) setStatus(error.message);
+  }
+  const I = icons[c.kind];
+  return (
+    <div className="signup">
+      <aside>
+        <I />
+        <span className="eyebrow">{c.title}</span>
+        <h1>
+          {c.kind === "guardian"
+            ? "Tell us about your pet"
+            : `Join as a ${c.title}`}
+        </h1>
+        <p>{c.copy}</p>
+        <small>
+          <ShieldCheck /> One login can support multiple roles.
+        </small>
+      </aside>
+      <form onSubmit={submit}>
+        <Link to="/register">← Choose another account type</Link>
+        <h2>Create your free account</h2>
+        <button className="btn quiet full" type="button" onClick={google}>
+          Continue with Google
+        </button>
+        <hr />
+        <label>
+          Full name
+          <input name="name" required autoComplete="name" />
+        </label>
+        <label>
+          Email address
+          <input name="email" required type="email" autoComplete="email" />
+        </label>
+        <label>
+          Password
+          <input
+            name="password"
+            required
+            type="password"
+            minLength={8}
+            autoComplete="new-password"
+          />
+        </label>
+        <label className="check">
+          <input required type="checkbox" />I agree to the Terms and acknowledge
+          the Privacy Notice.
+        </label>
+        <button className="btn full">Create account</button>
+        <p aria-live="polite">{status}</p>
+      </form>
+    </div>
+  );
+}
+function Onboard() {
+  const k = useLocation().pathname.split("/").pop() as Kind,
+    c = choices.find((x) => x.kind === k) || choices[0];
+  const [adopted, setAdopted] = useState(false),
+    [status, setStatus] = useState("");
+  async function save(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    if (!db) return setStatus("Development connection is unavailable.");
+    setStatus("Saving…");
+    const {
+      data: { user },
+    } = await db.auth.getUser();
+    if (!user) return setStatus("Please sign in before saving.");
+    const f = new FormData(e.currentTarget);
+    if (k === "guardian") {
+      const { data: pet, error } = await db
+        .from("pets")
+        .insert({
+          created_by: user.id,
+          name: f.get("name"),
+          species: f.get("species"),
+          adopted_self_reported: adopted,
+        })
+        .select("id")
+        .single();
+      if (error || !pet)
+        return setStatus(error?.message || "Unable to save pet.");
+      const { error: gError } = await db
+        .from("guardianships")
+        .insert({ pet_id: pet.id, guardian_id: user.id });
+      if (gError) return setStatus(gError.message);
+      if (adopted) {
+        const { error: vError } = await db
+          .from("adoption_verification_requests")
+          .insert({
+            pet_id: pet.id,
+            requested_by: user.id,
+            shelter_name: f.get("shelter_name"),
+            shelter_email: f.get("shelter_email") || null,
+            shelter_phone: f.get("shelter_phone") || null,
+            shelter_website_or_social: f.get("shelter_social") || null,
+            approximate_adoption_date: f.get("adoption_date") || null,
+            pet_name_at_adoption: f.get("adoption_name") || null,
+            contact_consent_at: new Date().toISOString(),
+            status: "submitted",
+          });
+        if (vError) return setStatus(vError.message);
+      }
+      setStatus(
+        adopted
+          ? "Pet saved. Adoption confirmation is submitted."
+          : "Pet Passport started.",
+      );
+      return;
+    }
+    const orgType =
+      k === "shelter"
+        ? "shelter"
+        : k === "rave_vendor"
+          ? "rave_vendor"
+          : "pet_business";
+    const { data: org, error } = await db
+      .from("organizations")
+      .insert({
+        created_by: user.id,
+        organization_type: orgType,
+        public_name: f.get("name"),
+        public_email: f.get("email") || null,
+        instagram_handle: f.get("instagram") || null,
+        status: k === "shelter" ? "submitted" : "active",
+      })
+      .select("id")
+      .single();
+    if (error || !org)
+      return setStatus(error?.message || "Unable to save organization.");
+    const { error: mError } = await db
+      .from("organization_memberships")
+      .insert({
+        organization_id: org.id,
+        user_id: user.id,
+        role: "administrator",
+      });
+    if (mError) return setStatus(mError.message);
+    const offer = String(f.get("offer") || "").trim();
+    if (offer) {
+      const { error: oError } = await db
+        .from("offers")
+        .insert({
+          organization_id: org.id,
+          created_by: user.id,
+          channel: k === "rave_vendor" ? "rave" : "pet",
+          title: offer,
+          summary: String(f.get("offer_summary") || offer),
+          category:
+            k === "rave_vendor" ? "Festival marketplace" : "Pet services",
+          expires_at: f.get("expires") || null,
+          status: "active",
+          published_at: new Date().toISOString(),
+        });
+      if (oError) return setStatus(oError.message);
+    }
+    setStatus(
+      k === "shelter"
+        ? "Shelter registration submitted."
+        : "Organization and listing saved.",
+    );
+  }
+  return (
+    <Page>
+      <section className="section shell narrow">
+        <span className="eyebrow">{c.title} setup</span>
+        <h1>
+          {k === "guardian"
+            ? "Tell us about your pet"
+            : "Tell us about your organization"}
+        </h1>
+        <form className="detail" onSubmit={save}>
+          <div className="panel">
+            <h2>{k === "guardian" ? "Pet basics" : "Organization profile"}</h2>
+            <div className="fields">
+              <label>
+                {k === "guardian" ? "Pet name" : "Public name"}
+                <input name="name" required />
+              </label>
+              <label>
+                {k === "guardian" ? "Species" : "Organization type"}
+                <select name="species" required>
+                  <option value="">Select one</option>
+                  <option
+                    value={
+                      k === "guardian"
+                        ? "dog"
+                        : k === "shelter"
+                          ? "shelter"
+                          : k === "rave_vendor"
+                            ? "rave_vendor"
+                            : "pet_business"
+                    }
+                  >
+                    {k === "guardian"
+                      ? "Dog"
+                      : k === "shelter"
+                        ? "Shelter or rescue"
+                        : k === "rave_vendor"
+                          ? "Festival vendor"
+                          : "Pet business"}
+                  </option>
+                  {k === "guardian" && (
+                    <>
+                      <option value="cat">Cat</option>
+                      <option value="other">Other</option>
+                    </>
+                  )}
+                </select>
+              </label>
+              <label>
+                Contact email
+                <input name="email" type="email" />
+              </label>
+              <label>
+                Instagram profile
+                <input name="instagram" placeholder="@username" />
+              </label>
+            </div>
+          </div>
+          {k === "guardian" && (
+            <div className="panel">
+              <h2>Was this pet adopted?</h2>
+              <button
+                type="button"
+                className="btn quiet"
+                onClick={() => setAdopted(!adopted)}
+              >
+                {adopted
+                  ? "Remove confirmation request"
+                  : "Yes, request shelter confirmation"}
+              </button>
+              {adopted && (
+                <div className="fields inset">
+                  <label>
+                    Shelter name
+                    <input name="shelter_name" required />
+                  </label>
+                  <label>
+                    Shelter email
+                    <input name="shelter_email" type="email" />
+                  </label>
+                  <label>
+                    Phone
+                    <input name="shelter_phone" type="tel" />
+                  </label>
+                  <label>
+                    Website or social profile
+                    <input name="shelter_social" />
+                  </label>
+                  <label>
+                    Approximate adoption date
+                    <input name="adoption_date" type="date" />
+                  </label>
+                  <label>
+                    Pet name at adoption
+                    <input name="adoption_name" />
+                  </label>
+                  <label className="check">
+                    <input required type="checkbox" />I authorize
+                    ShelterPawtners to contact this shelter.
+                  </label>
+                </div>
+              )}
+            </div>
+          )}
+          {k !== "guardian" && k !== "shelter" && (
+            <div className="panel">
+              <h2>Your first listing</h2>
+              <p>
+                Publish once required terms are complete. Publication does not
+                imply endorsement.
+              </p>
+              <div className="fields">
+                <label>
+                  Offer title
+                  <input name="offer" />
+                </label>
+                <label>
+                  Short description
+                  <input name="offer_summary" />
+                </label>
+                <label>
+                  Expiration date
+                  <input name="expires" type="date" />
+                </label>
+              </div>
+            </div>
+          )}
+          <button className="btn">Save and continue</button>
+          <p aria-live="polite">{status}</p>
+        </form>
+      </section>
+    </Page>
+  );
+}
+function Marketplace() {
+  const rave =
+    new URLSearchParams(useLocation().search).get("channel") === "rave";
+  return (
+    <Page>
+      <section className="market">
+        <div className="shell">
+          <span className="eyebrow">ShelterPawtners marketplace</span>
+          <h1>Find value that fits your world.</h1>
+          <div className="search">
+            <Search />
+            <input
+              aria-label="Search marketplace"
+              placeholder="Search products, services, or vendors"
+            />
+          </div>
+        </div>
+      </section>
+      <section className="section shell">
+        <div className="filters">
+          <button>All offers</button>
+          <button>Pet savings</button>
+          <button className={rave ? "active" : ""}>RAVE Shelter</button>
+        </div>
+        <Offers />
+        <div className="notice">
+          <ShieldCheck />
+          <p>
+            Public programs are not presented as ShelterPawtners partnerships.
+            Partner-published offers identify the responsible organization and
+            can be reported or suspended.
+          </p>
+        </div>
+      </section>
+    </Page>
+  );
+}
+function Login() {
+  const [status, setStatus] = useState("");
+  async function login(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    if (!db) return setStatus("Development connection is unavailable.");
+    const f = new FormData(e.currentTarget),
+      { error } = await db.auth.signInWithPassword({
+        email: String(f.get("email")),
+        password: String(f.get("password")),
+      });
+    setStatus(error ? error.message : "Signed in successfully.");
+  }
+  async function google() {
+    if (!db) return setStatus("Development connection is unavailable.");
+    const { error } = await db.auth.signInWithOAuth({
+      provider: "google",
+      options: { redirectTo: location.origin },
+    });
+    if (error) setStatus(error.message);
+  }
+  return (
+    <Page>
+      <section className="section shell narrow">
+        <div className="signup">
+          <aside>
+            <span className="eyebrow">Welcome back</span>
+            <h1>Sign in to ShelterPawtners</h1>
+            <p>
+              One login works across guardian, shelter, PetBiz, and RAVE Shelter
+              experiences.
+            </p>
+          </aside>
+          <form onSubmit={login}>
+            <button className="btn quiet full" type="button" onClick={google}>
+              Continue with Google
+            </button>
+            <hr />
+            <label>
+              Email address
+              <input name="email" required type="email" autoComplete="email" />
+            </label>
+            <label>
+              Password
+              <input
+                name="password"
+                required
+                type="password"
+                autoComplete="current-password"
+              />
+            </label>
+            <button className="btn full">Sign in</button>
+            <p aria-live="polite">{status}</p>
+            <Link to="/register">New here? Choose an account type</Link>
+          </form>
+        </div>
+      </section>
+    </Page>
+  );
+}
+function App() {
+  return (
+    <Routes>
+      <Route path="/" element={<Home />} />
+      <Route path="/rave" element={<Rave />} />
+      <Route path="/register" element={<Register />} />
+      <Route
+        path="/register.html"
+        element={<Navigate to={legacyRegistrationTarget} replace />}
+      />
+      <Route path="/login" element={<Login />} />
+      <Route path="/onboarding/:type" element={<Onboard />} />
+      <Route
+        path="/pets/new"
+        element={<Navigate to="/onboarding/guardian" />}
+      />
+      <Route path="/marketplace" element={<Marketplace />} />
+      <Route path="*" element={<Navigate to="/" />} />
+    </Routes>
+  );
+}
+createRoot(document.getElementById("root")!).render(
+  <StrictMode>
+    <BrowserRouter>
+      <App />
+    </BrowserRouter>
+  </StrictMode>,
+);

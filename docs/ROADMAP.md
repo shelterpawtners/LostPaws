@@ -2,11 +2,39 @@
 
 ## Current gate
 
-The documentation foundation and development-service discovery are the current deliverables. GitHub access and read-only access to the empty `shelterpawtners-dev` Supabase project have been confirmed. No application capabilities are complete.
+The user approved the MVP and authorized development implementation on September 6, 2026. The first working application slice is on `build/festival-mvp` and in draft pull request #1. The committed foundation migration is applied to `shelterpawtners-dev`; RLS is enabled on every exposed application table and the Supabase security advisor reports no findings.
 
-Do not scaffold the application, install packages, design or apply a database schema, configure authentication, or create migrations until the user explicitly approves the MVP scope and authorizes implementation. Do not connect to or create a production project without explicit instruction.
+Development implementation may continue within the approved scope. Production infrastructure, public DNS changes, merging to the live release path, and replacing the current public website still require explicit authorization.
 
 Phases express outcome order and dependencies, not fixed release dates. Each MVP slice should be small enough for product, content, security, accessibility, and browser review before the next slice begins.
+
+## MVP finish-line execution plan
+
+The remaining MVP work is organized into batches that produce reviewable outcomes. A batch may begin while an external credential is pending when the work can be safely developed with a mock or disabled integration.
+
+| Batch | Outcome | Codex implementation | Jim input or setup | Completion gate |
+| --- | --- | --- | --- | --- |
+| A: Functional account core | A person can create one identity, select one or more participant types, sign in, recover access, and complete the correct onboarding | Complete session-aware navigation, protected routes, sign-out, recovery, profile persistence, role switching, validation, errors, and authentication tests | Create Google OAuth application credentials and approve final redirect domains | Email and Google journeys pass with fresh accounts; unauthorized access is denied |
+| B: Guardian and adoption confirmation | A guardian saves a Passport Lite and submits a real shelter-confirmation request | Complete pet editing, status tracking, secure token issuance, external shelter response page, confirmation or decline, 30-day expiration, day 10/20/27 reminders, guardian notifications, private evidence upload, and audit events | Select and connect the transactional-email provider; approve sender address and final email copy | Token reuse, expiry, cancellation, cross-user access, upload denial, and delivery failures are tested |
+| C: Organizations and marketplace | Shelters build profiles; PetBiz and RAVE vendors publish real offers; visitors browse useful listings | Complete organization editing, membership context, offer create/edit/unpublish, pet/RAVE/shared filters, listing detail, reporting, link validation, expiration, campaign attribution, and curated seed records | Review the initial real listings and any partner-provided terms | Cross-organization isolation passes; listings show source, classification, dates, terms, and accurate status |
+| D: Operations dashboard | Jim can operate the launch without database-console work | Build admin views for signups, organizations, adoption requests, email failures, offers, edits, reports, suspension, removal, expiration, and audit events | Confirm operational priorities and who may receive admin access | Privileged actions are server-authorized, audited, reversible where appropriate, and unavailable to ordinary users |
+| E: Controlled community | Participants can connect and ask for help without exposing Passport data | Add organization connection requests, preferred-vendor relationships, offer comments, structured contact requests, basic direct conversations, reporting, blocking, moderation, and rate limits | Approve community rules and moderation language | Spam, cross-account access, blocking, reporting, and removal paths pass; no private Passport access is implied |
+| F: Release candidate and hosted preview | The full mobile journey is testable through a normal URL | Configure non-production hosting, SPA fallback routes, environment variables, analytics events, error monitoring, accessibility fixes, browser/device tests, QR tests, backup check, rollback plan, and launch checklist | Test the hosted preview on personal devices and approve the release candidate | All critical journeys pass on mobile and desktop; no broken calls to action or unsupported claims |
+| G: Production launch | Printed cards and public links reach the approved MVP | Create or authorize production Supabase, configure production secrets and OAuth redirects, deploy, validate DNS and HTTPS, run smoke tests, and monitor launch | Explicitly authorize production deployment and DNS replacement | User accepts production smoke test; support and rollback ownership are active |
+
+### Critical dependency order
+
+1. Finish the account core and establish the hosted preview environment.
+2. Connect Google OAuth and transactional email independently; neither credential should be committed.
+3. Complete the adoption-confirmation workflow before turning on automated outreach.
+4. Load and review real marketplace records before presenting the marketplace as populated.
+5. Finish the operations dashboard before partner self-publication is publicly available.
+6. Add controlled community interactions only after reporting, blocking, and moderation exist.
+7. Run release-candidate testing before any production or DNS change.
+
+### MVP finish-line definition
+
+The MVP is complete only when the two printed QR journeys, all four account types, Passport Lite, shelter confirmation, partner self-publication, marketplace filtering, operational monitoring, and controlled community interactions work against a hosted environment and pass authorization, accessibility, mobile, email, and recovery tests. A compiled interface or an applied schema alone is not the finish line.
 
 ## Product release strategy
 
