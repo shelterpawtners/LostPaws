@@ -58,6 +58,10 @@ Never end a work cycle in an ambiguous state. At every checkpoint, failure repor
 8. If the next step is something ChatGPT can perform with available tools, perform it before replying instead of merely announcing that it should happen.
 9. Do not end on `I will check`, `I will review`, `I will verify`, or equivalent when that check/review/verification can be completed in the current turn.
 10. If an external automation is expected to run, verify its actual state. If it is blocked by workflow state (for example, a draft PR preventing review), fix that state when authorized instead of waiting passively.
+11. A response is considered a dead end if it reports status without either performing the next available action or giving Jim the exact next action. Dead-end responses are prohibited.
+12. If there are multiple valid user decisions, present a recommended default plus short selectable response choices. When the chat UI supports true buttons, use them. When it does not, present compact numbered choices that Jim can answer with one character/number, and always include `Custom` for a free-form response.
+13. If a user decision is not actually required, do not ask for one; continue autonomously.
+14. If the user supplies a result from the previous required step, immediately validate that result and advance to the next dependency instead of re-explaining prior steps.
 
 ## Prerequisite-first action ordering
 
