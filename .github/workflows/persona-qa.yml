@@ -44,8 +44,8 @@ jobs:
           fi
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
-      - name: Run persona registration and onboarding tests
-        run: npx playwright test e2e/persona-registration.spec.ts e2e/phase-2-offer-redemption.spec.ts
+      - name: Run persona registration, access, and redemption tests
+        run: npx playwright test e2e/persona-registration.spec.ts e2e/persona-access-isolation.spec.ts e2e/phase-2-offer-redemption.spec.ts
       - name: Upload Playwright failure evidence
         if: failure()
         uses: actions/upload-artifact@v4
