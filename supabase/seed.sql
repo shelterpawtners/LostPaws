@@ -36,7 +36,7 @@ insert into public.organizations(id,created_by,organization_type,organization_ty
  ('20000000-0000-0000-0000-000000000001','10000000-0000-0000-0000-000000000003','pet_business','pet_business','Demo PetBiz A','active',true),
  ('20000000-0000-0000-0000-000000000002','10000000-0000-0000-0000-000000000004','shelter','shelter','Demo Shelter B','active',true),
  ('20000000-0000-0000-0000-000000000003','10000000-0000-0000-0000-000000000006','pet_business','pet_business','Demo PetBiz B','active',true),
- ('20000000-0000-0000-0000-000000000004','10000000-0000-0000-0000-000000000007','community_partner','community_partner','Demo RAVE Vendor','active',true)
+ ('20000000-0000-0000-0000-000000000004','10000000-0000-0000-0000-000000000007','rave_vendor','community_partner','Demo RAVE Vendor','active',true)
 on conflict(id) do nothing;
 insert into public.organization_memberships(organization_id,user_id,role,status) values
  ('20000000-0000-0000-0000-000000000001','10000000-0000-0000-0000-000000000003','owner','active'),
