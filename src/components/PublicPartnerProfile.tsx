@@ -20,7 +20,22 @@ type Profile = {
     state: string | null;
     postal: string | null;
   }[];
+  hours: {
+    day: number;
+    opens: string | null;
+    closes: string | null;
+    closed: boolean;
+  }[];
 };
+const dayNames = [
+  "Sunday",
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday",
+];
 export function PublicPartnerProfile() {
   const { id } = useParams();
   const [profile, setProfile] = useState<Profile | null>(null);
@@ -101,6 +116,19 @@ export function PublicPartnerProfile() {
                 {s.label || s.platform}
               </a>
             ))}
+          </p>
+        )}
+        {profile.hours?.length > 0 && (
+          <p>
+            <b>Hours:</b>{" "}
+            {profile.hours
+              .sort((a, b) => a.day - b.day)
+              .map((h) =>
+                h.closed
+                  ? `${dayNames[h.day]}: closed`
+                  : `${dayNames[h.day]}: ${h.opens?.slice(0, 5)}–${h.closes?.slice(0, 5)}`,
+              )
+              .join(" · ")}
           </p>
         )}
       </div>

@@ -15,15 +15,21 @@ type Partner = {
 
 export function PartnerDirectory() {
   const [items, setItems] = useState<Partner[]>([]);
+  const [category, setCategory] = useState("");
+  const [city, setCity] = useState("");
   const [state, setState] = useState("");
   const [mode, setMode] = useState("");
+  const [species, setSpecies] = useState("");
   useEffect(() => {
     if (!db) return;
     db.rpc("public_partner_directory", {
+      p_category: category || null,
+      p_city: city || null,
       p_state: state || null,
       p_mode: mode || null,
+      p_species: species || null,
     }).then(({ data }) => setItems((data || []) as Partner[]));
-  }, [state, mode]);
+  }, [category, city, state, mode, species]);
   return (
     <section className="section shell">
       <span className="eyebrow">Partner directory</span>
@@ -34,11 +40,35 @@ export function PartnerDirectory() {
       </p>
       <div className="filters">
         <label>
+          Category{" "}
+          <input
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+            placeholder="Grooming"
+          />
+        </label>
+        <label>
+          City{" "}
+          <input
+            value={city}
+            onChange={(e) => setCity(e.target.value)}
+            placeholder="Detroit"
+          />
+        </label>
+        <label>
           State{" "}
           <input
             value={state}
             onChange={(e) => setState(e.target.value)}
             placeholder="MI"
+          />
+        </label>
+        <label>
+          Species{" "}
+          <input
+            value={species}
+            onChange={(e) => setSpecies(e.target.value)}
+            placeholder="dog"
           />
         </label>
         <label>

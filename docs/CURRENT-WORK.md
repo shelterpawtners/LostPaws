@@ -46,15 +46,13 @@ The remaining clean-local pgTAP and authenticated Playwright reruns are validati
 
 ### Checkpoint 2 — Partner Profile + Public Directory
 
-**Status: complete pending product/QA acceptance.**
+**Status: engineering-complete pending product/QA acceptance.**
 
 Current objective:
 
-- complete the Partner public/private profile model and UX;
-- support categories, species served, business model, locations/service areas, online/nationwide participation, booking/order URLs, social links, and profile completion;
-- enforce minimum safe publication requirements;
-- support monitored self-publication with moderation/suspension/removal;
-- build durable public Partner profile and directory experiences;
+- Partner public/private profile model and UX are implemented, including categories, species served, business model, locations/service areas, online/nationwide participation, booking/order URLs, social links, hours, and profile completion;
+- server-side minimum safe publication and unpublish behavior are implemented;
+- monitored self-publication with moderation/suspension/removal foundations and durable public Partner profile/directory experiences are implemented;
 - preserve Michigan/Metro Detroit go-to-market emphasis without restricting nationwide/online participation;
 - preserve strong separation between public profile fields and private operational contacts;
 - refactor the large Partner onboarding component/API boundary as needed before materially expanding Partner UI.

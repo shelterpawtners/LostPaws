@@ -200,3 +200,10 @@ This is the canonical review list for implementation choices and explicit user-a
 - **Decision:** Public profile detail rendering uses an allowlisted RPC that requires published state and omits private-contact data.
 - **Reason:** Rich public profiles must not broaden the public data surface accidentally.
 - **Consequence:** Any new public field requires an explicit allowlist update and privacy review.
+
+## D-030 — Partner-managed profile completeness without public contact leakage
+
+- **Status:** Active; autonomous Checkpoint 2 completion decision
+- **Decision:** The Partner editor manages approved public profile data and separate primary/operational contacts in one authenticated workflow. Private contacts never appear in public profile RPCs or public UI. Save preserves an already-published state; only Publish and Unpublish change listing visibility.
+- **Reason:** Partners need a practical single place to maintain their listing, while the public directory must remain an intentionally narrow data surface.
+- **Consequence:** Invalid social URLs are rejected before browser writes, and the server remains the final enforcement point for publication, membership, state, and public visibility.
