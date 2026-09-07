@@ -43,4 +43,5 @@ Regression evidence on a clean local migration replay:
 - all 5 pgTAP files / 80 assertions passed, including retry idempotency and cross-Guardian read denial;
 - Guardian registration, two-click submission, exactly-one pet/guardianship verification, failure recovery, all other registration personas, all seeded persona sign-ins, Guardian isolation, cross-Partner authorization, and offer/claim/redemption passed in focused Chromium runs;
 - the initial eight-worker browser batch logged a non-product local runner limitation: 6 navigation timeouts while 10 tests passed. Deterministic one-worker reruns passed and are the acceptance evidence;
+- the production build passed with the existing advisory that the main minified JavaScript chunk is 511.87 kB; this is logged as non-blocking optimization work and does not affect the corrected journey;
 - no remote Supabase database was changed, Checkpoint 5 was not started, and no decision-required defect remains.
