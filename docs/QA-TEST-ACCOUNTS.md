@@ -11,13 +11,12 @@ Purpose: deterministic local/manual accounts plus registration guidance for auto
 | Pet Business Admin | `partner-admin@example.invalid` | `Demo-only-Partner!` | Partner profile, offers, redemption |
 | Pet Business B | `partner-b@example.invalid` | `Demo-only-Partner-B!` | Cross-partner isolation |
 | Shelter Admin | `shelter-admin@example.invalid` | `Demo-only-Shelter!` | Shelter registration/organization role testing |
+| RAVE Vendor | `rave-vendor@example.invalid` | `Demo-only-RAVE-Vendor!` | RAVE vendor onboarding/profile/offer testing |
 | Platform Admin | `platform-admin@example.invalid` | `Demo-only-Platform!` | Local administrative authorization testing only |
-
-A dedicated RAVE vendor test account should be added to the seed as part of the persona QA implementation rather than reusing the Pet Business identity.
 
 ## Fresh registration accounts
 
-Automated registration tests should create unique accounts at runtime instead of relying only on seeded users. Use a reserved test address pattern such as:
+Automated registration tests create unique accounts at runtime instead of relying only on seeded users. They use a reserved test address pattern such as:
 
 - `qa-guardian-<timestamp>@example.invalid`
 - `qa-shelter-<timestamp>@example.invalid`
@@ -55,7 +54,8 @@ After `npx supabase db reset` and `npm run dev`:
 3. Partner: sign in as `partner-admin@example.invalid`, create/publish an offer, and test redemption.
 4. Partner isolation: sign in as `partner-b@example.invalid` and confirm Partner A private/redemption data is not visible.
 5. Shelter: sign in as `shelter-admin@example.invalid` and verify shelter-specific access remains intact.
-6. Registration: create one new Guardian account through `/register?type=guardian`, complete the pet form, and verify the app advances after Save.
-7. Registration: spot-check new Shelter, Pet Business, and RAVE Vendor accounts route to the matching onboarding screens.
+6. RAVE Vendor: sign in as `rave-vendor@example.invalid` and verify RAVE vendor-specific onboarding/profile access.
+7. Registration: create one new Guardian account through `/register?type=guardian`, complete the pet form, and verify the app advances after Save.
+8. Registration: spot-check new Shelter, Pet Business, and RAVE Vendor accounts route to the matching onboarding screens.
 
 Do not use these credentials outside local/test environments and do not convert them into real user accounts.
