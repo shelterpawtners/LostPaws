@@ -56,6 +56,18 @@ Never end a work cycle in an ambiguous state. At every checkpoint, failure repor
 6. Prefer presenting 1-3 concrete proceed options when there is more than one valid path, with a recommended default.
 7. Do not leave the project waiting merely because an automated step or agent handoff has not yet been initiated; create the handoff artifact or give Jim the exact launch action before ending the cycle.
 
+## Prerequisite-first action ordering
+
+When Jim must perform multiple dependent actions, always present them in execution order.
+
+1. Put every prerequisite before the action that depends on it.
+2. Clearly label required prerequisites as `REQUIRED FIRST` or equivalent.
+3. Explain briefly why the prerequisite matters before showing the dependent command, prompt, or click path.
+4. Do not show a downstream prompt or action first and then tell Jim to stop and complete an earlier prerequisite.
+5. Where practical, confirm the expected successful result of the prerequisite so Jim knows it is safe to continue.
+6. After prerequisites are complete, present the dependent action as the clear `NEXT ACTION`.
+7. If there is no prerequisite, say so only when useful; do not add unnecessary ceremony.
+
 ## Reporting
 
 At checkpoint or PR review, provide Jim a concise summary of:
