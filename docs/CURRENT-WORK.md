@@ -42,22 +42,46 @@ Evidence: `docs/PHASE-2-CHECKPOINT-1-PROGRESS.md` and `docs/PHASE-2-CHECKPOINT-1
 
 Accepted capabilities include entry-first assisted organization matching, private drafts, safe access/claim review requests, atomic organization creation, multi-location support, corporate hierarchy, independent franchise/brand relationships without inherited control, duplicate-review/audit foundations, and RLS/authorization protections.
 
-The remaining clean-local pgTAP and authenticated Playwright reruns are validation debt, not current product blockers, and must be cleared no later than Phase 2 final hardening.
-
 ### Checkpoint 2 — Partner Profile + Public Directory
 
-**Status: engineering-complete pending product/QA acceptance.**
+**Status: ACCEPTED.**
+
+Accepted capabilities include:
+
+- full authenticated Partner profile editing;
+- public/private contact separation;
+- categories and species served;
+- business model and service-area/nationwide/online support;
+- booking/order links, social links, and business hours;
+- server-side minimum-safe publication validation;
+- publish and unpublish behavior;
+- moderation-state foundations;
+- public directory filters for category, city, state, service model, and species;
+- durable public Partner profile rendering;
+- explicit public-data allowlisting;
+- committed Checkpoint 2 pgTAP RLS/security tests;
+- maintainability extraction for shared Partner profile presentation/validation helpers.
+
+Independent connected-Supabase verification confirmed anonymous users cannot read private Partner contacts and unpublished profiles are hidden from the public profile-details RPC.
+
+Environment validation debt remains: clean local Supabase reset/pgTAP replay and authenticated Playwright runs should be completed when Docker/local test credentials are available and no later than Phase 2 final hardening.
+
+### Checkpoint 3 — Offer Engine
+
+**Status: ACTIVE.**
 
 Current objective:
 
-- Partner public/private profile model and UX are implemented, including categories, species served, business model, locations/service areas, online/nationwide participation, booking/order URLs, social links, hours, and profile completion;
-- server-side minimum safe publication and unpublish behavior are implemented;
-- monitored self-publication with moderation/suspension/removal foundations and durable public Partner profile/directory experiences are implemented;
-- preserve Michigan/Metro Detroit go-to-market emphasis without restricting nationwide/online participation;
-- preserve strong separation between public profile fields and private operational contacts;
-- refactor the large Partner onboarding component/API boundary as needed before materially expanding Partner UI.
-
-Do not begin Checkpoint 3 offer implementation except minimal scaffolding needed to display whether an organization has active offers.
+- implement Partner offer create/edit/preview/publish/pause/archive/duplicate/expire;
+- preserve immutable offer-version history;
+- support all-pet and shelter-pet-enhanced eligibility;
+- support location/online eligibility;
+- support scheduled/future offers and expiration;
+- support configurable claim expiration with 30-day default;
+- support optional inventory, per-user/per-pet limits, and first-N mechanics where approved;
+- provide truthful public offer presentation/classification;
+- preserve concurrency safety and cross-organization authorization;
+- do not begin claims/redemptions, verified savings, giving, or production deployment.
 
 ## User-involvement policy
 
