@@ -68,20 +68,15 @@ Environment validation debt remains: clean local Supabase reset/pgTAP replay and
 
 ### Checkpoint 3 — Offer Engine
 
-**Status: ACTIVE.**
+**Status: COMPLETE.** See `docs/PHASE-2-CHECKPOINT-3-PROGRESS.md`.
 
-Current objective:
+### Checkpoint 4 — Claim + QR/Code Redemption
 
-- implement Partner offer create/edit/preview/publish/pause/archive/duplicate/expire;
-- preserve immutable offer-version history;
-- support all-pet and shelter-pet-enhanced eligibility;
-- support location/online eligibility;
-- support scheduled/future offers and expiration;
-- support configurable claim expiration with 30-day default;
-- support optional inventory, per-user/per-pet limits, and first-N mechanics where approved;
-- provide truthful public offer presentation/classification;
-- preserve concurrency safety and cross-organization authorization;
-- do not begin claims/redemptions, verified savings, giving, or production deployment.
+**Status: READY FOR REQUIRED USER UX REVIEW.**
+
+The local flow supports exact-version Guardian claims, opaque PII-free codes, Partner deep-link/manual validation, one-action utilization confirmation, replay prevention, and reversal history. See `docs/PHASE-2-CHECKPOINT-4-PROGRESS.md`.
+
+Checkpoint 5 must not begin until the redemption UX is reviewed and approval is recorded.
 
 ## User-involvement policy
 

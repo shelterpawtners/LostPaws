@@ -6,6 +6,7 @@ Repository: `shelterpawtners/LostPaws`
 Branch: `build/festival-mvp`
 
 Read and follow:
+
 - `AGENTS.md`
 - `.agents/skills/shelterpawtners/SKILL.md`
 - `docs/CURRENT-WORK.md`
@@ -31,6 +32,7 @@ Do not begin Phase 3.
 Complete Checkpoint 3 (Offer Engine), perform its required QA, fix bounded defects, commit and push it, then continue directly into Checkpoint 4 (Claim + QR/Code Redemption) without waiting for user approval between the two unless a material business/security decision arises.
 
 Checkpoint 3 must preserve:
+
 - multiple offers per organization;
 - create/edit/preview/publish/pause/archive/duplicate/expire;
 - immutable/versioned offer history;
@@ -41,6 +43,7 @@ Checkpoint 3 must preserve:
 - truthful classifications and no silent history rewrite.
 
 Checkpoint 4 must preserve:
+
 - Offer, Claim, and Redemption as distinct records/states;
 - exact offer-version binding;
 - opaque QR/code/token with no PII;
@@ -83,6 +86,7 @@ After approval, complete only the approved provider-agnostic or approved-provide
 Complete Checkpoint 7 after Checkpoints 5 and 6 are accepted.
 
 Include:
+
 - partner dashboard;
 - admin controls;
 - exports;
@@ -104,6 +108,7 @@ STOP for final Phase 2 product acceptance after Checkpoint 7 is complete and pus
 ## Autonomous decision policy
 
 Proceed without user interruption for normal technical choices. Escalate only when a decision materially changes:
+
 - business promises or marketplace rules;
 - legal/charitable/tax meaning;
 - verified financial/savings definitions;
