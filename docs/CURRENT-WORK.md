@@ -4,7 +4,7 @@
 
 Phase 1 — Platform + Data Foundation is engineering-complete and is the approved foundation baseline.
 
-Phase 2 — Partner Marketplace MVP is the next phase, but implementation remains inactive until it is explicitly activated after the documentation and execution-plan review.
+Phase 2 — Partner Marketplace MVP is now **active**. The user explicitly authorized moving forward after reviewing and approving the canonical Phase 2 business baseline and requested that routine work be automated as much as possible.
 
 ## Authoritative phase structure
 
@@ -16,12 +16,15 @@ The five-phase structure is frozen:
 4. Impact + Giving + Financial Intelligence
 5. Integrations + Marketplace + Production Launch
 
-The authoritative future-phase specifications are:
+The authoritative phase specifications are:
 
-- `docs/phases/PHASE-2.md`
-- `docs/phases/PHASE-3.md`
-- `docs/phases/PHASE-4.md`
-- `docs/phases/PHASE-5.md`
+- Phase 1: `docs/PHASE-1-EXECUTION.md` and `docs/PHASE-1-PROGRESS.md`
+- Phase 2: `docs/phases/PHASE-2.md`
+- Phase 3: `docs/phases/PHASE-3.md`
+- Phase 4: `docs/phases/PHASE-4.md`
+- Phase 5: `docs/phases/PHASE-5.md`
+
+The bounded Phase 2 execution sequence is defined in `docs/PHASE-2-EXECUTION-PLAN.md`.
 
 Older roadmap phase numbering or festival-MVP sequencing does not override this structure. Useful older requirements may be preserved as research, acceptance criteria, or backlog items, but they do not become active MVP requirements unless explicitly re-approved.
 
@@ -41,9 +44,32 @@ A cloud/sandbox environment being unable to run Docker, `supabase db reset`, or 
 
 ## Current objective
 
-Reconcile canonical project knowledge and prepare the Phase 2 execution plan without beginning Phase 2 implementation.
+Execute Phase 2 checkpoint by checkpoint, beginning with **Checkpoint 1 — Partner Organization Foundation**.
 
-Before activation, review the approved Phase 2 specification against the user-approved Partner Marketplace decision baseline in `docs/DECISION-LOG.md`, identify any remaining material OPEN DECISION items, and break implementation into small Codex checkpoints with QA gates.
+Checkpoint 1 covers Partner onboarding entry, organization discovery/search-before-create, secure membership/claim requests, organization creation, multi-location businesses, corporate parent/child structures, independent franchises/brand relationships, duplicate handling foundations, RLS, and auditability.
+
+Do not jump ahead into Partner profiles, offers, redemption, verified savings, or giving except for minimal supporting scaffolding required by Checkpoint 1.
+
+## User-involvement policy
+
+Automate routine engineering, QA, documentation, and implementation decisions. Escalate to the user only when a decision materially affects:
+
+- business promises or marketplace rules;
+- legal, charitable, or tax meaning;
+- financial calculations or customer-facing verified totals;
+- privacy/security boundaries;
+- organization ownership/control where policy cannot be safely deferred;
+- destructive data operations;
+- paid service activation or credentials;
+- critical UX with materially different business outcomes;
+- production deployment, DNS, or infrastructure.
+
+Expected planned user checkpoints are:
+
+1. working redemption UX review during Checkpoint 4;
+2. verified-savings rule approval during Checkpoint 5;
+3. giving-provider selection during Checkpoint 6;
+4. final Phase 2 acceptance before Phase 3.
 
 ## Operating model
 
@@ -58,8 +84,8 @@ Before activation, review the approved Phase 2 specification against the user-ap
 
 ## Handoff rules
 
-- Do not begin Phase 2 until it is explicitly activated.
 - Preserve valid existing work and project knowledge.
 - Do not inherit architecture from Core or RaveShelter merely because it existed previously.
 - Record meaningful approved or autonomous decisions in `docs/DECISION-LOG.md` with their authority and status.
 - Test, fix, commit, and push at meaningful checkpoints so work remains recoverable and reviewable.
+- Do not begin Phase 3 until Phase 2 is completed and explicitly approved.
