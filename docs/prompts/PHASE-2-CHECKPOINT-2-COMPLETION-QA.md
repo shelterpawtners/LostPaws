@@ -7,6 +7,7 @@ Do not restart the checkpoint and do not begin Checkpoint 3.
 Use the existing implementation as the baseline and complete only the missing Checkpoint 2 requirements plus bounded QA fixes.
 
 Read:
+
 - `AGENTS.md`
 - `docs/CURRENT-WORK.md`
 - `docs/PHASE-2-EXECUTION-PLAN.md`
@@ -19,6 +20,7 @@ Read:
 ## Confirm and preserve completed work
 
 Preserve:
+
 - `organization_partner_profiles`
 - `organization_private_contacts`
 - `organization_social_links`
@@ -88,6 +90,7 @@ Complete at minimum:
 ## Security review focus
 
 Review the new public RPCs and profile RLS carefully. Pay special attention to:
+
 - SECURITY DEFINER functions and execution grants;
 - public/private data leakage;
 - suspended/removed publication states;
@@ -102,6 +105,7 @@ Do not weaken RLS to make the UI work.
 ## Documentation
 
 Update `docs/PHASE-2-CHECKPOINT-2-PROGRESS.md` so every Checkpoint 2 requirement is clearly one of:
+
 - Complete
 - Deferred by approved non-goal
 - Blocked by environment
@@ -115,6 +119,7 @@ Record meaningful implementation/QA decisions in `docs/DECISION-LOG.md`.
 ## Completion
 
 When finished:
+
 - commit and push all bounded Checkpoint 2 completion/QA work to `build/festival-mvp`;
 - do not begin Checkpoint 3;
 - report files/migrations changed, test results, browser/mobile/accessibility results, remaining environment-blocked validations, known limitations, and final remote commit SHA.

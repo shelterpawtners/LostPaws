@@ -193,3 +193,10 @@ This is the canonical review list for implementation choices and explicit user-a
 - **Decision:** A Partner profile is independently publishable only after server-side validation of a public description, public contact path, and either location context or an online/service model. Private operational contacts are stored separately and never returned by public profile RPCs.
 - **Reason:** This permits low-friction Basic Partner publication without confusing incomplete registrations for trustworthy public listings.
 - **Consequence:** Profiles remain subject to suspension/removal and publication is not a verification or endorsement claim.
+
+## D-029 — Public profile-details allowlist
+
+- **Status:** Active; autonomous Checkpoint 2 QA decision
+- **Decision:** Public profile detail rendering uses an allowlisted RPC that requires published state and omits private-contact data.
+- **Reason:** Rich public profiles must not broaden the public data surface accidentally.
+- **Consequence:** Any new public field requires an explicit allowlist update and privacy review.

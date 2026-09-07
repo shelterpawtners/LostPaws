@@ -14,13 +14,19 @@ type Profile = {
   service_area: string | null;
   business_model: string;
   participation_state: string;
+  social_links: { platform: string; url: string; label: string | null }[];
+  locations: {
+    city: string | null;
+    state: string | null;
+    postal: string | null;
+  }[];
 };
 export function PublicPartnerProfile() {
   const { id } = useParams();
   const [profile, setProfile] = useState<Profile | null>(null);
   useEffect(() => {
     if (!db || !id) return;
-    db.rpc("public_partner_profile", { p_organization_id: id })
+    db.rpc("public_partner_profile_details", { p_organization_id: id })
       .maybeSingle()
       .then(({ data }) => setProfile(data as Profile | null));
   }, [id]);
@@ -75,6 +81,26 @@ export function PublicPartnerProfile() {
         {profile.public_phone && (
           <p>
             <a href={`tel:${profile.public_phone}`}>{profile.public_phone}</a>
+          </p>
+        )}
+        {profile.locations?.length > 0 && (
+          <p>
+            <b>Locations:</b>{" "}
+            {profile.locations
+              .map((l) =>
+                [l.city, l.state, l.postal].filter(Boolean).join(", "),
+              )
+              .join(" · ")}
+          </p>
+        )}
+        {profile.social_links?.length > 0 && (
+          <p>
+            <b>Social:</b>{" "}
+            {profile.social_links.map((s) => (
+              <a key={s.platform} href={s.url}>
+                {s.label || s.platform}
+              </a>
+            ))}
           </p>
         )}
       </div>
