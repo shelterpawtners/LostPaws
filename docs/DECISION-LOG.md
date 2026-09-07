@@ -228,3 +228,10 @@ This is the canonical review list for implementation choices and explicit user-a
 - **Decision:** Guardian pet onboarding captures form data before authentication work and saves the pet plus its active primary guardianship through one authenticated database function keyed by a per-form submission UUID. The database enforces one pet per user/submission and one active instance of the same guardian-pet relationship.
 - **Reason:** The former browser-only sequence could lose the React form target after an asynchronous call, leave partial data if the second write failed, and create duplicate records on retry.
 - **Consequence:** A supported retry returns the same pet, pet identity remains separate from the human profile, RLS remains authoritative for reads, and the UI advances only after the atomic operation succeeds. This does not add Phase 3 Passport features or settle future co-guardian/transfer policy.
+
+## D-034 — Active-guardianship dashboard and narrow pet detail
+
+- **Status:** Active; user-directed Issue #4 blocker remediation
+- **Decision:** The Guardian dashboard resolves every pet through the signed-in user's active, non-ended guardianships. Existing pets open a read-only current-scope detail route, while creating another pet remains a separate explicit action.
+- **Reason:** A permanent static setup prompt concealed saved pets and could send an existing Guardian back through create-new onboarding.
+- **Consequence:** Empty and populated Guardian states are now distinct, multiple pets remain first-class, and no full Phase 3 editing, transfer, co-guardian, lifecycle, or Passport expansion is implied.

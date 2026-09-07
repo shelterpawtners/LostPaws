@@ -15,6 +15,7 @@ import {
   Routes,
   useLocation,
   useNavigate,
+  useParams,
 } from "react-router-dom";
 import {
   ArrowRight,
@@ -1527,10 +1528,19 @@ const onboardingRole: Record<Kind, UserRole> = {
   petbiz: "partner_member",
   rave_vendor: "partner_member",
 };
+type GuardianPet = {
+  id: string;
+  name: string;
+  species: string;
+  breed: string | null;
+  adopted_self_reported: boolean | null;
+};
 function Dashboard() {
   const { session } = useAuth();
   const [roles, setRoles] = useState<string[]>([]);
   const [activeRole, setActiveRole] = useState("");
+  const [pets, setPets] = useState<GuardianPet[]>([]);
+  const [petsLoading, setPetsLoading] = useState(true);
   const [status, setStatus] = useState("");
   const navigate = useNavigate();
   useEffect(() => {
@@ -1546,6 +1556,25 @@ function Dashboard() {
         const saved = localStorage.getItem("sp_active_role");
         setActiveRole(
           saved && list.includes(saved) ? saved : list[0] || "guardian",
+        );
+      });
+  }, [session]);
+  useEffect(() => {
+    if (!db || !session) return;
+    setPetsLoading(true);
+    db.from("guardianships")
+      .select("pets(id,name,species,breed,adopted_self_reported)")
+      .eq("guardian_id", session.user.id)
+      .eq("status", "active")
+      .is("ended_at", null)
+      .then(({ data, error }) => {
+        setPetsLoading(false);
+        if (error) return setStatus(error.message);
+        setPets(
+          (data || []).flatMap((row) => {
+            const pet = row.pets as GuardianPet | GuardianPet[] | null;
+            return Array.isArray(pet) ? pet : pet ? [pet] : [];
+          }),
         );
       });
   }, [session]);
@@ -1629,31 +1658,69 @@ function Dashboard() {
           <span className="eyebrow">{phaseOneRoleLabels[active]}</span>
           <h2>
             {kind === "guardian"
-              ? "Your pet journey starts here"
+              ? pets.length
+                ? "Your pets"
+                : "Your pet journey starts here"
               : kind === "shelter"
                 ? "Build your shelter presence"
                 : "Manage your organization"}
           </h2>
+          {kind === "guardian" && pets.length > 0 && (
+            <div className="guardianPets" aria-label="Your pets">
+              {pets.map((pet) => (
+                <Link
+                  className="petTile"
+                  to={`/pets/${pet.id}`}
+                  key={pet.id}
+                  aria-label={`Open ${pet.name}`}
+                >
+                  <PawPrint />
+                  <div>
+                    <b>{pet.name}</b>
+                    <p>
+                      {pet.species}
+                      {pet.breed ? ` · ${pet.breed}` : ""}
+                    </p>
+                  </div>
+                  <ArrowRight />
+                </Link>
+              ))}
+            </div>
+          )}
           <div className="nextCards">
-            <Link
-              className="next primary"
-              to={kind === "guardian" ? "/pets/new" : `/onboarding/${kind}`}
-            >
-              <PawPrint />
-              <div>
-                <b>
-                  {kind === "guardian"
-                    ? "Set up your pet"
-                    : "Complete your organization"}
-                </b>
-                <p>
-                  {kind === "guardian"
-                    ? "Start a private Digital Pet Passport and adoption story."
-                    : "Add the details people need to understand your work."}
-                </p>
-              </div>
-              <ArrowRight />
-            </Link>
+            {kind !== "guardian" || (!petsLoading && pets.length === 0) ? (
+              <Link
+                className="next primary"
+                to={kind === "guardian" ? "/pets/new" : `/onboarding/${kind}`}
+              >
+                <PawPrint />
+                <div>
+                  <b>
+                    {kind === "guardian"
+                      ? "Set up your pet"
+                      : "Complete your organization"}
+                  </b>
+                  <p>
+                    {kind === "guardian"
+                      ? "Start a private Digital Pet Passport and adoption story."
+                      : "Add the details people need to understand your work."}
+                  </p>
+                </div>
+                <ArrowRight />
+              </Link>
+            ) : null}
+            {kind === "guardian" && pets.length > 0 && (
+              <Link className="next" to="/pets/new">
+                <PawPrint />
+                <div>
+                  <b>Add another pet</b>
+                  <p>
+                    Create a separate Passport for another pet in your care.
+                  </p>
+                </div>
+                <ArrowRight />
+              </Link>
+            )}
             <Link className="next" to="/marketplace">
               <Search />
               <div>
@@ -1681,6 +1748,76 @@ function Dashboard() {
             {status}
           </p>
         </div>
+      </section>
+    </Page>
+  );
+}
+function GuardianPetDetail() {
+  const { session } = useAuth();
+  const { petId } = useParams();
+  const [pet, setPet] = useState<GuardianPet | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [status, setStatus] = useState("");
+  useEffect(() => {
+    if (!db || !session || !petId) return;
+    db.from("guardianships")
+      .select("pets(id,name,species,breed,adopted_self_reported)")
+      .eq("guardian_id", session.user.id)
+      .eq("pet_id", petId)
+      .eq("status", "active")
+      .is("ended_at", null)
+      .maybeSingle()
+      .then(({ data, error }) => {
+        setLoading(false);
+        if (error) return setStatus(error.message);
+        const related = data?.pets as GuardianPet | GuardianPet[] | null;
+        setPet(Array.isArray(related) ? related[0] || null : related || null);
+      });
+  }, [petId, session]);
+  return (
+    <Page>
+      <section className="section shell narrow petDetail">
+        <Link to="/dashboard">← Back to your pets</Link>
+        {loading ? (
+          <p role="status">Loading pet…</p>
+        ) : pet ? (
+          <div className="panel">
+            <span className="eyebrow">Digital Pet Passport</span>
+            <h1>{pet.name}</h1>
+            <dl>
+              <div>
+                <dt>Species</dt>
+                <dd>{pet.species}</dd>
+              </div>
+              {pet.breed && (
+                <div>
+                  <dt>Breed</dt>
+                  <dd>{pet.breed}</dd>
+                </div>
+              )}
+              <div>
+                <dt>Adoption status</dt>
+                <dd>
+                  {pet.adopted_self_reported
+                    ? "Guardian reported adopted"
+                    : "Not reported as adopted"}
+                </dd>
+              </div>
+            </dl>
+            <p>
+              More Passport details and editing tools are planned for the
+              Guardian and Shelter Passport phase.
+            </p>
+          </div>
+        ) : (
+          <div className="panel">
+            <h1>Pet unavailable</h1>
+            <p>This pet is not available under your active guardianships.</p>
+          </div>
+        )}
+        <p role="status" aria-live="polite">
+          {status}
+        </p>
       </section>
     </Page>
   );
@@ -1751,6 +1888,14 @@ function App() {
         element={
           <Protected>
             <Navigate to="/onboarding/guardian" />
+          </Protected>
+        }
+      />
+      <Route
+        path="/pets/:petId"
+        element={
+          <Protected>
+            <GuardianPetDetail />
           </Protected>
         }
       />

@@ -40,8 +40,25 @@ test.describe("Persona registration and onboarding", () => {
       button.click();
     });
 
-    await expect(page.getByRole("status")).toContainText(/Pet Passport started/);
+    await expect(page.getByRole("status")).toContainText(
+      /Pet Passport started/,
+    );
     await expect(page).toHaveURL(/\/dashboard$/, { timeout: 15_000 });
+    await expect(
+      page.getByRole("link", { name: "Open QA Guardian Pet" }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("link", { name: "Set up your pet" }),
+    ).toHaveCount(0);
+    await expect(
+      page.getByRole("link", { name: "Add another pet" }),
+    ).toBeVisible();
+    await page.getByRole("link", { name: "Open QA Guardian Pet" }).click();
+    await expect(page).toHaveURL(/\/pets\/[0-9a-f-]+$/);
+    await expect(page).not.toHaveURL(/\/onboarding\/guardian$/);
+    await expect(
+      page.getByRole("heading", { name: "QA Guardian Pet" }),
+    ).toBeVisible();
 
     const qa = createClient(url, key, {
       auth: { persistSession: false, autoRefreshToken: false },
@@ -61,7 +78,9 @@ test.describe("Persona registration and onboarding", () => {
     await qa.auth.signOut();
   });
 
-  test("Guardian pet save failure is visible and retryable", async ({ page }) => {
+  test("Guardian pet save failure is visible and retryable", async ({
+    page,
+  }) => {
     await register(page, "guardian");
     await page.getByLabel("Pet name").fill("Retryable Pet");
     await page.getByLabel("Species").selectOption("cat");

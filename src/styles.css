@@ -746,6 +746,52 @@ select:focus {
   grid-template-columns: 1fr 1fr;
   gap: 15px;
 }
+.guardianPets {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 15px;
+  margin-bottom: 18px;
+}
+.petTile {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 14px;
+  align-items: center;
+  padding: 20px;
+  border: 1px solid #b9a5e7;
+  border-radius: 18px;
+  background: linear-gradient(145deg, #f6f2ff, #ecfbf8);
+}
+.petTile > svg {
+  color: var(--purple);
+}
+.petTile b {
+  font-family: Outfit;
+  font-size: 1.2rem;
+}
+.petTile p {
+  margin: 4px 0 0;
+  color: var(--muted);
+  text-transform: capitalize;
+}
+.petDetail h1 {
+  font-family: Outfit;
+  font-size: clamp(2.4rem, 5vw, 4rem);
+  margin: 8px 0 24px;
+}
+.petDetail dl div {
+  padding: 12px 0;
+  border-bottom: 1px solid var(--line);
+}
+.petDetail dt {
+  color: var(--muted);
+  font-size: 0.85rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+.petDetail dd {
+  margin: 4px 0 0;
+}
 .next {
   min-height: 190px;
   display: grid;
