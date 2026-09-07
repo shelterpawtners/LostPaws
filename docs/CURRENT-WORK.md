@@ -4,7 +4,7 @@
 
 Phase 1 — Platform + Data Foundation is engineering-complete and is the approved foundation baseline.
 
-Phase 2 — Partner Marketplace MVP is now **active**. The user explicitly authorized moving forward after reviewing and approving the canonical Phase 2 business baseline and requested that routine work be automated as much as possible.
+Phase 2 — Partner Marketplace MVP is **active**.
 
 ## Authoritative phase structure
 
@@ -26,29 +26,40 @@ The authoritative phase specifications are:
 
 The bounded Phase 2 execution sequence is defined in `docs/PHASE-2-EXECUTION-PLAN.md`.
 
-Older roadmap phase numbering or festival-MVP sequencing does not override this structure. Useful older requirements may be preserved as research, acceptance criteria, or backlog items, but they do not become active MVP requirements unless explicitly re-approved.
+Older roadmap phase numbering or festival-MVP sequencing does not override this structure.
 
 ## Phase 1 final state
 
-Phase 1 engineering validation is complete for the current foundation:
+Phase 1 engineering validation is complete for the current foundation. See `docs/PHASE-1-PROGRESS.md` for evidence.
 
-- two clean local database resets reproduced the committed schema and seed state;
-- both post-reset pgTAP runs passed all 9 RLS/append-only assertions;
-- Playwright passed all 8 Phase 1 E2E/accessibility checks;
-- `npm run check` passed;
-- `npm run build` passed;
-- responsive and accessibility validation passed across the documented local browser widths;
-- the validated branch state is `build/festival-mvp`.
+## Phase 2 checkpoint status
 
-A cloud/sandbox environment being unable to run Docker, `supabase db reset`, or a browser preview is an environment limitation and is not a product blocker when stronger completed local validation already covers the same gate.
+### Checkpoint 1 — Partner Organization Foundation
 
-## Current objective
+**Status: ACCEPTED.**
 
-Phase 2 Checkpoint 1 — Partner Organization Foundation has completed its required QA review and is awaiting product acceptance. Its evidence ledgers are `docs/PHASE-2-CHECKPOINT-1-PROGRESS.md` and `docs/PHASE-2-CHECKPOINT-1-QA.md`.
+Evidence: `docs/PHASE-2-CHECKPOINT-1-PROGRESS.md` and `docs/PHASE-2-CHECKPOINT-1-QA.md`.
 
-Do not activate or implement Checkpoint 2 until Checkpoint 1 is reviewed and accepted. Checkpoint 1 covers Partner onboarding entry, entry-first organization discovery, secure membership/claim requests, organization creation, multi-location businesses, corporate parent/child structures, independent franchises/brand relationships, duplicate handling foundations, RLS, and auditability.
+Accepted capabilities include entry-first assisted organization matching, private drafts, safe access/claim review requests, atomic organization creation, multi-location support, corporate hierarchy, independent franchise/brand relationships without inherited control, duplicate-review/audit foundations, and RLS/authorization protections.
 
-Do not jump ahead into Partner profiles, offers, redemption, verified savings, or giving except for minimal supporting scaffolding required by Checkpoint 1.
+The remaining clean-local pgTAP and authenticated Playwright reruns are validation debt, not current product blockers, and must be cleared no later than Phase 2 final hardening.
+
+### Checkpoint 2 — Partner Profile + Public Directory
+
+**Status: ACTIVE.**
+
+Current objective:
+
+- complete the Partner public/private profile model and UX;
+- support categories, species served, business model, locations/service areas, online/nationwide participation, booking/order URLs, social links, and profile completion;
+- enforce minimum safe publication requirements;
+- support monitored self-publication with moderation/suspension/removal;
+- build durable public Partner profile and directory experiences;
+- preserve Michigan/Metro Detroit go-to-market emphasis without restricting nationwide/online participation;
+- preserve strong separation between public profile fields and private operational contacts;
+- refactor the large Partner onboarding component/API boundary as needed before materially expanding Partner UI.
+
+Do not begin Checkpoint 3 offer implementation except minimal scaffolding needed to display whether an organization has active offers.
 
 ## User-involvement policy
 
@@ -87,5 +98,5 @@ Expected planned user checkpoints are:
 - Preserve valid existing work and project knowledge.
 - Do not inherit architecture from Core or RaveShelter merely because it existed previously.
 - Record meaningful approved or autonomous decisions in `docs/DECISION-LOG.md` with their authority and status.
-- Test, fix, commit, and push at meaningful checkpoints so work remains recoverable and reviewable.
+- Test, fix, commit, and push at meaningful checkpoints.
 - Do not begin Phase 3 until Phase 2 is completed and explicitly approved.
