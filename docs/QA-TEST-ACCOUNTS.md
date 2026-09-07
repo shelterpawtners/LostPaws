@@ -4,15 +4,13 @@ Purpose: deterministic local/manual accounts plus registration guidance for auto
 
 ## Stable seeded manual accounts
 
-| Persona            | Email                                | Password                 | Primary manual use                                        |
-| ------------------ | ------------------------------------ | ------------------------ | --------------------------------------------------------- |
-| Guardian A         | `guardian-a@example.invalid`         | `Demo-only-Guardian-A!`  | Guardian marketplace/claim flows; already linked to Demo Pet A |
-| Guardian B         | `guardian-b@example.invalid`         | `Demo-only-Guardian-B!`  | Cross-guardian isolation; already linked to Demo Pet B    |
-| Pet Business Admin | `partner-admin@example.invalid`      | `Demo-only-Partner!`     | Partner profile, offers, redemption                       |
-| Pet Business B     | `partner-b@example.invalid`          | `Demo-only-Partner-B!`   | Cross-partner isolation                                   |
-| Shelter Admin      | `shelter-admin@example.invalid`      | `Demo-only-Shelter!`     | Shelter registration/organization role testing            |
-| RAVE Vendor        | `rave-vendor@example.invalid`        | `Demo-only-RAVE-Vendor!` | RAVE vendor onboarding/profile/offer testing              |
-| Platform Admin     | `platform-admin@example.invalid`     | `Demo-only-Platform!`    | Local administrative authorization testing only           |
+- **Guardian A** — `guardian-a@example.invalid` / `Demo-only-Guardian-A!` — Guardian marketplace/claim flows; already linked to Demo Pet A.
+- **Guardian B** — `guardian-b@example.invalid` / `Demo-only-Guardian-B!` — Cross-guardian isolation; already linked to Demo Pet B.
+- **Pet Business Admin** — `partner-admin@example.invalid` / `Demo-only-Partner!` — Partner profile, offers, and redemption.
+- **Pet Business B** — `partner-b@example.invalid` / `Demo-only-Partner-B!` — Cross-partner isolation.
+- **Shelter Admin** — `shelter-admin@example.invalid` / `Demo-only-Shelter!` — Shelter registration and organization-role testing.
+- **RAVE Vendor** — `rave-vendor@example.invalid` / `Demo-only-RAVE-Vendor!` — RAVE vendor onboarding, profile, and offer testing.
+- **Platform Admin** — `platform-admin@example.invalid` / `Demo-only-Platform!` — Local administrative authorization testing only.
 
 ## Fresh registration accounts
 
