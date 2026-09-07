@@ -44,6 +44,10 @@ Auditability is required for shelter verification, pet transfers, guardianship c
 
 Partner organization resolution uses an entry-first draft record, an authenticated exact-signal candidate function, distinct access/ownership request records, typed relationship records, and platform-only duplicate review cases. Candidate results contain only public identifying context and explainable match reasons; they never represent proof of control. Corporate parent assignment is limited to a parent the creator already manages. Independent franchises remain separate organizations related through a pending typed relationship, without inheriting membership or private data.
 
+### Phase 2 marketplace transaction boundary
+
+Partner offer commands append immutable numbered terms and expose only the current active version through a public allowlist. Guardian claims lock that version while enforcing inventory and limits. Redemption codes are random bearer capabilities stored only as private digests; Partner-scoped validation and confirmation consume them atomically. Claim, utilization, redemption history, and later verified-savings evidence remain separate concepts.
+
 ## Implementation and validation after approval
 
 Build small vertical changes with relevant tests and builds. Exercise authorization with different roles, organization memberships, guardianship states, and sharing scopes. Validate failure paths for transfers and redemptions, not just successful actions. Review frontend behavior in a browser according to the [design process](BRAND-DESIGN-SYSTEM.md).

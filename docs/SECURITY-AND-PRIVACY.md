@@ -65,3 +65,7 @@ Offer eligibility, adoption confirmation, transfer completion, administrative ch
 Capture attributable, time-stamped audit events for verification, transfers, guardianship changes, provider contributions, redemptions, and administrative actions. Record the relevant target and outcome without unnecessarily duplicating sensitive content. Protect audit history against unauthorized alteration and define retention before release.
 
 Test denial as well as success: cross-organization access, former guardians, expired sharing, revoked memberships, forged claims, repeated redemptions, and unauthorized private-file access should fail appropriately. Confirm intentionally public fields do not expose private data. Applicable checks accompany each feature; this foundation contains no implemented controls to test yet.
+
+### Offer claims and redemption codes
+
+Public offer reads use an explicit current-active field allowlist. Partner writes are server-authorized against active organization membership. Redemption QR/deep-link payloads contain only a high-entropy opaque code; Guardian and pet identifiers are never embedded. Only the digest is stored privately. Validation reveals bounded offer context only to a member of the responsible Partner organization, and confirmation locks and consumes the token to prevent replay.

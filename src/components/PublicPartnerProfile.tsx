@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { supabase as db } from "../lib/supabase";
 import { partnerDayNames } from "../lib/partner-profile";
+import { OfferMarketplace } from "./OfferMarketplace";
 
 type Profile = {
   business_name: string;
@@ -124,6 +125,7 @@ export function PublicPartnerProfile() {
           </p>
         )}
       </div>
+      <OfferMarketplace organizationId={id} />
       <p>
         Participation states describe activity in ShelterPawtners; they do not
         imply licensing, quality approval, or endorsement.

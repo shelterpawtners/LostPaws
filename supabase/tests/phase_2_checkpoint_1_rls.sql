@@ -65,13 +65,11 @@ select is(
   0::bigint,
   'a rejected atomic creation leaves no partial organization'
 );
+update public.organizations set public_name='Takeover attempt'
+where id='20000000-0000-0000-0000-000000000001';
 select is(
-  (with denied as (
-    update public.organizations set public_name='Takeover attempt'
-    where id='20000000-0000-0000-0000-000000000001'
-    returning id
-  ) select count(*)::bigint from denied),
-  0::bigint,
+  (select public_name from public.organizations where id='20000000-0000-0000-0000-000000000001'),
+  'Demo PetBiz A',
   'Partner B cannot edit Partner A organization'
 );
 select is(
@@ -140,15 +138,16 @@ where organization_id='20000000-0000-0000-0000-000000000003'
   and user_id='10000000-0000-0000-0000-000000000006';
 set local role authenticated;
 select set_config('request.jwt.claim.sub','10000000-0000-0000-0000-000000000006',true);
+update public.organizations set public_name='Revoked creator takeover'
+where id='20000000-0000-0000-0000-000000000003';
+reset role;
 select is(
-  (with denied as (
-    update public.organizations set public_name='Revoked creator takeover'
-    where id='20000000-0000-0000-0000-000000000003'
-    returning id
-  ) select count(*)::bigint from denied),
-  0::bigint,
+  (select public_name from public.organizations where id='20000000-0000-0000-0000-000000000003'),
+  'Demo PetBiz B',
   'a revoked creator cannot retain organization edit authority'
 );
+set local role authenticated;
+select set_config('request.jwt.claim.sub','10000000-0000-0000-0000-000000000006',true);
 select throws_ok(
   $$insert into public.organization_memberships(organization_id,user_id,role)
     values('20000000-0000-0000-0000-000000000003','10000000-0000-0000-0000-000000000006','owner')$$,

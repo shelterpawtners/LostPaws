@@ -26,6 +26,7 @@ import {
   Search,
   ShieldCheck,
   Store,
+  Tag,
   UserRound,
   X,
 } from "lucide-react";
@@ -44,6 +45,9 @@ import "./styles.css";
 import { PartnerDirectory } from "./components/PartnerDirectory";
 import { PartnerProfileEditor } from "./components/PartnerProfileEditor";
 import { PublicPartnerProfile } from "./components/PublicPartnerProfile";
+import { OfferManager } from "./components/OfferManager";
+import { OfferMarketplace } from "./components/OfferMarketplace";
+import { RedemptionFlow } from "./components/RedemptionFlow";
 type Kind = "guardian" | "shelter" | "petbiz" | "rave_vendor";
 const choices: { kind: Kind; title: string; copy: string }[] = [
   {
@@ -1253,7 +1257,7 @@ function Marketplace() {
           <button>Pet savings</button>
           <button className={rave ? "active" : ""}>RAVE Shelter</button>
         </div>
-        <Offers />
+        <OfferMarketplace />
         <div className="notice">
           <ShieldCheck />
           <p>
@@ -1653,6 +1657,16 @@ function Dashboard() {
               </div>
               <ArrowRight />
             </Link>
+            {kind === "petbiz" && (
+              <Link className="next" to="/partner/offers">
+                <Tag />
+                <div>
+                  <b>Manage offers</b>
+                  <p>Create, preview, publish, pause, and version offers.</p>
+                </div>
+                <ArrowRight />
+              </Link>
+            )}
           </div>
           <p role="status" aria-live="polite" aria-atomic="true">
             {status}
@@ -1667,6 +1681,14 @@ function PartnerProfileRoute() {
   return (
     <Page>
       <PartnerProfileEditor session={session} />
+    </Page>
+  );
+}
+function PartnerOffersRoute() {
+  const { session } = useAuth();
+  return (
+    <Page>
+      <OfferManager session={session} />
     </Page>
   );
 }
@@ -1724,6 +1746,42 @@ function App() {
         }
       />
       <Route path="/marketplace" element={<Marketplace />} />
+      <Route
+        path="/offers/:offerId"
+        element={
+          <Page>
+            <OfferMarketplace />
+          </Page>
+        }
+      />
+      <Route
+        path="/partner/offers"
+        element={
+          <Protected>
+            <PartnerOffersRoute />
+          </Protected>
+        }
+      />
+      <Route
+        path="/redeem"
+        element={
+          <Protected>
+            <Page>
+              <RedemptionFlow />
+            </Page>
+          </Protected>
+        }
+      />
+      <Route
+        path="/redeem/:code"
+        element={
+          <Protected>
+            <Page>
+              <RedemptionFlow />
+            </Page>
+          </Protected>
+        }
+      />
       <Route
         path="/business"
         element={

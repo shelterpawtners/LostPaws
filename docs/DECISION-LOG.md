@@ -207,3 +207,17 @@ This is the canonical review list for implementation choices and explicit user-a
 - **Decision:** The Partner editor manages approved public profile data and separate primary/operational contacts in one authenticated workflow. Private contacts never appear in public profile RPCs or public UI. Save preserves an already-published state; only Publish and Unpublish change listing visibility.
 - **Reason:** Partners need a practical single place to maintain their listing, while the public directory must remain an intentionally narrow data surface.
 - **Consequence:** Invalid social URLs are rejected before browser writes, and the server remains the final enforcement point for publication, membership, state, and public visibility.
+
+## D-031 — Transactional immutable offer commands
+
+- **Status:** Active; autonomous Checkpoint 3 implementation decision
+- **Decision:** Partner offer creation, revision, lifecycle changes, and duplication use organization-authorized database commands. Material saves append a numbered version, and ordinary browsers cannot directly mutate offer/version records.
+- **Reason:** Exact historical terms and cross-organization authorization must survive UI defects and concurrent actions.
+- **Consequence:** Public consumers use an allowlisted current-active RPC; scheduled, paused, expired, archived, and historical versions do not appear in ordinary marketplace results.
+
+## D-032 — Opaque single-use redemption capability
+
+- **Status:** Active; autonomous Checkpoint 4 implementation decision
+- **Decision:** Guardian claims return a 64-character opaque code while only its SHA-256 digest is retained privately. Partner validation and confirmation are atomic organization-scoped commands, with manual entry always available beside camera capability detection.
+- **Reason:** Scan/open/confirm should carry context without exposing PII, permitting replay, or requiring dedicated hardware.
+- **Consequence:** Claims remain distinct from utilization; confirmation consumes the token once, creates an exact-version redemption and audit events, and corrections append history rather than deleting the original.
