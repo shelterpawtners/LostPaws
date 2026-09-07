@@ -21,7 +21,7 @@ async function register(
   return email;
 }
 
-test.describe.serial("Persona registration and onboarding", () => {
+test.describe("Persona registration and onboarding", () => {
   test("fresh Guardian registration saves pet and advances", async ({ page }) => {
     await register(page, "guardian");
 
@@ -42,9 +42,7 @@ test.describe.serial("Persona registration and onboarding", () => {
       page,
     }) => {
       await register(page, persona);
-      await expect(
-        page.getByText(/setup/i).first(),
-      ).toBeVisible();
+      await expect(page.getByText(/setup/i).first()).toBeVisible();
     });
   }
 
