@@ -179,3 +179,10 @@ This is the canonical review list for implementation choices and explicit user-a
 - **Decision:** A corporate child can name a parent only when the creator already manages that parent. An independently owned franchise instead creates a separate organization and a pending typed relationship to a surfaced brand candidate.
 - **Reason:** Parent/child hierarchy is a control-bearing structure, while franchise/brand association is not proof of shared ownership.
 - **Consequence:** Neither siblings nor franchises inherit memberships, private contacts, redemption data, finances, or administration. Disputed control remains a review workflow.
+
+## D-027 — Atomic organization creation and revocable control
+
+- **Status:** Active; autonomous Checkpoint 1 QA remediation
+- **Decision:** Partner organization creation commits the organization, first owner membership, locations, permitted pending franchise relationship, and draft resolution through one authenticated database operation. `created_by` is provenance and can bootstrap only the first owner; ongoing edit authority requires active owner or administrator membership. Revocation retains a `revoked` membership record.
+- **Reason:** Separate browser writes could leave incomplete organizations after partial failure, while permanent creator authority could survive a legitimate control change.
+- **Consequence:** A retry cannot create a partially initialized organization through the supported UI, and revoking a membership removes edit authority without deleting the historical membership state. A future staff-management experience must use membership status transitions rather than deleting revocation evidence.

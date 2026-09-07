@@ -498,6 +498,7 @@ function PartnerOrganizationOnboarding({ kind }: { kind: PartnerKind }) {
   const [draftId, setDraftId] = useState("");
   const [status, setStatus] = useState("");
   const [reviewedMatches, setReviewedMatches] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   const choice = choices.find((item) => item.kind === kind)!;
   const update = (key: keyof PartnerForm, value: string) => {
     setForm((current) => ({ ...current, [key]: value }));
@@ -630,7 +631,7 @@ function PartnerOrganizationOnboarding({ kind }: { kind: PartnerKind }) {
     setStatus("Marked as not my business. Your entry remains saved privately.");
   }
   async function createOrganization() {
-    if (!db || !session) return;
+    if (!db || !session || submitting) return;
     if (!form.name.trim())
       return setStatus("Enter the public business name first.");
     const visibleMatches = matches.filter(
@@ -642,91 +643,19 @@ function PartnerOrganizationOnboarding({ kind }: { kind: PartnerKind }) {
         "Review the possible matches first. If this is genuinely separate, choose Create a separate business again.",
       );
     }
-    setStatus("Creating your organization…");
-    const { data: organization, error } = await db
-      .from("organizations")
-      .insert({
-        created_by: session.user.id,
-        organization_type:
-          kind === "rave_vendor" ? "rave_vendor" : "pet_business",
-        organization_type_code:
-          kind === "rave_vendor" ? "community_partner" : "pet_business",
-        public_name: form.name.trim(),
-        legal_name: form.legalName || null,
-        website_url: form.website || null,
-        public_phone: form.phone || null,
-        public_email: form.email || null,
-        instagram_handle: form.instagram || null,
-        parent_organization_id:
-          form.relationship === "corporate_child" && form.parentId
-            ? form.parentId
-            : null,
-        status: "active",
-      })
-      .select("id")
-      .single();
-    if (error || !organization)
-      return setStatus(error?.message || "Unable to create the organization.");
-    const { error: membershipError } = await db
-      .from("organization_memberships")
-      .insert({
-        organization_id: organization.id,
-        user_id: session.user.id,
-        role: "owner",
-      });
-    if (membershipError) return setStatus(membershipError.message);
-    const locations = [
-      {
-        street: form.street,
-        city: form.city,
-        state: form.state,
-        postal: form.postal,
-      },
-      ...form.additionalLocations,
-    ].filter(
-      (location) =>
-        location.street || location.city || location.state || location.postal,
-    );
-    if (locations.length) {
-      const { error: locationError } = await db
-        .from("organization_locations")
-        .insert(
-          locations.map((location, index) => ({
-            organization_id: organization.id,
-            location_type: "physical",
-            is_primary: index === 0,
-            street_address_1: location.street || null,
-            city: location.city || null,
-            state_province: location.state || null,
-            postal_code: location.postal || null,
-            created_by: session.user.id,
-          })),
-        );
-      if (locationError) return setStatus(locationError.message);
-    }
-    if (form.relationship === "franchise" && form.parentId) {
-      const { error: relationshipError } = await db
-        .from("organization_relationships")
-        .insert({
-          source_organization_id: organization.id,
-          target_organization_id: form.parentId,
-          relationship_type_code: "franchise_of",
-          status: "pending",
-          created_by: session.user.id,
-        });
-      if (relationshipError) return setStatus(relationshipError.message);
-    }
     const id = draftId || (await saveDraft());
-    if (id)
-      await db
-        .from("organization_onboarding_drafts")
-        .update({
-          status: "resolved_new",
-          resolved_organization_id: organization.id,
-          resolution_note:
-            "Created as a separate organization after matching review.",
-        })
-        .eq("id", id);
+    if (!id) return;
+    setSubmitting(true);
+    setStatus("Creating your organization…");
+    const { error } = await db.rpc("create_partner_organization", {
+      p_partner_kind: kind,
+      p_form: form,
+      p_draft_id: id,
+    });
+    if (error) {
+      setSubmitting(false);
+      return setStatus(error.message);
+    }
     setStatus(
       "Organization created. You can request related access separately when needed.",
     );
@@ -996,7 +925,11 @@ function PartnerOrganizationOnboarding({ kind }: { kind: PartnerKind }) {
                 </label>
               )}
             </div>
-            <button className="btn">Create a separate business</button>
+            <button className="btn" disabled={submitting}>
+              {submitting
+                ? "Creating your business…"
+                : "Create a separate business"}
+            </button>
             <p role="status" aria-live="polite" aria-atomic="true">
               {status}
             </p>

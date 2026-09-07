@@ -1,6 +1,13 @@
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(17);
+select plan(26);
+
+set local role anon;
+select throws_ok(
+  $$select * from public.partner_organization_candidates('Demo PetBiz A',null,null,null,null,null,null)$$,
+  '42501', null,
+  'anonymous callers cannot execute candidate matching'
+);
 
 -- Partner A owns Demo PetBiz A. Partner B is a separate Partner organization.
 set local role authenticated;
@@ -20,6 +27,43 @@ select is(
   (select count(*)::bigint from public.organization_onboarding_drafts where created_by='10000000-0000-0000-0000-000000000003'),
   0::bigint,
   'the requester cannot read another user draft'
+);
+select lives_ok(
+  $$select public.create_partner_organization(
+    'petbiz',
+    '{"name":"Atomic Demo Partner","street":"1 Main Street","city":"Detroit","state":"MI","additionalLocations":[{"street":"2 Main Street","city":"Ann Arbor","state":"MI"}]}'::jsonb,
+    (select id from public.organization_onboarding_drafts where created_by='10000000-0000-0000-0000-000000000006')
+  )$$,
+  'atomic partner creation succeeds with membership and multiple locations'
+);
+select is(
+  (select count(*)::bigint from public.organizations where public_name='Atomic Demo Partner'),
+  1::bigint,
+  'atomic creation creates exactly one organization'
+);
+select is(
+  (select count(*)::bigint from public.organization_memberships m join public.organizations o on o.id=m.organization_id where o.public_name='Atomic Demo Partner' and m.user_id='10000000-0000-0000-0000-000000000006' and m.role='owner'),
+  1::bigint,
+  'atomic creation creates the explicit owner membership'
+);
+select is(
+  (select count(*)::bigint from public.organization_locations l join public.organizations o on o.id=l.organization_id where o.public_name='Atomic Demo Partner'),
+  2::bigint,
+  'atomic creation saves all entered locations'
+);
+select throws_ok(
+  $$select public.create_partner_organization(
+    'petbiz',
+    '{"name":"Atomic denied child","relationship":"corporate_child","parentId":"20000000-0000-0000-0000-000000000001"}'::jsonb,
+    (select id from public.organization_onboarding_drafts where created_by='10000000-0000-0000-0000-000000000006')
+  )$$,
+  '42501', null,
+  'atomic creation rejects a parent the user does not manage'
+);
+select is(
+  (select count(*)::bigint from public.organizations where public_name='Atomic denied child'),
+  0::bigint,
+  'a rejected atomic creation leaves no partial organization'
 );
 select is(
   (with denied as (
@@ -87,6 +131,29 @@ select is(
   (select count(*)::bigint from public.organization_memberships where organization_id='20000000-0000-0000-0000-000000000001' and user_id='10000000-0000-0000-0000-000000000006'),
   0::bigint,
   'a franchise relationship never inherits brand control'
+);
+
+reset role;
+update public.organization_memberships
+set status='revoked'
+where organization_id='20000000-0000-0000-0000-000000000003'
+  and user_id='10000000-0000-0000-0000-000000000006';
+set local role authenticated;
+select set_config('request.jwt.claim.sub','10000000-0000-0000-0000-000000000006',true);
+select is(
+  (with denied as (
+    update public.organizations set public_name='Revoked creator takeover'
+    where id='20000000-0000-0000-0000-000000000003'
+    returning id
+  ) select count(*)::bigint from denied),
+  0::bigint,
+  'a revoked creator cannot retain organization edit authority'
+);
+select throws_ok(
+  $$insert into public.organization_memberships(organization_id,user_id,role)
+    values('20000000-0000-0000-0000-000000000003','10000000-0000-0000-0000-000000000006','owner')$$,
+  '42501', null,
+  'a revoked creator cannot reactivate their owner membership'
 );
 
 select set_config('request.jwt.claim.sub','10000000-0000-0000-0000-000000000005',true);

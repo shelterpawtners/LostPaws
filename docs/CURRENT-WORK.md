@@ -44,7 +44,7 @@ A cloud/sandbox environment being unable to run Docker, `supabase db reset`, or 
 
 ## Current objective
 
-Phase 2 Checkpoint 1 — Partner Organization Foundation is implemented and awaiting the required product/Copilot QA review. Its evidence ledger is `docs/PHASE-2-CHECKPOINT-1-PROGRESS.md`.
+Phase 2 Checkpoint 1 — Partner Organization Foundation has completed its required QA review and is awaiting product acceptance. Its evidence ledgers are `docs/PHASE-2-CHECKPOINT-1-PROGRESS.md` and `docs/PHASE-2-CHECKPOINT-1-QA.md`.
 
 Do not activate or implement Checkpoint 2 until Checkpoint 1 is reviewed and accepted. Checkpoint 1 covers Partner onboarding entry, entry-first organization discovery, secure membership/claim requests, organization creation, multi-location businesses, corporate parent/child structures, independent franchises/brand relationships, duplicate handling foundations, RLS, and auditability.
 

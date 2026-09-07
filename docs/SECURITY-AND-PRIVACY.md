@@ -30,6 +30,8 @@ Partner onboarding may preserve private draft business details and return possib
 
 Parent/child and franchise relationships are not authorization grants. An independently owned franchise, sibling, or branded business must not receive the parent or brand's contacts, memberships, private records, redemption information, financial data, or administrative capabilities. Duplicate review must preserve historical references and create private audit evidence; automated merges or destructive deletion are out of scope until separately approved.
 
+When an organization is created, the organization, first owner membership, locations, relationship record, and onboarding resolution must commit atomically. `created_by` records provenance and may bootstrap that first owner, but ongoing authority must depend on active membership; a revoked membership remains retained as a revoked record rather than being deleted.
+
 ## Transfer safeguards
 
 A transfer must use secure, hard-to-guess claim material with expiration and replay prevention. Bind the claim to the intended pet and an authorized workflow. Validate issuer authority and recipient identity before completion. Do not log usable transfer secrets or expose them to unrelated users.
