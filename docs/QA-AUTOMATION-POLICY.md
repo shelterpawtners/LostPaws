@@ -55,6 +55,9 @@ Never end a work cycle in an ambiguous state. At every checkpoint, failure repor
 5. When Jim's action becomes necessary, provide the exact command, click path, or prompt needed to proceed.
 6. Prefer presenting 1-3 concrete proceed options when there is more than one valid path, with a recommended default.
 7. Do not leave the project waiting merely because an automated step or agent handoff has not yet been initiated; create the handoff artifact or give Jim the exact launch action before ending the cycle.
+8. If the next step is something ChatGPT can perform with available tools, perform it before replying instead of merely announcing that it should happen.
+9. Do not end on `I will check`, `I will review`, `I will verify`, or equivalent when that check/review/verification can be completed in the current turn.
+10. If an external automation is expected to run, verify its actual state. If it is blocked by workflow state (for example, a draft PR preventing review), fix that state when authorized instead of waiting passively.
 
 ## Prerequisite-first action ordering
 
