@@ -44,6 +44,18 @@ The default loop is:
 
 No human approval is required for routine code/test fixes inside already-approved product behavior.
 
+## Continuous next-action handoff
+
+Never end a work cycle in an ambiguous state. At every checkpoint, failure report, PR review, or chat handoff:
+
+1. State what ChatGPT is doing next.
+2. State what Codex and/or GitHub Copilot should do next, if anything.
+3. State exactly what Jim should do next, if anything.
+4. If Jim has no action, say `No action needed from Jim right now.` explicitly.
+5. When Jim's action becomes necessary, provide the exact command, click path, or prompt needed to proceed.
+6. Prefer presenting 1-3 concrete proceed options when there is more than one valid path, with a recommended default.
+7. Do not leave the project waiting merely because an automated step or agent handoff has not yet been initiated; create the handoff artifact or give Jim the exact launch action before ending the cycle.
+
 ## Reporting
 
 At checkpoint or PR review, provide Jim a concise summary of:
@@ -53,5 +65,6 @@ At checkpoint or PR review, provide Jim a concise summary of:
 - regression tests added
 - remaining decision-required items
 - final CI/Playwright/pgTAP/build status
+- explicit next action for ChatGPT, Codex/Copilot, and Jim
 
 Do not stop progress merely because bugs were found; use the test system to drive the next corrective step.
