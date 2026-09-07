@@ -32,3 +32,15 @@ Implementation complete and ready for the required redemption UX review. Checkpo
 5. Review the validation card and `Confirm utilization` action.
 
 These are reserved `example.invalid` demo identities; no production credentials are used.
+
+## Guardian registration blocker QA
+
+The PR #2 follow-up found and fixed one blocking defect: Guardian onboarding accessed the React submit event after awaiting authentication, so the form target was no longer safe to read and the screen remained on `Saving…`. The corrected handler captures values synchronously, disables repeat submission while saving, reports recoverable errors, and uses an authenticated atomic/idempotent database function for the distinct pet and guardianship writes.
+
+Regression evidence on a clean local migration replay:
+
+- all 19 version-controlled migrations and `supabase/seed.sql` applied successfully;
+- all 5 pgTAP files / 80 assertions passed, including retry idempotency and cross-Guardian read denial;
+- Guardian registration, two-click submission, exactly-one pet/guardianship verification, failure recovery, all other registration personas, all seeded persona sign-ins, Guardian isolation, cross-Partner authorization, and offer/claim/redemption passed in focused Chromium runs;
+- the initial eight-worker browser batch logged a non-product local runner limitation: 6 navigation timeouts while 10 tests passed. Deterministic one-worker reruns passed and are the acceptance evidence;
+- no remote Supabase database was changed, Checkpoint 5 was not started, and no decision-required defect remains.

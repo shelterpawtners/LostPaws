@@ -3,6 +3,7 @@ import {
   createContext,
   useContext,
   useEffect,
+  useRef,
   useState,
 } from "react";
 import { createRoot } from "react-dom/client";
@@ -1004,57 +1005,58 @@ function Onboard() {
 }
 function StandardOnboard({ kind: k }: { kind: "guardian" | "shelter" }) {
   const c = choices.find((x) => x.kind === k) || choices[0];
+  const navigate = useNavigate();
   const [adopted, setAdopted] = useState(false),
-    [status, setStatus] = useState("");
+    [status, setStatus] = useState(""),
+    [saving, setSaving] = useState(false);
+  const guardianSubmissionId = useRef(crypto.randomUUID());
   async function save(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (!db) return setStatus("Development connection is unavailable.");
+    const f = new FormData(e.currentTarget);
+    if (saving) return;
+    setSaving(true);
     setStatus("Saving…");
     const {
       data: { user },
     } = await db.auth.getUser();
-    if (!user) return setStatus("Please sign in before saving.");
-    const f = new FormData(e.currentTarget);
+    if (!user) {
+      setSaving(false);
+      return setStatus("Please sign in before saving.");
+    }
     if (k === "guardian") {
-      const { data: pet, error } = await db
-        .from("pets")
-        .insert({
-          created_by: user.id,
-          name: f.get("name"),
-          species: f.get("species"),
-          adopted_self_reported: adopted,
-        })
-        .select("id")
-        .single();
-      if (error || !pet)
-        return setStatus(error?.message || "Unable to save pet.");
-      const { error: gError } = await db
-        .from("guardianships")
-        .insert({ pet_id: pet.id, guardian_id: user.id });
-      if (gError) return setStatus(gError.message);
-      if (adopted) {
-        const { error: vError } = await db
-          .from("adoption_verification_requests")
-          .insert({
-            pet_id: pet.id,
-            requested_by: user.id,
-            shelter_name: f.get("shelter_name"),
-            shelter_email: f.get("shelter_email") || null,
-            shelter_phone: f.get("shelter_phone") || null,
-            shelter_website_or_social: f.get("shelter_social") || null,
-            approximate_adoption_date: f.get("adoption_date") || null,
-            pet_name_at_adoption: f.get("adoption_name") || null,
-            contact_consent_at: new Date().toISOString(),
-            status: "submitted",
-          });
-        if (vError) return setStatus(vError.message);
+      const { error } = await db.rpc("save_guardian_onboarding_pet", {
+        p_submission_id: guardianSubmissionId.current,
+        p_name: String(f.get("name") || ""),
+        p_species: String(f.get("species") || ""),
+        p_adopted: adopted,
+        p_shelter_name: adopted ? String(f.get("shelter_name") || "") : null,
+        p_shelter_email: adopted
+          ? String(f.get("shelter_email") || "") || null
+          : null,
+        p_shelter_phone: adopted
+          ? String(f.get("shelter_phone") || "") || null
+          : null,
+        p_shelter_social: adopted
+          ? String(f.get("shelter_social") || "") || null
+          : null,
+        p_adoption_date: adopted
+          ? String(f.get("adoption_date") || "") || null
+          : null,
+        p_adoption_name: adopted
+          ? String(f.get("adoption_name") || "") || null
+          : null,
+      });
+      if (error) {
+        setSaving(false);
+        return setStatus(`Unable to save your pet. ${error.message}`);
       }
       setStatus(
         adopted
           ? "Pet saved. Adoption confirmation is submitted."
           : "Pet Passport started.",
       );
-      window.setTimeout(() => (location.href = "/dashboard"), 700);
+      window.setTimeout(() => navigate("/dashboard"), 700);
       return;
     }
     const orgType =
@@ -1082,20 +1084,25 @@ function StandardOnboard({ kind: k }: { kind: "guardian" | "shelter" }) {
       })
       .select("id")
       .single();
-    if (error || !org)
+    if (error || !org) {
+      setSaving(false);
       return setStatus(error?.message || "Unable to save organization.");
+    }
     const { error: mError } = await db.from("organization_memberships").insert({
       organization_id: org.id,
       user_id: user.id,
       role: "owner",
     });
-    if (mError) return setStatus(mError.message);
+    if (mError) {
+      setSaving(false);
+      return setStatus(mError.message);
+    }
     setStatus(
       k === "shelter"
         ? "Shelter registration submitted."
         : "Organization and listing saved.",
     );
-    window.setTimeout(() => (location.href = "/dashboard"), 700);
+    window.setTimeout(() => navigate("/dashboard"), 700);
   }
   return (
     <Page>
@@ -1224,7 +1231,9 @@ function StandardOnboard({ kind: k }: { kind: "guardian" | "shelter" }) {
               </div>
             </div>
           )}
-          <button className="btn">Save and continue</button>
+          <button className="btn" disabled={saving}>
+            {saving ? "Saving…" : "Save and continue"}
+          </button>
           <p role="status" aria-live="polite" aria-atomic="true">
             {status}
           </p>

@@ -221,3 +221,10 @@ This is the canonical review list for implementation choices and explicit user-a
 - **Decision:** Guardian claims return a 64-character opaque code while only its SHA-256 digest is retained privately. Partner validation and confirmation are atomic organization-scoped commands, with manual entry always available beside camera capability detection.
 - **Reason:** Scan/open/confirm should carry context without exposing PII, permitting replay, or requiring dedicated hardware.
 - **Consequence:** Claims remain distinct from utilization; confirmation consumes the token once, creates an exact-version redemption and audit events, and corrections append history rather than deleting the original.
+
+## D-033 — Atomic idempotent Guardian onboarding save
+
+- **Status:** Active; autonomous blocker remediation under the QA automation policy
+- **Decision:** Guardian pet onboarding captures form data before authentication work and saves the pet plus its active primary guardianship through one authenticated database function keyed by a per-form submission UUID. The database enforces one pet per user/submission and one active instance of the same guardian-pet relationship.
+- **Reason:** The former browser-only sequence could lose the React form target after an asynchronous call, leave partial data if the second write failed, and create duplicate records on retry.
+- **Consequence:** A supported retry returns the same pet, pet identity remains separate from the human profile, RLS remains authoritative for reads, and the UI advances only after the atomic operation succeeds. This does not add Phase 3 Passport features or settle future co-guardian/transfer policy.
