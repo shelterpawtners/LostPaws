@@ -46,7 +46,7 @@ The remaining clean-local pgTAP and authenticated Playwright reruns are validati
 
 ### Checkpoint 2 — Partner Profile + Public Directory
 
-**Status: ACTIVE.**
+**Status: complete pending product/QA review.**
 
 Current objective:
 

@@ -186,3 +186,10 @@ This is the canonical review list for implementation choices and explicit user-a
 - **Decision:** Partner organization creation commits the organization, first owner membership, locations, permitted pending franchise relationship, and draft resolution through one authenticated database operation. `created_by` is provenance and can bootstrap only the first owner; ongoing edit authority requires active owner or administrator membership. Revocation retains a `revoked` membership record.
 - **Reason:** Separate browser writes could leave incomplete organizations after partial failure, while permanent creator authority could survive a legitimate control change.
 - **Consequence:** A retry cannot create a partially initialized organization through the supported UI, and revoking a membership removes edit authority without deleting the historical membership state. A future staff-management experience must use membership status transitions rather than deleting revocation evidence.
+
+## D-028 — Partner profile publication boundary
+
+- **Status:** Active; autonomous Checkpoint 2 implementation decision
+- **Decision:** A Partner profile is independently publishable only after server-side validation of a public description, public contact path, and either location context or an online/service model. Private operational contacts are stored separately and never returned by public profile RPCs.
+- **Reason:** This permits low-friction Basic Partner publication without confusing incomplete registrations for trustworthy public listings.
+- **Consequence:** Profiles remain subject to suspension/removal and publication is not a verification or endorsement claim.

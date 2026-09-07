@@ -41,6 +41,9 @@ import {
   type UserRole,
 } from "./types/personas";
 import "./styles.css";
+import { PartnerDirectory } from "./components/PartnerDirectory";
+import { PartnerProfileEditor } from "./components/PartnerProfileEditor";
+import { PublicPartnerProfile } from "./components/PublicPartnerProfile";
 type Kind = "guardian" | "shelter" | "petbiz" | "rave_vendor";
 const choices: { kind: Kind; title: string; copy: string }[] = [
   {
@@ -1659,6 +1662,14 @@ function Dashboard() {
     </Page>
   );
 }
+function PartnerProfileRoute() {
+  const { session } = useAuth();
+  return (
+    <Page>
+      <PartnerProfileEditor session={session} />
+    </Page>
+  );
+}
 function App() {
   return (
     <Routes>
@@ -1667,6 +1678,14 @@ function App() {
       <Route path="/rave-shelter" element={<Rave />} />
       <Route path="/passport" element={<FoundationPage name="passport" />} />
       <Route path="/partners" element={<FoundationPage name="partners" />} />
+      <Route
+        path="/partners/:id"
+        element={
+          <Page>
+            <PublicPartnerProfile />
+          </Page>
+        }
+      />
       <Route path="/shelters" element={<FoundationPage name="shelters" />} />
       <Route path="/lostpaws" element={<FoundationPage name="lostpaws" />} />
       <Route path="/about" element={<FoundationPage name="about" />} />
@@ -1705,6 +1724,22 @@ function App() {
         }
       />
       <Route path="/marketplace" element={<Marketplace />} />
+      <Route
+        path="/business"
+        element={
+          <Protected>
+            <PartnerProfileRoute />
+          </Protected>
+        }
+      />
+      <Route
+        path="/directory"
+        element={
+          <Page>
+            <PartnerDirectory />
+          </Page>
+        }
+      />
       {[
         [
           "/my-pets",

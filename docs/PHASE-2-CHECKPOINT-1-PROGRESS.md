@@ -15,20 +15,20 @@ Acceptance basis:
 - Work development transaction confirmed atomic creation of organization, first owner membership, and multiple locations;
 - product review confirmed the approved entry-first assisted-matching UX and organization-control rules are implemented.
 
-| Requirement | Status | Evidence |
-| --- | --- | --- |
-| Entry-first Partner onboarding | Complete | `PartnerOrganizationOnboarding` in `src/main.tsx`; PetBiz and RAVE Shelter Vendor paths use the protected Partner flow. |
-| Private, resumable submitted details | Complete | `organization_onboarding_drafts`, own-row RLS, and resolved outcome fields. |
-| Conservative candidate matching | Complete | `partner_organization_candidates` is authenticated-only, scores explainable exact signals, and returns matching reasons without granting control. |
-| Match actions do not grant control | Complete | `organization_access_requests` stores membership/ownership-review requests separately from memberships. |
-| False-positive dismissal | Complete | User-specific candidate dismissals retain entered draft details. |
-| New independent organization | Complete | `public.create_partner_organization` atomically creates organization, owner membership, locations, optional pending franchise relation, and draft resolution. |
-| Multi-location support | Complete | Primary and additional locations remain organization-scoped. |
-| Corporate and franchise structures | Complete | Managed-parent requirement for corporate child; pending typed relationship for independent franchise; no inherited control. |
-| Claim/duplicate review and audit foundation | Complete | Pending request/review records, platform-only duplicate cases, and private audit trail. |
+| Requirement                                 | Status           | Evidence                                                                                                                                                                                            |
+| ------------------------------------------- | ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Entry-first Partner onboarding              | Complete         | `PartnerOrganizationOnboarding` in `src/main.tsx`; PetBiz and RAVE Shelter Vendor paths use the protected Partner flow.                                                                             |
+| Private, resumable submitted details        | Complete         | `organization_onboarding_drafts`, own-row RLS, and resolved outcome fields.                                                                                                                         |
+| Conservative candidate matching             | Complete         | `partner_organization_candidates` is authenticated-only, scores explainable exact signals, and returns matching reasons without granting control.                                                   |
+| Match actions do not grant control          | Complete         | `organization_access_requests` stores membership/ownership-review requests separately from memberships.                                                                                             |
+| False-positive dismissal                    | Complete         | User-specific candidate dismissals retain entered draft details.                                                                                                                                    |
+| New independent organization                | Complete         | `public.create_partner_organization` atomically creates organization, owner membership, locations, optional pending franchise relation, and draft resolution.                                       |
+| Multi-location support                      | Complete         | Primary and additional locations remain organization-scoped.                                                                                                                                        |
+| Corporate and franchise structures          | Complete         | Managed-parent requirement for corporate child; pending typed relationship for independent franchise; no inherited control.                                                                         |
+| Claim/duplicate review and audit foundation | Complete         | Pending request/review records, platform-only duplicate cases, and private audit trail.                                                                                                             |
 | Browser/mobile/accessibility implementation | Complete in code | Responsive layout, semantic labels, keyboard-operable actions, live status, and repeat-submit prevention were reviewed; dedicated authenticated Playwright execution remains environment-dependent. |
-| Unit/build validation | Complete | `npm run check` and `npm run build` passed during QA. |
-| Database/RLS validation | Accepted | Development transaction tests plus direct connected-Supabase permission/policy inspection and rolled-back revocation validation passed. |
+| Unit/build validation                       | Complete         | `npm run check` and `npm run build` passed during QA.                                                                                                                                               |
+| Database/RLS validation                     | Accepted         | Development transaction tests plus direct connected-Supabase permission/policy inspection and rolled-back revocation validation passed.                                                             |
 
 ## Accepted implementation decisions
 
