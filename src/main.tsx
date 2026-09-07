@@ -33,6 +33,10 @@ import type { Session } from "@supabase/supabase-js";
 import { accountRegistrationPath, legacyRegistrationTarget } from "./domain";
 import { googleAuthEnabled, supabase as db } from "./lib/supabase";
 import {
+  hasOrganizationMatchSignal,
+  organizationMatchSummary,
+} from "./lib/organization-matching";
+import {
   roleLabels as phaseOneRoleLabels,
   type UserRole,
 } from "./types/personas";
@@ -438,9 +442,628 @@ function Signup({ c }: { c: (typeof choices)[number] }) {
     </div>
   );
 }
+type PartnerKind = "petbiz" | "rave_vendor";
+type PartnerForm = {
+  name: string;
+  legalName: string;
+  website: string;
+  phone: string;
+  email: string;
+  instagram: string;
+  relationship: "independent" | "corporate_child" | "franchise";
+  parentId: string;
+  street: string;
+  city: string;
+  state: string;
+  postal: string;
+  additionalLocations: {
+    street: string;
+    city: string;
+    state: string;
+    postal: string;
+  }[];
+};
+type OrganizationCandidate = {
+  organization_id: string;
+  public_name: string;
+  city: string | null;
+  state_province: string | null;
+  match_score: number;
+  match_reasons: string[];
+};
+const emptyPartnerForm: PartnerForm = {
+  name: "",
+  legalName: "",
+  website: "",
+  phone: "",
+  email: "",
+  instagram: "",
+  relationship: "independent",
+  parentId: "",
+  street: "",
+  city: "",
+  state: "",
+  postal: "",
+  additionalLocations: [],
+};
+function PartnerOrganizationOnboarding({ kind }: { kind: PartnerKind }) {
+  const { session } = useAuth();
+  const navigate = useNavigate();
+  const [form, setForm] = useState<PartnerForm>(emptyPartnerForm);
+  const [matches, setMatches] = useState<OrganizationCandidate[]>([]);
+  const [dismissed, setDismissed] = useState<string[]>([]);
+  const [parents, setParents] = useState<{ id: string; public_name: string }[]>(
+    [],
+  );
+  const [draftId, setDraftId] = useState("");
+  const [status, setStatus] = useState("");
+  const [reviewedMatches, setReviewedMatches] = useState(false);
+  const choice = choices.find((item) => item.kind === kind)!;
+  const update = (key: keyof PartnerForm, value: string) => {
+    setForm((current) => ({ ...current, [key]: value }));
+    setReviewedMatches(false);
+  };
+  async function saveDraft() {
+    if (!db || !session) return "";
+    const { data, error } = await db
+      .from("organization_onboarding_drafts")
+      .upsert(
+        {
+          created_by: session.user.id,
+          partner_kind: kind,
+          form_data: form,
+        },
+        { onConflict: "created_by" },
+      )
+      .select("id")
+      .single();
+    if (error || !data) {
+      setStatus(error?.message || "Unable to save this private draft.");
+      return "";
+    }
+    setDraftId(data.id);
+    return data.id;
+  }
+  useEffect(() => {
+    if (!db || !session) return;
+    db.from("organizations")
+      .select("id, public_name")
+      .eq("created_by", session.user.id)
+      .order("public_name")
+      .then(({ data }) => setParents(data || []));
+    db.from("organization_onboarding_drafts")
+      .select("id, form_data")
+      .eq("created_by", session.user.id)
+      .maybeSingle()
+      .then(async ({ data }) => {
+        if (!data) return;
+        setDraftId(data.id);
+        if (data.form_data && Object.keys(data.form_data).length)
+          setForm((current) => ({
+            ...current,
+            ...(data.form_data as PartnerForm),
+          }));
+        const { data: priorDismissals } = await db!
+          .from("organization_candidate_dismissals")
+          .select("organization_id")
+          .eq("draft_id", data.id);
+        setDismissed(
+          (priorDismissals || []).map((item) => item.organization_id),
+        );
+      });
+  }, [session]);
+  useEffect(() => {
+    if (!db || !session) return;
+    const hasSignals = hasOrganizationMatchSignal({
+      publicName: form.name,
+      legalName: form.legalName,
+      website: form.website,
+      phone: form.phone,
+      street: form.street,
+    });
+    if (!hasSignals) return setMatches([]);
+    const timer = window.setTimeout(async () => {
+      const { data, error } = await db!.rpc("partner_organization_candidates", {
+        p_public_name: form.name || null,
+        p_legal_name: form.legalName || null,
+        p_website_url: form.website || null,
+        p_phone: form.phone || null,
+        p_street: form.street || null,
+        p_city: form.city || null,
+        p_state_province: form.state || null,
+      });
+      if (error) return setStatus(error.message);
+      setMatches((data || []) as OrganizationCandidate[]);
+    }, 350);
+    return () => window.clearTimeout(timer);
+  }, [
+    form.name,
+    form.legalName,
+    form.website,
+    form.phone,
+    form.street,
+    form.city,
+    form.state,
+    session,
+  ]);
+  async function request(
+    candidate: OrganizationCandidate,
+    type: "membership" | "ownership_claim",
+  ) {
+    if (!db || !session) return;
+    const id = await saveDraft();
+    if (!id) return;
+    const { error } = await db.from("organization_access_requests").insert({
+      organization_id: candidate.organization_id,
+      requester_id: session.user.id,
+      request_type: type,
+      requester_snapshot: form,
+      reason:
+        type === "membership"
+          ? "Requested during partner onboarding."
+          : "Ownership claim submitted during partner onboarding.",
+    });
+    setStatus(
+      error
+        ? error.code === "23505"
+          ? "That request is already pending."
+          : error.message
+        : type === "membership"
+          ? "Access request submitted. The organization can review it."
+          : "Ownership claim submitted for platform review.",
+    );
+  }
+  async function dismiss(candidate: OrganizationCandidate) {
+    if (!db || !session) return;
+    const id = draftId || (await saveDraft());
+    if (!id) return;
+    const { error } = await db.from("organization_candidate_dismissals").upsert(
+      {
+        draft_id: id,
+        organization_id: candidate.organization_id,
+        dismissed_by: session.user.id,
+      },
+      { onConflict: "draft_id,organization_id" },
+    );
+    if (error) return setStatus(error.message);
+    setDismissed((current) => [...current, candidate.organization_id]);
+    setStatus("Marked as not my business. Your entry remains saved privately.");
+  }
+  async function createOrganization() {
+    if (!db || !session) return;
+    if (!form.name.trim())
+      return setStatus("Enter the public business name first.");
+    const visibleMatches = matches.filter(
+      (item) => !dismissed.includes(item.organization_id),
+    );
+    if (visibleMatches.length && !reviewedMatches) {
+      setReviewedMatches(true);
+      return setStatus(
+        "Review the possible matches first. If this is genuinely separate, choose Create a separate business again.",
+      );
+    }
+    setStatus("Creating your organization…");
+    const { data: organization, error } = await db
+      .from("organizations")
+      .insert({
+        created_by: session.user.id,
+        organization_type:
+          kind === "rave_vendor" ? "rave_vendor" : "pet_business",
+        organization_type_code:
+          kind === "rave_vendor" ? "community_partner" : "pet_business",
+        public_name: form.name.trim(),
+        legal_name: form.legalName || null,
+        website_url: form.website || null,
+        public_phone: form.phone || null,
+        public_email: form.email || null,
+        instagram_handle: form.instagram || null,
+        parent_organization_id:
+          form.relationship === "corporate_child" && form.parentId
+            ? form.parentId
+            : null,
+        status: "active",
+      })
+      .select("id")
+      .single();
+    if (error || !organization)
+      return setStatus(error?.message || "Unable to create the organization.");
+    const { error: membershipError } = await db
+      .from("organization_memberships")
+      .insert({
+        organization_id: organization.id,
+        user_id: session.user.id,
+        role: "owner",
+      });
+    if (membershipError) return setStatus(membershipError.message);
+    const locations = [
+      {
+        street: form.street,
+        city: form.city,
+        state: form.state,
+        postal: form.postal,
+      },
+      ...form.additionalLocations,
+    ].filter(
+      (location) =>
+        location.street || location.city || location.state || location.postal,
+    );
+    if (locations.length) {
+      const { error: locationError } = await db
+        .from("organization_locations")
+        .insert(
+          locations.map((location, index) => ({
+            organization_id: organization.id,
+            location_type: "physical",
+            is_primary: index === 0,
+            street_address_1: location.street || null,
+            city: location.city || null,
+            state_province: location.state || null,
+            postal_code: location.postal || null,
+            created_by: session.user.id,
+          })),
+        );
+      if (locationError) return setStatus(locationError.message);
+    }
+    if (form.relationship === "franchise" && form.parentId) {
+      const { error: relationshipError } = await db
+        .from("organization_relationships")
+        .insert({
+          source_organization_id: organization.id,
+          target_organization_id: form.parentId,
+          relationship_type_code: "franchise_of",
+          status: "pending",
+          created_by: session.user.id,
+        });
+      if (relationshipError) return setStatus(relationshipError.message);
+    }
+    const id = draftId || (await saveDraft());
+    if (id)
+      await db
+        .from("organization_onboarding_drafts")
+        .update({
+          status: "resolved_new",
+          resolved_organization_id: organization.id,
+          resolution_note:
+            "Created as a separate organization after matching review.",
+        })
+        .eq("id", id);
+    setStatus(
+      "Organization created. You can request related access separately when needed.",
+    );
+    window.setTimeout(() => navigate("/dashboard"), 700);
+  }
+  const visibleMatches = matches.filter(
+    (item) => !dismissed.includes(item.organization_id),
+  );
+  return (
+    <Page>
+      <section className="section shell partnerOnboarding">
+        <span className="eyebrow">{choice.title} setup</span>
+        <h1>Start with your business details.</h1>
+        <p className="lead">
+          A name alone never proves control. We use the details you provide to
+          surface possible organizations, then let you request the right access
+          or create a genuinely separate business.
+        </p>
+        <div className="partnerOnboardingGrid">
+          <form
+            className="detail"
+            onSubmit={(event) => {
+              event.preventDefault();
+              createOrganization();
+            }}
+          >
+            <div className="panel">
+              <h2>Business details</h2>
+              <div className="fields">
+                <label>
+                  Public business name
+                  <input
+                    value={form.name}
+                    onChange={(event) => update("name", event.target.value)}
+                    required
+                    autoComplete="organization"
+                  />
+                </label>
+                <label>
+                  Legal name or DBA
+                  <input
+                    value={form.legalName}
+                    onChange={(event) =>
+                      update("legalName", event.target.value)
+                    }
+                  />
+                </label>
+                <label>
+                  Website
+                  <input
+                    type="url"
+                    value={form.website}
+                    onChange={(event) => update("website", event.target.value)}
+                    placeholder="https://"
+                  />
+                </label>
+                <label>
+                  Business phone
+                  <input
+                    type="tel"
+                    value={form.phone}
+                    onChange={(event) => update("phone", event.target.value)}
+                  />
+                </label>
+                <label>
+                  Contact email
+                  <input
+                    type="email"
+                    value={form.email}
+                    onChange={(event) => update("email", event.target.value)}
+                  />
+                </label>
+                <label>
+                  Instagram
+                  <input
+                    value={form.instagram}
+                    onChange={(event) =>
+                      update("instagram", event.target.value)
+                    }
+                    placeholder="@username"
+                  />
+                </label>
+              </div>
+            </div>
+            <div className="panel">
+              <h2>Primary location</h2>
+              <p>
+                Use a physical location when you have one. Add every location
+                you manage now, or continue with an online-only business.
+              </p>
+              <div className="fields">
+                <label>
+                  Street address
+                  <input
+                    value={form.street}
+                    onChange={(event) => update("street", event.target.value)}
+                    autoComplete="street-address"
+                  />
+                </label>
+                <label>
+                  City
+                  <input
+                    value={form.city}
+                    onChange={(event) => update("city", event.target.value)}
+                    autoComplete="address-level2"
+                  />
+                </label>
+                <label>
+                  State
+                  <input
+                    value={form.state}
+                    onChange={(event) => update("state", event.target.value)}
+                    autoComplete="address-level1"
+                  />
+                </label>
+                <label>
+                  Postal code
+                  <input
+                    value={form.postal}
+                    onChange={(event) => update("postal", event.target.value)}
+                    autoComplete="postal-code"
+                  />
+                </label>
+              </div>
+              {form.additionalLocations.map((location, index) => (
+                <div className="fields inset" key={index}>
+                  <label>
+                    Additional street address
+                    <input
+                      value={location.street}
+                      onChange={(event) =>
+                        setForm((current) => ({
+                          ...current,
+                          additionalLocations: current.additionalLocations.map(
+                            (item, itemIndex) =>
+                              itemIndex === index
+                                ? { ...item, street: event.target.value }
+                                : item,
+                          ),
+                        }))
+                      }
+                    />
+                  </label>
+                  <label>
+                    Additional city
+                    <input
+                      value={location.city}
+                      onChange={(event) =>
+                        setForm((current) => ({
+                          ...current,
+                          additionalLocations: current.additionalLocations.map(
+                            (item, itemIndex) =>
+                              itemIndex === index
+                                ? { ...item, city: event.target.value }
+                                : item,
+                          ),
+                        }))
+                      }
+                    />
+                  </label>
+                  <label>
+                    Additional state
+                    <input
+                      value={location.state}
+                      onChange={(event) =>
+                        setForm((current) => ({
+                          ...current,
+                          additionalLocations: current.additionalLocations.map(
+                            (item, itemIndex) =>
+                              itemIndex === index
+                                ? { ...item, state: event.target.value }
+                                : item,
+                          ),
+                        }))
+                      }
+                    />
+                  </label>
+                  <label>
+                    Additional postal code
+                    <input
+                      value={location.postal}
+                      onChange={(event) =>
+                        setForm((current) => ({
+                          ...current,
+                          additionalLocations: current.additionalLocations.map(
+                            (item, itemIndex) =>
+                              itemIndex === index
+                                ? { ...item, postal: event.target.value }
+                                : item,
+                          ),
+                        }))
+                      }
+                    />
+                  </label>
+                </div>
+              ))}
+              <button
+                type="button"
+                className="textButton"
+                onClick={() =>
+                  setForm((current) => ({
+                    ...current,
+                    additionalLocations: [
+                      ...current.additionalLocations,
+                      { street: "", city: "", state: "", postal: "" },
+                    ],
+                  }))
+                }
+              >
+                Add another location
+              </button>
+            </div>
+            <div className="panel">
+              <h2>How is this business related?</h2>
+              <div className="relationshipOptions">
+                <label>
+                  <input
+                    type="radio"
+                    checked={form.relationship === "independent"}
+                    onChange={() => update("relationship", "independent")}
+                  />
+                  Independent business
+                </label>
+                <label>
+                  <input
+                    type="radio"
+                    checked={form.relationship === "corporate_child"}
+                    onChange={() => update("relationship", "corporate_child")}
+                  />
+                  A location or child of an organization I already manage
+                </label>
+                <label>
+                  <input
+                    type="radio"
+                    checked={form.relationship === "franchise"}
+                    onChange={() => update("relationship", "franchise")}
+                  />
+                  An independent franchise or brand relationship
+                </label>
+              </div>
+              {form.relationship !== "independent" && (
+                <label className="relationshipSelect">
+                  {form.relationship === "corporate_child"
+                    ? "Organization you manage"
+                    : "Brand or organization to relate"}
+                  <select
+                    value={form.parentId}
+                    onChange={(event) => update("parentId", event.target.value)}
+                  >
+                    <option value="">Choose after reviewing matches</option>
+                    {form.relationship === "corporate_child"
+                      ? parents.map((item) => (
+                          <option key={item.id} value={item.id}>
+                            {item.public_name}
+                          </option>
+                        ))
+                      : visibleMatches.map((item) => (
+                          <option
+                            key={item.organization_id}
+                            value={item.organization_id}
+                          >
+                            {item.public_name}
+                            {item.city ? ` — ${item.city}` : ""}
+                          </option>
+                        ))}
+                  </select>
+                </label>
+              )}
+            </div>
+            <button className="btn">Create a separate business</button>
+            <p role="status" aria-live="polite" aria-atomic="true">
+              {status}
+            </p>
+          </form>
+          <aside
+            className="matchPanel"
+            aria-label="Possible organization matches"
+          >
+            <span className="eyebrow">Assisted matching</span>
+            <h2>Possible matches</h2>
+            <p aria-live="polite">
+              {visibleMatches.length
+                ? "Review these before creating a new business."
+                : "Add a name plus a website, phone, or location to check for possible matches."}
+            </p>
+            {visibleMatches.map((candidate) => (
+              <article className="candidate" key={candidate.organization_id}>
+                <h3>{candidate.public_name}</h3>
+                {(candidate.city || candidate.state_province) && (
+                  <p>
+                    {[candidate.city, candidate.state_province]
+                      .filter(Boolean)
+                      .join(", ")}
+                  </p>
+                )}
+                <small>
+                  {organizationMatchSummary(candidate.match_reasons)}
+                </small>
+                <div className="candidateActions">
+                  <button
+                    type="button"
+                    className="btn quiet"
+                    onClick={() => request(candidate, "membership")}
+                  >
+                    Request access
+                  </button>
+                  <button
+                    type="button"
+                    className="textButton"
+                    onClick={() => request(candidate, "ownership_claim")}
+                  >
+                    Claim review
+                  </button>
+                  <button
+                    type="button"
+                    className="textButton"
+                    onClick={() => dismiss(candidate)}
+                  >
+                    Not my business
+                  </button>
+                </div>
+              </article>
+            ))}
+          </aside>
+        </div>
+      </section>
+    </Page>
+  );
+}
 function Onboard() {
-  const k = useLocation().pathname.split("/").pop() as Kind,
-    c = choices.find((x) => x.kind === k) || choices[0];
+  const k = useLocation().pathname.split("/").pop() as Kind;
+  if (k === "petbiz" || k === "rave_vendor")
+    return <PartnerOrganizationOnboarding kind={k} />;
+  return <StandardOnboard kind={k} />;
+}
+function StandardOnboard({ kind: k }: { kind: "guardian" | "shelter" }) {
+  const c = choices.find((x) => x.kind === k) || choices[0];
   const [adopted, setAdopted] = useState(false),
     [status, setStatus] = useState("");
   async function save(e: React.FormEvent<HTMLFormElement>) {
@@ -527,21 +1150,6 @@ function Onboard() {
       role: "owner",
     });
     if (mError) return setStatus(mError.message);
-    const offer = String(f.get("offer") || "").trim();
-    if (offer) {
-      const { error: oError } = await db.from("offers").insert({
-        organization_id: org.id,
-        created_by: user.id,
-        channel: k === "rave_vendor" ? "rave" : "pet",
-        title: offer,
-        summary: String(f.get("offer_summary") || offer),
-        category: k === "rave_vendor" ? "Festival marketplace" : "Pet services",
-        expires_at: f.get("expires") || null,
-        status: "active",
-        published_at: new Date().toISOString(),
-      });
-      if (oError) return setStatus(oError.message);
-    }
     setStatus(
       k === "shelter"
         ? "Shelter registration submitted."
@@ -1075,7 +1683,7 @@ function Dashboard() {
               ? "Your pet journey starts here"
               : kind === "shelter"
                 ? "Build your shelter presence"
-                : "Manage your organization and offers"}
+                : "Manage your organization"}
           </h2>
           <div className="nextCards">
             <Link

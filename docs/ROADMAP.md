@@ -130,20 +130,20 @@ No paid production service, production Supabase project, DNS change, or public d
 
 These apply throughout all phases rather than being deferred cleanup:
 
-| Workstream | Ongoing requirement |
-| --- | --- |
-| Product and research | Preserve traceable requirements; validate user value; do not convert old ideas into requirements without approval. |
-| Brand and content | Premium accessible presentation, accurate claims, no fabricated partnerships, offers, statistics, or impact. |
-| Accessibility | Keyboard access, focus, contrast, semantic structure, responsive layouts, touch targets, reduced-motion behavior, and browser review. |
-| Privacy and security | Data minimization, RLS, server authorization, private storage, auditability, secrets management, abuse controls. |
-| Marketplace trust | Provenance, classifications, eligibility, conditions, freshness, expiration, disclosure, correction, reporting, and moderation. |
-| Organization trust | Separate registration, membership, ownership/control, verification, publication, franchise/brand relationships, and disputes. |
-| Financial truth | Distinguish claims, utilization, verified savings, commitments, accruals, contributions, settlements, and corrections. |
-| Quality engineering | Unit, database/RLS, failure-path, browser, mobile, accessibility, and integration validation appropriate to each checkpoint. |
-| Operations | Admin visibility, moderation, support, incident handling, backups, monitoring, release checklists, and cost review. |
-| Legal/commercial | Privacy/terms, Partner agreements, affiliate/sponsorship disclosure, charitable/tax claims, IP, and provider terms. |
-| Growth | Michigan/Metro Detroit operating focus with nationwide-capable online and LostPaws/RAVE participation from launch. |
-| Architecture/cost | GitHub-controlled code and migrations, low initial cost, maintainability, measured scale, and no premature microservices or unapproved Make dependency. |
+| Workstream           | Ongoing requirement                                                                                                                                     |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Product and research | Preserve traceable requirements; validate user value; do not convert old ideas into requirements without approval.                                      |
+| Brand and content    | Premium accessible presentation, accurate claims, no fabricated partnerships, offers, statistics, or impact.                                            |
+| Accessibility        | Keyboard access, focus, contrast, semantic structure, responsive layouts, touch targets, reduced-motion behavior, and browser review.                   |
+| Privacy and security | Data minimization, RLS, server authorization, private storage, auditability, secrets management, abuse controls.                                        |
+| Marketplace trust    | Provenance, classifications, eligibility, conditions, freshness, expiration, disclosure, correction, reporting, and moderation.                         |
+| Organization trust   | Separate registration, membership, ownership/control, verification, publication, franchise/brand relationships, and disputes.                           |
+| Financial truth      | Distinguish claims, utilization, verified savings, commitments, accruals, contributions, settlements, and corrections.                                  |
+| Quality engineering  | Unit, database/RLS, failure-path, browser, mobile, accessibility, and integration validation appropriate to each checkpoint.                            |
+| Operations           | Admin visibility, moderation, support, incident handling, backups, monitoring, release checklists, and cost review.                                     |
+| Legal/commercial     | Privacy/terms, Partner agreements, affiliate/sponsorship disclosure, charitable/tax claims, IP, and provider terms.                                     |
+| Growth               | Michigan/Metro Detroit operating focus with nationwide-capable online and LostPaws/RAVE participation from launch.                                      |
+| Architecture/cost    | GitHub-controlled code and migrations, low initial cost, maintainability, measured scale, and no premature microservices or unapproved Make dependency. |
 
 ## Post-MVP backlog themes
 

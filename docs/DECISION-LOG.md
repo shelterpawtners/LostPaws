@@ -165,3 +165,17 @@ This is the canonical review list for implementation choices and explicit user-a
 - **Decision:** Partner onboarding begins with normal business-detail entry. ShelterPawtners uses the information being entered to evaluate likely existing organization matches and surfaces those candidates as assistive guidance beside the form on desktop, with an accessible equivalent on mobile. The user is not forced to complete a separate organization search before entering business details. Before final creation of a new organization, available identifying data must still be checked for likely matches to reduce obvious duplicates.
 - **Reason:** Early in the marketplace, most businesses are unlikely to have an existing record. A mandatory search-first flow adds friction before the user has provided useful data. Entry-first matching feels natural, preserves useful submitted information, and still provides a path to align with existing accounts when matches exist.
 - **Consequence:** Candidate matches are suggestions only and never prove representation or grant control. A Partner can request access or ownership review from a candidate, dismiss a false-positive candidate, or continue creating a genuinely separate organization without restarting or re-entering the form. Draft/onboarding data may be preserved before final organization resolution, but the implementation must avoid creating duplicate final organization records merely because business details were captured. Matching should be conservative, explainable, extensible, and based on signals such as name, legal/DBA name, domain, phone, address, geography, parent brand, and known relationships.
+
+## D-025 — Conservative exact-signal candidate matching
+
+- **Status:** Active; autonomous Checkpoint 1 implementation decision
+- **Decision:** Initial candidate matching uses explainable normalized exact signals only: website, phone, public name, legal/DBA name, primary street address, city, and state. Website and phone rank above names; matching returns reasons and never automatically resolves ownership, membership, or duplicates.
+- **Reason:** The earliest partner dataset is small and uncertain. Exact signals reduce false-positive pressure while preserving a replaceable path for later enrichment.
+- **Consequence:** Similar names can remain separate organizations. Fuzzy matching, paid enrichment, automatic merges, and any control transfer require later explicit scope and review.
+
+## D-026 — Relationship control boundary
+
+- **Status:** Active; autonomous Checkpoint 1 implementation decision
+- **Decision:** A corporate child can name a parent only when the creator already manages that parent. An independently owned franchise instead creates a separate organization and a pending typed relationship to a surfaced brand candidate.
+- **Reason:** Parent/child hierarchy is a control-bearing structure, while franchise/brand association is not proof of shared ownership.
+- **Consequence:** Neither siblings nor franchises inherit memberships, private contacts, redemption data, finances, or administration. Disputed control remains a review workflow.

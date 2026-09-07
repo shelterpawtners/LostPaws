@@ -24,6 +24,12 @@ Future research and insight products must not expose guardian personally identif
 - Restrict platform administrative access and audit sensitive actions. Define operational access policies before implementing support tools.
 - Revoke access when membership or sharing permission ends, accounting for any time-limited file access mechanism.
 
+### Organization claims and matching
+
+Partner onboarding may preserve private draft business details and return possible organization candidates, but a matching name, website, phone, or address is not proof of representation. Candidate matching must be authenticated, conservative, and explainable. A request for membership or ownership review must remain pending until an authorized organization manager or platform process resolves it; it must not create a membership or transfer control as a side effect.
+
+Parent/child and franchise relationships are not authorization grants. An independently owned franchise, sibling, or branded business must not receive the parent or brand's contacts, memberships, private records, redemption information, financial data, or administrative capabilities. Duplicate review must preserve historical references and create private audit evidence; automated merges or destructive deletion are out of scope until separately approved.
+
 ## Transfer safeguards
 
 A transfer must use secure, hard-to-guess claim material with expiration and replay prevention. Bind the claim to the intended pet and an authorized workflow. Validate issuer authority and recipient identity before completion. Do not log usable transfer secrets or expose them to unrelated users.

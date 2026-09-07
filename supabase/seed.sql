@@ -8,7 +8,8 @@ insert into auth.users (
  ('00000000-0000-0000-0000-000000000000','10000000-0000-0000-0000-000000000002','authenticated','authenticated','guardian-b@example.invalid',crypt('Demo-only-Guardian-B!',gen_salt('bf')),now(),'{}','{"full_name":"Guardian B","onboarding_type":"guardian"}',now(),now()),
  ('00000000-0000-0000-0000-000000000000','10000000-0000-0000-0000-000000000003','authenticated','authenticated','partner-admin@example.invalid',crypt('Demo-only-Partner!',gen_salt('bf')),now(),'{}','{"full_name":"Partner Admin","onboarding_type":"petbiz"}',now(),now()),
  ('00000000-0000-0000-0000-000000000000','10000000-0000-0000-0000-000000000004','authenticated','authenticated','shelter-admin@example.invalid',crypt('Demo-only-Shelter!',gen_salt('bf')),now(),'{}','{"full_name":"Shelter Admin","onboarding_type":"shelter"}',now(),now()),
- ('00000000-0000-0000-0000-000000000000','10000000-0000-0000-0000-000000000005','authenticated','authenticated','platform-admin@example.invalid',crypt('Demo-only-Platform!',gen_salt('bf')),now(),'{}','{"full_name":"Platform Admin","onboarding_type":"guardian"}',now(),now())
+ ('00000000-0000-0000-0000-000000000000','10000000-0000-0000-0000-000000000005','authenticated','authenticated','platform-admin@example.invalid',crypt('Demo-only-Platform!',gen_salt('bf')),now(),'{}','{"full_name":"Platform Admin","onboarding_type":"guardian"}',now(),now()),
+ ('00000000-0000-0000-0000-000000000000','10000000-0000-0000-0000-000000000006','authenticated','authenticated','partner-b@example.invalid',crypt('Demo-only-Partner-B!',gen_salt('bf')),now(),'{}','{"full_name":"Partner B","onboarding_type":"petbiz"}',now(),now())
 on conflict(id) do nothing;
 
 -- GoTrue scans these token fields as strings during password authentication.
@@ -24,17 +25,20 @@ where email like '%@example.invalid';
 
 insert into public.user_roles(user_id,role_code,assigned_by) values
  ('10000000-0000-0000-0000-000000000003','partner_admin','10000000-0000-0000-0000-000000000005'),
+ ('10000000-0000-0000-0000-000000000006','partner_admin','10000000-0000-0000-0000-000000000005'),
  ('10000000-0000-0000-0000-000000000004','shelter_admin','10000000-0000-0000-0000-000000000005'),
  ('10000000-0000-0000-0000-000000000005','platform_admin','10000000-0000-0000-0000-000000000005')
 on conflict do nothing;
 
 insert into public.organizations(id,created_by,organization_type,organization_type_code,public_name,status,is_demo) values
  ('20000000-0000-0000-0000-000000000001','10000000-0000-0000-0000-000000000003','pet_business','pet_business','Demo PetBiz A','active',true),
- ('20000000-0000-0000-0000-000000000002','10000000-0000-0000-0000-000000000004','shelter','shelter','Demo Shelter B','active',true)
+ ('20000000-0000-0000-0000-000000000002','10000000-0000-0000-0000-000000000004','shelter','shelter','Demo Shelter B','active',true),
+ ('20000000-0000-0000-0000-000000000003','10000000-0000-0000-0000-000000000006','pet_business','pet_business','Demo PetBiz B','active',true)
 on conflict(id) do nothing;
 insert into public.organization_memberships(organization_id,user_id,role,status) values
  ('20000000-0000-0000-0000-000000000001','10000000-0000-0000-0000-000000000003','owner','active'),
- ('20000000-0000-0000-0000-000000000002','10000000-0000-0000-0000-000000000004','owner','active')
+ ('20000000-0000-0000-0000-000000000002','10000000-0000-0000-0000-000000000004','owner','active'),
+ ('20000000-0000-0000-0000-000000000003','10000000-0000-0000-0000-000000000006','owner','active')
 on conflict(organization_id,user_id) do update set role=excluded.role,status=excluded.status;
 
 insert into public.pets(id,created_by,name,species,is_demo) values

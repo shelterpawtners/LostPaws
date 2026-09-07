@@ -44,9 +44,9 @@ A cloud/sandbox environment being unable to run Docker, `supabase db reset`, or 
 
 ## Current objective
 
-Execute Phase 2 checkpoint by checkpoint, beginning with **Checkpoint 1 — Partner Organization Foundation**.
+Phase 2 Checkpoint 1 — Partner Organization Foundation is implemented and awaiting the required product/Copilot QA review. Its evidence ledger is `docs/PHASE-2-CHECKPOINT-1-PROGRESS.md`.
 
-Checkpoint 1 covers Partner onboarding entry, organization discovery/search-before-create, secure membership/claim requests, organization creation, multi-location businesses, corporate parent/child structures, independent franchises/brand relationships, duplicate handling foundations, RLS, and auditability.
+Do not activate or implement Checkpoint 2 until Checkpoint 1 is reviewed and accepted. Checkpoint 1 covers Partner onboarding entry, entry-first organization discovery, secure membership/claim requests, organization creation, multi-location businesses, corporate parent/child structures, independent franchises/brand relationships, duplicate handling foundations, RLS, and auditability.
 
 Do not jump ahead into Partner profiles, offers, redemption, verified savings, or giving except for minimal supporting scaffolding required by Checkpoint 1.
 
