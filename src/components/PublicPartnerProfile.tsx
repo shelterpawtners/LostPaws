@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { supabase as db } from "../lib/supabase";
+import { partnerDayNames } from "../lib/partner-profile";
 
 type Profile = {
   business_name: string;
@@ -27,15 +28,6 @@ type Profile = {
     closed: boolean;
   }[];
 };
-const dayNames = [
-  "Sunday",
-  "Monday",
-  "Tuesday",
-  "Wednesday",
-  "Thursday",
-  "Friday",
-  "Saturday",
-];
 export function PublicPartnerProfile() {
   const { id } = useParams();
   const [profile, setProfile] = useState<Profile | null>(null);
@@ -125,8 +117,8 @@ export function PublicPartnerProfile() {
               .sort((a, b) => a.day - b.day)
               .map((h) =>
                 h.closed
-                  ? `${dayNames[h.day]}: closed`
-                  : `${dayNames[h.day]}: ${h.opens?.slice(0, 5)}–${h.closes?.slice(0, 5)}`,
+                  ? `${partnerDayNames[h.day]}: closed`
+                  : `${partnerDayNames[h.day]}: ${h.opens?.slice(0, 5)}–${h.closes?.slice(0, 5)}`,
               )
               .join(" · ")}
           </p>

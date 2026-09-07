@@ -1,28 +1,21 @@
 import { useEffect, useState } from "react";
 import type { Session } from "@supabase/supabase-js";
 import { supabase as db } from "../lib/supabase";
+import {
+  isHttpUrl,
+  partnerBusinessModels,
+  partnerDayNames,
+  partnerSocialPlatforms,
+} from "../lib/partner-profile";
 
 type Org = { id: string; public_name: string };
 type Hours = { opens_at: string; closes_at: string; is_closed: boolean };
-const days = [
-  "Sunday",
-  "Monday",
-  "Tuesday",
-  "Wednesday",
-  "Thursday",
-  "Friday",
-  "Saturday",
-];
-const platforms = [
-  "instagram",
-  "facebook",
-  "tiktok",
-  "youtube",
-  "linkedin",
-  "other",
-];
 const blankHours = () =>
-  days.map(() => ({ opens_at: "09:00", closes_at: "17:00", is_closed: true }));
+  partnerDayNames.map(() => ({
+    opens_at: "09:00",
+    closes_at: "17:00",
+    is_closed: true,
+  }));
 
 export function PartnerProfileEditor({ session }: { session: Session | null }) {
   const [orgs, setOrgs] = useState<Org[]>([]),
@@ -160,11 +153,7 @@ export function PartnerProfileEditor({ session }: { session: Session | null }) {
     if (!db || !id || saving) return;
     const invalidSocial = Object.values(socials).some((url) => {
       if (!url.trim()) return false;
-      try {
-        return !["http:", "https:"].includes(new URL(url).protocol);
-      } catch {
-        return true;
-      }
+      return !isHttpUrl(url);
     });
     if (invalidSocial)
       return setStatus(
@@ -329,11 +318,11 @@ export function PartnerProfileEditor({ session }: { session: Session | null }) {
           <label>
             How customers are served
             <select value={model} onChange={(e) => setModel(e.target.value)}>
-              <option value="physical">Physical location</option>
-              <option value="online">Online</option>
-              <option value="mobile">Mobile</option>
-              <option value="service_area">Service area</option>
-              <option value="national">National</option>
+              {partnerBusinessModels.map(([value, label]) => (
+                <option key={value} value={value}>
+                  {label}
+                </option>
+              ))}
             </select>
           </label>
           {field("Species served (comma separated)", species, setSpecies)}
@@ -353,7 +342,7 @@ export function PartnerProfileEditor({ session }: { session: Session | null }) {
         </div>
         <h2>Social links</h2>
         <div className="fields">
-          {platforms.map((platform) =>
+          {partnerSocialPlatforms.map((platform) =>
             field(
               `${platform} URL`,
               socials[platform] || "",
@@ -364,7 +353,7 @@ export function PartnerProfileEditor({ session }: { session: Session | null }) {
         </div>
         <h2>Business hours</h2>
         <div className="fields">
-          {days.map((day, i) => (
+          {partnerDayNames.map((day, i) => (
             <fieldset key={day}>
               <legend>{day}</legend>
               <label>
