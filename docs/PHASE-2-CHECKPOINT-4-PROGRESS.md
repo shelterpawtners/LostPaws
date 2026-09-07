@@ -43,7 +43,7 @@ Regression evidence on a clean local migration replay:
 - all 5 pgTAP files / 80 assertions passed, including retry idempotency and cross-Guardian read denial;
 - Guardian registration, two-click submission, exactly-one pet/guardianship verification, failure recovery, all other registration personas, all seeded persona sign-ins, Guardian isolation, cross-Partner authorization, and offer/claim/redemption passed in focused Chromium runs;
 - the initial eight-worker browser batch logged a non-product local runner limitation: 6 navigation timeouts while 10 tests passed. Deterministic one-worker reruns passed and are the acceptance evidence;
-- the production build passed with the advisory that the main minified JavaScript chunk is 514.70 kB; this is logged as non-blocking optimization work and does not affect the corrected journey;
+- the production build passed with the advisory that the main minified JavaScript chunk is 514.82 kB; this is logged as non-blocking optimization work and does not affect the corrected journey;
 - local Chromium emitted a non-blocking GPU `debug.log`; the generated artifact is now ignored and did not affect browser results;
 - no remote Supabase database was changed, Checkpoint 5 was not started, and no decision-required defect remains.
 
@@ -56,6 +56,8 @@ Validation evidence:
 - clean local reset replayed all 19 migrations in filename order and applied `supabase/seed.sql`;
 - all 5 pgTAP files / 80 assertions passed;
 - focused Chromium Guardian dashboard coverage passed 3/3, including two pets, empty state, cross-Guardian isolation, a 390×844 responsive viewport with no horizontal overflow, and keyboard activation of an existing pet;
-- the combined Guardian registration/dashboard, seeded persona isolation, and offer/claim/redemption run passed 23/23;
+- the combined Guardian registration/dashboard, seeded persona isolation, and offer/claim/redemption run passed 24/24, including recoverable session-verification failure;
 - the saved-pet registration regression proves the newly created pet appears after dashboard navigation, `Set up your pet` is absent, `Add another pet` remains distinct, and pet selection opens `/pets/:petId` rather than onboarding;
 - no database migration or authorization-policy change was needed for Issue #4, no remote Supabase database was changed, and Checkpoint 5 was not started.
+
+Copilot's first review recommended a non-future migration filename, explicit missing-environment failures in browser tests, lazy submission-ID initialization, and recovery from a thrown session-verification request. All findings were treated as routine pre-merge blockers, corrected, and covered by the final validation run.

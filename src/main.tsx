@@ -3,7 +3,6 @@ import {
   createContext,
   useContext,
   useEffect,
-  useRef,
   useState,
 } from "react";
 import { createRoot } from "react-dom/client";
@@ -1010,7 +1009,7 @@ function StandardOnboard({ kind: k }: { kind: "guardian" | "shelter" }) {
   const [adopted, setAdopted] = useState(false),
     [status, setStatus] = useState(""),
     [saving, setSaving] = useState(false);
-  const guardianSubmissionId = useRef(crypto.randomUUID());
+  const [guardianSubmissionId] = useState(() => crypto.randomUUID());
   async function save(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (!db) return setStatus("Development connection is unavailable.");
@@ -1018,16 +1017,24 @@ function StandardOnboard({ kind: k }: { kind: "guardian" | "shelter" }) {
     if (saving) return;
     setSaving(true);
     setStatus("Saving…");
-    const {
-      data: { user },
-    } = await db.auth.getUser();
+    let user;
+    try {
+      const { data, error } = await db.auth.getUser();
+      if (error) throw error;
+      user = data.user;
+    } catch {
+      setSaving(false);
+      return setStatus(
+        "Unable to verify your session. Check your connection and try again.",
+      );
+    }
     if (!user) {
       setSaving(false);
       return setStatus("Please sign in before saving.");
     }
     if (k === "guardian") {
       const { error } = await db.rpc("save_guardian_onboarding_pet", {
-        p_submission_id: guardianSubmissionId.current,
+        p_submission_id: guardianSubmissionId,
         p_name: String(f.get("name") || ""),
         p_species: String(f.get("species") || ""),
         p_adopted: adopted,

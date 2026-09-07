@@ -5,6 +5,14 @@ const password = "Demo-only-Registration!";
 const url = process.env.PLAYWRIGHT_SUPABASE_URL || "";
 const key = process.env.PLAYWRIGHT_SUPABASE_PUBLISHABLE_KEY || "";
 
+function client() {
+  if (!url || !key)
+    throw new Error("Local Supabase test settings are missing.");
+  return createClient(url, key, {
+    auth: { persistSession: false, autoRefreshToken: false },
+  });
+}
+
 function freshEmail(persona: string) {
   return `qa-${persona}-${Date.now()}-${Math.random().toString(16).slice(2)}@example.invalid`;
 }
@@ -60,9 +68,7 @@ test.describe("Persona registration and onboarding", () => {
       page.getByRole("heading", { name: "QA Guardian Pet" }),
     ).toBeVisible();
 
-    const qa = createClient(url, key, {
-      auth: { persistSession: false, autoRefreshToken: false },
-    });
+    const qa = client();
     const { error: signInError } = await qa.auth.signInWithPassword({
       email,
       password,
@@ -96,6 +102,25 @@ test.describe("Persona registration and onboarding", () => {
     await save.click();
     await expect(page.getByRole("status")).toContainText(
       "Unable to save your pet. QA simulated save failure",
+    );
+    await expect(save).toBeEnabled();
+    await expect(page).toHaveURL(/\/onboarding\/guardian$/);
+  });
+
+  test("Guardian pet save recovers when session verification fails", async ({
+    page,
+  }) => {
+    await register(page, "guardian");
+    await page.getByLabel("Pet name").fill("Session Retry Pet");
+    await page.getByLabel("Species").selectOption("dog");
+    await page.route("**/auth/v1/user", (route) =>
+      route.abort("connectionfailed"),
+    );
+
+    const save = page.getByRole("button", { name: "Save and continue" });
+    await save.click();
+    await expect(page.getByRole("status")).toContainText(
+      "Unable to verify your session. Check your connection and try again.",
     );
     await expect(save).toBeEnabled();
     await expect(page).toHaveURL(/\/onboarding\/guardian$/);

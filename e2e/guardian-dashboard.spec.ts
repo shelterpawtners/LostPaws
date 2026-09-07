@@ -5,6 +5,14 @@ const url = process.env.PLAYWRIGHT_SUPABASE_URL || "";
 const key = process.env.PLAYWRIGHT_SUPABASE_PUBLISHABLE_KEY || "";
 const registrationPassword = "Demo-only-Registration!";
 
+function client() {
+  if (!url || !key)
+    throw new Error("Local Supabase test settings are missing.");
+  return createClient(url, key, {
+    auth: { persistSession: false, autoRefreshToken: false },
+  });
+}
+
 async function signIn(page: Page, email: string, password: string) {
   await page.goto("/login");
   await page.getByLabel("Email address").fill(email);
@@ -21,9 +29,7 @@ test.describe("Guardian pet-centric dashboard", () => {
   }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     const secondPetName = `Second QA Pet ${Date.now()}`;
-    const qa = createClient(url, key, {
-      auth: { persistSession: false, autoRefreshToken: false },
-    });
+    const qa = client();
     const { error: signInError } = await qa.auth.signInWithPassword({
       email: "guardian-a@example.invalid",
       password: "Demo-only-Guardian-A!",
