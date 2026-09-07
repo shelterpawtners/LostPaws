@@ -101,12 +101,12 @@ This is the canonical review list for implementation choices and explicit user-a
 - **Status:** User-approved; applies to Phase 2
 - **Decision:** Use the progression `Basic Partner` → `Participating Partner` → `Redemption Verified` → `Shelter Impact Partner` unless later explicitly renamed.
 - **Reason:** Positive progression rewards real participation without using punitive language.
-- **Consequence:** `Redemption Verified` means at least one legitimate non-demo ShelterPawtners redemption was confirmed. `Shelter Impact Partner` requires stronger demonstrated mission participation and must not be awarded from a pledge alone.
+- **Consequence:** `Redemption Verified` means at least one legitimate non-demo ShelterPawtners redemption has been confirmed. `Shelter Impact Partner` requires stronger demonstrated mission participation and must not be awarded from a pledge alone.
 
 ## D-016 — Organization discovery, claims, franchises, and duplicates
 
-- **Status:** User-approved; applies to Phase 2
-- **Decision:** Search existing organizations before creating a new one. Existing organizations cannot be casually claimed. Membership/access or ownership claims require a controlled workflow and administrative resolution where necessary. Platform administrators control duplicate merge/deprecation actions.
+- **Status:** Partially superseded by D-024
+- **Decision:** Existing organizations cannot be casually claimed. Membership/access or ownership claims require a controlled workflow and administrative resolution where necessary. Platform administrators control duplicate merge/deprecation actions. The earlier mandatory search-before-create UX in this decision is superseded by D-024.
 - **Reason:** Business names are not sufficient proof of control and real-world structures include chains, franchises, multi-location independents, and coincidentally similar names.
 - **Consequence:** One organization may manage multiple locations. Corporate parent/child relationships may represent controlled chains. Independently owned franchises may share a brand relationship such as `franchise_of` or `branded_as` without sharing account control, private contacts, redemptions, finances, or administration. Matching should consider name, legal/DBA name, website/domain, phone, address, location, parent brand, and known organization relationships.
 
@@ -158,3 +158,10 @@ This is the canonical review list for implementation choices and explicit user-a
 - **Decision:** Product records and customer-facing claims must not assume ShelterPawtners is an approved nonprofit, charitable recipient, B Corp, fiscal sponsor, or official festival partner unless that status is separately established and verified.
 - **Reason:** Older project ideas discussed possible nonprofit and LLC structures, but the current repository correctly treats the organization as a startup initiative.
 - **Consequence:** Future legal/entity structure is a separate business decision and must not be encoded into MVP product behavior prematurely.
+
+## D-024 — Entry-first assisted organization matching
+
+- **Status:** User-approved; applies to Phase 2 Checkpoint 1; supersedes D-016 only where D-016 required a search-first UX
+- **Decision:** Partner onboarding begins with normal business-detail entry. ShelterPawtners uses the information being entered to evaluate likely existing organization matches and surfaces those candidates as assistive guidance beside the form on desktop, with an accessible equivalent on mobile. The user is not forced to complete a separate organization search before entering business details. Before final creation of a new organization, available identifying data must still be checked for likely matches to reduce obvious duplicates.
+- **Reason:** Early in the marketplace, most businesses are unlikely to have an existing record. A mandatory search-first flow adds friction before the user has provided useful data. Entry-first matching feels natural, preserves useful submitted information, and still provides a path to align with existing accounts when matches exist.
+- **Consequence:** Candidate matches are suggestions only and never prove representation or grant control. A Partner can request access or ownership review from a candidate, dismiss a false-positive candidate, or continue creating a genuinely separate organization without restarting or re-entering the form. Draft/onboarding data may be preserved before final organization resolution, but the implementation must avoid creating duplicate final organization records merely because business details were captured. Matching should be conservative, explainable, extensible, and based on signals such as name, legal/DBA name, domain, phone, address, geography, parent brand, and known relationships.
