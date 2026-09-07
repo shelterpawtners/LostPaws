@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { supabase as db } from "../lib/supabase";
 
@@ -7,7 +7,15 @@ export function RedemptionFlow() {
     navigate = useNavigate(),
     [code, setCode] = useState(params.code || ""),
     [claim, setClaim] = useState<any>(null),
-    [status, setStatus] = useState("");
+    [status, setStatus] = useState(""),
+    [scanning, setScanning] = useState(false),
+    video = useRef<HTMLVideoElement>(null),
+    stream = useRef<MediaStream | null>(null);
+  function stopCamera() {
+    stream.current?.getTracks().forEach((track) => track.stop());
+    stream.current = null;
+    setScanning(false);
+  }
   async function validate(value = code) {
     if (!db || !value) return;
     const { data, error } = await db.rpc("validate_redemption_code", {
@@ -25,6 +33,7 @@ export function RedemptionFlow() {
   }
   useEffect(() => {
     if (params.code) void validate(params.code);
+    return stopCamera;
   }, [params.code]);
   async function confirm() {
     if (!db || !claim) return;
@@ -43,9 +52,46 @@ export function RedemptionFlow() {
       return setStatus(
         "Camera scanning is unavailable here. Enter the code below instead.",
       );
-    setStatus(
-      "Camera scanning support is available; use the manual code for this browser test environment.",
-    );
+    try {
+      stream.current = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: "environment" },
+      });
+      setScanning(true);
+      setStatus("Point the camera at the ShelterPawtners redemption QR.");
+      await new Promise((resolve) => setTimeout(resolve, 0));
+      if (!video.current) return;
+      video.current.srcObject = stream.current;
+      await video.current.play();
+      const Detector = (window as any).BarcodeDetector;
+      const detector = new Detector({ formats: ["qr_code"] });
+      const deadline = Date.now() + 30_000;
+      while (Date.now() < deadline && stream.current) {
+        const [result] = await detector.detect(video.current);
+        if (result?.rawValue) {
+          let value = result.rawValue as string;
+          try {
+            value =
+              new URL(value).pathname.split("/").filter(Boolean).at(-1) ||
+              value;
+          } catch {
+            // A raw opaque code is also a supported QR payload.
+          }
+          setCode(value);
+          stopCamera();
+          navigate(`/redeem/${value}`, { replace: true });
+          await validate(value);
+          return;
+        }
+        await new Promise((resolve) => setTimeout(resolve, 250));
+      }
+      stopCamera();
+      setStatus("No code was detected. Enter the code below instead.");
+    } catch {
+      stopCamera();
+      setStatus(
+        "Camera permission was unavailable. Enter the code below instead.",
+      );
+    }
   }
   return (
     <section className="section shell formPage">
@@ -58,6 +104,19 @@ export function RedemptionFlow() {
         <button className="btn quiet" onClick={scan}>
           Scan QR with camera
         </button>
+        {scanning && (
+          <div>
+            <video
+              ref={video}
+              muted
+              playsInline
+              aria-label="QR camera preview"
+            />
+            <button className="textButton" onClick={stopCamera}>
+              Stop camera
+            </button>
+          </div>
+        )}
         <label>
           Manual redemption code
           <input

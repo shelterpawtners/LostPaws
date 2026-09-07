@@ -13,7 +13,7 @@ Implementation complete and ready for the required redemption UX review. Checkpo
 - One `Confirm utilization` action atomically creates a distinct redemption, marks the claim utilized, consumes the token, and records protected audit/history events.
 - Cross-Partner access, expired/revoked/used codes, and replay are rejected server-side.
 - Append-oriented reversal/correction history preserves the original redemption.
-- Camera capability detection retains manual entry when scanning is unavailable; dedicated scanner hardware is not required.
+- Supported mobile browsers use the rear camera and native `BarcodeDetector` to decode QR links or raw codes; permission denial, unsupported browsers, and scan timeout retain manual entry. Dedicated scanner hardware is not required.
 
 ## Validation
 
