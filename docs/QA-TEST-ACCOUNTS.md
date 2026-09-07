@@ -1,5 +1,7 @@
 # ShelterPawtners QA test accounts
 
+<!-- prettier-ignore-start -->
+
 Purpose: deterministic local/manual accounts plus registration guidance for automated browser tests. All seeded addresses use the reserved `example.invalid` domain and are test-only.
 
 ## Stable seeded manual accounts
@@ -57,3 +59,5 @@ After `npx supabase db reset` and `npm run dev`:
 8. Registration: spot-check new Shelter, Pet Business, and RAVE Vendor accounts route to the matching onboarding screens.
 
 Do not use these credentials outside local/test environments and do not convert them into real user accounts.
+
+<!-- prettier-ignore-end -->
