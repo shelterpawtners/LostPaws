@@ -1,6 +1,6 @@
-# Phase 1 decision log
+# ShelterPawtners decision log
 
-This is the canonical review list for implementation choices made without requesting routine human input. User-approved requirements remain authoritative.
+This is the canonical review list for implementation choices and explicit user-approved project decisions that affect product behavior, architecture, trust, sequencing, or financial meaning. Newer explicit user decisions supersede older choices. Historical decisions remain recorded even when later superseded.
 
 ## D-001 — Additive reconciliation
 
@@ -52,7 +52,7 @@ This is the canonical review list for implementation choices made without reques
 - **Status:** Active
 - **Decision:** Create the migration file directly after the environment blocked the CLI file-creation call, then apply the exact committed SQL through Supabase migration tooling.
 - **Reason:** Work could continue safely without an unmanaged dashboard change.
-- **Consequence:** Future environments should return to `supabase migration new` and `db pull`.
+- **Consequence:** Future environments should return to `supabase migration new` and `db pull` when available.
 
 ## D-009 — V2 RAVE Shelter asset family
 
@@ -80,4 +80,81 @@ This is the canonical review list for implementation choices made without reques
 - **Status:** Active
 - **Decision:** Do not grant `platform_admin` until the intended `jim@shelterpawtners.com` identity has actually signed into Supabase.
 - **Reason:** Privileged access must attach to a verified real identity, never a guessed or temporary account.
-- **Consequence:** The single post-build setup action is to sign in once, then perform the documented explicit bootstrap assignment.
+- **Consequence:** The post-build setup action is to sign in once, then perform the documented explicit bootstrap assignment.
+
+## D-013 — Frozen five-phase program structure
+
+- **Status:** User-approved and active
+- **Decision:** The canonical delivery sequence is: (1) Platform + Data Foundation, (2) Partner Marketplace MVP, (3) Guardian + Shelter Passport MVP, (4) Impact + Giving + Financial Intelligence, and (5) Integrations + Marketplace + Production Launch.
+- **Reason:** The user explicitly froze this phase structure after reconciling older ShelterPawtners plans.
+- **Consequence:** Older Phase 2–10 numbering and earlier festival-MVP sequencing are superseded as execution authority. Useful ideas may remain as backlog or acceptance references only.
+
+## D-014 — Monitored Partner self-publication
+
+- **Status:** User-approved; applies to Phase 2
+- **Decision:** Partners may create and publish a basic public profile and eligible offers without manual ShelterPawtners preapproval once minimum safe publication requirements are met. Publication remains subject to moderation, suspension, correction, and removal.
+- **Reason:** Lower onboarding friction is important for early marketplace growth while platform controls preserve trust.
+- **Consequence:** Registration and publication do not imply business licensing, quality verification, charitable status, or ShelterPawtners endorsement.
+
+## D-015 — Partner participation states
+
+- **Status:** User-approved; applies to Phase 2
+- **Decision:** Use the progression `Basic Partner` → `Participating Partner` → `Redemption Verified` → `Shelter Impact Partner` unless later explicitly renamed.
+- **Reason:** Positive progression rewards real participation without using punitive language.
+- **Consequence:** `Redemption Verified` means at least one legitimate non-demo ShelterPawtners redemption was confirmed. `Shelter Impact Partner` requires stronger demonstrated mission participation and must not be awarded from a pledge alone.
+
+## D-016 — Organization discovery, claims, franchises, and duplicates
+
+- **Status:** User-approved; applies to Phase 2
+- **Decision:** Search existing organizations before creating a new one. Existing organizations cannot be casually claimed. Membership/access or ownership claims require a controlled workflow and administrative resolution where necessary. Platform administrators control duplicate merge/deprecation actions.
+- **Reason:** Business names are not sufficient proof of control and real-world structures include chains, franchises, multi-location independents, and coincidentally similar names.
+- **Consequence:** One organization may manage multiple locations. Corporate parent/child relationships may represent controlled chains. Independently owned franchises may share a brand relationship such as `franchise_of` or `branded_as` without sharing account control, private contacts, redemptions, finances, or administration. Matching should consider name, legal/DBA name, website/domain, phone, address, location, parent brand, and known organization relationships.
+
+## D-017 — Verified savings truth standard
+
+- **Status:** User-approved; applies to Phase 2
+- **Decision:** Report dollar savings as verified only when a confirmed redemption has a defensible baseline/value comparison and actual redeemed value. Otherwise record utilization without inventing a savings amount.
+- **Reason:** Savings reporting must remain trustworthy and useful for later Partner, Guardian, shelter, and impact reporting.
+- **Consequence:** Detailed savings formulas remain an implementation-time discussion and must be documented before customer-facing totals are enabled.
+
+## D-018 — Redemption automation principle
+
+- **Status:** User-approved; applies to Phase 2
+- **Decision:** Redemption must be mobile-first, extremely easy, and designed for progressive automation. The preferred MVP direction is claim or offer context → unique redeemable record/code/QR → Partner scan/open → minimal confirmation, with the system carrying as much context as possible.
+- **Reason:** A workflow requiring employees to search for customers or manually re-enter transaction context will not scale operationally.
+- **Consequence:** Phase 2 should establish a simple confirmation path and data model that can later support QR deep links, automated pricing/savings calculations, ecommerce attribution, POS/API connections, or other integrations without a rewrite.
+
+## D-019 — Giving state separation and positive Partner participation
+
+- **Status:** User-approved; applies to Phase 2 and later phases
+- **Decision:** Distinguish contribution commitment, accrued impact, externally verified contribution, and settled contribution. A commitment or accrued amount must never be represented as money already donated or settled.
+- **Reason:** Financial truth is required while giving should still be positioned as a positive Partner participation and customer-acquisition feature rather than only a donation request.
+- **Consequence:** Partner experiences may support constructs such as a fixed amount per verified redemption, percentage-based support, recurring commitments, one-time campaigns, or designated shelter support when legally and operationally supported. Recognition and impact displays must be based on the correct state.
+
+## D-020 — Giving provider before charitable-money implementation
+
+- **Status:** User-approved principle; `OPEN DECISION` for provider selection
+- **Decision:** Research and select an appropriate qualified fundraising, donation, payment, or charitable-intermediary service before implementing production charitable-money movement. Do not assume ShelterPawtners itself is the charitable recipient.
+- **Reason:** Provider capabilities affect settlement, receipts, eligible recipients, APIs, fees, reconciliation, compliance, and reporting.
+- **Consequence:** Phase 2 may build provider-agnostic data/UX foundations and support administrator-verified external contributions where appropriate. Production provider integration and accounting maturity belong to later approved phases unless an earlier bounded integration is explicitly approved.
+
+## D-021 — Michigan-first, nationwide-capable MVP
+
+- **Status:** User-approved and active
+- **Decision:** Launch operations focus on Michigan, especially Metro Detroit, while the MVP supports nationwide participation from launch for online/national Partners, LostPaws/RAVE community participants, testers, and other eligible users.
+- **Reason:** Local concentration makes Partner and shelter acquisition operationally manageable while nationwide participation increases feedback, community reach, and marketplace learning.
+- **Consequence:** Michigan is a go-to-market focus, not an architectural restriction. Marketplace geography must support local locations/service areas, statewide/regional coverage, nationwide coverage, and online availability.
+
+## D-022 — Make remains out of the active architecture
+
+- **Status:** User-approved and active
+- **Decision:** Make is on hold and is not part of the current LostPaws application architecture.
+- **Reason:** The fresh build should use the implemented repository architecture rather than inheriting older automation ideas.
+- **Consequence:** Do not introduce Make as a dependency or integration requirement unless it is explicitly re-approved later.
+
+## D-023 — Current legal/business structure remains unasserted
+
+- **Status:** Active; `OPEN DECISION` for future legal structure
+- **Decision:** Product records and customer-facing claims must not assume ShelterPawtners is an approved nonprofit, charitable recipient, B Corp, fiscal sponsor, or official festival partner unless that status is separately established and verified.
+- **Reason:** Older project ideas discussed possible nonprofit and LLC structures, but the current repository correctly treats the organization as a startup initiative.
+- **Consequence:** Future legal/entity structure is a separate business decision and must not be encoded into MVP product behavior prematurely.
