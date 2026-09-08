@@ -144,7 +144,7 @@ test.describe.serial("Admin QA mode hosted regression", () => {
     await signInAsAdmin(page);
     await openAdminQa(page);
     await page
-      .getByRole("button", { name: "Create fresh Guardian test account" })
+      .getByRole("button", { name: "Create fresh Guardian" })
       .click();
     await expect(page).toHaveURL(/\/onboarding\/guardian$/);
     await expect(adminQaBanner(page)).toContainText("ADMIN QA MODE");
