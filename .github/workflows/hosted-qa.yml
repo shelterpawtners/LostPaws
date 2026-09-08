@@ -75,7 +75,6 @@ jobs:
     if: needs.acceptance-gate.outputs.run_hosted == 'true'
     runs-on: ubuntu-latest
     env:
-      PLAYWRIGHT_BASE_URL: ${{ inputs.qa_url || vars.QA_BASE_URL || 'https://lost-paws-one.vercel.app' }}
       PLAYWRIGHT_HOSTED_QA: "true"
       PLAYWRIGHT_SUPABASE_URL: ${{ vars.QA_SUPABASE_URL }}
       PLAYWRIGHT_SUPABASE_PUBLISHABLE_KEY: ${{ vars.QA_SUPABASE_PUBLISHABLE_KEY }}
@@ -100,6 +99,61 @@ jobs:
           grep -q "^STATUS: READY_FOR_ACCEPTANCE$" docs/AI-HANDOFF.md
           grep -q "^SAFE_TO_CONTINUE: YES$" docs/AI-HANDOFF.md
           grep -q "^OWNER_DECISION_REQUIRED: NO$" docs/AI-HANDOFF.md
+      - name: Resolve tested Vercel URL and verify deployed frontend SHA
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ needs.acceptance-gate.outputs.pr_number }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before || github.sha }}
+          INPUT_QA_URL: ${{ inputs.qa_url }}
+          FALLBACK_QA_URL: ${{ vars.QA_BASE_URL || 'https://lost-paws-one.vercel.app' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if [[ "${GITHUB_EVENT_NAME}" == "workflow_dispatch" || -z "${PR_NUMBER}" ]]; then
+            qa_url="${INPUT_QA_URL:-${FALLBACK_QA_URL}}"
+          else
+            frontend_sha=$(git log -1 --format=%H "${BASE_SHA}..HEAD" -- src public index.html package.json package-lock.json vite.config.ts tsconfig.json tsconfig.app.json tsconfig.node.json || true)
+
+            if [[ -n "${frontend_sha}" ]]; then
+              echo "Latest frontend-impacting PR SHA: ${frontend_sha}"
+              for attempt in $(seq 1 30); do
+                vercel_state=$(gh api "repos/${REPO}/commits/${frontend_sha}/status" --jq '[.statuses[] | select(.context == "Vercel")] | first | .state // "missing"')
+                case "${vercel_state}" in
+                  success)
+                    echo "Vercel deployment for ${frontend_sha} is successful."
+                    break
+                    ;;
+                  failure|error)
+                    echo "Vercel deployment for ${frontend_sha} is ${vercel_state}." >&2
+                    exit 1
+                    ;;
+                  *)
+                    if [[ "${attempt}" == "30" ]]; then
+                      echo "Timed out waiting for Vercel status on ${frontend_sha}." >&2
+                      exit 1
+                    fi
+                    sleep 10
+                    ;;
+                esac
+              done
+            else
+              echo "No frontend-impacting commit in this PR; existing QA deployment is valid."
+            fi
+
+            comments=$(gh api "repos/${REPO}/issues/${PR_NUMBER}/comments?per_page=100" --paginate)
+            qa_url=$(jq -r '[.[] | select(.user.login == "vercel[bot]")] | last | (.body // "") | try capture("\\[Preview\\]\\((?<url>https://[^)]+\\.vercel\\.app[^)]*)\\)").url catch ""' <<<"${comments}")
+            if [[ -z "${qa_url}" ]]; then
+              qa_url="${FALLBACK_QA_URL}"
+            fi
+          fi
+
+          qa_url=${qa_url%/}
+          [[ "${qa_url}" == https://* ]] || { echo "Hosted QA URL must be HTTPS." >&2; exit 1; }
+          [[ "${qa_url}" =~ ^https://[^/]+\.vercel\.app(/.*)?$ ]] || { echo "Hosted QA URL must be a Vercel URL." >&2; exit 1; }
+          echo "PLAYWRIGHT_BASE_URL=${qa_url}" >> "$GITHUB_ENV"
+          echo "Hosted QA target: ${qa_url}"
       - name: Require hosted QA configuration
         shell: bash
         run: |
@@ -107,35 +161,7 @@ jobs:
           for setting in PLAYWRIGHT_BASE_URL PLAYWRIGHT_SUPABASE_URL PLAYWRIGHT_SUPABASE_PUBLISHABLE_KEY PLAYWRIGHT_ADMIN_EMAIL PLAYWRIGHT_ADMIN_PASSWORD PLAYWRIGHT_GUARDIAN_EMAIL PLAYWRIGHT_GUARDIAN_PASSWORD PLAYWRIGHT_PARTNER_EMAIL PLAYWRIGHT_PARTNER_PASSWORD; do
             [[ -n "${!setting}" ]] || { echo "Missing hosted QA setting: $setting" >&2; exit 1; }
           done
-          [[ "$PLAYWRIGHT_BASE_URL" == https://* ]]
-          [[ "$PLAYWRIGHT_BASE_URL" =~ ^https://[^/]+\.vercel\.app(/.*)?$ ]]
           [[ "$PLAYWRIGHT_SUPABASE_URL" =~ ^https://jukmlmryykcnjtpblbja\.supabase\.co/?$ ]]
-      - name: Wait for latest frontend-impacting SHA to be Ready on Vercel
-        if: needs.acceptance-gate.outputs.pr_number != ''
-        env:
-          GH_TOKEN: ${{ github.token }}
-          REPO: ${{ github.repository }}
-          PR_NUMBER: ${{ needs.acceptance-gate.outputs.pr_number }}
-          QA_URL: ${{ vars.QA_BASE_URL }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          frontend_sha=$(git log -1 --format=%H -- src public index.html package.json package-lock.json vite.config.ts tsconfig.json tsconfig.app.json tsconfig.node.json || true)
-          if [[ -z "${frontend_sha}" ]]; then
-            exit 0
-          fi
-          commit_time=$(gh api "repos/${REPO}/commits/${frontend_sha}" --jq '.commit.committer.date')
-          qa_url=${QA_URL%/}
-          for attempt in $(seq 1 30); do
-            comments=$(gh api "repos/${REPO}/issues/${PR_NUMBER}/comments?per_page=100" --paginate)
-            ready=$(jq --arg commit_time "${commit_time}" --arg qa_url "${qa_url}" '[.[] | select(.user.login == "vercel[bot]") | select(.updated_at >= $commit_time) | select(.body | contains("Ready")) | select(.body | contains($qa_url))] | length' <<<"${comments}")
-            if [[ "${ready}" -gt 0 ]]; then
-              exit 0
-            fi
-            sleep 10
-          done
-          echo "Timed out waiting for Vercel Ready state." >&2
-          exit 1
       - run: npm ci
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
