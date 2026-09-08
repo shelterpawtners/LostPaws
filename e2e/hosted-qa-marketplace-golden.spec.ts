@@ -42,8 +42,9 @@ test.describe.serial("Hosted partner-to-guardian marketplace golden path", () =>
     await page.getByLabel("Public description").fill(publicDescription);
     await page.getByLabel("Public email").fill(publicEmail);
     await page.getByLabel("How customers are served").selectOption("online");
+    const profileStatus = page.locator(".panel > p[role='status']").last();
     await page.getByRole("button", { name: "Save draft" }).click();
-    await expect(page.getByRole("status")).toContainText("Saved as a private draft");
+    await expect(profileStatus).toContainText("Saved as a private draft");
     const organization = page.getByLabel("Organization");
     const selectedOrganizationId = await organization.inputValue();
     await page.reload();
@@ -58,7 +59,7 @@ test.describe.serial("Hosted partner-to-guardian marketplace golden path", () =>
     });
     if ((await publishProfile.count()) > 0) {
       await publishProfile.click();
-      await expect(page.getByRole("status")).toContainText("Published.");
+      await expect(profileStatus).toContainText("Published.");
     }
 
     await page.goto("/partner/offers");
