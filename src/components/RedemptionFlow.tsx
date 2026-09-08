@@ -199,7 +199,9 @@ export function RedemptionFlow() {
                 <input
                   maxLength={3}
                   value={currencyCode}
-                  onChange={(e) => setCurrencyCode(e.target.value.toUpperCase())}
+                  onChange={(e) =>
+                    setCurrencyCode(e.target.value.toUpperCase())
+                  }
                 />
               </label>
               <label>
