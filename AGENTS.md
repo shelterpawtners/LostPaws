@@ -1,66 +1,68 @@
 # LostPaws agent instructions
 
-## Scope and authority
+## Authority
 
-This is the new, clean application repository for ShelterPawtners and its LostPaws initiative. The user approved the MVP and authorized implementation in `shelterpawtners-dev` on September 6, 2026. Application code, committed migrations, development authentication, and development data work are authorized within the approved roadmap and security requirements.
+ShelterPawtners/LostPaws is in active development. The MVP and development work in `shelterpawtners-dev` are authorized. Jim explicitly authorized autonomous completion of the remainder of Phase 2 on 2026-09-08.
 
-Do not connect to or create production infrastructure, modify public DNS, or deploy over the current live site without explicit user instruction.
+- Phase 2 Checkpoint 5 and later Phase 2 checkpoints may proceed under the autonomous policy.
+- Phase 3 remains explicitly unauthorized.
+- Do not auto-merge.
+- Do not modify production DNS, production Supabase, replace the public live site, create paid infrastructure, or cross a material legal/privacy/security/financial/product RED boundary without explicit owner approval.
+- Do not expose secrets, weaken RLS, or put service-role credentials in browser code.
 
-Do not copy code, CSS, HTML, components, or architecture from Core or RaveShelter. Do not modify another ShelterPawtners repository. Inspect a specific legacy item only when explicitly instructed; permission to inspect does not imply permission to copy.
+Explicit newer owner instructions supersede older planning text. Resolve stale contradictions instead of stopping on an obsolete gate.
 
-The documents capture authoritative user requirements. Explicit subsequent user decisions supersede earlier project choices; update affected documents when a decision changes. Do not invent business requirements. Ask for clarification only when an unresolved decision creates material product, security, legal, privacy, financial, production, or architectural risk. Otherwise make a reasonable implementation choice and document its rationale and tradeoffs in the relevant document.
+## Read first
+
+For every meaningful coding task, read only what is relevant, starting with:
+
+1. the active GitHub Issue/PR;
+2. `docs/CURRENT-WORK.md`;
+3. `docs/AI-HANDOFF.md`;
+4. `docs/AUTONOMOUS-EXECUTION-POLICY.md`;
+5. `docs/AI-COST-AND-TESTING-GOVERNANCE.md`;
+6. the active phase specification/progress file;
+7. relevant architecture/security/product docs.
+
+Do not load unrelated historical documents merely for completeness. Keep task context lean.
 
 ## Autonomous execution
 
-Read and follow [Autonomous execution policy](docs/AUTONOMOUS-EXECUTION-POLICY.md) for every meaningful coding task.
+- GREEN: decide, implement, test, and continue.
+- YELLOW: use the safest reversible assumption, record it in `docs/OWNER-DECISION-BACKLOG.md`, and continue.
+- RED: finish safely separable work, record the blocker, update `docs/AI-HANDOFF.md`, and stop narrowly.
+- Continue through related in-scope defects until acceptance criteria are met or a RED/hard blocker is reached.
+- Do not ask Jim to approve routine engineering decisions.
 
-- GREEN decisions: decide, implement, test, and continue without asking the product owner.
-- YELLOW decisions: use the safest reversible provisional assumption, record it in [Owner decision backlog](docs/OWNER-DECISION-BACKLOG.md), and continue.
-- RED decisions: complete safely separable work, record the blocker, update `docs/AI-HANDOFF.md`, and stop at the narrowest boundary.
-- Do not stop for routine engineering choices or ordinary in-scope defects.
-- Continue fixing related in-scope blockers until the active Issue acceptance criteria are met or a RED/hard blocker is reached.
-- A repository instruction file governs an invoked agent session; it does not itself authorize a new phase or launch another agent session.
+## AI-cost discipline
 
-Current explicit progression gates remain in force: do not begin Phase 2 Checkpoint 5 or Phase 3 without explicit product-owner authorization.
+Follow `docs/AI-COST-AND-TESTING-GOVERNANCE.md`.
 
-## Read before working
+- Treat each invoked coding-agent session as one bounded checkpoint/defect-cluster session.
+- Do not request another agent session just because CI or Hosted QA turned green.
+- Do not use AI for deterministic formatting, polling, reruns, lint/typecheck/build, or other native automation work.
+- Do not request Copilot code review on every commit; default to one review at checkpoint acceptance when materially useful.
+- Prefer one complete task prompt and a clear stopping condition over repeated steering comments.
 
-Read [README.md](README.md) for current state and [.agents/skills/shelterpawtners/SKILL.md](.agents/skills/shelterpawtners/SKILL.md) for task-specific document routing. Read relevant documents before architectural changes. Each topic has a canonical home:
+## Engineering rules
 
-| Topic                                                          | Authoritative document                                                          |
-| -------------------------------------------------------------- | ------------------------------------------------------------------------------- |
-| Mission, ecosystem, audiences                                  | [Product vision](docs/PRODUCT-VISION.md)                                        |
-| Product behavior and acceptance expectations                   | [Product requirements](docs/PRODUCT-REQUIREMENTS.md)                            |
-| Marketplace research, classification, freshness                | [Marketplace research](docs/MARKETPLACE-RESEARCH.md)                            |
-| Festival deadline, Rave Shelter channel, adoption verification | [Festival MVP and adoption verification](docs/FESTIVAL-MVP-AND-VERIFICATION.md) |
-| Roles, organization membership, scope                          | [User roles](docs/USER-ROLES.md)                                                |
-| Visual direction and design process                            | [Brand design system](docs/BRAND-DESIGN-SYSTEM.md)                              |
-| Terminology, claims, customer copy                             | [Content standards](docs/CONTENT-STANDARDS.md)                                  |
-| Technical direction and engineering choices                    | [Architecture](docs/ARCHITECTURE.md)                                            |
-| Phasing, dependencies, unresolved decisions                    | [Roadmap](docs/ROADMAP.md)                                                      |
-| Autonomous execution / escalation                              | [Autonomous execution policy](docs/AUTONOMOUS-EXECUTION-POLICY.md)              |
-| Deferred owner preferences / blockers                          | [Owner decision backlog](docs/OWNER-DECISION-BACKLOG.md)                        |
-| Autonomous implementation decisions                            | [Phase 1 decision log](docs/DECISION-LOG.md)                                    |
-| Privacy, authorization, transfer safeguards                    | [Security and privacy](docs/SECURITY-AND-PRIVACY.md)                            |
+- React + TypeScript + Vite + Tailwind + Supabase are the approved stack.
+- Git migrations are the schema source of truth.
+- Preserve provenance, append-oriented financial/economic history, integer minor-unit money values, demo-data isolation, and auditability.
+- Never fabricate partnerships, metrics, discounts, affiliations, donations, verification, or production facts.
+- Prefer small, testable changes and avoid unnecessary dependencies/enterprise complexity.
+- Preserve accessibility and mobile-first behavior.
 
-Keep detailed guidance in its canonical document and link to it elsewhere. Resolve contradictions instead of adding competing instructions. Preserve the distinction between required behavior, preferred technology, proposed implementation choices, provisional assumptions, and deferred decisions.
+## Validation
 
-Record every meaningful product, design, technical, security, sequencing, or operational decision made without direct user approval in the [Phase 1 decision log](docs/DECISION-LOG.md) when it is durable. Reversible YELLOW preferences belong in [Owner decision backlog](docs/OWNER-DECISION-BACKLOG.md) until resolved. Add durable entries in the same change that implements the decision, including rationale and consequences. Do not use either log as permission to decide matters requiring user authority.
+Use the tiered testing strategy in `docs/AI-COST-AND-TESTING-GOVERNANCE.md`:
 
-## Engineering conduct
+- implementation: lint, typecheck, unit tests, build;
+- checkpoint acceptance: relevant hosted Playwright + relevant database/RLS tests;
+- phase hardening: broader Persona QA/browser/security regression.
 
-- Prefer small, testable changes and reusable components. Avoid unnecessary dependencies and premature enterprise complexity.
-- Run relevant tests and builds before declaring implementation complete. Review frontend changes in a browser, including responsive behavior, keyboard use, focus states, and accessibility. Compilation alone is insufficient.
-- Validate documentation plus the real application tests, production build, responsive interface, accessibility behavior, and relevant Supabase advisors.
-- Keep database schema changes in committed migrations. Never fix authorization only in the frontend, expose credentials, commit secrets, or bypass or weaken RLS to make a feature work.
-- Use only the development Supabase project, `shelterpawtners-dev`, once the specific implementation action is authorized. Production connection or creation requires explicit user instruction.
-- Preserve provenance and auditability for verification, transfers, guardianship, provider contributions, marketplace entries, redemptions, and administrative actions.
-- Treat marketplace source, classification, eligibility, freshness, expiration, disclosure, and human publication as product requirements. Never imply a public provider is a ShelterPawtners partner.
-- Do not claim unfinished capabilities are functional. Do not fabricate statistics, partnerships, testimonials, discounts, research findings, or official affiliations.
-- Follow the content and brand documents for customer-facing material. Preserve accessibility and privacy through implementation and browser review.
+Do not weaken a valid test to make CI green. When impact mapping is uncertain, use the broader deterministic test rather than an AI judgment call.
 
-## Completion reporting
+## Completion
 
-State what changed, what was checked, material limitations, and unresolved decisions. Keep README current state accurate. The implementation gate is lifted for the approved development MVP. Production deployment remains separately gated.
-
-Before completing or stopping a meaningful task, update `docs/AI-HANDOFF.md` using the status contract in `docs/AUTONOMOUS-EXECUTION-POLICY.md`, including whether an owner decision is required and whether it is safe for another agent to continue.
+Before completing or blocking a meaningful task, update `docs/AI-HANDOFF.md` with task/issue, agent, branch, final SHA, areas changed, exact tests/results, CI/Hosted QA state, open defects, owner-decision state, and next action. Update durable decision/progress docs only when materially required.
