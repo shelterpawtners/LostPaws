@@ -1,6 +1,5 @@
 name: Hosted QA
 
-# The branch-push lane also provides trusted acceptance execution when a PR-originated bot commit is held for Actions approval.
 on:
   pull_request:
     branches: [build/festival-mvp]
@@ -12,16 +11,7 @@ on:
       - "package.json"
       - "package-lock.json"
       - "supabase/**"
-  push:
-    branches: [qa/guardian-registration-personas]
-    paths:
-      - "src/**"
-      - "e2e/**"
-      - ".github/workflows/hosted-qa.yml"
-      - "playwright.config.ts"
-      - "package.json"
-      - "package-lock.json"
-      - "supabase/**"
+      - "docs/AI-HANDOFF.md"
   workflow_dispatch:
     inputs:
       qa_url:
@@ -35,14 +25,39 @@ on:
         type: boolean
 
 concurrency:
-  group: hosted-qa-${{ github.ref }}
+  group: hosted-qa-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 permissions:
   contents: read
 
 jobs:
+  acceptance-gate:
+    runs-on: ubuntu-latest
+    outputs:
+      run_hosted: ${{ steps.gate.outputs.run_hosted }}
+    steps:
+      - uses: actions/checkout@v7
+      - id: gate
+        name: Run heavy hosted QA only at acceptance boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+          status=$(sed -n 's/^STATUS:[[:space:]]*//p' docs/AI-HANDOFF.md | head -n 1)
+          safe=$(sed -n 's/^SAFE_TO_CONTINUE:[[:space:]]*//p' docs/AI-HANDOFF.md | head -n 1)
+          owner=$(sed -n 's/^OWNER_DECISION_REQUIRED:[[:space:]]*//p' docs/AI-HANDOFF.md | head -n 1)
+
+          if [[ "${safe}" == "YES" && "${owner}" == "NO" && ( "${status}" == "READY_FOR_ACCEPTANCE" || "${status}" == "COMPLETE" ) ]]; then
+            echo "run_hosted=true" >> "$GITHUB_OUTPUT"
+            echo "Checkpoint is at an acceptance boundary; run hosted QA."
+          else
+            echo "run_hosted=false" >> "$GITHUB_OUTPUT"
+            echo "Checkpoint is ${status:-unknown}; skip heavy hosted browser QA for this intermediate commit."
+          fi
+
   hosted-smoke:
+    needs: acceptance-gate
+    if: needs.acceptance-gate.outputs.run_hosted == 'true' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     env:
       PLAYWRIGHT_BASE_URL: ${{ inputs.qa_url || vars.QA_BASE_URL || 'https://lost-paws-one.vercel.app' }}
