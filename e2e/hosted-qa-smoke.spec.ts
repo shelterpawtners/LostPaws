@@ -37,10 +37,10 @@ test.describe.serial("Hosted shared-dev smoke", () => {
     );
     const addAnotherPet = page.getByRole("link", { name: "Add another pet" });
     const setUpPet = page.getByRole("link", { name: "Set up your pet" });
-    if (await addAnotherPet.isVisible().catch(() => false)) {
+    await expect(addAnotherPet.or(setUpPet)).toBeVisible();
+    if (await addAnotherPet.isVisible()) {
       await addAnotherPet.click();
     } else {
-      await expect(setUpPet).toBeVisible();
       await setUpPet.click();
     }
     await expect(page).toHaveURL(/\/onboarding\/guardian$/);
