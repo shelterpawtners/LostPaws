@@ -1,9 +1,9 @@
 # AI Handoff
 
-STATUS: READY_FOR_ACCEPTANCE
+STATUS: IN_PROGRESS
 CURRENT_PHASE: Phase 2 — Partner Marketplace MVP
 CURRENT_CHECKPOINT: Phase 2 Checkpoint 5 — Verified Savings + Customer Attribution
-NEXT_CHECKPOINT: Run full Hosted QA on the corrected acceptance head; if green, mark the CP5 pre-decision slice COMPLETE, keep verified-savings rules owner-gated, and continue only safely separable provider-agnostic Phase 2 Checkpoint 6 work
+NEXT_CHECKPOINT: Validate the Admin QA hard-navigation restoration fix; when CI and Hosted QA are green, mark the CP5 pre-decision slice COMPLETE, keep verified-savings rules owner-gated, and continue only safely separable provider-agnostic Phase 2 Checkpoint 6 work
 OWNER_DECISION_REQUIRED: NO
 SAFE_TO_CONTINUE: YES
 
@@ -27,6 +27,7 @@ Active Issue: #13
 Concurrency migration SHA: `882c958b804c4466b47bfe108364c45427186d1a`
 Concurrency test fix SHA: `c2003df199d57d96660fd842e817a07314fd5879`
 Hosted Admin QA selector fix SHA: `4614e3cef2f67378cb8cf827b364abda2a9b84e5`
+Admin QA reload-state fix SHA: `11b23ef41861f0d2e26272ed588019ddaa217f94`
 
 ### Checkpoint 5 implemented scope
 
@@ -42,45 +43,38 @@ Hosted Admin QA selector fix SHA: `4614e3cef2f67378cb8cf827b364abda2a9b84e5`
 
 ### Concurrency/data-integrity hardening
 
-Architecture review identified that two different claims for the same Guardian + Partner could be confirmed concurrently and both observe no prior redemption. CP5 prevents duplicate `first_known` attribution by:
+CP5 prevents duplicate `first_known` attribution by serializing Guardian + Partner relationship classification with a transaction-scoped advisory lock and enforcing a unique partial index for confirmed non-demo `first_known` redemptions. Migration replay fails loudly rather than silently rewriting pre-existing history, and existing secure-token/RLS controls remain intact.
 
-- taking a transaction-scoped advisory lock keyed to Guardian + Partner before relationship classification;
-- enforcing a unique partial index allowing at most one confirmed non-demo `first_known` redemption per Guardian + Partner;
-- failing migration loudly instead of silently rewriting history if pre-existing duplicate first-known classifications are ever detected;
-- retaining secure-token replay locking and all existing RLS/authorization controls.
+### Deterministic evidence and current defect cluster
 
-### Deterministic evidence
-
-- Persona QA #62 on concurrency-hardened head `c2003df199d57d96660fd842e817a07314fd5879`: PASS.
-  - local Supabase start/reset/seed: PASS;
-  - all pgTAP/RLS suites including 16 CP5 assertions: PASS;
-  - Guardian/persona/access/redemption Playwright: PASS.
+- Persona QA #62 on concurrency-hardened head `c2003df199d57d96660fd842e817a07314fd5879`: PASS (local reset/seed, all pgTAP/RLS including 16 CP5 assertions, Guardian/persona/access/redemption Playwright).
 - CI #211: PASS on the concurrency-hardened slice.
 - CI #214 on pre-fix acceptance head `a98b5ac387892629e92c633390b99ebc21e0f3d2`: PASS.
-- Hosted QA #112 on `a98b5ac387892629e92c633390b99ebc21e0f3d2`: FAILED only in Admin QA browser selector logic after Vercel exact-SHA readiness succeeded.
-  - 6 hosted tests passed before the serial suite stopped; 2 later tests did not run.
-  - Failure classification: GREEN test-selector defect, not application authorization, Supabase, RLS, deployment readiness, or CP5 savings behavior.
-  - Root cause: `getByRole("status")` became ambiguous because the page legitimately contains both the Admin QA banner and a separate empty live status region.
-  - Correction `4614e3c`: all Admin QA persona-banner assertions target the status region containing `ADMIN QA MODE`; coverage is narrowed semantically rather than weakened.
-- CI #217 on the corrected head lineage: PASS (`npm ci`, lint, unit tests, production build).
-- Full Hosted QA on the corrected READY head is the remaining CP5 acceptance evidence.
+- Hosted QA #112: FAILED in Admin QA because a generic `getByRole("status")` selector matched two legitimate live regions. Vercel exact-SHA readiness passed first. This was a GREEN test defect; `4614e3c` scoped banner assertions to the `ADMIN QA MODE` status region without weakening authorization/session coverage.
+- CI #217: PASS after the selector correction.
+- Hosted QA #116 on READY head `36ed211c3cf13f93221b04358a1cc140a11146a5`: FAILED later in the same Admin QA persistence test after `page.goto("/marketplace")` because no Admin QA banner appeared after the hard navigation. Six hosted tests passed; two later serial tests did not run.
+- #116 classification: GREEN application state-restoration defect, not a selector defect. `/marketplace` is wrapped in `Page` and therefore renders `QaBanner`, but a hard navigation recreates JS module state while the acting Supabase session remains in `sessionStorage`. `QaBanner` previously checked only the in-memory acting client on mount, so it could render no banner while `AuthProvider` restored the session independently.
+- Fix `11b23ef4`: `QaBanner` now restores the tab-scoped acting session itself when the in-memory client is absent, while still listening for `sp-qa-changed`; it guards async state updates on unmount. This preserves the explicit cross-route/reload Admin QA session contract instead of weakening the regression test.
+- CI #219 is the current native validation for `11b23ef4`; Hosted QA must rerun after CI and a usable frontend deployment are available.
 
 ### Cost-control state
 
-- No Copilot/Copilot review was invoked for this diagnosis or fix.
-- The defect was diagnosed from native GitHub Actions logs and corrected directly.
-- Persona QA remains change-aware/deliberate rather than being attached to every PR update.
+- No Copilot/Copilot review was invoked for either defect or fix.
+- Diagnosis used native GitHub Actions logs and direct repository inspection.
+- Persona QA remains change-aware/deliberate; no schema/RLS change was made in this defect cluster.
 
 ### Deliberate RED boundary
 
-No effective/adjusted customer-facing savings total or lifetime verified total is introduced. Original captured values stay immutable and corrections stay append-only. The owner must still approve what evidence/calculation qualifies as customer-facing `verified savings`, including treatment of corrections, refunds, reversals, bundles, free items, evidence strength, and Partner-entered values.
+No effective/adjusted customer-facing savings total or lifetime verified total is introduced. Original captured values stay immutable and corrections stay append-only. The owner must approve what evidence/calculation qualifies as customer-facing `verified savings`, including corrections, refunds, reversals, bundles, free items, evidence strength, and Partner-entered values.
 
-This RED rule does not automatically block provider-agnostic Checkpoint 6 engineering that does not depend on verified-savings totals or charitable-money provider selection. Issue #14 is prepared as the bounded CP6 contract but implementation must not advance until the CP5 pre-decision acceptance evidence is green and recorded COMPLETE.
+This RED rule does not block provider-agnostic Checkpoint 6 engineering that is independent of verified-savings totals or charitable-money provider selection. Issue #14 is prepared as the bounded CP6 contract, but implementation must not advance until the CP5 pre-decision acceptance evidence is green and recorded COMPLETE.
 
-### Vercel connector blocker
+### Vercel blockers/state
 
-Direct ChatGPT Vercel access remains unauthorized/incomplete: `list_teams` returns exactly `{"teams": []}`, so team `jims-projects-acec6bcb` and project `lost-paws` cannot be enumerated or inspected through the connector. This is an OAuth/account-scope blocker. It is independent of deployment readiness: Hosted QA #112's native GitHub/Vercel readiness gate confirmed the exact acceptance SHA Ready on `https://lost-paws-one.vercel.app/` before browser tests ran.
+Direct ChatGPT Vercel access remains unauthorized/incomplete: `list_teams` returns exactly `{"teams": []}`, so team `jims-projects-acec6bcb` and project `lost-paws` cannot be enumerated through the connector. This remains an OAuth/account-scope blocker.
+
+Separately, GitHub's Vercel commit status on the READY handoff head reported `failure` with target `https://vercel.com/jims-projects-acec6bcb?upgradeToPro=build-rate-limit`, indicating a Vercel build-rate-limit condition. Do not upgrade or alter paid infrastructure autonomously. Hosted QA #116 still safely used the previously Ready latest frontend-impacting deployment (`4de911d8884866772fdb5e8eb3c022de7b9e4541`) because its head changed only tests/handoff. The new `11b23ef4` fix changes frontend code, so Hosted QA acceptance requires a deployment containing that fix; do not claim acceptance against the older frontend.
 
 ### Human action required
 
-None for the current GREEN selector correction. Continue deterministic acceptance. After CP5 pre-decision acceptance, the verified-savings rule remains an owner decision before any customer-facing verified totals are enabled; independent provider-agnostic Phase 2 work may continue.
+None for the GREEN application fix itself. If the Vercel build-rate limit prevents deployment of `11b23ef4`, that is an external environment/cost blocker; do not cross the paid-plan gate. Verified-savings rules remain an owner decision only after the CP5 pre-decision engineering slice is accepted.
