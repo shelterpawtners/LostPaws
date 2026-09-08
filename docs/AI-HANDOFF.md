@@ -15,6 +15,8 @@ ACCEPTED_CODE_SHA: NONE
 - Active Issue: #15.
 - CP6 Issue #14 remains authorized next, but feature implementation must wait until Dev Loop v2 is integrated.
 - Phase 3 remains unauthorized.
+- CI #238 failed only at `npm run lint`; Database QA #3, Persona QA #68, Hosted QA #134, Merge Gate #3, Dependency Review #3, AI Ops Status #3, and the read-only formatting artifact workflow all passed on head `45c6a87303565c63b325dbf037245b5497bb494c`.
+- Failure classification: GREEN formatting defect. The deterministic formatting artifact was applied exactly and the temporary one-shot formatter workflow was removed. Native CI/QA must now validate the corrected head before this bootstrap can be marked COMPLETE.
 
 ## Dev Loop v2 scope
 
@@ -34,7 +36,7 @@ Implement and validate:
 
 ## Cost policy
 
-- No automatic Copilot/Codex/Claude invocation.
+- No automatic coding-agent invocation.
 - No automatic AI review.
 - Native GitHub Actions/scripts own deterministic validation/status.
 - One primary coding agent per bounded checkpoint by default.
@@ -57,4 +59,4 @@ Before marking this bootstrap COMPLETE:
 5. document any deliberately deferred optimization;
 6. set `ACCEPTED_CODE_SHA` to the exact accepted bootstrap implementation SHA;
 7. update Issue #15 and this handoff;
-8. merge only under the owner's already-granted authorization for this optimization rollout, then create the fresh CP6 branch/PR.
+8. integrate only under the owner's already-granted authorization for this optimization rollout, then create the fresh CP6 branch/PR.

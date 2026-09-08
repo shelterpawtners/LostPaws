@@ -14,14 +14,14 @@ PR #2 was owner-approved and merged into `build/festival-mvp` on 2026-09-08.
 
 Accepted Phase 2 status:
 
-| Checkpoint | Status |
-| --- | --- |
-| CP1 — Partner Organization Foundation | ACCEPTED |
-| CP2 — Partner Profile + Public Directory | ACCEPTED |
-| CP3 — Offer Engine | COMPLETE |
-| CP4 — Claim + QR/Code Redemption | ACCEPTED |
-| CP5 — Verified Savings + Customer Attribution pre-decision engineering | COMPLETE |
-| CP6 — Provider-agnostic Impact, Reputation + Giving Foundation | AUTHORIZED NEXT |
+| Checkpoint                                                             | Status          |
+| ---------------------------------------------------------------------- | --------------- |
+| CP1 — Partner Organization Foundation                                  | ACCEPTED        |
+| CP2 — Partner Profile + Public Directory                               | ACCEPTED        |
+| CP3 — Offer Engine                                                     | COMPLETE        |
+| CP4 — Claim + QR/Code Redemption                                       | ACCEPTED        |
+| CP5 — Verified Savings + Customer Attribution pre-decision engineering | COMPLETE        |
+| CP6 — Provider-agnostic Impact, Reputation + Giving Foundation         | AUTHORIZED NEXT |
 
 CP5 evidence remains recorded in the handoff/progress history and Issue #13 is closed.
 

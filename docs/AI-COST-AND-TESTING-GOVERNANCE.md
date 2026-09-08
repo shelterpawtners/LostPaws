@@ -53,10 +53,12 @@ Unknown paths fall back to broader deterministic testing.
 ### Tier 1 — implementation
 
 **CI**
+
 - docs-only → formatting/instruction checks;
 - web/workflow/dependency/E2E/shared changes → formatting, unit tests, production build.
 
 **Database QA**
+
 - database/RLS/RPC/Supabase changes → local Supabase start/reset/replay + pgTAP/RLS.
 
 No Chromium is required for Database QA.
@@ -66,10 +68,12 @@ No Chromium is required for Database QA.
 Only when `STATUS: READY_FOR_ACCEPTANCE`.
 
 **Persona QA**
+
 - runs only when persona-sensitive impact exists;
 - fresh local Supabase reset/seed + targeted Persona/Guardian/access/redemption Playwright.
 
 **Hosted QA**
+
 - runs only when product/browser impact exists and the PR is the active build lane;
 - verifies relevant Vercel readiness;
 - runs hosted golden paths once at acceptance.
