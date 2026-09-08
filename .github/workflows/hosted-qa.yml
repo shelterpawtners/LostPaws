@@ -30,6 +30,8 @@ concurrency:
 
 permissions:
   contents: read
+  issues: read
+  pull-requests: read
 
 jobs:
   acceptance-gate:
@@ -63,21 +65,23 @@ jobs:
       PLAYWRIGHT_BASE_URL: ${{ inputs.qa_url || vars.QA_BASE_URL || 'https://lost-paws-one.vercel.app' }}
       PLAYWRIGHT_HOSTED_QA: "true"
       PLAYWRIGHT_SUPABASE_URL: ${{ vars.QA_SUPABASE_URL }}
+      PLAYWRIGHT_SUPABASE_PUBLISHABLE_KEY: ${{ vars.QA_SUPABASE_PUBLISHABLE_KEY }}
       PLAYWRIGHT_ADMIN_EMAIL: ${{ secrets.QA_PLATFORM_ADMIN_EMAIL }}
       PLAYWRIGHT_ADMIN_PASSWORD: ${{ secrets.QA_PLATFORM_ADMIN_PASSWORD }}
       PLAYWRIGHT_NON_ADMIN_EMAIL: ${{ secrets.QA_NON_ADMIN_EMAIL }}
       PLAYWRIGHT_NON_ADMIN_PASSWORD: ${{ secrets.QA_NON_ADMIN_PASSWORD }}
-      PLAYWRIGHT_GUARDIAN_EMAIL: guardian-a@example.invalid
-      PLAYWRIGHT_GUARDIAN_PASSWORD: Demo-only-Guardian-A!
-      PLAYWRIGHT_PARTNER_EMAIL: partner-admin@example.invalid
-      PLAYWRIGHT_PARTNER_PASSWORD: Demo-only-Partner!
+      PLAYWRIGHT_GUARDIAN_EMAIL: ${{ secrets.QA_GUARDIAN_EMAIL }}
+      PLAYWRIGHT_GUARDIAN_PASSWORD: ${{ secrets.QA_GUARDIAN_PASSWORD }}
+      PLAYWRIGHT_PARTNER_EMAIL: ${{ secrets.QA_PARTNER_EMAIL }}
+      PLAYWRIGHT_PARTNER_PASSWORD: ${{ secrets.QA_PARTNER_PASSWORD }}
     steps:
       - uses: actions/checkout@v7
+        with:
+          fetch-depth: 2
       - uses: actions/setup-node@v7
         with:
           node-version: 22
           cache: npm
-      - run: npm ci
       - name: Require handoff continuation authorization
         shell: bash
         run: |
@@ -92,15 +96,66 @@ jobs:
       - name: Require hosted QA configuration
         shell: bash
         run: |
-          for setting in PLAYWRIGHT_BASE_URL PLAYWRIGHT_GUARDIAN_EMAIL PLAYWRIGHT_GUARDIAN_PASSWORD PLAYWRIGHT_PARTNER_EMAIL PLAYWRIGHT_PARTNER_PASSWORD; do
+          set -euo pipefail
+          for setting in \
+            PLAYWRIGHT_BASE_URL \
+            PLAYWRIGHT_SUPABASE_URL \
+            PLAYWRIGHT_SUPABASE_PUBLISHABLE_KEY \
+            PLAYWRIGHT_ADMIN_EMAIL \
+            PLAYWRIGHT_ADMIN_PASSWORD \
+            PLAYWRIGHT_NON_ADMIN_EMAIL \
+            PLAYWRIGHT_NON_ADMIN_PASSWORD \
+            PLAYWRIGHT_GUARDIAN_EMAIL \
+            PLAYWRIGHT_GUARDIAN_PASSWORD \
+            PLAYWRIGHT_PARTNER_EMAIL \
+            PLAYWRIGHT_PARTNER_PASSWORD; do
             [[ -n "${!setting}" ]] || { echo "Missing hosted QA setting: $setting" >&2; exit 1; }
           done
           [[ "$PLAYWRIGHT_BASE_URL" == https://* ]] || { echo "QA_BASE_URL must be HTTPS" >&2; exit 1; }
           [[ "$PLAYWRIGHT_BASE_URL" =~ ^https://[^/]+\.vercel\.app(/.*)?$ ]] || { echo "QA URL must be a Vercel URL on vercel.app" >&2; exit 1; }
-          if [[ -n "${PLAYWRIGHT_SUPABASE_URL:-}" ]] && [[ ! "$PLAYWRIGHT_SUPABASE_URL" =~ ^https://jukmlmryykcnjtpblbja\.supabase\.co/?$ ]]; then
-            echo "QA_SUPABASE_URL must point to shelterpawtners-dev when set" >&2
+          [[ "$PLAYWRIGHT_SUPABASE_URL" =~ ^https://jukmlmryykcnjtpblbja\.supabase\.co/?$ ]] || {
+            echo "QA_SUPABASE_URL must point to shelterpawtners-dev" >&2
             exit 1
+          }
+      - name: Wait for this web commit to be Ready on Vercel
+        if: github.event_name == 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          QA_URL: ${{ vars.QA_BASE_URL }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          # If the deployed web artifact cannot change, no new Vercel deployment
+          # is required and the existing QA URL is the correct target.
+          if git rev-parse HEAD^ >/dev/null 2>&1 && git diff --quiet HEAD^ HEAD -- \
+            src public index.html package.json package-lock.json \
+            vite.config.ts vite.config.js tsconfig.json tsconfig.app.json tsconfig.node.json; then
+            echo "No frontend/build-impacting change in this commit; Vercel readiness wait is unnecessary."
+            exit 0
           fi
+
+          commit_time=$(gh api "repos/${REPO}/commits/${HEAD_SHA}" --jq '.commit.committer.date')
+          echo "Waiting for Vercel bot to report Ready for the current web-impacting commit (${HEAD_SHA})."
+
+          for attempt in $(seq 1 30); do
+            ready=$(gh api "repos/${REPO}/issues/${PR_NUMBER}/comments?per_page=100" --paginate --jq \
+              --arg commit_time "${commit_time}" --arg qa_url "${QA_URL}" \
+              '[.[] | select(.user.login == "vercel[bot]") | select(.updated_at >= $commit_time) | select(.body | contains("Ready")) | select(.body | contains($qa_url))] | length')
+            if [[ "${ready}" -gt 0 ]]; then
+              echo "Vercel reports the current QA deployment Ready."
+              exit 0
+            fi
+            echo "Vercel deployment not Ready yet (attempt ${attempt}/30)."
+            sleep 10
+          done
+
+          echo "Timed out waiting for Vercel Ready state for the current web-impacting commit. Hosted QA will not test a potentially stale deployment." >&2
+          exit 1
+      - run: npm ci
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
       - name: Run hosted smoke
