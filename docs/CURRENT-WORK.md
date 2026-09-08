@@ -23,34 +23,32 @@ Accepted Phase 2 status:
 | CP5 — Verified Savings + Customer Attribution pre-decision engineering | COMPLETE        |
 | CP6 — Provider-agnostic Impact, Reputation + Giving Foundation         | AUTHORIZED NEXT |
 
-CP5 evidence remains recorded in the handoff/progress history and Issue #13 is closed.
-
 ## Dev Loop v2 bootstrap
 
-**Issue #15 — Dev Loop v2 bootstrap** is COMPLETE at accepted code SHA `7d3f69782da7365400fbce639837b692b37c995c`.
+**Issue #15 — Dev Loop v2 bootstrap** is COMPLETE at accepted code SHA `6a63827a1111d00ea930a1e07e8aa3ffd9e911ed`.
 
-Accepted native evidence:
+Accepted native evidence on that implementation SHA:
 
-- CI #244 PASS;
-- Database QA #9 PASS;
-- Persona QA #74 PASS;
-- Hosted QA #140 PASS with actual `hosted-smoke` job SUCCESS;
-- Merge Gate #10 PASS at the acceptance boundary;
-- Dependency Review #9 PASS;
-- AI Ops Status #10 PASS.
+- CI #257 PASS;
+- Database QA #22 PASS;
+- Persona QA #87 PASS, including local Admin QA security regression;
+- Hosted QA #153 PASS with actual hosted golden paths against the resolved Vercel Preview artifact;
+- Merge Gate #23 PASS at the acceptance boundary;
+- Dependency Review #22 PASS;
+- AI Ops Status #23 PASS.
 
-PR #16 remains open only for manual integration because auto-merge is prohibited. No engineering or owner-decision blocker remains for this bootstrap.
+PR #16 now requires only final documentation-only Merge Gate validation and integration under the owner's standing authorization.
 
 ## Next product checkpoint
 
-After PR #16 is manually integrated:
+After PR #16 is integrated:
 
 1. create `phase2/cp6-impact-giving` from the updated `build/festival-mvp`;
 2. open one bounded CP6 PR for Issue #14;
 3. move the `<!-- ai-active-build-pr -->` marker to that PR;
 4. set the handoff to `IN_PROGRESS`, owner decision `NO`, safe to continue `YES`, accepted SHA `NONE`;
 5. implement CP6 provider-agnostic impact/reputation/giving foundations;
-6. stop before provider-dependent production money movement.
+6. stop only before provider-dependent production money movement or another RED decision.
 
 ## Operating model
 
@@ -61,11 +59,14 @@ Key rules:
 - one Issue → one short branch → one bounded PR → acceptance → merge;
 - GitHub Actions/scripts own deterministic work;
 - AI credits are reserved for implementation/reasoning;
-- Database QA runs during relevant DB implementation changes;
-- Persona and Hosted browser QA run at the acceptance boundary only when the classifier requires them;
-- Merge Gate validates evidence;
+- Database QA runs for relevant DB changes;
+- Persona and Hosted browser QA run at checkpoint acceptance only when the classifier requires them;
+- generic Hosted QA validates normal product flows on the PR Preview artifact;
+- hidden Admin QA security behavior runs in the local Persona acceptance lane;
+- Merge Gate validates deterministic evidence and `ACCEPTED_CODE_SHA`;
 - AI Ops status is one native Issue #12 record;
-- stale watchdog cadence is hourly.
+- stale watchdog cadence is hourly;
+- tooling/docs-only commits reuse valid prior frontend acceptance instead of forcing redundant deployment/browser work.
 
 ## Owner gates
 

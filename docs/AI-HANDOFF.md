@@ -1,62 +1,65 @@
 # AI Handoff
 
-STATUS: READY_FOR_ACCEPTANCE
+STATUS: COMPLETE
 CURRENT_PHASE: Phase 2 — Partner Marketplace MVP
 CURRENT_CHECKPOINT: Dev Loop v2 bootstrap — Issue #15
-NEXT_CHECKPOINT: Integrate PR #16 after final native acceptance; then begin CP6 Issue #14 on fresh `phase2/cp6-impact-giving`
+NEXT_CHECKPOINT: Merge accepted PR #16, then launch CP6 Issue #14 from fresh `phase2/cp6-impact-giving`
 OWNER_DECISION_REQUIRED: NO
 SAFE_TO_CONTINUE: YES
-ACCEPTED_CODE_SHA: NONE
+ACCEPTED_CODE_SHA: 6a63827a1111d00ea930a1e07e8aa3ffd9e911ed
 
 ## Current state
 
-- PR #2 is merged into `build/festival-mvp` at merge commit `e248f8b3ae754da7faccf41ebe2c0a4bb3857f27`.
+- PR #2 is merged into `build/festival-mvp` at `e248f8b3ae754da7faccf41ebe2c0a4bb3857f27`.
 - Dev Loop v2 branch: `ops/dev-loop-v2`; active PR #16.
-- Earlier acceptance evidence at `7d3f69782da7365400fbce639837b692b37c995c` is superseded because the QA control-plane architecture changed afterward.
-- Final architecture must prove itself before integration; no stale accepted SHA is being reused.
-- Generic Hosted QA now verifies the latest frontend-impacting commit's Vercel status and tests the PR's Vercel Preview URL.
-- Hidden Admin QA regression is separated from generic Preview Hosted QA and runs in the deterministic local Persona acceptance lane with `VITE_ADMIN_QA_MODE_ENABLED=true` and seeded demo identities.
-- QA workflow changes self-trigger their relevant acceptance lane through the canonical change-impact classifier.
-- The hourly ChatGPT Build Controller is temporarily disabled during this live one-writer sprint to prevent concurrent branch edits; re-enable it at the next real stopping boundary.
-- CP6 Issue #14 is the next already-authorized Phase 2 checkpoint after Dev Loop v2 integration.
+- Dev Loop v2 implementation is accepted at `6a63827a1111d00ea930a1e07e8aa3ffd9e911ed`.
+- Acceptance evidence on that exact implementation SHA:
+  - CI #257 PASS;
+  - Database QA #22 PASS;
+  - Persona QA #87 PASS, including the local Admin QA security regression with the local-only Edge Function QA flag;
+  - Hosted QA #153 PASS with actual hosted golden paths against the resolved Vercel Preview artifact;
+  - Merge Gate #23 PASS at the acceptance boundary;
+  - Dependency Review #22 PASS;
+  - AI Ops Status #23 PASS.
+- Generic Hosted QA no longer depends on the hidden Admin QA Vercel feature flag. Admin QA security behavior is validated in the deterministic local Persona lane.
+- Tooling/docs-only commits may reuse the last successful frontend-impacting Vercel Preview artifact instead of waiting for an ignored deployment.
+- CP6 Issue #14 is the next authorized Phase 2 checkpoint after PR #16 integration.
 - Phase 3 remains unauthorized.
 
-## Dev Loop v2 delivered scope to validate
+## Dev Loop v2 accepted scope
 
 - one canonical change-impact classifier;
 - change-aware CI;
-- separate Database QA from Persona browser acceptance;
+- Database QA separated from Persona browser acceptance;
 - acceptance-only Persona and Hosted QA;
 - deterministic Merge Gate using `ACCEPTED_CODE_SHA`;
 - centralized exact Supabase CLI pin wrapper;
 - short root agent instructions plus path-specific GitHub instructions;
 - event-driven native AI Ops status with one Issue #12 status record;
 - hourly stale watchdog;
-- grouped Dependabot updates and native dependency review;
-- PR Preview browser acceptance for branch-specific product changes;
-- Admin QA security acceptance independent of Vercel Preview feature-flag scope;
-- full operating-model documentation.
+- grouped Dependabot updates and native Dependency Review;
+- Vercel ignored-build logic delegated to the classifier;
+- branch-specific PR Preview browser acceptance;
+- hidden Admin QA security acceptance independent of Vercel Preview feature-flag scope;
+- full Dev Loop v2 operating-model documentation.
 
 ## Cost policy
 
-- No automatic coding-agent invocation.
-- No automatic AI review.
-- Native GitHub Actions/scripts own deterministic validation/status.
-- No CP6 product work belongs in the bootstrap branch.
+- No automatic coding-agent invocation or automatic AI review.
+- GitHub Actions/scripts own deterministic validation, status, and merge evidence.
+- AI is reserved for implementation, architecture, diagnosis, and material semantic review.
 - One active writer per code path.
 
 ## RED boundaries
 
 - `OD-003` remains blocking only for customer-facing verified-savings rules/totals.
 - `OD-004` remains blocking only for provider-dependent charitable-money movement/settlement/integration.
-- No production/DNS, paid infrastructure, destructive migration, auto-merge, or Phase 3.
+- No production/DNS, paid infrastructure, destructive migration, or Phase 3.
 
-## Acceptance required now
+## Next action
 
-1. CI Gate PASS.
-2. Database QA Gate PASS (full DB QA if classifier requires it).
-3. Persona QA Gate PASS with the local Admin QA security regression executing successfully.
-4. Hosted QA Gate PASS with actual hosted golden paths against the resolved PR Preview URL.
-5. Dependency Review PASS when applicable.
-6. Merge Gate accepts the final `ACCEPTED_CODE_SHA` only after the required evidence is green.
-7. Then mark Issue #15 COMPLETE, merge PR #16 under the owner's standing Dev Loop v2 authorization, and create the fresh CP6 branch/PR.
+1. Let the final documentation-only head pass CI/Merge Gate using the accepted implementation evidence above.
+2. Close Issue #15 and merge PR #16 under the owner's standing authorization.
+3. Verify the updated `build/festival-mvp` baseline.
+4. Create `phase2/cp6-impact-giving`, open one bounded CP6 PR for Issue #14, move the active-build marker, and set the handoff to `IN_PROGRESS` / `OWNER_DECISION_REQUIRED: NO` / `SAFE_TO_CONTINUE: YES` / `ACCEPTED_CODE_SHA: NONE`.
+5. Implement only the provider-agnostic CP6 foundation allowed before `OD-004`.
