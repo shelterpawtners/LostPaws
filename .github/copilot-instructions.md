@@ -1,63 +1,35 @@
 # ShelterPawtners Copilot Instructions
 
-Read `AGENTS.md` before implementing work.
+Read `AGENTS.md` first. Then read only the active task context: the GitHub Issue/PR, `docs/CURRENT-WORK.md`, `docs/AI-HANDOFF.md`, `docs/AUTONOMOUS-EXECUTION-POLICY.md`, `docs/AI-COST-AND-TESTING-GOVERNANCE.md`, and the relevant phase/security/product files.
 
-Also read:
+## Current authority
 
-- `docs/CURRENT-WORK.md`
-- `docs/AI-OPERATING-PROTOCOL.md`
-- `docs/AUTONOMOUS-EXECUTION-POLICY.md`
-- `docs/AI-HANDOFF.md`
-- `docs/OWNER-DECISION-BACKLOG.md`
-- `docs/DECISION-LOG.md`
-- the active GitHub Issue/PR
-- the active phase specification referenced by `docs/CURRENT-WORK.md`
-- the active phase progress file when present
-
-Do not redesign approved product/business rules.
+- Remainder of Phase 2 is authorized.
+- Phase 2 Checkpoint 5 is authorized and active when the handoff says so.
+- Phase 3 is not authorized.
+- No auto-merge, production/DNS changes, paid infrastructure, service-role browser credentials, RLS weakening, or material RED decisions without owner approval.
 
 ## Autonomy
 
-Work autonomously through routine implementation, debugging, validation, and related in-scope blockers.
+- GREEN: decide and continue.
+- YELLOW: make the safest reversible assumption, log it in `docs/OWNER-DECISION-BACKLOG.md`, and continue.
+- RED/hard blocker: finish safely separable work, update the backlog/handoff, and stop narrowly.
+- Fix related in-scope defects instead of stopping after the first failure.
+- Never weaken a valid regression test just to make CI green.
 
-- GREEN decisions: decide and continue without asking Jim.
-- YELLOW decisions: use the safest reversible assumption, record it in `docs/OWNER-DECISION-BACKLOG.md`, and continue.
-- RED decisions: complete safely separable work, record the blocker, update `docs/AI-HANDOFF.md`, and stop at the narrowest boundary.
-- Do not ask for approval for ordinary engineering choices.
-- Do not weaken valid regression tests merely to make CI green.
-- Continue through clearly related in-scope failures until the active Issue acceptance criteria are met or a RED/hard blocker is reached.
+## AI-credit discipline
 
-Current explicit progression gates remain in force: do not begin Phase 2 Checkpoint 5 or Phase 3 without explicit product-owner authorization.
+- Treat this invocation as one bounded checkpoint/defect-cluster session.
+- Work through implementation, targeted validation, and related GREEN/YELLOW fixes in this same session where practical.
+- Do not request or trigger another Copilot session because a routine CI/Hosted QA run passed.
+- Do not use AI for deterministic formatting, polling, status checks, test reruns, or tasks GitHub Actions/scripts can perform.
+- Do not request Copilot code review on every commit. Default to one review at checkpoint acceptance only when materially useful.
+- Keep context lean; do not read unrelated historical docs or explore unrelated code.
 
-Primary stack:
+## Stack and invariants
 
-- React
-- TypeScript
-- Vite
-- Tailwind CSS
-- Supabase
+React, TypeScript, Vite, Tailwind, Supabase. Git migrations are schema source of truth. Preserve RLS, auditability, provenance, demo-data isolation, append-oriented economic history, integer minor-unit money values, mobile-first behavior, and accessibility.
 
-General rules:
+## Before completion/blockage
 
-- Use GitHub migrations as the source of truth for schema changes.
-- Never weaken RLS simply to make a test pass.
-- Never commit secrets.
-- Financial history is append-oriented; do not silently rewrite finalized financial events.
-- Store money as integer minor units plus ISO currency.
-- User-facing U.S. financial values use centralized U.S. accounting/currency formatting.
-- Preserve demo-data isolation.
-- Preserve provenance and auditability.
-- Keep mobile-first and accessibility requirements.
-- Do not expand a bounded Copilot task into unrelated product work or an unauthorized phase.
-- Prefer clearly labeled demo/QA placeholders over blocking on non-material copy/content preferences.
-
-Before completing or stopping a coding task:
-
-1. run the strongest relevant available lint/typecheck/tests/build,
-2. classify failures and fix in-scope GREEN/YELLOW defects,
-3. update tests when behavior changes,
-4. update `docs/OWNER-DECISION-BACKLOG.md` for unresolved owner preferences or blockers,
-5. update `docs/AI-HANDOFF.md` using the status contract in `docs/AUTONOMOUS-EXECUTION-POLICY.md`,
-6. update the active progress file when the task completes a phase gate,
-7. push completed work to the active branch/PR when the task allows it,
-8. never merge unless explicitly authorized.
+Run the strongest relevant tiered validation, update changed-behavior tests, update `docs/OWNER-DECISION-BACKLOG.md` only when needed, and update `docs/AI-HANDOFF.md` with final SHA, exact test/CI/Hosted QA state, defects, decision state, and next action. Never merge unless explicitly authorized.
