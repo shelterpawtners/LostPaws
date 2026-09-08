@@ -72,15 +72,17 @@ Environment validation debt remains: clean local Supabase reset/pgTAP replay and
 
 ### Checkpoint 4 — Claim + QR/Code Redemption
 
-**Status: READY FOR REQUIRED USER UX REVIEW.**
+**Status: ACCEPTED FOR AUTONOMOUS PHASE 2 PROGRESSION.**
 
-The local flow supports exact-version Guardian claims, opaque PII-free codes, Partner deep-link/manual validation, one-action utilization confirmation, replay prevention, and reversal history. See `docs/PHASE-2-CHECKPOINT-4-PROGRESS.md`.
+The flow supports exact-version Guardian claims, opaque PII-free codes, Partner deep-link/manual validation, one-action utilization confirmation, replay prevention, and reversal history. See `docs/PHASE-2-CHECKPOINT-4-PROGRESS.md`.
 
-Checkpoint 5 must not begin until the redemption UX is reviewed and approval is recorded.
+Jim's 2026-09-08 authorization of autonomous completion of the remainder of Phase 2 satisfies the prior progression gate for Checkpoint 5. Remaining redemption UX observations are non-blocking Phase 2 feedback unless they expose a RED decision. Phase 3 remains explicitly gated.
 
 ### Shared QA preview
 
 GitHub Issue #6 adds branch-scoped Vercel Preview configuration, SPA refresh routing, deterministic shared-dev seeding guidance, and hosted Playwright smoke/audit entry points. The preview is limited to `shelterpawtners-dev`; production hosting, DNS, Supabase, and credentials remain untouched. See `docs/HOSTED-QA.md`.
+
+Issue #6 hosted QA hardening is complete on the active QA branch with green CI and hosted push/PR acceptance runs. Hosted QA is now the normal browser acceptance surface for this Phase 2 branch.
 
 ## MVP execution strategy
 
@@ -106,8 +108,8 @@ The broad Issue #5 full-site audit is intentionally deferred until the major MVP
 ### Current strategic sequence
 
 1. Keep Admin QA functional enough to support testing; do not over-polish the tool.
-2. Finish/stabilize the active Partner Marketplace golden path with focused support/moderation visibility and targeted regression.
-3. Build a small private Guardian profile-lite vertical slice.
+2. Continue the authorized remaining Phase 2 checkpoints, beginning with Checkpoint 5, using hosted QA as the normal acceptance layer.
+3. Build a small private Guardian profile-lite vertical slice only if it remains inside the approved Phase 2 boundary; otherwise defer to Phase 3.
 4. Continue Pet/Guardian foundation work only within the approved phase boundary.
 5. Defer adoption verification, shelter-created Passport transfer/handoff, and other Phase 3 work until explicitly authorized.
 
@@ -152,19 +154,20 @@ Automate routine engineering, QA, documentation, and implementation decisions. E
 - critical UX with materially different business outcomes;
 - production deployment, DNS, or infrastructure.
 
-Expected planned user checkpoints are:
+Current owner checkpoint policy:
 
-1. working redemption UX review during Checkpoint 4;
-2. verified-savings rule approval during Checkpoint 5;
-3. giving-provider selection during Checkpoint 6;
-4. final Phase 2 acceptance before Phase 3.
+1. the remainder of Phase 2 is authorized for autonomous checkpoint-to-checkpoint execution;
+2. material verified-savings, giving-provider, financial, legal, privacy, or security decisions remain RED and must be escalated when encountered;
+3. final Phase 2 acceptance is required before Phase 3;
+4. Phase 3 requires a new explicit owner authorization.
 
 ## Operating model
 
 - GitHub is the source of truth and control plane.
-- Codex is the primary engineer.
-- Copilot is QA and a bounded engineer.
-- ChatGPT Project owns business decisions, UX, schemas, phase planning, review, financial rules, and execution prompts.
+- Codex is the primary engineer when available.
+- Copilot is the active cloud engineer/fallback and QA collaborator.
+- Claude may be used as an independent reviewer or alternate engineer when explicitly invoked.
+- ChatGPT Project owns business decisions, UX, schemas, phase planning, review, acceptance supervision, and execution orchestration.
 - Make is on hold and is not part of the current architecture.
 - Newer explicit user decisions supersede older project choices.
 - Implemented repository architecture supersedes stale planning notes.
