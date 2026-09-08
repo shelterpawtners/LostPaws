@@ -111,8 +111,9 @@ jobs:
         run: |
           set -euo pipefail
 
-          qa_url="${INPUT_QA_URL:-${FALLBACK_QA_URL}}"
-          if [[ "${GITHUB_EVENT_NAME}" != "workflow_dispatch" && -n "${PR_NUMBER}" ]]; then
+          if [[ "${GITHUB_EVENT_NAME}" == "workflow_dispatch" || -z "${PR_NUMBER}" ]]; then
+            qa_url="${INPUT_QA_URL:-${FALLBACK_QA_URL}}"
+          else
             frontend_sha=$(git log -1 --format=%H "${BASE_SHA}..HEAD" -- src public index.html package.json package-lock.json vite.config.ts tsconfig.json tsconfig.app.json tsconfig.node.json || true)
 
             if [[ -n "${frontend_sha}" ]]; then
@@ -139,6 +140,12 @@ jobs:
               done
             else
               echo "No frontend-impacting commit in this PR; existing QA deployment is valid."
+            fi
+
+            comments=$(gh api "repos/${REPO}/issues/${PR_NUMBER}/comments?per_page=100" --paginate)
+            qa_url=$(jq -r '[.[] | select(.user.login == "vercel[bot]")] | last | (.body // "") | try capture("\\[Preview\\]\\((?<url>https://[^)]+\\.vercel\\.app[^)]*)\\)").url catch ""' <<<"${comments}")
+            if [[ -z "${qa_url}" ]]; then
+              qa_url="${FALLBACK_QA_URL}"
             fi
           fi
 
