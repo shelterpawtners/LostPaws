@@ -18,6 +18,7 @@ Use this file with `docs/AUTONOMOUS-EXECUTION-POLICY.md`.
 
 ```markdown
 ### OD-XXX — <short title>
+
 Status: PROVISIONAL | BLOCKING | RESOLVED
 Category: UX | PRODUCT | SECURITY | PRIVACY | LEGAL | FINANCIAL | PRODUCTION | OTHER
 Introduced by: <agent>
@@ -45,6 +46,7 @@ Resolution:
 No provisional owner decisions are currently required by this framework.
 
 ### OD-001 — Phase 2 Checkpoint 5 authorization
+
 Status: BLOCKING
 Category: PRODUCT
 Introduced by: ChatGPT
@@ -67,6 +69,7 @@ Resolution:
 PENDING
 
 ### OD-002 — Phase 3 authorization
+
 Status: BLOCKING
 Category: PRODUCT
 Introduced by: ChatGPT
