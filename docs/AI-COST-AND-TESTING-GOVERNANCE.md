@@ -10,14 +10,12 @@ The GitHub control plane is **zero-AI by default**. GitHub Actions may detect, r
 
 Choose the lowest-cost surface that can safely complete the task.
 
-| Work type | Preferred surface | Rule |
-| --- | --- | --- |
-| Product/architecture/spec/acceptance reasoning | regular ChatGPT | Use for decisions, issue contracts, architecture review, and semantic acceptance. |
-| Substantial code-centric repository implementation | Codex / ChatGPT Work when included agentic allowance is available | Use one bounded session for the checkpoint/defect cluster; do not run Work and Codex on the same task concurrently. |
-| Tiny local edits / boilerplate while a human is editing | Copilot IDE completions / next-edit suggestions | Prefer non-agent suggestions over a cloud coding-agent session. |
-| Fallback code implementation when OpenAI agentic allowance is unavailable | intentionally started Copilot session | Prefer a bounded CLI session with an AI-credit cap when practical; cloud agent is a manual fallback, never an automatic scheduler. |
-| Formatting, lint, typecheck, tests, migration replay, pgTAP, browser regression, polling, status, dedup, stall detection | native scripts / GitHub Actions | Never spend AI credits merely to run or watch deterministic checks. |
-| Code review | deterministic checks first; one semantic AI review only when material | No repeated review during iterative fixes. |
+- **Product/architecture/spec/acceptance reasoning:** use regular ChatGPT for decisions, issue contracts, architecture review, and semantic acceptance.
+- **Substantial code-centric repository implementation:** use Codex / ChatGPT Work when included agentic allowance is available. Use one bounded session for the checkpoint/defect cluster; do not run Work and Codex on the same task concurrently.
+- **Tiny local edits / boilerplate while a human is editing:** prefer Copilot IDE completions / next-edit suggestions over a cloud coding-agent session.
+- **Fallback code implementation when OpenAI agentic allowance is unavailable:** intentionally start a bounded Copilot session. Prefer a CLI session with an AI-credit cap when practical; cloud agent is a manual fallback, never an automatic scheduler.
+- **Formatting, lint, typecheck, tests, migration replay, pgTAP, browser regression, polling, status, dedup, and stall detection:** use native scripts / GitHub Actions. Never spend AI credits merely to run or watch deterministic checks.
+- **Code review:** run deterministic checks first; use one semantic AI review only when its reasoning value is material. Do not repeat review during iterative fixes.
 
 Do not route Codex through GitHub's third-party coding-agent surface merely to avoid GitHub Copilot usage; GitHub-hosted coding agents can still consume GitHub AI credits. Use the OpenAI execution surface directly when choosing Codex/Work.
 
@@ -110,9 +108,10 @@ Vercel should not rebuild the frontend for docs-only, GitHub-workflow-only, E2E-
 
 - Use `bash scripts/vercel-ignore-build.sh` as the Vercel Ignored Build Step when enabled in project settings.
 - The script builds conservatively when frontend/build inputs change and skips only commits that cannot alter the deployed web artifact.
+- Acceptance-boundary `READY_FOR_ACCEPTANCE` / `COMPLETE` SHAs always deploy so Hosted QA can prove the exact SHA under test is Ready on the stable QA URL.
 - Keep Vercel's native dependency/build cache enabled.
 - Do not introduce another CI/CD provider just to optimize preview builds.
-- Heavy Hosted QA must not claim acceptance until the relevant web deployment for the tested code is Ready. The workflow should use a native deployment/readiness signal rather than an AI judgment call.
+- Heavy Hosted QA must not claim acceptance until the relevant web deployment for the tested code is Ready. The workflow uses a native Vercel/GitHub readiness signal rather than an AI judgment call.
 
 ## Handoff
 
