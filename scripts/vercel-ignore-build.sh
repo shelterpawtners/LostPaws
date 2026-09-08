@@ -4,38 +4,25 @@ set -euo pipefail
 # Vercel Ignored Build Step semantics:
 #   exit 0 => skip build
 #   exit 1 => proceed with build
-#
-# Normal intermediate commits build only when the deployed web artifact can
-# change. Acceptance-boundary commits always build so Hosted QA can prove the
-# exact READY_FOR_ACCEPTANCE / COMPLETE SHA is what the stable QA URL serves.
-
-if [[ -f docs/AI-HANDOFF.md ]]; then
-  status=$(sed -n 's/^STATUS:[[:space:]]*//p' docs/AI-HANDOFF.md | head -n 1)
-  if [[ "${status}" == "READY_FOR_ACCEPTANCE" || "${status}" == "COMPLETE" ]]; then
-    echo "Acceptance-boundary handoff detected; deploy this exact SHA for Hosted QA."
-    exit 1
-  fi
-fi
 
 if ! git rev-parse HEAD^ >/dev/null 2>&1; then
   echo "No parent commit available; build conservatively."
   exit 1
 fi
 
-if git diff --quiet HEAD^ HEAD -- \
-  src \
-  public \
-  index.html \
-  package.json \
-  package-lock.json \
-  vite.config.ts \
-  vite.config.js \
-  tsconfig.json \
-  tsconfig.app.json \
-  tsconfig.node.json; then
-  echo "No frontend/build-impacting changes detected; skip intermediate Vercel build."
-  exit 0
+impact=$(mktemp)
+trap 'rm -f "$impact"' EXIT
+
+bash scripts/classify-change-impact.sh HEAD^ HEAD > "$impact"
+
+artifact=$(sed -n 's/^frontend_artifact=//p' "$impact" | tail -n 1)
+deployment=$(sed -n 's/^deployment=//p' "$impact" | tail -n 1)
+unknown=$(sed -n 's/^unknown=//p' "$impact" | tail -n 1)
+
+if [[ "$artifact" == "true" || "$deployment" == "true" || "$unknown" == "true" ]]; then
+  echo "Deployed frontend artifact changed; run Vercel build."
+  exit 1
 fi
 
-echo "Frontend/build-impacting changes detected; run Vercel build."
-exit 1
+echo "No deployed frontend artifact change detected; skip Vercel build."
+exit 0

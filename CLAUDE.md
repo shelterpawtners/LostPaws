@@ -3,6 +3,7 @@
 `AGENTS.md` is the primary cross-agent instruction file. Read it first.
 
 For the active task, then read only:
+
 - the active GitHub Issue/PR;
 - `docs/CURRENT-WORK.md`;
 - `docs/AI-HANDOFF.md`;

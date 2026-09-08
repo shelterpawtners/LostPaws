@@ -3,23 +3,10 @@ name: Hosted QA
 on:
   pull_request:
     branches: [build/festival-mvp]
-    paths:
-      - "src/**"
-      - "public/**"
-      - "e2e/**"
-      - ".github/workflows/hosted-qa.yml"
-      - "playwright.config.ts"
-      - "package.json"
-      - "package-lock.json"
-      - "index.html"
-      - "vite.config.ts"
-      - "tsconfig*.json"
-      - "supabase/**"
-      - "docs/AI-HANDOFF.md"
   workflow_dispatch:
     inputs:
       qa_url:
-        description: Vercel Preview HTTPS URL (defaults to the QA_BASE_URL repository variable)
+        description: Vercel Preview HTTPS URL (defaults to QA_BASE_URL)
         required: false
         type: string
       full_browser_audit:
@@ -47,44 +34,40 @@ jobs:
       - uses: actions/checkout@v7
         with:
           fetch-depth: 0
+      - id: impact
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before || github.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: bash scripts/classify-change-impact.sh "$BASE_SHA" "$HEAD_SHA"
       - id: gate
-        name: Run heavy hosted QA only at active acceptance boundary
+        name: Run heavy Hosted QA only at the active acceptance boundary
         env:
           GH_TOKEN: ${{ github.token }}
           REPO: ${{ github.repository }}
           ACTIVE_MARKER: "<!-- ai-active-build-pr -->"
+          HOSTED_REQUIRED: ${{ steps.impact.outputs.requires_hosted_qa }}
         shell: bash
         run: |
           set -euo pipefail
+          if [[ "${GITHUB_EVENT_NAME}" == "workflow_dispatch" ]]; then
+            echo "pr_number=" >> "$GITHUB_OUTPUT"
+            echo "run_hosted=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
           status=$(sed -n 's/^STATUS:[[:space:]]*//p' docs/AI-HANDOFF.md | head -n 1)
           safe=$(sed -n 's/^SAFE_TO_CONTINUE:[[:space:]]*//p' docs/AI-HANDOFF.md | head -n 1)
           owner=$(sed -n 's/^OWNER_DECISION_REQUIRED:[[:space:]]*//p' docs/AI-HANDOFF.md | head -n 1)
-
           prs=$(gh api "repos/${REPO}/pulls?state=open&base=build/festival-mvp&per_page=100")
-          pr_number=$(jq -r --arg branch "${GITHUB_HEAD_REF:-${GITHUB_REF_NAME}}" --arg marker "${ACTIVE_MARKER}" \
-            '[.[] | select(.head.ref == $branch) | select((.body // "") | contains($marker))] | if length == 1 then .[0].number else empty end' <<<"${prs}")
+          pr_number=$(jq -r --arg branch "${GITHUB_HEAD_REF:-${GITHUB_REF_NAME}}" --arg marker "${ACTIVE_MARKER}" '[.[] | select(.head.ref == $branch) | select((.body // "") | contains($marker))] | if length == 1 then .[0].number else empty end' <<<"${prs}")
           echo "pr_number=${pr_number}" >> "$GITHUB_OUTPUT"
-
-          if [[ "${GITHUB_EVENT_NAME}" == "workflow_dispatch" ]]; then
-            echo "run_hosted=true" >> "$GITHUB_OUTPUT"
-            echo "Manual Hosted QA requested."
-            exit 0
-          fi
-
           if [[ -z "${pr_number}" ]]; then
             echo "run_hosted=false" >> "$GITHUB_OUTPUT"
-            echo "This branch is not the single active build PR; skip hosted QA."
             exit 0
           fi
-
-          # Automatic full browser acceptance is run exactly when a checkpoint
-          # is READY. COMPLETE is documentary state and must not repeat the suite.
-          if [[ "${safe}" == "YES" && "${owner}" == "NO" && "${status}" == "READY_FOR_ACCEPTANCE" ]]; then
+          if [[ "${HOSTED_REQUIRED}" == "true" && "${safe}" == "YES" && "${owner}" == "NO" && "${status}" == "READY_FOR_ACCEPTANCE" ]]; then
             echo "run_hosted=true" >> "$GITHUB_OUTPUT"
-            echo "Active checkpoint is READY_FOR_ACCEPTANCE; run hosted QA."
           else
             echo "run_hosted=false" >> "$GITHUB_OUTPUT"
-            echo "Checkpoint is ${status:-unknown}; skip heavy hosted browser QA."
           fi
 
   hosted-smoke:
@@ -92,7 +75,6 @@ jobs:
     if: needs.acceptance-gate.outputs.run_hosted == 'true'
     runs-on: ubuntu-latest
     env:
-      PLAYWRIGHT_BASE_URL: ${{ inputs.qa_url || vars.QA_BASE_URL || 'https://lost-paws-one.vercel.app' }}
       PLAYWRIGHT_HOSTED_QA: "true"
       PLAYWRIGHT_SUPABASE_URL: ${{ vars.QA_SUPABASE_URL }}
       PLAYWRIGHT_SUPABASE_PUBLISHABLE_KEY: ${{ vars.QA_SUPABASE_PUBLISHABLE_KEY }}
@@ -111,79 +93,79 @@ jobs:
           node-version: 22
           cache: npm
       - name: Require handoff continuation authorization
+        if: github.event_name != 'workflow_dispatch'
         shell: bash
         run: |
-          grep -q "^SAFE_TO_CONTINUE: YES$" docs/AI-HANDOFF.md || {
-            echo "Hosted QA cannot advance when AI handoff is not SAFE_TO_CONTINUE: YES" >&2
-            exit 1
-          }
-          grep -q "^OWNER_DECISION_REQUIRED: NO$" docs/AI-HANDOFF.md || {
-            echo "Hosted QA cannot advance while OWNER_DECISION_REQUIRED is not NO" >&2
-            exit 1
-          }
-      - name: Require hosted QA configuration
-        shell: bash
-        run: |
-          set -euo pipefail
-          for setting in \
-            PLAYWRIGHT_BASE_URL \
-            PLAYWRIGHT_SUPABASE_URL \
-            PLAYWRIGHT_SUPABASE_PUBLISHABLE_KEY \
-            PLAYWRIGHT_ADMIN_EMAIL \
-            PLAYWRIGHT_ADMIN_PASSWORD \
-            PLAYWRIGHT_GUARDIAN_EMAIL \
-            PLAYWRIGHT_GUARDIAN_PASSWORD \
-            PLAYWRIGHT_PARTNER_EMAIL \
-            PLAYWRIGHT_PARTNER_PASSWORD; do
-            [[ -n "${!setting}" ]] || { echo "Missing hosted QA setting: $setting" >&2; exit 1; }
-          done
-          [[ "$PLAYWRIGHT_BASE_URL" == https://* ]] || { echo "QA_BASE_URL must be HTTPS" >&2; exit 1; }
-          [[ "$PLAYWRIGHT_BASE_URL" =~ ^https://[^/]+\.vercel\.app(/.*)?$ ]] || { echo "QA URL must be a Vercel URL on vercel.app" >&2; exit 1; }
-          [[ "$PLAYWRIGHT_SUPABASE_URL" =~ ^https://jukmlmryykcnjtpblbja\.supabase\.co/?$ ]] || {
-            echo "QA_SUPABASE_URL must point to shelterpawtners-dev" >&2
-            exit 1
-          }
-      - name: Wait for latest frontend-impacting SHA to be Ready on Vercel
-        if: needs.acceptance-gate.outputs.pr_number != ''
+          grep -q "^STATUS: READY_FOR_ACCEPTANCE$" docs/AI-HANDOFF.md
+          grep -q "^SAFE_TO_CONTINUE: YES$" docs/AI-HANDOFF.md
+          grep -q "^OWNER_DECISION_REQUIRED: NO$" docs/AI-HANDOFF.md
+      - name: Resolve tested Vercel URL and verify deployed frontend artifact
         env:
           GH_TOKEN: ${{ github.token }}
           REPO: ${{ github.repository }}
           PR_NUMBER: ${{ needs.acceptance-gate.outputs.pr_number }}
-          QA_URL: ${{ vars.QA_BASE_URL }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before || github.sha }}
+          INPUT_QA_URL: ${{ inputs.qa_url }}
+          FALLBACK_QA_URL: ${{ vars.QA_BASE_URL || 'https://lost-paws-one.vercel.app' }}
         shell: bash
         run: |
           set -euo pipefail
 
-          frontend_sha=$(git log -1 --format=%H -- \
-            src public index.html package.json package-lock.json vite.config.ts tsconfig.json tsconfig.app.json tsconfig.node.json || true)
-          if [[ -z "${frontend_sha}" ]]; then
-            echo "No frontend-impacting commit found; use the existing QA deployment."
-            exit 0
+          if [[ "${GITHUB_EVENT_NAME}" == "workflow_dispatch" || -z "${PR_NUMBER}" ]]; then
+            qa_url="${INPUT_QA_URL:-${FALLBACK_QA_URL}}"
+          else
+            frontend_sha=$(bash scripts/latest-frontend-artifact-sha.sh "${BASE_SHA}" HEAD)
+
+            if [[ -n "${frontend_sha}" ]]; then
+              echo "Latest deployed-artifact PR SHA: ${frontend_sha}"
+              for attempt in $(seq 1 30); do
+                vercel_state=$(gh api "repos/${REPO}/commits/${frontend_sha}/status" --jq '[.statuses[] | select(.context == "Vercel")] | first | .state // "missing"')
+                case "${vercel_state}" in
+                  success)
+                    echo "Vercel deployment for ${frontend_sha} is successful."
+                    break
+                    ;;
+                  failure|error)
+                    echo "Vercel deployment for ${frontend_sha} is ${vercel_state}." >&2
+                    exit 1
+                    ;;
+                  *)
+                    if [[ "${attempt}" == "30" ]]; then
+                      echo "Timed out waiting for Vercel status on ${frontend_sha}." >&2
+                      exit 1
+                    fi
+                    sleep 10
+                    ;;
+                esac
+              done
+            else
+              echo "No deployed frontend artifact changed in this PR; existing QA deployment is valid."
+            fi
+
+            comments=$(gh api "repos/${REPO}/issues/${PR_NUMBER}/comments?per_page=100" --paginate)
+            qa_url=$(jq -r '[.[] | select(.user.login == "vercel[bot]")] | last | (.body // "") | try capture("\\[Preview\\]\\((?<url>https://[^)]+\\.vercel\\.app[^)]*)\\)").url catch ""' <<<"${comments}")
+            if [[ -z "${qa_url}" ]]; then
+              qa_url="${FALLBACK_QA_URL}"
+            fi
           fi
 
-          commit_time=$(gh api "repos/${REPO}/commits/${frontend_sha}" --jq '.commit.committer.date')
-          qa_url=${QA_URL%/}
-          echo "Waiting for Vercel Ready state at or after frontend SHA ${frontend_sha}."
-
-          for attempt in $(seq 1 30); do
-            comments=$(gh api "repos/${REPO}/issues/${PR_NUMBER}/comments?per_page=100" --paginate)
-            ready=$(jq --arg commit_time "${commit_time}" --arg qa_url "${qa_url}" \
-              '[.[] | select(.user.login == "vercel[bot]") | select(.updated_at >= $commit_time) | select(.body | contains("Ready")) | select(.body | contains($qa_url))] | length' \
-              <<<"${comments}")
-            if [[ "${ready}" -gt 0 ]]; then
-              echo "Vercel reports the latest frontend-impacting deployment Ready."
-              exit 0
-            fi
-            echo "Vercel deployment not Ready yet (attempt ${attempt}/30)."
-            sleep 10
+          qa_url=${qa_url%/}
+          [[ "${qa_url}" == https://* ]] || { echo "Hosted QA URL must be HTTPS." >&2; exit 1; }
+          [[ "${qa_url}" =~ ^https://[^/]+\.vercel\.app(/.*)?$ ]] || { echo "Hosted QA URL must be a Vercel URL." >&2; exit 1; }
+          echo "PLAYWRIGHT_BASE_URL=${qa_url}" >> "$GITHUB_ENV"
+          echo "Hosted QA target: ${qa_url}"
+      - name: Require hosted QA configuration
+        shell: bash
+        run: |
+          set -euo pipefail
+          for setting in PLAYWRIGHT_BASE_URL PLAYWRIGHT_SUPABASE_URL PLAYWRIGHT_SUPABASE_PUBLISHABLE_KEY PLAYWRIGHT_ADMIN_EMAIL PLAYWRIGHT_ADMIN_PASSWORD PLAYWRIGHT_GUARDIAN_EMAIL PLAYWRIGHT_GUARDIAN_PASSWORD PLAYWRIGHT_PARTNER_EMAIL PLAYWRIGHT_PARTNER_PASSWORD; do
+            [[ -n "${!setting}" ]] || { echo "Missing hosted QA setting: $setting" >&2; exit 1; }
           done
-
-          echo "Timed out waiting for Vercel Ready state after the latest frontend-impacting commit. Hosted QA will not test a potentially stale deployment." >&2
-          exit 1
+          [[ "$PLAYWRIGHT_SUPABASE_URL" =~ ^https://jukmlmryykcnjtpblbja\.supabase\.co/?$ ]]
       - run: npm ci
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
-      - name: Run hosted smoke
+      - name: Run hosted golden paths
         run: npm run test:e2e:hosted
       - name: Run Issue 5 browser audit
         if: ${{ inputs.full_browser_audit }}
@@ -195,3 +177,23 @@ jobs:
           name: hosted-playwright-results
           path: test-results/
           if-no-files-found: ignore
+
+  hosted-gate:
+    name: Hosted QA Gate
+    if: always()
+    needs: [acceptance-gate, hosted-smoke]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require Hosted QA only when gated on
+        env:
+          GATE_RESULT: ${{ needs.acceptance-gate.result }}
+          REQUIRED: ${{ needs.acceptance-gate.outputs.run_hosted }}
+          HOSTED_RESULT: ${{ needs.hosted-smoke.result }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$GATE_RESULT" == "success" ]] || exit 1
+          if [[ "$REQUIRED" == "true" && "$HOSTED_RESULT" != "success" ]]; then
+            exit 1
+          fi
+          echo "Hosted QA requirement satisfied."
