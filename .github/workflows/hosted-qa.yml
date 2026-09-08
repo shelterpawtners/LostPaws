@@ -1,5 +1,6 @@
 name: Hosted QA
 
+# The branch-push lane also provides trusted acceptance execution when a PR-originated bot commit is held for Actions approval.
 on:
   pull_request:
     branches: [build/festival-mvp]
