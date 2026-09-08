@@ -1,30 +1,6 @@
 name: Hosted QA
 
 on:
-  push:
-    branches:
-      - qa/guardian-registration-personas
-    paths:
-      - "src/**"
-      - "e2e/**"
-      - "supabase/**"
-      - "package.json"
-      - "package-lock.json"
-      - "playwright.config.*"
-      - "vite.config.*"
-      - ".github/workflows/hosted-qa.yml"
-  pull_request:
-    branches:
-      - build/festival-mvp
-    paths:
-      - "src/**"
-      - "e2e/**"
-      - "supabase/**"
-      - "package.json"
-      - "package-lock.json"
-      - "playwright.config.*"
-      - "vite.config.*"
-      - ".github/workflows/hosted-qa.yml"
   workflow_dispatch:
     inputs:
       qa_url:
@@ -36,6 +12,10 @@ on:
         required: false
         default: false
         type: boolean
+
+concurrency:
+  group: hosted-qa-${{ github.ref }}
+  cancel-in-progress: true
 
 permissions:
   contents: read
@@ -63,45 +43,24 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - name: Check hosted QA configuration
-        id: config
+      - name: Require hosted QA configuration
         shell: bash
         run: |
-          missing=0
           for setting in PLAYWRIGHT_BASE_URL PLAYWRIGHT_SUPABASE_URL PLAYWRIGHT_SUPABASE_PUBLISHABLE_KEY PLAYWRIGHT_ADMIN_EMAIL PLAYWRIGHT_ADMIN_PASSWORD PLAYWRIGHT_NON_ADMIN_EMAIL PLAYWRIGHT_NON_ADMIN_PASSWORD PLAYWRIGHT_GUARDIAN_EMAIL PLAYWRIGHT_GUARDIAN_PASSWORD PLAYWRIGHT_PARTNER_EMAIL PLAYWRIGHT_PARTNER_PASSWORD; do
-            if [[ -z "${!setting}" ]]; then
-              echo "::notice::Hosted QA setting is not configured: $setting"
-              missing=1
-            fi
+            [[ -n "${!setting}" ]] || { echo "Missing hosted QA setting: $setting" >&2; exit 1; }
           done
-          if [[ "$missing" -eq 1 ]]; then
-            if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
-              echo "Manual Hosted QA runs require all documented QA variables/secrets." >&2
-              exit 1
-            fi
-            echo "configured=false" >> "$GITHUB_OUTPUT"
-            echo "::notice::Hosted QA skipped for this automatic run because shared QA configuration is incomplete."
-          else
-            echo "configured=true" >> "$GITHUB_OUTPUT"
-          fi
-      - name: Validate hosted QA target
-        if: steps.config.outputs.configured == 'true'
-        shell: bash
-        run: |
           [[ "$PLAYWRIGHT_BASE_URL" == https://* ]] || { echo "QA_BASE_URL must be HTTPS" >&2; exit 1; }
           [[ "$PLAYWRIGHT_BASE_URL" =~ ^https://[^/]+\.vercel\.app(/.*)?$ ]] || { echo "QA URL must be a Vercel URL on vercel.app" >&2; exit 1; }
           [[ "$PLAYWRIGHT_SUPABASE_URL" =~ ^https://jukmlmryykcnjtpblbja\.supabase\.co/?$ ]] || { echo "QA_SUPABASE_URL must point to shelterpawtners-dev" >&2; exit 1; }
       - name: Install Chromium
-        if: steps.config.outputs.configured == 'true'
         run: npx playwright install --with-deps chromium
       - name: Run hosted smoke
-        if: steps.config.outputs.configured == 'true'
         run: npm run test:e2e:hosted
       - name: Run Issue 5 browser audit
-        if: steps.config.outputs.configured == 'true' && inputs.full_browser_audit
+        if: ${{ inputs.full_browser_audit }}
         run: npx playwright test e2e/phase-1-accessibility.spec.ts e2e/phase-1-auth.spec.ts e2e/guardian-dashboard.spec.ts e2e/persona-access-isolation.spec.ts e2e/persona-registration.spec.ts e2e/phase-2-partner-onboarding.spec.ts e2e/phase-2-offer-redemption.spec.ts
       - name: Upload Playwright failure evidence
-        if: failure() && steps.config.outputs.configured == 'true'
+        if: failure()
         uses: actions/upload-artifact@v6
         with:
           name: hosted-playwright-results
