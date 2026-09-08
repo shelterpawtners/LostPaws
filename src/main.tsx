@@ -33,7 +33,12 @@ import {
 } from "lucide-react";
 import type { Session } from "@supabase/supabase-js";
 import { accountRegistrationPath, legacyRegistrationTarget } from "./domain";
-import { googleAuthEnabled, supabase as db } from "./lib/supabase";
+import {
+  adminSupabase,
+  getActingSupabase,
+  googleAuthEnabled,
+  supabase as db,
+} from "./lib/supabase";
 import {
   hasOrganizationMatchSignal,
   organizationMatchSummary,
@@ -49,6 +54,11 @@ import { PublicPartnerProfile } from "./components/PublicPartnerProfile";
 import { OfferManager } from "./components/OfferManager";
 import { OfferMarketplace } from "./components/OfferMarketplace";
 import { RedemptionFlow } from "./components/RedemptionFlow";
+import {
+  AdminQaMode,
+  AdminQaNavLink,
+  QaBanner,
+} from "./components/AdminQaMode";
 type Kind = "guardian" | "shelter" | "petbiz" | "rave_vendor";
 const choices: { kind: Kind; title: string; copy: string }[] = [
   {
@@ -86,17 +96,27 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
     loading: true,
   });
   useEffect(() => {
-    if (!db) {
+    if (!adminSupabase) {
       setState({ session: null, loading: false });
       return;
     }
-    db.auth
-      .getSession()
-      .then(({ data }) => setState({ session: data.session, loading: false }));
-    const { data } = db.auth.onAuthStateChange((_event, session) =>
-      setState({ session, loading: false }),
-    );
-    return () => data.subscription.unsubscribe();
+    const persistedClient = adminSupabase;
+    const refresh = () => {
+      (getActingSupabase() || persistedClient).auth
+        .getSession()
+        .then(({ data }) =>
+          setState({ session: data.session, loading: false }),
+        );
+    };
+    refresh();
+    window.addEventListener("sp-qa-changed", refresh);
+    const { data } = persistedClient.auth.onAuthStateChange(() => {
+      if (!getActingSupabase()) refresh();
+    });
+    return () => {
+      window.removeEventListener("sp-qa-changed", refresh);
+      data.subscription.unsubscribe();
+    };
   }, []);
   return <AuthContext.Provider value={state}>{children}</AuthContext.Provider>;
 }
@@ -132,6 +152,7 @@ function Header() {
           <Link to="/marketplace">Marketplace</Link>
           <Link to="/rave">RAVE Shelter</Link>
           <Link to="/register">Join</Link>
+          {session && <AdminQaNavLink />}
           <Link className="btn quiet" to={session ? "/dashboard" : "/login"}>
             {session ? "My dashboard" : "Sign in"}
           </Link>
@@ -161,6 +182,7 @@ function Page({ children }: { children: React.ReactNode }) {
   return (
     <>
       <Header />
+      <QaBanner />
       <main id="main" className="min-h-screen" tabIndex={-1}>
         {children}
       </main>
@@ -1879,6 +1901,16 @@ function App() {
         element={
           <Protected>
             <Dashboard />
+          </Protected>
+        }
+      />
+      <Route
+        path="/admin-qa"
+        element={
+          <Protected>
+            <Page>
+              <AdminQaMode />
+            </Page>
           </Protected>
         }
       />

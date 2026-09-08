@@ -242,3 +242,10 @@ This is the canonical review list for implementation choices and explicit user-a
 - **Decision:** Human QA uses branch-scoped Vercel Preview deployments connected only to `shelterpawtners-dev` through the project URL and publishable client key. Deterministic shared data comes from the idempotent committed seed; hosted browser tests never receive privileged Supabase credentials.
 - **Reason:** Reviewers need a normal HTTPS surface without local Docker while production hosting, DNS, data, and credentials remain separately gated.
 - **Consequence:** Preview success is evidence for review, not production promotion. Shared Auth rate limits make seeded identities the stable automation path; disposable hosted-test pets are clearly prefixed and administrative cleanup remains deliberate.
+
+## D-036 — Delegated, audited test-only Admin QA sessions
+
+- **Status:** Active; Issue #7 implementation decision
+- **Decision:** QA persona switching uses a server-issued, one-time session exchange for reserved `@example.invalid` accounts. The persisted administrator session is never replaced; a second non-persisted client carries the acting test user's actual Supabase JWT.
+- **Reason:** This preserves real RLS fidelity without revealing passwords or server credentials, and makes return-to-admin immediate.
+- **Consequence:** Server functions remain role-authorized, environment-guarded, and audited. Arbitrary production-user impersonation is explicitly unsupported.

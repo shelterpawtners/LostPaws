@@ -15,8 +15,13 @@ Set these values in **Project settings → Environment Variables**, selecting **
 | `VITE_SUPABASE_URL`             | The `shelterpawtners-dev` project URL                       |
 | `VITE_SUPABASE_PUBLISHABLE_KEY` | An enabled publishable client key for `shelterpawtners-dev` |
 | `VITE_GOOGLE_AUTH_ENABLED`      | `false` until Google configuration is separately approved   |
+| `VITE_ADMIN_QA_MODE_ENABLED`    | `true` for this QA preview only; unset or `false` elsewhere |
 
 Do not add `service_role`, secret, database-password, or personal-access-token values to Vercel. Production-scoped variables remain untouched.
+
+## Admin QA Mode
+
+The QA preview supports an admin-only, test-persona mode. Configure the development project's Edge Function secret `QA_MODE_ENABLED=true`; this is a separate server-side guard from the public Vite UI flag. The `admin-qa-session` and `admin-create-test-user` functions use a server-only credential, validate the caller's active `platform_admin` database role, accept only `@example.invalid` targets, and write immutable private audit events. They remain disabled in production.
 
 ## Supabase Auth redirect allowlist
 
