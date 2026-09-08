@@ -24,7 +24,7 @@ Active implementation task: rerun provisioned Persona QA acceptance on the lates
 - Issue / task: #11 Partner profile persistence blocker.
 - Agent: GitHub Copilot.
 - Branch: `qa/guardian-registration-personas`.
-- Final remote SHA: `HEAD` of this handoff update commit on `qa/guardian-registration-personas`.
+- Final remote SHA: `9ca86f3a46321988009a07dbf9ba6a9885e5ffa8`.
 - Verified root cause: Partner profile editor allowed editing before async profile load completed, so late-loading server data could overwrite freshly typed form values before save; organization selection was also reset from an unordered membership query on reload.
 - What changed:
   - `src/components/PartnerProfileEditor.tsx`
