@@ -1,9 +1,28 @@
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(14);
+select plan(16);
 
 set local role authenticated;
 select set_config('request.jwt.claim.sub','10000000-0000-0000-0000-000000000003',true);
+
+select ok(
+  exists(
+    select 1
+    from pg_catalog.pg_class idx
+    join pg_catalog.pg_namespace ns on ns.oid=idx.relnamespace
+    join pg_catalog.pg_index ix on ix.indexrelid=idx.oid
+    where ns.nspname='public'
+      and idx.relname='redemptions_one_first_known_per_guardian_partner'
+      and ix.indisunique
+  ),
+  'first-known relationship has a database uniqueness invariant'
+);
+
+select like(
+  pg_catalog.pg_get_functiondef('public.confirm_redemption(text,uuid,jsonb)'::regprocedure),
+  '%pg_advisory_xact_lock%',
+  'relationship classification is serialized across concurrent Guardian + Partner confirmations'
+);
 
 create temp table cp5_ids(
   first_offer uuid,
