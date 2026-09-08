@@ -18,9 +18,11 @@ select ok(
   'first-known relationship has a database uniqueness invariant'
 );
 
-select like(
-  pg_catalog.pg_get_functiondef('public.confirm_redemption(text,uuid,jsonb)'::regprocedure),
-  '%pg_advisory_xact_lock%',
+select ok(
+  position(
+    'pg_advisory_xact_lock'
+    in pg_catalog.pg_get_functiondef('public.confirm_redemption(text,uuid,jsonb)'::regprocedure)
+  ) > 0,
   'relationship classification is serialized across concurrent Guardian + Partner confirmations'
 );
 
