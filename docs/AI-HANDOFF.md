@@ -1,9 +1,9 @@
 # AI Handoff
 
-STATUS: READY_FOR_ACCEPTANCE
+STATUS: COMPLETE
 CURRENT_PHASE: Phase 2 — Partner Marketplace MVP
 CURRENT_CHECKPOINT: Hosted shared QA hardening / Issue #6
-NEXT_CHECKPOINT: Continue remaining Phase 2 work from the approved roadmap after hosted QA acceptance
+NEXT_CHECKPOINT: Phase 2 Checkpoint 5 execution (authorized)
 OWNER_DECISION_REQUIRED: NO
 SAFE_TO_CONTINUE: YES
 
@@ -57,6 +57,7 @@ Acceptance evidence: Persona QA run #51 (`34210680064`) passed.
 Issue #6 — make hosted shared QA the normal acceptance environment.
 
 Issue #6 implementation SHA: `a4f492df2f49df011470fbcb7b80e2ec99e29e0d`
+Issue #6 final remote SHA: `1c0dcf9e200d0cff841588d039773e544894e783`
 
 Issue #6 root-cause gap addressed:
 
@@ -76,6 +77,8 @@ What changed for Issue #6:
 - Extended `npm run test:e2e:hosted` to include the new hosted golden-path test.
 - Updated `docs/HOSTED-QA.md` to align with implemented triggers, orchestration gate, and normal acceptance flow.
 - Recorded the durable workflow decision in `docs/DECISION-LOG.md` as D-039.
+- Stabilized hosted partner-profile persistence coverage by preventing save interaction before organization bootstrap completes in `PartnerProfileEditor`.
+- Stabilized hosted golden-path role-switching by routing sign-out through `/dashboard`, where the sign-out control is guaranteed.
 
 Issue #6 validation run locally:
 
@@ -85,11 +88,12 @@ Issue #6 validation run locally:
 - `npm run build` — PASS
 - `npx playwright test e2e/hosted-qa-marketplace-golden.spec.ts` — PASS (skipped locally without hosted env flags/secrets by design)
 
-Issue #6 CI state at implementation handoff:
+Issue #6 CI/Hosted QA state at completion:
 
 - Base branch (`build/festival-mvp`) CI remains passing.
-- Feature branch (`qa/guardian-registration-personas`) CI run #138 (`34211816225`) passed before this change set.
-- Hosted QA acceptance for this latest SHA is pending CI execution on the updated workflow.
+- Feature branch (`qa/guardian-registration-personas`) CI run #149 (`34217922764`) passed on final SHA.
+- Hosted QA push run #44 (`34217917559`) passed on final SHA.
+- Hosted QA PR run #45 (`34217922736`) passed on final SHA.
 
 Target operating model:
 
