@@ -1,9 +1,9 @@
 # AI Handoff
 
-STATUS: READY_FOR_ACCEPTANCE
+STATUS: IN_PROGRESS
 CURRENT_PHASE: Phase 2 — Partner Marketplace MVP
 CURRENT_CHECKPOINT: Phase 2 Checkpoint 5 — Verified Savings + Customer Attribution
-NEXT_CHECKPOINT: Run the full Hosted QA acceptance boundary for the CP5 pre-decision slice; if green, mark the slice COMPLETE and stop at the customer-facing verified-savings RED rule gate
+NEXT_CHECKPOINT: Harden first-known/returning attribution against concurrent confirmations, rerun Persona QA, then return to full Hosted QA acceptance
 OWNER_DECISION_REQUIRED: NO
 SAFE_TO_CONTINUE: YES
 
@@ -20,12 +20,11 @@ This file is the shared baton between ChatGPT, Codex, Copilot, GitHub Actions, a
 
 ## Current handoff
 
-Updated by: ChatGPT automation execution
+Updated by: ChatGPT architecture acceptance review
 Branch: `qa/guardian-registration-personas`
 Active PR: #2 (`<!-- ai-active-build-pr -->`)
 Active Issue: #13
-Final CP5 feature/test SHA: `7ecaf0359ab8d2cba0c68cb39a45bce9acd487c5`
-Hosted QA credential-dedup fix SHA: `78ebdf34478f7280675c8c996d2309d89c0c8d41`
+Current head before concurrency hardening: `de34405ee92363f8f54ee1c2a7df5311f01d1cdc`
 
 ### Checkpoint 5 implemented scope
 
@@ -39,38 +38,35 @@ Hosted QA credential-dedup fix SHA: `78ebdf34478f7280675c8c996d2309d89c0c8d41`
 - Partner redemption UI optionally captures reference/list value, amount actually paid, currency, reference type/source, evidence reference, and Partner customer attestation while explicitly stating the values are not verified savings.
 - Targeted Playwright verifies the Partner UI values persist and produce exact candidate savings.
 
-### Deterministic validation
+### Accepted deterministic evidence before final hardening
 
 - Persona QA #56 passed the CP5 database foundation end to end.
-- Earlier pgTAP plan mismatch was corrected from 12 to 14 without weakening any assertion.
-- Persona QA #59 attempt 2 on exact feature/test SHA `7ecaf0359ab8d2cba0c68cb39a45bce9acd487c5` PASSED local Supabase reset/seed, all pgTAP/RLS tests, and Guardian/persona/access/redemption Playwright including CP5 attribution persistence.
-- CI #199 passed on pre-acceptance head `584d8b0576d2c3b616a8f71644dce85cff461c65`.
-- Hosted QA #97 reached exact-SHA Vercel Ready and then failed only in `admin-qa-mode.spec.ts` because the configured duplicate non-admin credential pair was mismatched. Failure evidence showed Guardian A email paired with a different Guardian password and Supabase returned `Invalid login credentials`.
-- Classification: hosted QA configuration duplication, not CP5 application, RLS, authorization, migration, or Vercel readiness failure.
-- GREEN correction: Admin QA denial coverage now reuses the already-required/validated Guardian QA credentials as its non-admin identity; dedicated `QA_NON_ADMIN_*` secrets were removed from the workflow. The authorization assertion remains unchanged.
-- CI #201 PASSED the credential-dedup code/workflow fix.
-- Full Hosted QA rerun on the final READY handoff state is the remaining acceptance evidence.
+- pgTAP plan mismatch was corrected from 12 to 14 without weakening assertions.
+- Persona QA #59 attempt 2 on feature/test SHA `7ecaf0359ab8d2cba0c68cb39a45bce9acd487c5` PASSED local Supabase reset/seed, all pgTAP/RLS tests, and Guardian/persona/access/redemption Playwright including CP5 attribution persistence.
+- Hosted QA credential duplication was removed by reusing the validated Guardian QA identity for non-admin denial coverage; authorization assertions remain unchanged.
+- CI remained green through the hosted-QA and QA-user-factory fixes.
 
-### Cost-control notes
+### Architecture finding — GREEN concurrency hardening
 
-- No Copilot/Copilot review was invoked for this defect.
-- Persona QA remains deliberate/manual; no repeated heavy schema suite is attached to every long-lived PR update.
-- Hosted acceptance still verifies Vercel reports the exact acceptance SHA Ready before browser tests run.
+The current `confirm_redemption` classification is correct sequentially but can race when two different claims for the same Guardian + Partner are confirmed concurrently. Both transactions could observe no prior confirmed redemption and both persist `first_known`, corrupting customer-attribution analytics.
+
+This is a GREEN data-integrity defect within CP5, not a product-owner decision. Harden before acceptance by:
+
+1. serializing non-demo Guardian + Partner relationship classification with a transaction-scoped advisory lock;
+2. adding a unique partial index that guarantees at most one persisted `first_known` confirmed non-demo redemption per Guardian + Partner;
+3. extending pgTAP to guard both the serialized implementation and the one-first-known invariant;
+4. rerunning Persona QA and Hosted QA acceptance.
+
+Do not weaken existing attribution, RLS, replay, or append-only assertions.
 
 ### Deliberate RED boundary
 
-No effective/adjusted customer-facing savings total or lifetime verified total is introduced. Original captured values stay immutable and corrections stay append-only. Deciding how corrections, refunds, reversals, bundles, free items, evidence strength, or Partner-entered values roll into customer-facing `verified savings` is the explicit Checkpoint 5 financial/product rule gate and must not be guessed.
+No effective/adjusted customer-facing savings total or lifetime verified total is introduced. Original captured values stay immutable and corrections stay append-only. Deciding how corrections, refunds, reversals, bundles, free items, evidence strength, or Partner-entered values roll into customer-facing `verified savings` remains the explicit Checkpoint 5 financial/product rule gate.
 
 ### Vercel connector blocker
 
-Direct ChatGPT Vercel API access remains blocked: `list_teams` returns an empty team list, so team `jims-projects-acec6bcb` / project `lost-paws` cannot be queried through the connector. This is an OAuth/account-scope issue. It does not block Hosted QA because the GitHub/Vercel integration independently reported the exact acceptance deployment Ready.
-
-### Remaining CP5 work
-
-1. Inspect the full Hosted QA rerun on this final READY handoff state.
-2. If green, mark the pre-decision CP5 engineering slice COMPLETE/accepted and stop narrowly at the verified-savings calculation/evidence RED gate.
-3. Do not enable customer-facing `verified savings` until the owner approves that rule.
+Direct ChatGPT Vercel API access still returns an empty team list after reconnect attempts. This remains an external OAuth/account-scope issue and does not block GitHub/Vercel Hosted QA, which independently observes exact-SHA deployment readiness.
 
 ### Human action required
 
-None until Hosted QA completes. The next owner decision is the verified-savings rule gate after the pre-decision engineering slice is accepted.
+None for this concurrency hardening. Continue autonomously, then return to the verified-savings owner gate after green acceptance.
