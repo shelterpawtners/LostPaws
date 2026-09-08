@@ -1,9 +1,9 @@
 # AI Handoff
 
-STATUS: IN_PROGRESS
+STATUS: READY_FOR_ACCEPTANCE
 CURRENT_PHASE: Phase 2 — Partner Marketplace MVP
 CURRENT_CHECKPOINT: Phase 2 Checkpoint 5 — Verified Savings + Customer Attribution
-NEXT_CHECKPOINT: Validate the Admin QA selector correction with CI/Hosted QA; if green, mark the CP5 pre-decision slice COMPLETE, keep verified-savings rules owner-gated, and continue only safely separable provider-agnostic Phase 2 Checkpoint 6 work
+NEXT_CHECKPOINT: Run full Hosted QA on the corrected acceptance head; if green, mark the CP5 pre-decision slice COMPLETE, keep verified-savings rules owner-gated, and continue only safely separable provider-agnostic Phase 2 Checkpoint 6 work
 OWNER_DECISION_REQUIRED: NO
 SAFE_TO_CONTINUE: YES
 
@@ -61,8 +61,9 @@ Architecture review identified that two different claims for the same Guardian +
   - 6 hosted tests passed before the serial suite stopped; 2 later tests did not run.
   - Failure classification: GREEN test-selector defect, not application authorization, Supabase, RLS, deployment readiness, or CP5 savings behavior.
   - Root cause: `getByRole("status")` became ambiguous because the page legitimately contains both the Admin QA banner and a separate empty live status region.
-  - Correction `4614e3c`: all Admin QA persona-banner assertions now target the status region containing `ADMIN QA MODE`; coverage is narrowed semantically rather than weakened.
-- CI/Hosted QA for the selector correction are the remaining CP5 acceptance evidence.
+  - Correction `4614e3c`: all Admin QA persona-banner assertions target the status region containing `ADMIN QA MODE`; coverage is narrowed semantically rather than weakened.
+- CI #217 on the corrected head lineage: PASS (`npm ci`, lint, unit tests, production build).
+- Full Hosted QA on the corrected READY head is the remaining CP5 acceptance evidence.
 
 ### Cost-control state
 
@@ -82,4 +83,4 @@ Direct ChatGPT Vercel access remains unauthorized/incomplete: `list_teams` retur
 
 ### Human action required
 
-None for the current GREEN selector correction. Continue deterministic validation. After CP5 pre-decision acceptance, the verified-savings rule remains an owner decision before any customer-facing verified totals are enabled; independent provider-agnostic Phase 2 work may continue.
+None for the current GREEN selector correction. Continue deterministic acceptance. After CP5 pre-decision acceptance, the verified-savings rule remains an owner decision before any customer-facing verified totals are enabled; independent provider-agnostic Phase 2 work may continue.
