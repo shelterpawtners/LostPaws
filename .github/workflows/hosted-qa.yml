@@ -117,7 +117,7 @@ jobs:
             echo "QA_SUPABASE_URL must point to shelterpawtners-dev" >&2
             exit 1
           }
-      - name: Wait for this web commit to be Ready on Vercel
+      - name: Wait for this acceptance SHA to be Ready on Vercel
         if: github.event_name == 'pull_request'
         env:
           GH_TOKEN: ${{ github.token }}
@@ -129,31 +129,24 @@ jobs:
         run: |
           set -euo pipefail
 
-          # If the deployed web artifact cannot change, no new Vercel deployment
-          # is required and the existing QA URL is the correct target.
-          if git rev-parse HEAD^ >/dev/null 2>&1 && git diff --quiet HEAD^ HEAD -- \
-            src public index.html package.json package-lock.json \
-            vite.config.ts vite.config.js tsconfig.json tsconfig.app.json tsconfig.node.json; then
-            echo "No frontend/build-impacting change in this commit; Vercel readiness wait is unnecessary."
-            exit 0
-          fi
-
           commit_time=$(gh api "repos/${REPO}/commits/${HEAD_SHA}" --jq '.commit.committer.date')
-          echo "Waiting for Vercel bot to report Ready for the current web-impacting commit (${HEAD_SHA})."
+          qa_url=${QA_URL%/}
+          echo "Waiting for Vercel to report Ready for acceptance SHA ${HEAD_SHA}."
 
           for attempt in $(seq 1 30); do
-            ready=$(gh api "repos/${REPO}/issues/${PR_NUMBER}/comments?per_page=100" --paginate --jq \
-              --arg commit_time "${commit_time}" --arg qa_url "${QA_URL}" \
-              '[.[] | select(.user.login == "vercel[bot]") | select(.updated_at >= $commit_time) | select(.body | contains("Ready")) | select(.body | contains($qa_url))] | length')
+            comments=$(gh api "repos/${REPO}/issues/${PR_NUMBER}/comments?per_page=100" --paginate)
+            ready=$(jq --arg commit_time "${commit_time}" --arg qa_url "${qa_url}" \
+              '[.[] | select(.user.login == "vercel[bot]") | select(.updated_at >= $commit_time) | select(.body | contains("Ready")) | select(.body | contains($qa_url))] | length' \
+              <<<"${comments}")
             if [[ "${ready}" -gt 0 ]]; then
-              echo "Vercel reports the current QA deployment Ready."
+              echo "Vercel reports the exact acceptance-boundary deployment Ready."
               exit 0
             fi
             echo "Vercel deployment not Ready yet (attempt ${attempt}/30)."
             sleep 10
           done
 
-          echo "Timed out waiting for Vercel Ready state for the current web-impacting commit. Hosted QA will not test a potentially stale deployment." >&2
+          echo "Timed out waiting for Vercel Ready state for the current acceptance SHA. Hosted QA will not test a potentially stale deployment." >&2
           exit 1
       - run: npm ci
       - name: Install Chromium
