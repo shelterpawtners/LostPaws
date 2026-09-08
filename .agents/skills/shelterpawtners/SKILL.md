@@ -1,39 +1,25 @@
 ---
 name: shelterpawtners
-description: Work on the ShelterPawtners and LostPaws product in this repository using its product rules, brand standards, role boundaries, marketplace trust rules, and engineering context. Use for project documentation, features, UI, marketing, data, savings, and shelter workflows.
+description: Route ShelterPawtners/LostPaws work to the repository's canonical product, security, brand, marketplace, and engineering guidance.
 ---
 
-# ShelterPawtners project workflow
+# ShelterPawtners context router
 
-Read [AGENTS.md](../../../AGENTS.md) and [README.md](../../../README.md) first to establish scope and current state. This skill routes to canonical documents; it does not grant permission to implement planned capabilities. The MVP approval gate in AGENTS.md remains binding until the user explicitly lifts it.
+Read `../../../AGENTS.md` first. It contains current authority, guardrails, autonomy, validation, and AI-cost rules. Do not repeat or override those rules here.
 
-## Load the relevant context
+Load only the context required for the task:
 
-Paths below are relative to this skill directory. Load the documents needed for the actual task rather than reading everything by default.
+| Task | Canonical context |
+| --- | --- |
+| Brand/UI | `docs/BRAND-DESIGN-SYSTEM.md`, `docs/CONTENT-STANDARDS.md` |
+| Feature/product behavior | `docs/PRODUCT-REQUIREMENTS.md`, `docs/USER-ROLES.md`, active phase spec |
+| Marketplace/savings | `docs/PRODUCT-REQUIREMENTS.md`, `docs/MARKETPLACE-RESEARCH.md`, `docs/CONTENT-STANDARDS.md` |
+| Database/auth/RLS | `docs/ARCHITECTURE.md`, `docs/SECURITY-AND-PRIVACY.md`, `docs/USER-ROLES.md` |
+| Shelter/transfer | product requirements + roles + architecture + security/privacy |
+| Planning/phase | `docs/CURRENT-WORK.md`, active phase spec/progress, `docs/ROADMAP.md` |
 
-| Task                               | Required context                                                                                                                                                                                                                |
-| ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Brand or UI                        | [Brand design system](../../../docs/BRAND-DESIGN-SYSTEM.md), [Content standards](../../../docs/CONTENT-STANDARDS.md).                                                                                                           |
-| Feature                            | [Product requirements](../../../docs/PRODUCT-REQUIREMENTS.md), [User roles](../../../docs/USER-ROLES.md), and [Roadmap](../../../docs/ROADMAP.md) for phase boundaries.                                                         |
-| Marketplace or savings             | [Product requirements](../../../docs/PRODUCT-REQUIREMENTS.md), [Marketplace research](../../../docs/MARKETPLACE-RESEARCH.md), [Content standards](../../../docs/CONTENT-STANDARDS.md), and [Roadmap](../../../docs/ROADMAP.md). |
-| Database or authorization          | [Architecture](../../../docs/ARCHITECTURE.md), [Security and privacy](../../../docs/SECURITY-AND-PRIVACY.md), and [User roles](../../../docs/USER-ROLES.md) when permission scope is involved.                                  |
-| Marketing page                     | [Product vision](../../../docs/PRODUCT-VISION.md), [Brand design system](../../../docs/BRAND-DESIGN-SYSTEM.md), [Content standards](../../../docs/CONTENT-STANDARDS.md).                                                        |
-| Shelter workflow or transfer       | [Product requirements](../../../docs/PRODUCT-REQUIREMENTS.md), [User roles](../../../docs/USER-ROLES.md), [Architecture](../../../docs/ARCHITECTURE.md), [Security and privacy](../../../docs/SECURITY-AND-PRIVACY.md).         |
-| Planning or context changes        | [Product vision](../../../docs/PRODUCT-VISION.md), [Roadmap](../../../docs/ROADMAP.md), and the canonical document for the affected topic.                                                                                      |
-| Autonomous implementation decision | [Phase 1 decision log](../../../docs/DECISION-LOG.md) and the canonical document for the affected topic.                                                                                                                        |
+For active implementation also read the GitHub Issue/PR and `docs/AI-HANDOFF.md`.
 
-For mixed tasks, combine the relevant routes. Before an architectural change, read architecture and security context even if the task began as a UI request.
+Keep Care, Savings, and Community connected; preserve guardianship vs provenance vs verification; never imply unverified providers are ShelterPawtners partners; preserve marketplace source/freshness/disclosure requirements.
 
-## Apply the context
-
-Locate the intended behavior and distinguish a requirement from a potential future capability. Check the decision register before committing to a sensitive policy. Ask only when a material unresolved product, security, legal, privacy, or architectural risk requires human judgment; document reasonable routine choices otherwise.
-
-Keep Care, Savings, and Community connected. Preserve the distinction between pet history, current guardianship, provenance, verification, and sharing authority. Do not turn a Passport into a public record by default or present LostPaws as an affiliated festival program without formal support.
-
-For marketplace work, distinguish public opportunities from ShelterPawtners relationships. Require traceable sources, important conditions, freshness, expiration handling, appropriate disclosures, and human publication. A large count of stale or misleading links is not success.
-
-For design work, follow the documented sequence from user need through browser review. For data work, follow the migration and authorization requirements. Update the canonical document when a real decision changes; link from other documents rather than duplicating its detailed rules.
-
-When making a meaningful decision without direct user approval, add or update its entry in the autonomous decision log in the same change. Do not log purely mechanical edits. Never use the log to bypass a required user decision.
-
-Validate according to AGENTS.md and the task's actual artifacts. Report completed work accurately, including limits and remaining decisions. Never infer authorization to move from planning to application implementation.
+Use canonical documents as the source of detailed rules. Link to them rather than duplicating large instruction blocks, and treat newer owner decisions/live handoff state as superseding stale historical planning text.
