@@ -163,10 +163,13 @@ export function AdminQaMode() {
       setChecking(false);
       return;
     }
-    void adminSupabase.auth
-      .getSession()
-      .then(({ data }) => setAdminSession(data.session))
-      .finally(() => setChecking(false));
+    void adminSupabase.auth.getSession().then(({ data }) => {
+      setAdminSession(data.session);
+      // Keep the route in its loading state while an authenticated session's
+      // platform_admin role is checked. Otherwise the component can redirect
+      // to /dashboard and unmount before the role query resolves.
+      if (!data.session) setChecking(false);
+    });
   }, []);
   useEffect(() => {
     if (!adminSupabase || !adminSession || !qaEnabled) return;
