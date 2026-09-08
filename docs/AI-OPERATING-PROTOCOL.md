@@ -88,6 +88,7 @@ Use strategic vertical-slice testing:
 - Run the broader full-site audit after the main MVP tent poles connect.
 
 Priority testing now:
+
 - auth/login/account creation;
 - roles and authorization;
 - profile/onboarding persistence;
