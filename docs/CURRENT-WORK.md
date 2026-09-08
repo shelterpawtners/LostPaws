@@ -82,6 +82,62 @@ Checkpoint 5 must not begin until the redemption UX is reviewed and approval is 
 
 GitHub Issue #6 adds branch-scoped Vercel Preview configuration, SPA refresh routing, deterministic shared-dev seeding guidance, and hosted Playwright smoke/audit entry points. The preview is limited to `shelterpawtners-dev`; production hosting, DNS, Supabase, and credentials remain untouched. See `docs/HOSTED-QA.md`.
 
+## MVP execution strategy
+
+The active execution model is **vertical-slice MVP delivery with strategic testing**.
+
+While the product is still being assembled, target effort is approximately:
+
+- 65–70% critical MVP feature/tent-pole delivery;
+- 20–25% automated foundation and golden-path regression testing;
+- 5–10% human UX acceptance;
+- minimal cosmetic polish until the core flows are connected.
+
+For each business-critical vertical slice:
+
+1. build the usable end-to-end path;
+2. protect it with one strong golden-path Playwright regression plus essential RLS/security checks;
+3. fix blockers immediately;
+4. defer broad permutations/cosmetic automation until later;
+5. move to the next tent pole.
+
+The broad Issue #5 full-site audit is intentionally deferred until the major MVP vertical slices connect.
+
+### Current strategic sequence
+
+1. Keep Admin QA functional enough to support testing; do not over-polish the tool.
+2. Finish/stabilize the active Partner Marketplace golden path with focused support/moderation visibility and targeted regression.
+3. Build a small private Guardian profile-lite vertical slice.
+4. Continue Pet/Guardian foundation work only within the approved phase boundary.
+5. Defer adoption verification, shelter-created Passport transfer/handoff, and other Phase 3 work until explicitly authorized.
+
+Issue #9 completed the MVP profile/data-model review and found no immediate schema migration necessary. The review identified future policy/design work around co-guardians, adoption evidence/disputes, shelter responder linking, and public Shelter profile fields.
+
+## Repo-native AI coordination
+
+GitHub is the shared coordination layer between ChatGPT, Codex, Copilot, CI, and the product owner.
+
+Authoritative coordination files:
+
+- `docs/CURRENT-WORK.md` — phase, priorities, active execution strategy;
+- `docs/AI-HANDOFF.md` — latest concise agent-to-agent baton;
+- `docs/AI-OPERATING-PROTOCOL.md` — required agent workflow and completion contract;
+- `docs/DECISION-LOG.md` — durable decisions.
+
+### Required handoff behavior
+
+Every meaningful Codex/agent task must:
+
+1. start from the relevant GitHub Issue and current repository state;
+2. read `docs/AI-HANDOFF.md` and `docs/AI-OPERATING-PROTOCOL.md`;
+3. implement/test/commit/push on the assigned branch;
+4. update the relevant Issue/PR;
+5. update `docs/AI-HANDOFF.md` before declaring completion.
+
+The handoff must contain the final remote SHA, changes made, tests/results, CI/hosted QA state, open defects, decisions needed, deferred items, and recommended next action.
+
+The normal human trigger back to ChatGPT is simply: **“check the GitHub handoff.”** Large Codex completion reports should no longer need to be copied between tools.
+
 ## User-involvement policy
 
 Automate routine engineering, QA, documentation, and implementation decisions. Escalate to the user only when a decision materially affects:
