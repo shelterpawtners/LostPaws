@@ -87,23 +87,31 @@ jobs:
     if: github.event_name == 'schedule'
     runs-on: ubuntu-latest
     steps:
-      - name: Inspect active Phase 2 PR every five minutes
+      - name: Discover and inspect the active build PR every five minutes
         env:
           GH_TOKEN: ${{ github.token }}
           REPO: ${{ github.repository }}
-          PR_NUMBER: "2"
+          ACTIVE_MARKER: "<!-- ai-active-build-pr -->"
           STALE_MINUTES: "30"
         shell: bash
         run: |
           set -euo pipefail
 
-          pr=$(gh api "repos/${REPO}/pulls/${PR_NUMBER}")
-          state=$(jq -r '.state' <<<"${pr}")
-          [[ "${state}" == "open" ]] || {
-            echo "Active PR is not open; nothing to supervise."
-            exit 0
-          }
+          prs=$(gh api "repos/${REPO}/pulls?state=open&base=build/festival-mvp&per_page=100")
+          active_numbers=$(jq -r --arg marker "${ACTIVE_MARKER}" '.[] | select((.body // "") | contains($marker)) | .number' <<<"${prs}")
+          active_count=$(grep -c . <<<"${active_numbers}" || true)
 
+          if [[ "${active_count}" == "0" ]]; then
+            echo "No open PR is marked as the active build lane; nothing to supervise."
+            exit 0
+          fi
+          if [[ "${active_count}" != "1" ]]; then
+            echo "Expected exactly one active build PR marker, found ${active_count}; stop to avoid supervising the wrong branch." >&2
+            exit 1
+          fi
+
+          PR_NUMBER=$(head -n 1 <<<"${active_numbers}")
+          pr=$(jq -c --argjson n "${PR_NUMBER}" '.[] | select(.number == $n)' <<<"${prs}")
           head_branch=$(jq -r '.head.ref' <<<"${pr}")
           head_sha=$(jq -r '.head.sha' <<<"${pr}")
           handoff=$(gh api "repos/${REPO}/contents/docs/AI-HANDOFF.md?ref=${head_branch}" --jq '.content' | base64 --decode)
@@ -131,8 +139,6 @@ jobs:
           commit_epoch=$(date -u -d "${commit_time}" +%s)
           age_minutes=$(( (now_epoch - commit_epoch) / 60 ))
 
-          # Look only at the latest run for each relevant workflow on the current SHA.
-          # A prior failure followed by a successful rerun is resolved and must not re-invoke AI.
           latest_bad=$(jq -r --arg sha "${head_sha}" '
             [.workflow_runs[]
               | select(.head_sha == $sha and (.name == "CI" or .name == "Persona QA" or .name == "Hosted QA"))]
