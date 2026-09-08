@@ -13,31 +13,45 @@ This file is the shared baton between ChatGPT, Codex, Copilot, GitHub Actions, a
 
 ## Current handoff
 
-Updated by: ChatGPT
+Updated by: GitHub Copilot
 Branch: `qa/guardian-registration-personas`
-Last completed product task: GitHub Issue #9 — MVP Profile & Data Model Review
-Issue #11 status: NOT ACCEPTED — targeted Persona QA exposed a Partner profile persistence blocker
-Active implementation task: fix Issue #11 persistence blocker before any next slice
+Last completed product task: GitHub Issue #11 — Partner profile persistence blocker root-cause fix
+Issue #11 status: READY FOR RE-VALIDATION — root-cause fix and focused regression updates committed
+Active implementation task: rerun provisioned Persona QA acceptance on the latest branch SHA
 
 ### Completed
 
-- Issue #8 Admin QA foundation and targeted hosted regression coverage implemented.
-- Persona QA pgTAP harness defect corrected after CI exposed an invalid permission assertion.
-- Issue #9 MVP profile/data-model review completed; the current schema was sufficient for that foundation.
-- RAVE Vendor remains a Partner-architecture classification/channel rather than a duplicate organization model.
-- Issue #11 implementation added marketplace loading/error handling, Partner profile publication visibility in Offer Manager, and expanded the Partner -> Guardian golden-path regression.
-- GitHub Actions CI run #111 passed.
-- Persona QA database layer passed 84/84 pgTAP tests.
-
-### Active blocker
-
-Persona QA run #39 failed in `e2e/phase-2-offer-redemption.spec.ts` during the Partner profile persistence check:
-
-Partner Admin saves a private draft with a non-empty `Public description`, receives the success message, reloads `/business`, and the saved description reloads as an empty string.
-
-This violates Issue #11 acceptance. Do not weaken the regression assertion to make CI green. Fix the root cause.
-
-Reference: `docs/prompts/ISSUE-11-PARTNER-PROFILE-PERSISTENCE-BLOCKER.md`.
+- Issue / task: #11 Partner profile persistence blocker.
+- Agent: GitHub Copilot.
+- Branch: `qa/guardian-registration-personas`.
+- Final remote SHA: `HEAD` of this handoff update commit on `qa/guardian-registration-personas`.
+- Verified root cause: Partner profile editor allowed editing before async profile load completed, so late-loading server data could overwrite freshly typed form values before save; organization selection was also reset from an unordered membership query on reload.
+- What changed:
+  - `src/components/PartnerProfileEditor.tsx`
+    - Persist selected organization per signed-in user in `localStorage`.
+    - Deterministically order memberships by organization UUID before default selection.
+    - Load selected profile with cancellation-safe async handling and explicit `loadingProfile` state.
+    - Disable editable controls while profile data is loading to prevent late-load clobbering of newly entered values.
+    - Guard `save()` during active profile loading.
+  - `e2e/phase-2-offer-redemption.spec.ts`
+    - Preserve and assert same selected organization across reload.
+    - Preserve and assert both `Public description` and `Public email` across reload before publish/offer steps continue.
+- Tests run + results:
+  - `npm run check` ✅ pass (prettier, typecheck, vitest: 3 files / 9 tests).
+  - `npm run build` ✅ pass.
+  - `npx playwright test e2e/phase-2-offer-redemption.spec.ts` ⚠️ blocked locally without provisioned seeded/local Supabase auth session; sign-in remained on `/login`.
+- CI / hosted QA status:
+  - Base branch `build/festival-mvp`: recent CI runs are passing.
+  - Feature branch: multiple older Persona QA runs failed on this persistence assertion; recent CI/Hosted QA runs are passing on newer workflow commits.
+  - Acceptance signal still required: rerun Persona QA on the latest SHA that includes this fix.
+- Open defects:
+  - None newly identified beyond awaiting provisioned Persona QA confirmation for this fix.
+- Product-owner decisions needed:
+  - None for this blocker fix.
+- Deferred items:
+  - Broad full-site audit remains deferred per current MVP testing strategy.
+- Recommended next action:
+  - Run Persona QA against latest branch SHA; if green, mark Issue #11 accepted and continue the active Phase 2 sequence without expanding scope.
 
 ### Current strategic findings
 

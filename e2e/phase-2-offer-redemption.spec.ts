@@ -27,9 +27,15 @@ test.describe.serial("Phase 2 offer and redemption journey", () => {
     await expect(page.getByRole("status")).toContainText(
       "Saved as a private draft",
     );
+    const organization = page.getByLabel("Organization");
+    const selectedOrganizationId = await organization.inputValue();
     await page.reload();
+    await expect(organization).toHaveValue(selectedOrganizationId);
     await expect(page.getByLabel("Public description")).toHaveValue(
       "A focused Playwright Partner profile for the marketplace golden path.",
+    );
+    await expect(page.getByLabel("Public email")).toHaveValue(
+      "partner@example.invalid",
     );
     await page.getByRole("button", { name: "Publish profile" }).click();
     await expect(page.getByRole("status")).toContainText("Published.");
