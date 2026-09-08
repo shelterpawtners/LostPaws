@@ -4,8 +4,8 @@ const hosted = process.env.PLAYWRIGHT_HOSTED_QA === "true";
 const adminCredentialsConfigured = Boolean(
   process.env.PLAYWRIGHT_ADMIN_EMAIL &&
     process.env.PLAYWRIGHT_ADMIN_PASSWORD &&
-    process.env.PLAYWRIGHT_NON_ADMIN_EMAIL &&
-    process.env.PLAYWRIGHT_NON_ADMIN_PASSWORD,
+    process.env.PLAYWRIGHT_GUARDIAN_EMAIL &&
+    process.env.PLAYWRIGHT_GUARDIAN_PASSWORD,
 );
 
 function requiredSetting(name: string) {
@@ -33,6 +33,14 @@ async function signInAsAdmin(page: Page) {
   );
 }
 
+async function signInAsGuardian(page: Page) {
+  await signIn(
+    page,
+    requiredSetting("PLAYWRIGHT_GUARDIAN_EMAIL"),
+    requiredSetting("PLAYWRIGHT_GUARDIAN_PASSWORD"),
+  );
+}
+
 async function openAdminQa(page: Page) {
   await page.goto("/admin-qa");
   await expect(
@@ -43,7 +51,7 @@ async function openAdminQa(page: Page) {
 test.describe.serial("Admin QA mode hosted regression", () => {
   test.skip(
     !hosted || !adminCredentialsConfigured,
-    "Set PLAYWRIGHT_HOSTED_QA=true and admin/non-admin QA credentials for hosted Admin QA runs.",
+    "Set PLAYWRIGHT_HOSTED_QA=true and admin/Guardian QA credentials for hosted Admin QA runs.",
   );
   test.describe.configure({ timeout: 90_000 });
 
@@ -55,11 +63,10 @@ test.describe.serial("Admin QA mode hosted regression", () => {
   test("a non-admin is redirected away from Admin QA Mode", async ({
     page,
   }) => {
-    await signIn(
-      page,
-      requiredSetting("PLAYWRIGHT_NON_ADMIN_EMAIL"),
-      requiredSetting("PLAYWRIGHT_NON_ADMIN_PASSWORD"),
-    );
+    // The seeded Guardian account is already required and validated by hosted QA,
+    // so reuse it as the non-admin identity instead of maintaining a duplicate
+    // credential pair that can drift independently.
+    await signInAsGuardian(page);
     await page.goto("/admin-qa");
     await expect(page).toHaveURL(/\/dashboard$/);
     await expect(
