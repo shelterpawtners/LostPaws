@@ -22,41 +22,6 @@ permissions:
   pull-requests: write
 
 jobs:
-  delegate-failure:
-    if: >-
-      github.event_name == 'workflow_run' &&
-      github.event.workflow_run.head_repository.full_name == github.repository &&
-      github.event.workflow_run.pull_requests[0].number != null &&
-      contains(fromJSON('["failure","timed_out","cancelled","action_required"]'), github.event.workflow_run.conclusion)
-    runs-on: ubuntu-latest
-    steps:
-      - name: Record failure; defer Copilot re-invocation to stale-work supervisor
-        env:
-          GH_TOKEN: ${{ github.token }}
-          REPO: ${{ github.repository }}
-          PR_NUMBER: ${{ github.event.workflow_run.pull_requests[0].number }}
-          WORKFLOW_NAME: ${{ github.event.workflow_run.name }}
-          RUN_URL: ${{ github.event.workflow_run.html_url }}
-          HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          marker="<!-- ai-build-orchestrator-failure-record:${WORKFLOW_NAME}:${HEAD_SHA} -->"
-          if gh api "repos/${REPO}/issues/${PR_NUMBER}/comments" --paginate --jq '.[].body' | grep -Fq "${marker}"; then
-            echo "Failure already recorded."
-            exit 0
-          fi
-
-          body=$(cat <<EOF
-          ${marker}
-          Automated supervisor recorded **${WORKFLOW_NAME}** failure at \`${HEAD_SHA}\`.
-          Run: ${RUN_URL}
-
-          No new Copilot session is started immediately. The five-minute supervisor will re-engage Copilot only if the failure remains unresolved and the branch is stale for at least 20 minutes. This preserves the same QA gate while reducing AI-credit usage.
-          EOF
-          )
-          gh api --method POST "repos/${REPO}/issues/${PR_NUMBER}/comments" -f body="${body}"
-
   advance-after-acceptance:
     if: >-
       github.event_name == 'workflow_run' &&
@@ -81,23 +46,25 @@ jobs:
 
           handoff=$(gh api "repos/${REPO}/contents/docs/AI-HANDOFF.md?ref=${HEAD_BRANCH}" --jq '.content' | base64 --decode)
 
-          if ! grep -Eq '^SAFE_TO_CONTINUE:[[:space:]]*YES[[:space:]]*$' <<<"${handoff}"; then
+          grep -Eq '^SAFE_TO_CONTINUE:[[:space:]]*YES[[:space:]]*$' <<<"${handoff}" || {
             echo "Handoff does not authorize automatic continuation."
             exit 0
-          fi
-          if ! grep -Eq '^OWNER_DECISION_REQUIRED:[[:space:]]*NO[[:space:]]*$' <<<"${handoff}"; then
+          }
+          grep -Eq '^OWNER_DECISION_REQUIRED:[[:space:]]*NO[[:space:]]*$' <<<"${handoff}" || {
             echo "Handoff requires an owner decision."
             exit 0
-          fi
-          if ! grep -Eq '^STATUS:[[:space:]]*(READY_FOR_ACCEPTANCE|COMPLETE)[[:space:]]*$' <<<"${handoff}"; then
-            echo "Checkpoint is still IN_PROGRESS; do not spend another Copilot session on a routine green run."
+          }
+          grep -Eq '^STATUS:[[:space:]]*(READY_FOR_ACCEPTANCE|COMPLETE)[[:space:]]*$' <<<"${handoff}" || {
+            echo "Checkpoint is still IN_PROGRESS; a routine green run must not spend another AI session."
             exit 0
-          fi
+          }
 
           next_checkpoint=$(sed -n 's/^NEXT_CHECKPOINT:[[:space:]]*//p' <<<"${handoff}" | head -n 1)
           checkpoint_key=$(printf '%s' "${next_checkpoint:-none}" | sha256sum | cut -c1-16)
           marker="<!-- ai-build-orchestrator-advance:${checkpoint_key} -->"
-          if gh api "repos/${REPO}/issues/${PR_NUMBER}/comments" --paginate --jq '.[].body' | grep -Fq "${marker}"; then
+
+          comments=$(gh api "repos/${REPO}/issues/${PR_NUMBER}/comments?per_page=100" --paginate)
+          if jq -e --arg marker "${marker}" '[.[] | select(.body | contains($marker))] | length > 0' <<<"${comments}" >/dev/null; then
             echo "This next checkpoint was already delegated."
             exit 0
           fi
@@ -110,7 +77,7 @@ jobs:
           Accepted SHA: \`${HEAD_SHA}\`
           Next checkpoint from \`docs/AI-HANDOFF.md\`: **${next_checkpoint:-read the current handoff and continue the next authorized Phase 2 task}**
 
-          This is one bounded checkpoint-level invocation. Work autonomously through implementation and local validation; do not request a new Copilot session for each green CI/Hosted QA commit. Make routine GREEN decisions directly, log reversible YELLOW assumptions, and stop only for a RED decision or hard blocker. The remainder of Phase 2 is authorized; Phase 3 is not. Do not auto-merge. Update \`docs/AI-HANDOFF.md\` before declaring completion.
+          This is one bounded checkpoint-level invocation. Work through implementation, targeted validation, and related GREEN/YELLOW defects in this session. Do not request a new Copilot session for each green CI/Hosted QA commit. Follow \`docs/AI-COST-AND-TESTING-GOVERNANCE.md\`. Phase 3 remains blocked; do not auto-merge.
           EOF
           )
 
@@ -125,22 +92,38 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           REPO: ${{ github.repository }}
           PR_NUMBER: "2"
-          STALE_MINUTES: "20"
+          STALE_MINUTES: "30"
         shell: bash
         run: |
           set -euo pipefail
 
           pr=$(gh api "repos/${REPO}/pulls/${PR_NUMBER}")
           state=$(jq -r '.state' <<<"${pr}")
-          [[ "${state}" == "open" ]] || { echo "Active PR is not open; nothing to supervise."; exit 0; }
+          [[ "${state}" == "open" ]] || {
+            echo "Active PR is not open; nothing to supervise."
+            exit 0
+          }
 
           head_branch=$(jq -r '.head.ref' <<<"${pr}")
           head_sha=$(jq -r '.head.sha' <<<"${pr}")
           handoff=$(gh api "repos/${REPO}/contents/docs/AI-HANDOFF.md?ref=${head_branch}" --jq '.content' | base64 --decode)
-          runs=$(gh api "repos/${REPO}/actions/runs?branch=${head_branch}&per_page=30")
+          runs=$(gh api "repos/${REPO}/actions/runs?branch=${head_branch}&per_page=50")
 
           in_flight=$(jq -r --arg sha "${head_sha}" '[.workflow_runs[] | select(.head_sha == $sha and (.status == "queued" or .status == "in_progress"))] | length' <<<"${runs}")
-          [[ "${in_flight}" == "0" ]] || { echo "Workflow activity is in flight; no agent re-invocation."; exit 0; }
+          [[ "${in_flight}" == "0" ]] || {
+            echo "Workflow activity is in flight; no agent re-invocation."
+            exit 0
+          }
+
+          current_checkpoint=$(sed -n 's/^CURRENT_CHECKPOINT:[[:space:]]*//p' <<<"${handoff}" | head -n 1)
+          checkpoint_key=$(printf '%s' "${current_checkpoint:-unknown}" | sha256sum | cut -c1-16)
+          recovery_marker="<!-- ai-build-supervisor-recovery:${checkpoint_key} -->"
+          comments=$(gh api "repos/${REPO}/issues/${PR_NUMBER}/comments?per_page=100" --paginate)
+
+          if jq -e --arg marker "${recovery_marker}" '[.[] | select(.body | contains($marker))] | length > 0' <<<"${comments}" >/dev/null; then
+            echo "One automatic stale recovery has already been used for this checkpoint; do not spend another AI session."
+            exit 0
+          fi
 
           commit=$(gh api "repos/${REPO}/commits/${head_sha}")
           commit_time=$(jq -r '.commit.committer.date' <<<"${commit}")
@@ -148,28 +131,33 @@ jobs:
           commit_epoch=$(date -u -d "${commit_time}" +%s)
           age_minutes=$(( (now_epoch - commit_epoch) / 60 ))
 
+          # Look only at the latest run for each relevant workflow on the current SHA.
+          # A prior failure followed by a successful rerun is resolved and must not re-invoke AI.
           latest_bad=$(jq -r --arg sha "${head_sha}" '
-            .workflow_runs
-            | map(select(.head_sha == $sha and (.name == "CI" or .name == "Persona QA" or .name == "Hosted QA")))
+            [.workflow_runs[]
+              | select(.head_sha == $sha and (.name == "CI" or .name == "Persona QA" or .name == "Hosted QA"))]
+            | sort_by(.name, .created_at)
+            | group_by(.name)
+            | map(last)
             | map(select(.conclusion == "failure" or .conclusion == "timed_out" or .conclusion == "cancelled" or .conclusion == "action_required"))
-            | sort_by(.created_at) | last // empty
+            | sort_by(.created_at)
+            | last // empty
             | if . == "" then "" else "\(.name)|\(.conclusion)|\(.html_url)" end
           ' <<<"${runs}")
 
           if [[ -n "${latest_bad}" ]] && (( age_minutes >= STALE_MINUTES )); then
             IFS='|' read -r workflow conclusion run_url <<<"${latest_bad}"
-            marker="<!-- ai-build-supervisor-stale-failure:${head_sha} -->"
-            if ! gh api "repos/${REPO}/issues/${PR_NUMBER}/comments" --paginate --jq '.[].body' | grep -Fq "${marker}"; then
-              body=$(cat <<EOF
-          ${marker}
-          @copilot The five-minute supervisor found an unresolved **${workflow}** ${conclusion} at \`${head_sha}\` and no newer branch activity for ${age_minutes} minutes.
+            body=$(cat <<EOF
+          ${recovery_marker}
+          @copilot One cost-controlled stale recovery for **${current_checkpoint:-current Phase 2 checkpoint}**.
+
+          The latest **${workflow}** state is **${conclusion}** at \`${head_sha}\`, no workflow is running, and there has been no newer commit for ${age_minutes} minutes.
           Run: ${run_url}
 
-          Re-engage this existing checkpoint only now because it is stale. Fix GREEN/YELLOW defects autonomously. Do not weaken tests/RLS, touch production, auto-merge, or begin Phase 3. Update \`docs/AI-HANDOFF.md\` when the checkpoint state changes.
+          Continue the existing bounded checkpoint. Fix GREEN/YELLOW defects autonomously and use native tests for deterministic validation. This checkpoint will not receive another automatic AI re-kick. Do not weaken tests/RLS, touch production, auto-merge, or begin Phase 3. Update \`docs/AI-HANDOFF.md\` when state changes.
           EOF
-              )
-              gh api --method POST "repos/${REPO}/issues/${PR_NUMBER}/comments" -f body="${body}"
-            fi
+            )
+            gh api --method POST "repos/${REPO}/issues/${PR_NUMBER}/comments" -f body="${body}"
             exit 0
           fi
 
@@ -177,16 +165,12 @@ jobs:
              grep -Eq '^SAFE_TO_CONTINUE:[[:space:]]*YES[[:space:]]*$' <<<"${handoff}" &&
              grep -Eq '^OWNER_DECISION_REQUIRED:[[:space:]]*NO[[:space:]]*$' <<<"${handoff}" &&
              (( age_minutes >= STALE_MINUTES )); then
-            marker="<!-- ai-build-supervisor-stalled:${head_sha} -->"
-            if ! gh api "repos/${REPO}/issues/${PR_NUMBER}/comments" --paginate --jq '.[].body' | grep -Fq "${marker}"; then
-              next_checkpoint=$(sed -n 's/^CURRENT_CHECKPOINT:[[:space:]]*//p' <<<"${handoff}" | head -n 1)
-              body=$(cat <<EOF
-          ${marker}
-          @copilot The active checkpoint appears stalled: **${next_checkpoint:-current Phase 2 checkpoint}**. No workflow is running and the branch has had no new commit for ${age_minutes} minutes.
+            body=$(cat <<EOF
+          ${recovery_marker}
+          @copilot One cost-controlled stale recovery for **${current_checkpoint:-current Phase 2 checkpoint}**.
 
-          Continue the existing bounded task; do not broaden scope. This re-kick occurs only after the 20-minute stale threshold to conserve AI credits. Phase 3 remains blocked and no auto-merge is allowed.
+          No workflow is running and the branch has had no new commit for ${age_minutes} minutes. Continue the existing bounded task; do not broaden scope. This checkpoint will not receive another automatic AI re-kick. Follow \`docs/AI-COST-AND-TESTING-GOVERNANCE.md\`. Phase 3 remains blocked and no auto-merge is allowed.
           EOF
-              )
-              gh api --method POST "repos/${REPO}/issues/${PR_NUMBER}/comments" -f body="${body}"
-            fi
+            )
+            gh api --method POST "repos/${REPO}/issues/${PR_NUMBER}/comments" -f body="${body}"
           fi
