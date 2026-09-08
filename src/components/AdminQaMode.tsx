@@ -5,6 +5,7 @@ import {
   adminSupabase,
   clearActingSupabase,
   getActingSupabase,
+  restoreActingSupabase,
   startActingSupabase,
 } from "../lib/supabase";
 
@@ -109,13 +110,28 @@ export function QaBanner() {
   const [notice, setNotice] = useState("");
   const navigate = useNavigate();
   useEffect(() => {
-    const refresh = () =>
-      void getActingSupabase()
-        ?.auth.getSession()
-        .then(({ data }) => setActing(data.session || null));
-    refresh();
+    let active = true;
+    const refresh = async () => {
+      const existingClient = getActingSupabase();
+      if (existingClient) {
+        const { data } = await existingClient.auth.getSession();
+        if (active) setActing(data.session || null);
+        return;
+      }
+
+      // A hard navigation/reload recreates the JS module state while preserving
+      // the tab-scoped acting session in sessionStorage. Restore it here so the
+      // QA banner remains truthful across routes instead of depending on the
+      // AuthProvider restore finishing before this component mounts.
+      const restoredSession = await restoreActingSupabase();
+      if (active) setActing(restoredSession);
+    };
+    void refresh();
     window.addEventListener("sp-qa-changed", refresh);
-    return () => window.removeEventListener("sp-qa-changed", refresh);
+    return () => {
+      active = false;
+      window.removeEventListener("sp-qa-changed", refresh);
+    };
   }, []);
   async function stop() {
     setReturning(true);
