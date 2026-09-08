@@ -37,7 +37,9 @@ test.describe.serial("Phase 2 offer and redemption journey", () => {
     await expect(page.getByLabel("Public email")).toHaveValue(
       "partner@example.invalid",
     );
-    await page.getByRole("button", { name: "Publish profile" }).click();
+    await page
+      .getByRole("button", { name: "Publish profile", exact: true })
+      .click();
     await expect(page.getByRole("status")).toContainText("Published.");
 
     await page.goto("/partner/offers");
