@@ -1,27 +1,28 @@
 # AI Handoff
 
-STATUS: COMPLETE
+STATUS: READY_FOR_ACCEPTANCE
 CURRENT_PHASE: Phase 2 — Partner Marketplace MVP
 CURRENT_CHECKPOINT: Dev Loop v2 bootstrap — Issue #15
-NEXT_CHECKPOINT: Integrate accepted PR #16 manually, then launch CP6 Issue #14 from a fresh `phase2/cp6-impact-giving` branch
+NEXT_CHECKPOINT: Complete and integrate Dev Loop v2; then launch CP6 Issue #14 from a fresh `phase2/cp6-impact-giving` branch
 OWNER_DECISION_REQUIRED: NO
 SAFE_TO_CONTINUE: YES
-ACCEPTED_CODE_SHA: fd905eee638c0d3c8b2810f26a799d0130291ebc
+ACCEPTED_CODE_SHA: NONE
 
 ## Current state
 
 - PR #2 is merged into `build/festival-mvp` at merge commit `e248f8b3ae754da7faccf41ebe2c0a4bb3857f27`.
-- Dev Loop v2 implementation branch: `ops/dev-loop-v2`.
-- Issue #15 acceptance contract is satisfied at `fd905eee638c0d3c8b2810f26a799d0130291ebc`.
-- Native acceptance evidence on that SHA: CI #239 PASS, Database QA #4 PASS, Persona QA #69 PASS, Hosted QA #135 PASS, Merge Gate #4 PASS, Dependency Review #4 PASS, AI Ops Status #4 PASS.
-- The prior CI #238 formatting failure was a GREEN formatting defect. The deterministic formatter artifact was applied exactly and the temporary one-shot formatter workflow was removed before the accepted run.
-- CP6 Issue #14 remains the next authorized Phase 2 product checkpoint.
-- PR #16 must be integrated into `build/festival-mvp` before creating the fresh CP6 branch. Current controller policy prohibits auto-merge, so that integration remains an operator action rather than an engineering blocker or RED product decision.
+- Active work branch: `ops/dev-loop-v2`.
+- Active Issue: #15.
+- The deterministic formatting defect is fixed. CI #239 passed on `fd905eee638c0d3c8b2810f26a799d0130291ebc`.
+- Merge Gate #7 correctly identified that the required Hosted QA `hosted-smoke` job had been skipped because the handoff had not entered `READY_FOR_ACCEPTANCE` before COMPLETE was recorded.
+- Failure classification: GREEN workflow/state-contract defect. No application, RLS, security, product, or environment defect is indicated.
+- This handoff now enters the required acceptance boundary. Full Hosted QA must execute successfully on this head before COMPLETE is restored.
+- CP6 Issue #14 remains authorized next after Dev Loop v2 acceptance and integration.
 - Phase 3 remains unauthorized.
 
-## Dev Loop v2 delivered scope
+## Dev Loop v2 scope
 
-Accepted:
+Implement and validate:
 
 - one change-impact classifier;
 - change-aware CI;
@@ -41,7 +42,7 @@ Accepted:
 - No automatic AI review.
 - Native GitHub Actions/scripts own deterministic validation/status.
 - One primary coding agent per bounded checkpoint by default.
-- No CP6 product work belongs in the bootstrap branch.
+- No CP6 product work in this bootstrap branch.
 
 ## RED boundaries
 
@@ -49,10 +50,9 @@ Accepted:
 - `OD-004` remains blocking only for provider-dependent charitable-money movement/settlement/integration.
 - No production/DNS, paid infrastructure, destructive migration, auto-merge, or Phase 3.
 
-## Next action
+## Acceptance action
 
-1. Manually merge accepted PR #16 into `build/festival-mvp` without changing the accepted implementation.
-2. Create `phase2/cp6-impact-giving` from the updated `build/festival-mvp`.
-3. Open the bounded CP6 PR for Issue #14 and move `<!-- ai-active-build-pr -->` to it.
-4. Set the handoff back to `IN_PROGRESS` with `ACCEPTED_CODE_SHA: NONE` for CP6.
-5. Implement only the provider-agnostic CP6 foundation allowed before `OD-004`.
+1. Let native CI and Hosted QA execute on this `READY_FOR_ACCEPTANCE` head.
+2. Require the actual Hosted QA `hosted-smoke` job to pass; a skipped heavy job is not acceptance.
+3. If required evidence is green, set `ACCEPTED_CODE_SHA` to this acceptance head, restore `STATUS: COMPLETE`, close Issue #15, and require Merge Gate to pass on the final documentation-only head.
+4. Do not merge automatically.
