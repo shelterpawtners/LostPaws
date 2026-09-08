@@ -18,11 +18,16 @@ const blankHours = () =>
   }));
 
 export function PartnerProfileEditor({ session }: { session: Session | null }) {
+  const selectionKey = session
+    ? `partner-profile:selected-org:${session.user.id}`
+    : "";
   const [orgs, setOrgs] = useState<Org[]>([]),
     [categories, setCategories] = useState<{ id: string; label: string }[]>([]),
     [id, setId] = useState(""),
     [status, setStatus] = useState(""),
     [saving, setSaving] = useState(false);
+  const [loadingSetup, setLoadingSetup] = useState(false);
+  const [loadingProfile, setLoadingProfile] = useState(false);
   const [description, setDescription] = useState(""),
     [about, setAbout] = useState(""),
     [model, setModel] = useState("physical"),
@@ -45,6 +50,8 @@ export function PartnerProfileEditor({ session }: { session: Session | null }) {
     [opsPhone, setOpsPhone] = useState("");
   useEffect(() => {
     if (!db || !session) return;
+    let cancelled = false;
+    setLoadingSetup(true);
     void Promise.all([
       db
         .from("organization_memberships")
@@ -56,17 +63,39 @@ export function PartnerProfileEditor({ session }: { session: Session | null }) {
         .select("id,label")
         .eq("is_active", true)
         .order("sort_order"),
-    ]).then(([m, c]) => {
-      const next = (m.data || [])
-        .map((r: any) => r.organizations)
-        .filter(Boolean) as Org[];
-      setOrgs(next);
-      setId(next[0]?.id || "");
-      setCategories((c.data || []) as any);
-    });
-  }, [session]);
+    ])
+      .then(([m, c]) => {
+        if (cancelled) return;
+        const next = (m.data || [])
+          .map((r: any) => r.organizations)
+          .filter(Boolean)
+          .sort((a: Org, b: Org) => a.id.localeCompare(b.id)) as Org[];
+        const storedOrgId = selectionKey
+          ? localStorage.getItem(selectionKey)
+          : null;
+        const selectedOrgId = next.some((org) => org.id === storedOrgId)
+          ? storedOrgId || ""
+          : next[0]?.id || "";
+        setOrgs(next);
+        setId(selectedOrgId);
+        setCategories((c.data || []) as any);
+      })
+      .finally(() => {
+        if (cancelled) return;
+        setLoadingSetup(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [selectionKey, session]);
+  useEffect(() => {
+    if (!selectionKey || !id) return;
+    localStorage.setItem(selectionKey, id);
+  }, [id, selectionKey]);
   useEffect(() => {
     if (!db || !id) return;
+    let cancelled = false;
+    setLoadingProfile(true);
     void Promise.all([
       db
         .from("organization_partner_profiles")
@@ -99,49 +128,60 @@ export function PartnerProfileEditor({ session }: { session: Session | null }) {
         .select("*")
         .eq("organization_id", id)
         .maybeSingle(),
-    ]).then(([p, o, c, s, h, l, contacts]) => {
-      const profile: any = p.data || {},
-        org: any = o.data || {},
-        contact: any = contacts.data || {};
-      setDescription(profile.public_description || "");
-      setAbout(profile.public_about || "");
-      setModel(profile.business_model || "physical");
-      setStatus(profile.publication_status || "Draft");
-      setWebsite(org.website_url || "");
-      setEmail(org.public_email || "");
-      setPhone(org.public_phone || "");
-      setBooking(profile.public_booking_url || "");
-      setOrder(profile.public_order_url || "");
-      setServiceArea(profile.public_service_area || "");
-      setSpecies((profile.species_served || []).join(", "));
-      setSelectedCategories((c.data || []).map((x: any) => x.category_id));
-      setSocials(
-        Object.fromEntries((s.data || []).map((x: any) => [x.platform, x.url])),
-      );
-      const next = blankHours();
-      (h.data || []).forEach(
-        (x: any) =>
-          (next[x.day_of_week] = {
-            opens_at: x.opens_at?.slice(0, 5) || "09:00",
-            closes_at: x.closes_at?.slice(0, 5) || "17:00",
-            is_closed: x.is_closed,
-          }),
-      );
-      setHours(next);
-      setLocations(
-        (l.data || []).map((x: any) =>
-          [x.city, x.state_province, x.location_type]
-            .filter(Boolean)
-            .join(", "),
-        ),
-      );
-      setPrimaryName(contact.primary_contact_name || "");
-      setPrimaryEmail(contact.primary_contact_email || "");
-      setPrimaryPhone(contact.primary_contact_phone || "");
-      setOpsName(contact.operational_contact_name || "");
-      setOpsEmail(contact.operational_contact_email || "");
-      setOpsPhone(contact.operational_contact_phone || "");
-    });
+    ])
+      .then(([p, o, c, s, h, l, contacts]) => {
+        if (cancelled) return;
+        const profile: any = p.data || {},
+          org: any = o.data || {},
+          contact: any = contacts.data || {};
+        setDescription(profile.public_description || "");
+        setAbout(profile.public_about || "");
+        setModel(profile.business_model || "physical");
+        setStatus(profile.publication_status || "Draft");
+        setWebsite(org.website_url || "");
+        setEmail(org.public_email || "");
+        setPhone(org.public_phone || "");
+        setBooking(profile.public_booking_url || "");
+        setOrder(profile.public_order_url || "");
+        setServiceArea(profile.public_service_area || "");
+        setSpecies((profile.species_served || []).join(", "));
+        setSelectedCategories((c.data || []).map((x: any) => x.category_id));
+        setSocials(
+          Object.fromEntries(
+            (s.data || []).map((x: any) => [x.platform, x.url]),
+          ),
+        );
+        const next = blankHours();
+        (h.data || []).forEach(
+          (x: any) =>
+            (next[x.day_of_week] = {
+              opens_at: x.opens_at?.slice(0, 5) || "09:00",
+              closes_at: x.closes_at?.slice(0, 5) || "17:00",
+              is_closed: x.is_closed,
+            }),
+        );
+        setHours(next);
+        setLocations(
+          (l.data || []).map((x: any) =>
+            [x.city, x.state_province, x.location_type]
+              .filter(Boolean)
+              .join(", "),
+          ),
+        );
+        setPrimaryName(contact.primary_contact_name || "");
+        setPrimaryEmail(contact.primary_contact_email || "");
+        setPrimaryPhone(contact.primary_contact_phone || "");
+        setOpsName(contact.operational_contact_name || "");
+        setOpsEmail(contact.operational_contact_email || "");
+        setOpsPhone(contact.operational_contact_phone || "");
+      })
+      .finally(() => {
+        if (cancelled) return;
+        setLoadingProfile(false);
+      });
+    return () => {
+      cancelled = true;
+    };
   }, [id]);
   const toggle = (categoryId: string) =>
     setSelectedCategories((v) =>
@@ -150,7 +190,7 @@ export function PartnerProfileEditor({ session }: { session: Session | null }) {
         : [...v, categoryId],
     );
   async function save(publish = false, unpublish = false) {
-    if (!db || !id || saving) return;
+    if (!db || !id || saving || loadingProfile) return;
     const invalidSocial = Object.values(socials).some((url) => {
       if (!url.trim()) return false;
       return !isHttpUrl(url);
@@ -294,161 +334,175 @@ export function PartnerProfileEditor({ session }: { session: Session | null }) {
             ))}
           </select>
         </label>
-        <div className="fields">
-          <label>
-            Public description
-            <textarea
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-            />
-          </label>
-          <label>
-            About your business
-            <textarea
-              value={about}
-              onChange={(e) => setAbout(e.target.value)}
-            />
-          </label>
-          {field("Public website", website, setWebsite, "url")}
-          {field("Public email", email, setEmail, "email")}
-          {field("Public phone", phone, setPhone, "tel")}
-          {field("Booking URL", booking, setBooking, "url")}
-          {field("Order or ecommerce URL", order, setOrder, "url")}
-          {field("Service area", serviceArea, setServiceArea)}
-          <label>
-            How customers are served
-            <select value={model} onChange={(e) => setModel(e.target.value)}>
-              {partnerBusinessModels.map(([value, label]) => (
-                <option key={value} value={value}>
-                  {label}
-                </option>
-              ))}
-            </select>
-          </label>
-          {field("Species served (comma separated)", species, setSpecies)}
-        </div>
-        <h2>Categories</h2>
-        <div className="relationshipOptions">
-          {categories.map((c) => (
-            <label key={c.id}>
-              <input
-                type="checkbox"
-                checked={selectedCategories.includes(c.id)}
-                onChange={() => toggle(c.id)}
+        {loadingProfile && (
+          <p role="status" aria-live="polite">
+            Loading saved profile details…
+          </p>
+        )}
+        <fieldset disabled={saving || loadingProfile || loadingSetup || !id}>
+          <div className="fields">
+            <label>
+              Public description
+              <textarea
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
               />
-              {c.label}
             </label>
-          ))}
-        </div>
-        <h2>Social links</h2>
-        <div className="fields">
-          {partnerSocialPlatforms.map((platform) =>
-            field(
-              `${platform} URL`,
-              socials[platform] || "",
-              (url) => setSocials((all) => ({ ...all, [platform]: url })),
-              "url",
-            ),
-          )}
-        </div>
-        <h2>Business hours</h2>
-        <div className="fields">
-          {partnerDayNames.map((day, i) => (
-            <fieldset key={day}>
-              <legend>{day}</legend>
-              <label>
+            <label>
+              About your business
+              <textarea
+                value={about}
+                onChange={(e) => setAbout(e.target.value)}
+              />
+            </label>
+            {field("Public website", website, setWebsite, "url")}
+            {field("Public email", email, setEmail, "email")}
+            {field("Public phone", phone, setPhone, "tel")}
+            {field("Booking URL", booking, setBooking, "url")}
+            {field("Order or ecommerce URL", order, setOrder, "url")}
+            {field("Service area", serviceArea, setServiceArea)}
+            <label>
+              How customers are served
+              <select value={model} onChange={(e) => setModel(e.target.value)}>
+                {partnerBusinessModels.map(([value, label]) => (
+                  <option key={value} value={value}>
+                    {label}
+                  </option>
+                ))}
+              </select>
+            </label>
+            {field("Species served (comma separated)", species, setSpecies)}
+          </div>
+          <h2>Categories</h2>
+          <div className="relationshipOptions">
+            {categories.map((c) => (
+              <label key={c.id}>
                 <input
                   type="checkbox"
-                  checked={hours[i].is_closed}
-                  onChange={(e) =>
-                    setHours((all) =>
-                      all.map((h, n) =>
-                        n === i ? { ...h, is_closed: e.target.checked } : h,
-                      ),
-                    )
-                  }
+                  checked={selectedCategories.includes(c.id)}
+                  onChange={() => toggle(c.id)}
                 />
-                Closed
+                {c.label}
               </label>
-              {!hours[i].is_closed && (
-                <>
+            ))}
+          </div>
+          <h2>Social links</h2>
+          <div className="fields">
+            {partnerSocialPlatforms.map((platform) =>
+              field(
+                `${platform} URL`,
+                socials[platform] || "",
+                (url) => setSocials((all) => ({ ...all, [platform]: url })),
+                "url",
+              ),
+            )}
+          </div>
+          <h2>Business hours</h2>
+          <div className="fields">
+            {partnerDayNames.map((day, i) => (
+              <fieldset key={day}>
+                <legend>{day}</legend>
+                <label>
                   <input
-                    aria-label={`${day} opening time`}
-                    type="time"
-                    value={hours[i].opens_at}
+                    type="checkbox"
+                    checked={hours[i].is_closed}
                     onChange={(e) =>
                       setHours((all) =>
                         all.map((h, n) =>
-                          n === i ? { ...h, opens_at: e.target.value } : h,
+                          n === i ? { ...h, is_closed: e.target.checked } : h,
                         ),
                       )
                     }
                   />
-                  <input
-                    aria-label={`${day} closing time`}
-                    type="time"
-                    value={hours[i].closes_at}
-                    onChange={(e) =>
-                      setHours((all) =>
-                        all.map((h, n) =>
-                          n === i ? { ...h, closes_at: e.target.value } : h,
-                        ),
-                      )
-                    }
-                  />
-                </>
-              )}
-            </fieldset>
-          ))}
-        </div>
-        <h2>Locations and service context</h2>
-        <p>
-          {locations.length
-            ? locations.join(" · ")
-            : "No saved locations. An online, national, mobile, or service-area model can publish without a street address."}
-        </p>
-        <h2>Private contacts</h2>
-        <p className="lead">
-          Only organization owners and administrators can access these contacts.
-        </p>
-        <div className="fields">
-          {field("Primary contact name", primaryName, setPrimaryName)}
-          {field(
-            "Primary contact email",
-            primaryEmail,
-            setPrimaryEmail,
-            "email",
-          )}
-          {field("Primary contact phone", primaryPhone, setPrimaryPhone, "tel")}
-          {field("Operational/redemption contact name", opsName, setOpsName)}
-          {field(
-            "Operational/redemption email",
-            opsEmail,
-            setOpsEmail,
-            "email",
-          )}
-          {field("Operational/redemption phone", opsPhone, setOpsPhone, "tel")}
-        </div>
-        <div className="actions">
-          <button
-            className="btn quiet"
-            disabled={saving}
-            onClick={() => save(false)}
-          >
-            Save draft
-          </button>
-          <button className="btn" disabled={saving} onClick={() => save(true)}>
-            Publish profile
-          </button>
-          <button
-            className="textButton"
-            disabled={saving}
-            onClick={() => save(false, true)}
-          >
-            Unpublish profile
-          </button>
-        </div>
-        <p role="status" aria-live="polite">
+                  Closed
+                </label>
+                {!hours[i].is_closed && (
+                  <>
+                    <input
+                      aria-label={`${day} opening time`}
+                      type="time"
+                      value={hours[i].opens_at}
+                      onChange={(e) =>
+                        setHours((all) =>
+                          all.map((h, n) =>
+                            n === i ? { ...h, opens_at: e.target.value } : h,
+                          ),
+                        )
+                      }
+                    />
+                    <input
+                      aria-label={`${day} closing time`}
+                      type="time"
+                      value={hours[i].closes_at}
+                      onChange={(e) =>
+                        setHours((all) =>
+                          all.map((h, n) =>
+                            n === i ? { ...h, closes_at: e.target.value } : h,
+                          ),
+                        )
+                      }
+                    />
+                  </>
+                )}
+              </fieldset>
+            ))}
+          </div>
+          <h2>Locations and service context</h2>
+          <p>
+            {locations.length
+              ? locations.join(" · ")
+              : "No saved locations. An online, national, mobile, or service-area model can publish without a street address."}
+          </p>
+          <h2>Private contacts</h2>
+          <p className="lead">
+            Only organization owners and administrators can access these
+            contacts.
+          </p>
+          <div className="fields">
+            {field("Primary contact name", primaryName, setPrimaryName)}
+            {field(
+              "Primary contact email",
+              primaryEmail,
+              setPrimaryEmail,
+              "email",
+            )}
+            {field(
+              "Primary contact phone",
+              primaryPhone,
+              setPrimaryPhone,
+              "tel",
+            )}
+            {field("Operational/redemption contact name", opsName, setOpsName)}
+            {field(
+              "Operational/redemption email",
+              opsEmail,
+              setOpsEmail,
+              "email",
+            )}
+            {field(
+              "Operational/redemption phone",
+              opsPhone,
+              setOpsPhone,
+              "tel",
+            )}
+          </div>
+          <div className="actions">
+            <button className="btn quiet" onClick={() => save(false)}>
+              Save draft
+            </button>
+            <button className="btn" onClick={() => save(true)}>
+              Publish profile
+            </button>
+            <button className="textButton" onClick={() => save(false, true)}>
+              Unpublish profile
+            </button>
+          </div>
+        </fieldset>
+        <p
+          role="status"
+          aria-live="polite"
+          data-testid="partner-profile-save-status"
+        >
           {status}
         </p>
       </div>

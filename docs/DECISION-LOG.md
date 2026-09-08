@@ -221,3 +221,52 @@ This is the canonical review list for implementation choices and explicit user-a
 - **Decision:** Guardian claims return a 64-character opaque code while only its SHA-256 digest is retained privately. Partner validation and confirmation are atomic organization-scoped commands, with manual entry always available beside camera capability detection.
 - **Reason:** Scan/open/confirm should carry context without exposing PII, permitting replay, or requiring dedicated hardware.
 - **Consequence:** Claims remain distinct from utilization; confirmation consumes the token once, creates an exact-version redemption and audit events, and corrections append history rather than deleting the original.
+
+## D-033 — Atomic idempotent Guardian onboarding save
+
+- **Status:** Active; autonomous blocker remediation under the QA automation policy
+- **Decision:** Guardian pet onboarding captures form data before authentication work and saves the pet plus its active primary guardianship through one authenticated database function keyed by a per-form submission UUID. The database enforces one pet per user/submission and one active instance of the same guardian-pet relationship.
+- **Reason:** The former browser-only sequence could lose the React form target after an asynchronous call, leave partial data if the second write failed, and create duplicate records on retry.
+- **Consequence:** A supported retry returns the same pet, pet identity remains separate from the human profile, RLS remains authoritative for reads, and the UI advances only after the atomic operation succeeds. This does not add Phase 3 Passport features or settle future co-guardian/transfer policy.
+
+## D-034 — Active-guardianship dashboard and narrow pet detail
+
+- **Status:** Active; user-directed Issue #4 blocker remediation
+- **Decision:** The Guardian dashboard resolves every pet through the signed-in user's active, non-ended guardianships. Existing pets open a read-only current-scope detail route, while creating another pet remains a separate explicit action.
+- **Reason:** A permanent static setup prompt concealed saved pets and could send an existing Guardian back through create-new onboarding.
+- **Consequence:** Empty and populated Guardian states are now distinct, multiple pets remain first-class, and no full Phase 3 editing, transfer, co-guardian, lifecycle, or Passport expansion is implied.
+
+## D-035 — Shared-development preview isolation
+
+- **Status:** Active; user-directed Issue #6 QA infrastructure
+- **Decision:** Human QA uses branch-scoped Vercel Preview deployments connected only to `shelterpawtners-dev` through the project URL and publishable client key. Deterministic shared data comes from the idempotent committed seed; hosted browser tests never receive privileged Supabase credentials.
+- **Reason:** Reviewers need a normal HTTPS surface without local Docker while production hosting, DNS, data, and credentials remain separately gated.
+- **Consequence:** Preview success is evidence for review, not production promotion. Shared Auth rate limits make seeded identities the stable automation path; disposable hosted-test pets are clearly prefixed and administrative cleanup remains deliberate.
+
+## D-036 — Delegated, audited test-only Admin QA sessions
+
+- **Status:** Active; Issue #7 implementation decision
+- **Decision:** QA persona switching uses a server-issued, one-time session exchange for reserved `@example.invalid` accounts. The persisted administrator session is never replaced; a separately scoped client carries the acting test user's actual Supabase JWT.
+- **Reason:** This preserves real RLS fidelity without revealing passwords or server credentials, and makes return-to-admin immediate.
+- **Consequence:** Server functions remain role-authorized, environment-guarded, and audited. Arbitrary production-user impersonation is explicitly unsupported.
+
+## D-037 — Tab-scoped QA persona continuity
+
+- **Status:** Active; Issue #8 QA remediation decision
+- **Decision:** The separate acting-user client uses its own `sessionStorage` key so an active QA persona survives a page reload in the same browser tab, while the real administrator remains in the normal persisted Supabase storage key.
+- **Reason:** Hosted regression and human QA both need to test navigation and refresh without silently reverting identity; a tab boundary limits this temporary delegated session to the current QA tab.
+- **Consequence:** Closing the tab ends the acting-session continuity, `Return to Admin` removes the dedicated key and restores the existing admin session without credentials, and neither client overwrites the other.
+
+## D-038 — Profile/data review locks relationship-first MVP sequencing
+
+- **Status:** Active; Issue #9 review decision
+- **Decision:** Preserve the existing normalized identity, organization, pet, guardianship, offer, and verification foundations without speculative schema expansion. Treat `created_by` as provenance rather than permanent pet authority, and activate shelter-created Passport transfer, co-guardian control, and responder-linked adoption verification only through dedicated transactional vertical slices.
+- **Reason:** The necessary base relations already exist, while premature nullable fields or form edits would not solve the real access-control and provenance risks.
+- **Consequence:** No migration is added for Issue #9. The documented transfer, co-guardian, organization-claim, and adoption-response gates become prerequisites for their respective future UI slices.
+
+## D-039 — Hosted QA as default Phase 2 acceptance lane
+
+- **Status:** Active; Issue #6 implementation decision
+- **Decision:** Hosted QA now runs automatically for push events on `qa/guardian-registration-personas` and pull requests targeting `build/festival-mvp`, while Persona QA remains a manual deterministic lower-level local-Supabase/pgTAP regression gate. Hosted acceptance includes an explicit handoff-authorization guard (`SAFE_TO_CONTINUE: YES` and `OWNER_DECISION_REQUIRED: NO`) plus a practical Partner → Guardian golden-path regression that preserves the Issue #11 profile persistence check.
+- **Reason:** Jim's normal acceptance workflow must use Vercel + shared `shelterpawtners-dev` instead of local Docker resets, but progression still needs explicit repository-state authorization and diagnosable automated evidence.
+- **Consequence:** Hosted acceptance evidence becomes the routine signal for ongoing Phase 2 QA while maintaining non-production boundaries, seeded deterministic personas, and no privileged credential exposure in browser tests.

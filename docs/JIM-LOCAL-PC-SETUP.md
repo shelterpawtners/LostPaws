@@ -2,6 +2,18 @@
 
 Purpose: record Jim's working local-development setup for ShelterPawtners/LostPaws so future troubleshooting starts from the known-good configuration.
 
+## Durable correction rule
+
+This file is the source of truth for Jim-specific local paths, command locations, environment quirks, and known-good setup steps.
+
+When Jim corrects an assumed path, executable location, command sequence, or local-environment behavior:
+
+1. Treat the correction as authoritative for this project unless later superseded.
+2. Update this document when the correction is durable and relevant to future work.
+3. Before giving Jim local setup or troubleshooting instructions, consult this document instead of assuming standard Windows installation paths.
+4. Do not revert to generic defaults such as `C:\Program Files\Docker` when this document records a different known-good location.
+5. Prefer hosted shared-dev QA for Jim's routine UX testing once available; local Docker/Supabase should primarily support engineering, destructive reset testing, and machine-specific reproduction.
+
 ## Repository path
 
 Windows repository path:
@@ -81,7 +93,24 @@ From the repository root, start the Vite app in a separate PowerShell terminal:
 npm run dev
 ```
 
-Keep Docker Desktop and local Supabase running while testing authenticated marketplace/redemption workflows.
+Keep Docker Desktop and local Supabase running while testing authenticated marketplace/redemption workflows locally.
+
+## Hosted shared QA direction
+
+Routine Jim UX testing is moving away from local Docker/PowerShell setup.
+
+Approved target flow:
+
+1. Codex develops and validates locally.
+2. GitHub CI and Playwright run automated checks.
+3. Shared Supabase project `shelterpawtners-dev` provides the non-production backend.
+4. Vercel provides the hosted HTTPS preview/staging frontend.
+5. Jim performs normal browser QA against the hosted URL.
+6. Production deployment/DNS remains a separate explicit approval gate.
+
+Vercel was installed and connected through ChatGPT on 2026-09-07. The Vercel API connection responds successfully. No team workspace is currently returned by the connector; treat this as compatible with a personal-account scope, not as evidence that the connection failed.
+
+Until hosted QA is fully operational, local testing may still be required for specific regression checks.
 
 ## WSL note
 
@@ -98,4 +127,4 @@ If local Supabase fails to start:
 5. From the repo root, run `npx supabase start`.
 6. Verify with `npx supabase status`.
 
-This file documents Jim's personal development machine only. It is not a production deployment specification.
+This file documents Jim's personal development machine and shared QA direction only. It is not a production deployment specification.

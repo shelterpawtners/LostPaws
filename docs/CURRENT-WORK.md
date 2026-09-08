@@ -2,13 +2,11 @@
 
 ## Current phase
 
-Phase 1 — Platform + Data Foundation is engineering-complete and is the approved foundation baseline.
+Phase 2 — Partner Marketplace MVP is active.
 
-Phase 2 — Partner Marketplace MVP is **active**.
+Phase 1 — Platform + Data Foundation is complete and remains the approved foundation baseline.
 
-## Authoritative phase structure
-
-The five-phase structure is frozen:
+Frozen phase structure:
 
 1. Platform + Data Foundation
 2. Partner Marketplace MVP
@@ -16,104 +14,114 @@ The five-phase structure is frozen:
 4. Impact + Giving + Financial Intelligence
 5. Integrations + Marketplace + Production Launch
 
-The authoritative phase specifications are:
-
-- Phase 1: `docs/PHASE-1-EXECUTION.md` and `docs/PHASE-1-PROGRESS.md`
-- Phase 2: `docs/phases/PHASE-2.md`
-- Phase 3: `docs/phases/PHASE-3.md`
-- Phase 4: `docs/phases/PHASE-4.md`
-- Phase 5: `docs/phases/PHASE-5.md`
-
-The bounded Phase 2 execution sequence is defined in `docs/PHASE-2-EXECUTION-PLAN.md`.
-
-Older roadmap phase numbering or festival-MVP sequencing does not override this structure.
-
-## Phase 1 final state
-
-Phase 1 engineering validation is complete for the current foundation. See `docs/PHASE-1-PROGRESS.md` for evidence.
+Phase 3 remains explicitly unauthorized.
 
 ## Phase 2 checkpoint status
 
-### Checkpoint 1 — Partner Organization Foundation
+| Checkpoint                                                             | Status          | Primary evidence                                                           |
+| ---------------------------------------------------------------------- | --------------- | -------------------------------------------------------------------------- |
+| CP1 — Partner Organization Foundation                                  | ACCEPTED        | `docs/PHASE-2-CHECKPOINT-1-PROGRESS.md`, `docs/PHASE-2-CHECKPOINT-1-QA.md` |
+| CP2 — Partner Profile + Public Directory                               | ACCEPTED        | committed profile/directory RLS + hosted regression                        |
+| CP3 — Offer Engine                                                     | COMPLETE        | `docs/PHASE-2-CHECKPOINT-3-PROGRESS.md`                                    |
+| CP4 — Claim + QR/Code Redemption                                       | ACCEPTED        | `docs/PHASE-2-CHECKPOINT-4-PROGRESS.md`                                    |
+| CP5 — Verified Savings + Customer Attribution pre-decision engineering | COMPLETE        | Issue #13, Persona QA #62, CI #231, Hosted QA #128                         |
+| CP6 — Provider-agnostic Impact, Reputation + Giving Foundation         | AUTHORIZED NEXT | Issue #14; begin only after PR #2 merge gate                               |
 
-**Status: ACCEPTED.**
+## Immediate integration gate
 
-Evidence: `docs/PHASE-2-CHECKPOINT-1-PROGRESS.md` and `docs/PHASE-2-CHECKPOINT-1-QA.md`.
+PR #2 (`qa/guardian-registration-personas` → `build/festival-mvp`) contains the accumulated Phase 2 QA/integration foundation through accepted Checkpoint 5.
 
-Accepted capabilities include entry-first assisted organization matching, private drafts, safe access/claim review requests, atomic organization creation, multi-location support, corporate hierarchy, independent franchise/brand relationships without inherited control, duplicate-review/audit foundations, and RLS/authorization protections.
+Current policy:
 
-### Checkpoint 2 — Partner Profile + Public Directory
+- PR #2 is merge-only; do not add CP6 features or unrelated cleanup.
+- CP5 is fully accepted and Issue #13 is closed.
+- PR #2 is mergeable and its accepted feature/test head has green Persona QA, CI, and full Hosted QA.
+- Auto-merge is prohibited, so owner approval is required for the merge itself.
+- After merge, confirm the integration branch state before starting the next checkpoint.
 
-**Status: ACCEPTED.**
+## Clean execution model after PR #2
 
-Accepted capabilities include:
+Starting with CP6, use **one bounded checkpoint/feature PR at a time** instead of a long-lived integration PR.
 
-- full authenticated Partner profile editing;
-- public/private contact separation;
-- categories and species served;
-- business model and service-area/nationwide/online support;
-- booking/order links, social links, and business hours;
-- server-side minimum-safe publication validation;
-- publish and unpublish behavior;
-- moderation-state foundations;
-- public directory filters for category, city, state, service model, and species;
-- durable public Partner profile rendering;
-- explicit public-data allowlisting;
-- committed Checkpoint 2 pgTAP RLS/security tests;
-- maintainability extraction for shared Partner profile presentation/validation helpers.
+Post-merge launch sequence:
 
-Independent connected-Supabase verification confirmed anonymous users cannot read private Partner contacts and unpublished profiles are hidden from the public profile-details RPC.
+1. merge PR #2 into `build/festival-mvp` after owner approval;
+2. create `phase2/cp6-impact-giving` from the updated integration branch;
+3. open a small PR for Issue #14;
+4. place `<!-- ai-active-build-pr -->` on exactly one active implementation PR;
+5. set `docs/AI-HANDOFF.md` to `IN_PROGRESS` on that branch;
+6. implement the bounded checkpoint;
+7. use normal CI during implementation;
+8. use targeted Persona QA only for database/RLS/persona-sensitive changes;
+9. run full Hosted QA only at `READY_FOR_ACCEPTANCE`;
+10. mark COMPLETE only after deterministic acceptance is green;
+11. merge, then start the next checkpoint from a fresh integration base.
 
-Environment validation debt remains: clean local Supabase reset/pgTAP replay and authenticated Playwright runs should be completed when Docker/local test credentials are available and no later than Phase 2 final hardening.
+## MVP delivery strategy
 
-### Checkpoint 3 — Offer Engine
+Keep the vertical-slice balance:
 
-**Status: COMPLETE.** See `docs/PHASE-2-CHECKPOINT-3-PROGRESS.md`.
+- 65–70% critical MVP feature delivery;
+- 20–25% automated golden-path/RLS regression;
+- 5–10% human UX acceptance;
+- minimal cosmetic polish until major flows are connected.
 
-### Checkpoint 4 — Claim + QR/Code Redemption
+For each critical slice:
 
-**Status: READY FOR REQUIRED USER UX REVIEW.**
+1. build the usable end-to-end path;
+2. protect it with targeted deterministic tests;
+3. fix GREEN/YELLOW blockers immediately;
+4. defer broad permutations and cosmetic work;
+5. move on after acceptance.
 
-The local flow supports exact-version Guardian claims, opaque PII-free codes, Partner deep-link/manual validation, one-action utilization confirmation, replay prevention, and reversal history. See `docs/PHASE-2-CHECKPOINT-4-PROGRESS.md`.
+Issue #5 remains the broader full-site QA/hardening epic and is not the gate for every checkpoint.
 
-Checkpoint 5 must not begin until the redemption UX is reviewed and approval is recorded.
+## Cost-controlled AI operating model
 
-## User-involvement policy
+GitHub is the source of truth and zero-AI control plane.
 
-Automate routine engineering, QA, documentation, and implementation decisions. Escalate to the user only when a decision materially affects:
+Use native GitHub Actions/scripts for:
 
-- business promises or marketplace rules;
-- legal, charitable, or tax meaning;
-- financial calculations or customer-facing verified totals;
-- privacy/security boundaries;
-- organization ownership/control where policy cannot be safely deferred;
+- polling and workflow status;
+- lint/unit/build;
+- migration replay and pgTAP/RLS;
+- Playwright execution;
+- targeted Persona QA;
+- Hosted QA gating;
+- stall detection and status reconciliation.
+
+Use AI only when reasoning or implementation adds material value:
+
+- bounded checkpoint implementation;
+- non-obvious defect diagnosis;
+- architecture/product/security reasoning;
+- semantic acceptance review;
+- RED-decision escalation.
+
+Do not invoke coding agents for routine green CI, polling, status updates, simple locator/test-plan fixes, or repetitive review. Prefer one substantial coding session per bounded checkpoint rather than many small steering prompts.
+
+Authoritative coordination:
+
+- active GitHub Issue — task contract;
+- `docs/AI-HANDOFF.md` — live baton/state;
+- `docs/AUTONOMOUS-EXECUTION-POLICY.md` — GREEN/YELLOW/RED behavior;
+- `docs/AI-COST-AND-TESTING-GOVERNANCE.md` — cost/test rules;
+- `docs/OWNER-DECISION-BACKLOG.md` — unresolved owner gates;
+- this file — phase/checkpoint status and immediate execution sequence.
+
+## Current owner policy
+
+Jim authorized autonomous completion of the remainder of Phase 2 on 2026-09-08.
+
+Still owner-gated:
+
+- auto-merge / merge approval when explicitly required by repo policy;
+- customer-facing verified-savings rules or totals (`OD-003`);
+- giving-provider selection, production charitable-money movement, settlement, APIs/webhooks/receipts (`OD-004`);
+- legal/privacy/security posture changes;
 - destructive data operations;
-- paid service activation or credentials;
-- critical UX with materially different business outcomes;
-- production deployment, DNS, or infrastructure.
+- paid infrastructure;
+- production deployment/DNS;
+- Phase 3 authorization.
 
-Expected planned user checkpoints are:
-
-1. working redemption UX review during Checkpoint 4;
-2. verified-savings rule approval during Checkpoint 5;
-3. giving-provider selection during Checkpoint 6;
-4. final Phase 2 acceptance before Phase 3.
-
-## Operating model
-
-- GitHub is the source of truth and control plane.
-- Codex is the primary engineer.
-- Copilot is QA and a bounded engineer.
-- ChatGPT Project owns business decisions, UX, schemas, phase planning, review, financial rules, and execution prompts.
-- Make is on hold and is not part of the current architecture.
-- Newer explicit user decisions supersede older project choices.
-- Implemented repository architecture supersedes stale planning notes.
-- Ambiguous material product, legal, financial, privacy, security, or architectural matters are marked `OPEN DECISION` rather than invented.
-
-## Handoff rules
-
-- Preserve valid existing work and project knowledge.
-- Do not inherit architecture from Core or RaveShelter merely because it existed previously.
-- Record meaningful approved or autonomous decisions in `docs/DECISION-LOG.md` with their authority and status.
-- Test, fix, commit, and push at meaningful checkpoints.
-- Do not begin Phase 3 until Phase 2 is completed and explicitly approved.
+Newer explicit owner decisions and implemented repository state supersede stale historical planning notes.

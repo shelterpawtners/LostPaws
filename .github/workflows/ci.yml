@@ -1,21 +1,35 @@
 name: CI
+
 on:
   pull_request:
+    paths-ignore:
+      - "docs/**"
+      - "*.md"
   push:
     branches: [main, build/festival-mvp]
+    paths-ignore:
+      - "docs/**"
+      - "*.md"
+
+concurrency:
+  group: ci-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
+
 jobs:
   web:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
           node-version: 22
           cache: npm
       - run: npm ci
       - run: npm run lint
-      - run: npm run typecheck
       - run: npm test
+      # npm run build includes `tsc -b`, so a separate typecheck step would
+      # compile TypeScript twice without increasing the acceptance bar.
       - run: npm run build

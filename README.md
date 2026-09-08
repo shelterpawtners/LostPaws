@@ -6,7 +6,7 @@ LostPaws is the new application repository for the ShelterPawtners business and 
 
 MVP implementation was authorized on September 6, 2026. The repository now contains a React and TypeScript application plus a committed Supabase migration applied to `shelterpawtners-dev`.
 
-The current implementation includes responsive public pages, email authentication, protected multi-role routes, Partner organization/profile management, a public Partner directory, immutable Partner offers, exact-version Guardian claims, and an opaque-code Partner redemption workflow. The working redemption UX is awaiting its required Checkpoint 4 review; verified-savings work has not begun. Google sign-in remains disabled until provider credentials and approved redirect URLs are configured. Nothing has been deployed to the public ShelterPawtners domain.
+The current implementation includes responsive public pages, email authentication, protected multi-role routes, a pet-centric Guardian dashboard with active multi-pet selection, Partner organization/profile management, a public Partner directory, immutable Partner offers, exact-version Guardian claims, and an opaque-code Partner redemption workflow. The working redemption UX is awaiting its required Checkpoint 4 review; verified-savings work has not begun. Google sign-in remains disabled until provider credentials and approved redirect URLs are configured. Nothing has been deployed to the public ShelterPawtners domain.
 
 ## Planned capabilities
 
@@ -28,6 +28,8 @@ npm run build
 ```
 
 Development work is limited to `shelterpawtners-dev`. Production connection, project creation, DNS changes, and deployment require explicit user instruction.
+
+Human QA can use the branch-scoped Vercel Preview described in [Hosted shared-development QA](docs/HOSTED-QA.md). It uses only the shared development Supabase URL and publishable key; production remains untouched.
 
 ## Architecture
 

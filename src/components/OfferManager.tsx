@@ -11,6 +11,8 @@ type Offer = {
   current_version_id: string;
   offer_versions: any[];
 };
+type ProfileState =
+  "draft" | "published" | "unpublished" | "suspended" | "removed";
 export function OfferManager({ session }: { session: Session | null }) {
   const [orgs, setOrgs] = useState<Org[]>([]),
     [org, setOrg] = useState(""),
@@ -18,7 +20,10 @@ export function OfferManager({ session }: { session: Session | null }) {
     [selected, setSelected] = useState(""),
     [form, setForm] = useState<OfferTerms>(blankOffer),
     [preview, setPreview] = useState(false),
-    [status, setStatus] = useState("");
+    [status, setStatus] = useState(""),
+    [profileState, setProfileState] = useState<ProfileState | "missing">(
+      "missing",
+    );
   useEffect(() => {
     if (!db || !session) return;
     void db
@@ -34,12 +39,24 @@ export function OfferManager({ session }: { session: Session | null }) {
   }, [session]);
   const load = () => {
     if (!db || !org) return;
-    void db
-      .from("offers")
-      .select("id,title,status,current_version_id,offer_versions(*)")
-      .eq("organization_id", org)
-      .order("created_at", { ascending: false })
-      .then(({ data }) => setOffers((data || []) as any));
+    void Promise.all([
+      db
+        .from("offers")
+        .select("id,title,status,current_version_id,offer_versions(*)")
+        .eq("organization_id", org)
+        .order("created_at", { ascending: false }),
+      db
+        .from("organization_partner_profiles")
+        .select("publication_status")
+        .eq("organization_id", org)
+        .maybeSingle(),
+    ]).then(([offerResult, profileResult]) => {
+      setOffers((offerResult.data || []) as any);
+      setProfileState(
+        (profileResult.data?.publication_status as ProfileState | undefined) ||
+          "missing",
+      );
+    });
   };
   useEffect(load, [org]);
   const set = (key: keyof OfferTerms, value: string) =>
@@ -110,6 +127,12 @@ export function OfferManager({ session }: { session: Session | null }) {
               ))}
             </select>
           </label>
+          <div className="notice" data-testid="marketplace-profile-state">
+            <b>Marketplace profile:</b> {profileState.replaceAll("_", " ")}.
+            {profileState === "published"
+              ? " Your public business profile is visible to Guardians."
+              : " Publish your Partner profile so Guardians can learn about your business alongside its offers."}
+          </div>
           <button
             className="btn quiet"
             onClick={() => {

@@ -14,6 +14,7 @@ import {
   Routes,
   useLocation,
   useNavigate,
+  useParams,
 } from "react-router-dom";
 import {
   ArrowRight,
@@ -32,7 +33,13 @@ import {
 } from "lucide-react";
 import type { Session } from "@supabase/supabase-js";
 import { accountRegistrationPath, legacyRegistrationTarget } from "./domain";
-import { googleAuthEnabled, supabase as db } from "./lib/supabase";
+import {
+  adminSupabase,
+  getActingSupabase,
+  googleAuthEnabled,
+  restoreActingSupabase,
+  supabase as db,
+} from "./lib/supabase";
 import {
   hasOrganizationMatchSignal,
   organizationMatchSummary,
@@ -48,6 +55,11 @@ import { PublicPartnerProfile } from "./components/PublicPartnerProfile";
 import { OfferManager } from "./components/OfferManager";
 import { OfferMarketplace } from "./components/OfferMarketplace";
 import { RedemptionFlow } from "./components/RedemptionFlow";
+import {
+  AdminQaMode,
+  AdminQaNavLink,
+  QaBanner,
+} from "./components/AdminQaMode";
 type Kind = "guardian" | "shelter" | "petbiz" | "rave_vendor";
 const choices: { kind: Kind; title: string; copy: string }[] = [
   {
@@ -85,17 +97,27 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
     loading: true,
   });
   useEffect(() => {
-    if (!db) {
+    if (!adminSupabase) {
       setState({ session: null, loading: false });
       return;
     }
-    db.auth
-      .getSession()
-      .then(({ data }) => setState({ session: data.session, loading: false }));
-    const { data } = db.auth.onAuthStateChange((_event, session) =>
-      setState({ session, loading: false }),
-    );
-    return () => data.subscription.unsubscribe();
+    const persistedClient = adminSupabase;
+    const refresh = async () => {
+      if (!getActingSupabase()) await restoreActingSupabase();
+      const { data } = await (
+        getActingSupabase() || persistedClient
+      ).auth.getSession();
+      setState({ session: data.session, loading: false });
+    };
+    void refresh();
+    window.addEventListener("sp-qa-changed", refresh);
+    const { data } = persistedClient.auth.onAuthStateChange(() => {
+      if (!getActingSupabase()) refresh();
+    });
+    return () => {
+      window.removeEventListener("sp-qa-changed", refresh);
+      data.subscription.unsubscribe();
+    };
   }, []);
   return <AuthContext.Provider value={state}>{children}</AuthContext.Provider>;
 }
@@ -131,6 +153,7 @@ function Header() {
           <Link to="/marketplace">Marketplace</Link>
           <Link to="/rave">RAVE Shelter</Link>
           <Link to="/register">Join</Link>
+          {session && <AdminQaNavLink />}
           <Link className="btn quiet" to={session ? "/dashboard" : "/login"}>
             {session ? "My dashboard" : "Sign in"}
           </Link>
@@ -160,6 +183,7 @@ function Page({ children }: { children: React.ReactNode }) {
   return (
     <>
       <Header />
+      <QaBanner />
       <main id="main" className="min-h-screen" tabIndex={-1}>
         {children}
       </main>
@@ -1004,57 +1028,66 @@ function Onboard() {
 }
 function StandardOnboard({ kind: k }: { kind: "guardian" | "shelter" }) {
   const c = choices.find((x) => x.kind === k) || choices[0];
+  const navigate = useNavigate();
   const [adopted, setAdopted] = useState(false),
-    [status, setStatus] = useState("");
+    [status, setStatus] = useState(""),
+    [saving, setSaving] = useState(false);
+  const [guardianSubmissionId] = useState(() => crypto.randomUUID());
   async function save(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (!db) return setStatus("Development connection is unavailable.");
-    setStatus("Saving…");
-    const {
-      data: { user },
-    } = await db.auth.getUser();
-    if (!user) return setStatus("Please sign in before saving.");
     const f = new FormData(e.currentTarget);
+    if (saving) return;
+    setSaving(true);
+    setStatus("Saving…");
+    let user;
+    try {
+      const { data, error } = await db.auth.getUser();
+      if (error) throw error;
+      user = data.user;
+    } catch {
+      setSaving(false);
+      return setStatus(
+        "Unable to verify your session. Check your connection and try again.",
+      );
+    }
+    if (!user) {
+      setSaving(false);
+      return setStatus("Please sign in before saving.");
+    }
     if (k === "guardian") {
-      const { data: pet, error } = await db
-        .from("pets")
-        .insert({
-          created_by: user.id,
-          name: f.get("name"),
-          species: f.get("species"),
-          adopted_self_reported: adopted,
-        })
-        .select("id")
-        .single();
-      if (error || !pet)
-        return setStatus(error?.message || "Unable to save pet.");
-      const { error: gError } = await db
-        .from("guardianships")
-        .insert({ pet_id: pet.id, guardian_id: user.id });
-      if (gError) return setStatus(gError.message);
-      if (adopted) {
-        const { error: vError } = await db
-          .from("adoption_verification_requests")
-          .insert({
-            pet_id: pet.id,
-            requested_by: user.id,
-            shelter_name: f.get("shelter_name"),
-            shelter_email: f.get("shelter_email") || null,
-            shelter_phone: f.get("shelter_phone") || null,
-            shelter_website_or_social: f.get("shelter_social") || null,
-            approximate_adoption_date: f.get("adoption_date") || null,
-            pet_name_at_adoption: f.get("adoption_name") || null,
-            contact_consent_at: new Date().toISOString(),
-            status: "submitted",
-          });
-        if (vError) return setStatus(vError.message);
+      const { error } = await db.rpc("save_guardian_onboarding_pet", {
+        p_submission_id: guardianSubmissionId,
+        p_name: String(f.get("name") || ""),
+        p_species: String(f.get("species") || ""),
+        p_adopted: adopted,
+        p_shelter_name: adopted ? String(f.get("shelter_name") || "") : null,
+        p_shelter_email: adopted
+          ? String(f.get("shelter_email") || "") || null
+          : null,
+        p_shelter_phone: adopted
+          ? String(f.get("shelter_phone") || "") || null
+          : null,
+        p_shelter_social: adopted
+          ? String(f.get("shelter_social") || "") || null
+          : null,
+        p_adoption_date: adopted
+          ? String(f.get("adoption_date") || "") || null
+          : null,
+        p_adoption_name: adopted
+          ? String(f.get("adoption_name") || "") || null
+          : null,
+      });
+      if (error) {
+        setSaving(false);
+        return setStatus(`Unable to save your pet. ${error.message}`);
       }
       setStatus(
         adopted
           ? "Pet saved. Adoption confirmation is submitted."
           : "Pet Passport started.",
       );
-      window.setTimeout(() => (location.href = "/dashboard"), 700);
+      window.setTimeout(() => navigate("/dashboard"), 700);
       return;
     }
     const orgType =
@@ -1082,20 +1115,25 @@ function StandardOnboard({ kind: k }: { kind: "guardian" | "shelter" }) {
       })
       .select("id")
       .single();
-    if (error || !org)
+    if (error || !org) {
+      setSaving(false);
       return setStatus(error?.message || "Unable to save organization.");
+    }
     const { error: mError } = await db.from("organization_memberships").insert({
       organization_id: org.id,
       user_id: user.id,
       role: "owner",
     });
-    if (mError) return setStatus(mError.message);
+    if (mError) {
+      setSaving(false);
+      return setStatus(mError.message);
+    }
     setStatus(
       k === "shelter"
         ? "Shelter registration submitted."
         : "Organization and listing saved.",
     );
-    window.setTimeout(() => (location.href = "/dashboard"), 700);
+    window.setTimeout(() => navigate("/dashboard"), 700);
   }
   return (
     <Page>
@@ -1224,7 +1262,9 @@ function StandardOnboard({ kind: k }: { kind: "guardian" | "shelter" }) {
               </div>
             </div>
           )}
-          <button className="btn">Save and continue</button>
+          <button className="btn" disabled={saving}>
+            {saving ? "Saving…" : "Save and continue"}
+          </button>
           <p role="status" aria-live="polite" aria-atomic="true">
             {status}
           </p>
@@ -1518,10 +1558,19 @@ const onboardingRole: Record<Kind, UserRole> = {
   petbiz: "partner_member",
   rave_vendor: "partner_member",
 };
+type GuardianPet = {
+  id: string;
+  name: string;
+  species: string;
+  breed: string | null;
+  adopted_self_reported: boolean | null;
+};
 function Dashboard() {
   const { session } = useAuth();
   const [roles, setRoles] = useState<string[]>([]);
   const [activeRole, setActiveRole] = useState("");
+  const [pets, setPets] = useState<GuardianPet[]>([]);
+  const [petsLoading, setPetsLoading] = useState(true);
   const [status, setStatus] = useState("");
   const navigate = useNavigate();
   useEffect(() => {
@@ -1537,6 +1586,25 @@ function Dashboard() {
         const saved = localStorage.getItem("sp_active_role");
         setActiveRole(
           saved && list.includes(saved) ? saved : list[0] || "guardian",
+        );
+      });
+  }, [session]);
+  useEffect(() => {
+    if (!db || !session) return;
+    setPetsLoading(true);
+    db.from("guardianships")
+      .select("pets(id,name,species,breed,adopted_self_reported)")
+      .eq("guardian_id", session.user.id)
+      .eq("status", "active")
+      .is("ended_at", null)
+      .then(({ data, error }) => {
+        setPetsLoading(false);
+        if (error) return setStatus(error.message);
+        setPets(
+          (data || []).flatMap((row) => {
+            const pet = row.pets as GuardianPet | GuardianPet[] | null;
+            return Array.isArray(pet) ? pet : pet ? [pet] : [];
+          }),
         );
       });
   }, [session]);
@@ -1620,31 +1688,69 @@ function Dashboard() {
           <span className="eyebrow">{phaseOneRoleLabels[active]}</span>
           <h2>
             {kind === "guardian"
-              ? "Your pet journey starts here"
+              ? pets.length
+                ? "Your pets"
+                : "Your pet journey starts here"
               : kind === "shelter"
                 ? "Build your shelter presence"
                 : "Manage your organization"}
           </h2>
+          {kind === "guardian" && pets.length > 0 && (
+            <div className="guardianPets" aria-label="Your pets">
+              {pets.map((pet) => (
+                <Link
+                  className="petTile"
+                  to={`/pets/${pet.id}`}
+                  key={pet.id}
+                  aria-label={`Open ${pet.name}`}
+                >
+                  <PawPrint />
+                  <div>
+                    <b>{pet.name}</b>
+                    <p>
+                      {pet.species}
+                      {pet.breed ? ` · ${pet.breed}` : ""}
+                    </p>
+                  </div>
+                  <ArrowRight />
+                </Link>
+              ))}
+            </div>
+          )}
           <div className="nextCards">
-            <Link
-              className="next primary"
-              to={kind === "guardian" ? "/pets/new" : `/onboarding/${kind}`}
-            >
-              <PawPrint />
-              <div>
-                <b>
-                  {kind === "guardian"
-                    ? "Set up your pet"
-                    : "Complete your organization"}
-                </b>
-                <p>
-                  {kind === "guardian"
-                    ? "Start a private Digital Pet Passport and adoption story."
-                    : "Add the details people need to understand your work."}
-                </p>
-              </div>
-              <ArrowRight />
-            </Link>
+            {kind !== "guardian" || (!petsLoading && pets.length === 0) ? (
+              <Link
+                className="next primary"
+                to={kind === "guardian" ? "/pets/new" : `/onboarding/${kind}`}
+              >
+                <PawPrint />
+                <div>
+                  <b>
+                    {kind === "guardian"
+                      ? "Set up your pet"
+                      : "Complete your organization"}
+                  </b>
+                  <p>
+                    {kind === "guardian"
+                      ? "Start a private Digital Pet Passport and adoption story."
+                      : "Add the details people need to understand your work."}
+                  </p>
+                </div>
+                <ArrowRight />
+              </Link>
+            ) : null}
+            {kind === "guardian" && pets.length > 0 && (
+              <Link className="next" to="/pets/new">
+                <PawPrint />
+                <div>
+                  <b>Add another pet</b>
+                  <p>
+                    Create a separate Passport for another pet in your care.
+                  </p>
+                </div>
+                <ArrowRight />
+              </Link>
+            )}
             <Link className="next" to="/marketplace">
               <Search />
               <div>
@@ -1672,6 +1778,76 @@ function Dashboard() {
             {status}
           </p>
         </div>
+      </section>
+    </Page>
+  );
+}
+function GuardianPetDetail() {
+  const { session } = useAuth();
+  const { petId } = useParams();
+  const [pet, setPet] = useState<GuardianPet | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [status, setStatus] = useState("");
+  useEffect(() => {
+    if (!db || !session || !petId) return;
+    db.from("guardianships")
+      .select("pets(id,name,species,breed,adopted_self_reported)")
+      .eq("guardian_id", session.user.id)
+      .eq("pet_id", petId)
+      .eq("status", "active")
+      .is("ended_at", null)
+      .maybeSingle()
+      .then(({ data, error }) => {
+        setLoading(false);
+        if (error) return setStatus(error.message);
+        const related = data?.pets as GuardianPet | GuardianPet[] | null;
+        setPet(Array.isArray(related) ? related[0] || null : related || null);
+      });
+  }, [petId, session]);
+  return (
+    <Page>
+      <section className="section shell narrow petDetail">
+        <Link to="/dashboard">← Back to your pets</Link>
+        {loading ? (
+          <p role="status">Loading pet…</p>
+        ) : pet ? (
+          <div className="panel">
+            <span className="eyebrow">Digital Pet Passport</span>
+            <h1>{pet.name}</h1>
+            <dl>
+              <div>
+                <dt>Species</dt>
+                <dd>{pet.species}</dd>
+              </div>
+              {pet.breed && (
+                <div>
+                  <dt>Breed</dt>
+                  <dd>{pet.breed}</dd>
+                </div>
+              )}
+              <div>
+                <dt>Adoption status</dt>
+                <dd>
+                  {pet.adopted_self_reported
+                    ? "Guardian reported adopted"
+                    : "Not reported as adopted"}
+                </dd>
+              </div>
+            </dl>
+            <p>
+              More Passport details and editing tools are planned for the
+              Guardian and Shelter Passport phase.
+            </p>
+          </div>
+        ) : (
+          <div className="panel">
+            <h1>Pet unavailable</h1>
+            <p>This pet is not available under your active guardianships.</p>
+          </div>
+        )}
+        <p role="status" aria-live="polite">
+          {status}
+        </p>
       </section>
     </Page>
   );
@@ -1730,6 +1906,16 @@ function App() {
         }
       />
       <Route
+        path="/admin-qa"
+        element={
+          <Protected>
+            <Page>
+              <AdminQaMode />
+            </Page>
+          </Protected>
+        }
+      />
+      <Route
         path="/onboarding/:type"
         element={
           <Protected>
@@ -1742,6 +1928,14 @@ function App() {
         element={
           <Protected>
             <Navigate to="/onboarding/guardian" />
+          </Protected>
+        }
+      />
+      <Route
+        path="/pets/:petId"
+        element={
+          <Protected>
+            <GuardianPetDetail />
           </Protected>
         }
       />

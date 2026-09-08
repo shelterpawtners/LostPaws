@@ -1,0 +1,66 @@
+name: Persona QA
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "supabase/**"
+      - "e2e/guardian-dashboard.spec.ts"
+      - "e2e/persona-registration.spec.ts"
+      - "e2e/persona-access-isolation.spec.ts"
+      - "e2e/phase-2-offer-redemption.spec.ts"
+      - ".github/workflows/persona-qa.yml"
+      - "playwright.config.ts"
+      - "package.json"
+      - "package-lock.json"
+
+concurrency:
+  group: persona-qa-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  persona-qa:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Start local Supabase
+        run: npx --yes supabase@2.117.0 start
+      - name: Reset and seed local database
+        run: npx --yes supabase@2.117.0 db reset
+      - name: Run pgTAP database tests
+        run: npx --yes supabase@2.117.0 test db
+      - name: Export local Supabase browser settings
+        shell: bash
+        run: |
+          npx --yes supabase@2.117.0 status -o env > supabase.env
+          set -a
+          source supabase.env
+          set +a
+          echo "PLAYWRIGHT_SUPABASE_URL=${API_URL}" >> "$GITHUB_ENV"
+          if [ -n "${ANON_KEY:-}" ]; then
+            echo "PLAYWRIGHT_SUPABASE_PUBLISHABLE_KEY=${ANON_KEY}" >> "$GITHUB_ENV"
+          elif [ -n "${PUBLISHABLE_KEY:-}" ]; then
+            echo "PLAYWRIGHT_SUPABASE_PUBLISHABLE_KEY=${PUBLISHABLE_KEY}" >> "$GITHUB_ENV"
+          else
+            echo "No local public Supabase key was returned by supabase status" >&2
+            exit 1
+          fi
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Run persona registration, access, and redemption tests
+        run: npx playwright test e2e/guardian-dashboard.spec.ts e2e/persona-registration.spec.ts e2e/persona-access-isolation.spec.ts e2e/phase-2-offer-redemption.spec.ts
+      - name: Upload Playwright failure evidence
+        if: failure()
+        uses: actions/upload-artifact@v6
+        with:
+          name: playwright-test-results
+          path: test-results/
+          if-no-files-found: ignore
