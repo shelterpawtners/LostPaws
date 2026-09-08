@@ -3,7 +3,12 @@ create extension if not exists pgtap with schema extensions;
 select plan(4);
 
 set local role anon;
-select is((select count(*)::bigint from private.audit_events),0::bigint,'anonymous callers cannot read QA audit evidence');
+select throws_ok(
+  $$select count(*)::bigint from private.audit_events$$,
+  '42501',
+  'permission denied for schema private',
+  'anonymous callers cannot read QA audit evidence'
+);
 
 set local role authenticated;
 select set_config('request.jwt.claim.sub','10000000-0000-0000-0000-000000000003',true);
