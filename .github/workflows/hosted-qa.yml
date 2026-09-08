@@ -52,10 +52,10 @@ jobs:
       PLAYWRIGHT_ADMIN_PASSWORD: ${{ secrets.QA_PLATFORM_ADMIN_PASSWORD }}
       PLAYWRIGHT_NON_ADMIN_EMAIL: ${{ secrets.QA_NON_ADMIN_EMAIL }}
       PLAYWRIGHT_NON_ADMIN_PASSWORD: ${{ secrets.QA_NON_ADMIN_PASSWORD }}
-      PLAYWRIGHT_GUARDIAN_EMAIL: ${{ secrets.QA_GUARDIAN_EMAIL || 'guardian-a@example.invalid' }}
-      PLAYWRIGHT_GUARDIAN_PASSWORD: ${{ secrets.QA_GUARDIAN_PASSWORD || 'Demo-only-Guardian-A!' }}
-      PLAYWRIGHT_PARTNER_EMAIL: ${{ secrets.QA_PARTNER_EMAIL || 'partner-admin@example.invalid' }}
-      PLAYWRIGHT_PARTNER_PASSWORD: ${{ secrets.QA_PARTNER_PASSWORD || 'Demo-only-Partner!' }}
+      PLAYWRIGHT_GUARDIAN_EMAIL: guardian-a@example.invalid
+      PLAYWRIGHT_GUARDIAN_PASSWORD: Demo-only-Guardian-A!
+      PLAYWRIGHT_PARTNER_EMAIL: partner-admin@example.invalid
+      PLAYWRIGHT_PARTNER_PASSWORD: Demo-only-Partner!
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v7

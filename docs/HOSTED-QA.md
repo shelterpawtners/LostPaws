@@ -58,12 +58,12 @@ GitHub's **Hosted QA** workflow runs automatically on:
 
 The workflow requires `docs/AI-HANDOFF.md` to declare `SAFE_TO_CONTINUE: YES` and `OWNER_DECISION_REQUIRED: NO` before acceptance execution. It defaults to `https://lost-paws-one.vercel.app` when `QA_BASE_URL` is not configured. Configure repository variables `QA_BASE_URL`, `QA_SUPABASE_URL`, and `QA_SUPABASE_PUBLISHABLE_KEY`, plus these GitHub Actions **secrets** (never repository variables or source code):
 
-| Secret                                                   | Purpose                                                                                                                    |
-| -------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
-| `QA_PLATFORM_ADMIN_EMAIL` / `QA_PLATFORM_ADMIN_PASSWORD` | Authorized platform-admin login used to exercise the server-side QA functions.                                             |
-| `QA_NON_ADMIN_EMAIL` / `QA_NON_ADMIN_PASSWORD`           | Ordinary account used to prove `/admin-qa` rejects non-admins.                                                             |
-| `QA_GUARDIAN_EMAIL` / `QA_GUARDIAN_PASSWORD`             | Optional override for the deterministic Guardian used by hosted smoke (defaults to seeded `guardian-a@example.invalid`).   |
-| `QA_PARTNER_EMAIL` / `QA_PARTNER_PASSWORD`               | Optional override for the deterministic Partner used by hosted smoke (defaults to seeded `partner-admin@example.invalid`). |
+| Secret                                                   | Purpose                                                                                                                        |
+| -------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| `QA_PLATFORM_ADMIN_EMAIL` / `QA_PLATFORM_ADMIN_PASSWORD` | Authorized platform-admin login used to exercise the server-side QA functions.                                                 |
+| `QA_NON_ADMIN_EMAIL` / `QA_NON_ADMIN_PASSWORD`           | Ordinary account used to prove `/admin-qa` rejects non-admins.                                                                 |
+| `QA_GUARDIAN_EMAIL` / `QA_GUARDIAN_PASSWORD`             | Not required for hosted CI; the workflow intentionally uses seeded `guardian-a@example.invalid` for deterministic behavior.    |
+| `QA_PARTNER_EMAIL` / `QA_PARTNER_PASSWORD`               | Not required for hosted CI; the workflow intentionally uses seeded `partner-admin@example.invalid` for deterministic behavior. |
 
 The workflow fails before browser execution if handoff authorization, target URL, or required hosted Guardian/Partner credentials are missing. Its Admin QA suite runs only when admin/non-admin credentials are configured; without those secrets, the admin suite is skipped while hosted Guardian/Partner smoke and marketplace golden-path coverage still execute. Select `full_browser_audit` to run the practical hosted portion of the Issue #5 audit. Persona QA remains the targeted deterministic lower-level gate for local disposable Supabase reset, pgTAP, and direct database setup.
 
