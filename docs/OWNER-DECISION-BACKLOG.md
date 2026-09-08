@@ -88,3 +88,49 @@ Phase 3 roadmap/progression only.
 
 Resolution:
 PENDING
+
+### OD-003 — Customer-facing verified-savings standard
+
+Status: BLOCKING
+Category: FINANCIAL
+Introduced by: ChatGPT architecture acceptance review
+Date: 2026-09-08
+Review by: Before enabling any customer-facing `verified savings` total or verified lifetime-savings reporting
+
+Question:
+What evidence and calculation rules qualify a redemption value as customer-facing `verified savings`, including reference-value sources, Partner-entered values, receipts/order evidence, bundles/free items, refunds, corrections, reversals, and lifetime-total treatment?
+
+Provisional assumption:
+N/A for customer-facing verified totals. The system may preserve raw/reference/paid amounts, provenance, candidate savings, relationship classification, and append-only correction history, but must not label those values verified.
+
+Why safe to defer:
+The provider-/rule-independent CP5 foundation and later Phase 2 work can proceed without making a financial claim to Guardians. This blocks only verified-savings labeling/calculation behavior that depends on the approved standard.
+
+Affected areas:
+Guardian/Partner savings labels and totals, reporting, dashboards, exports, analytics, and any derived verified-savings read model.
+
+Resolution:
+PENDING
+
+### OD-004 — Charitable giving provider / production money movement
+
+Status: BLOCKING
+Category: FINANCIAL
+Introduced by: ChatGPT architecture acceptance review
+Date: 2026-09-08
+Review by: Before provider-dependent charitable money movement or production settlement integration in Phase 2 Checkpoint 6
+
+Question:
+Which giving/settlement provider and production flow should ShelterPawtners use for charitable contributions after current provider research and review?
+
+Provisional assumption:
+N/A for production money movement. CP6 may implement provider-agnostic participation/reputation states, contribution commitments, accrual semantics, externally verified settled-contribution evidence, audit history, and permission-safe reporting using existing Phase 1 foundations.
+
+Why safe to defer:
+The provider-agnostic domain model can be made truthful and testable without collecting/routing production funds. Provider-specific APIs, settlement, receipts, webhooks, batching, and real money movement remain isolated behind this gate.
+
+Affected areas:
+Giving-provider integration, donation settlement, receipts, reconciliation, production payment/fund movement, and provider-specific webhooks.
+
+Resolution:
+PENDING
