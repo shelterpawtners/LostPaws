@@ -13,6 +13,7 @@ mapfile -t changed_files < <(git diff --name-only "${BASE_SHA}" "${HEAD_SHA}")
 
 docs=false
 web=false
+frontend_artifact=false
 shared_app=false
 database=false
 persona=false
@@ -21,6 +22,7 @@ workflow=false
 dependency=false
 deployment=false
 unknown=false
+package_json_changed=false
 
 for file in "${changed_files[@]}"; do
   case "${file}" in
@@ -29,6 +31,7 @@ for file in "${changed_files[@]}"; do
       ;;
     src/*)
       web=true
+      frontend_artifact=true
       case "${file}" in
         src/main.tsx|src/lib/*|src/*auth*|src/*Auth*|src/*session*|src/*Session*)
           shared_app=true
@@ -38,6 +41,7 @@ for file in "${changed_files[@]}"; do
       ;;
     public/*|index.html|vite.config.*|tsconfig*.json)
       web=true
+      frontend_artifact=true
       ;;
     supabase/migrations/*|supabase/tests/*|supabase/seed.sql|supabase/config.toml)
       database=true
@@ -56,9 +60,15 @@ for file in "${changed_files[@]}"; do
           ;;
       esac
       ;;
-    package.json|package-lock.json)
+    package-lock.json)
       dependency=true
       web=true
+      frontend_artifact=true
+      ;;
+    package.json)
+      dependency=true
+      web=true
+      package_json_changed=true
       ;;
     .github/workflows/persona-qa.yml)
       workflow=true
@@ -79,9 +89,9 @@ for file in "${changed_files[@]}"; do
       workflow=true
       docs=true
       ;;
-    vercel.json|scripts/vercel-ignore-build.sh)
+    vercel.json)
       deployment=true
-      web=true
+      frontend_artifact=true
       ;;
     .gitignore|.prettierignore|.prettierrc*|eslint.config.*)
       workflow=true
@@ -92,9 +102,27 @@ for file in "${changed_files[@]}"; do
   esac
 done
 
+# package.json contains both deploy-impacting inputs and test/tooling scripts.
+# Only dependencies/runtime/build configuration should force a Vercel build.
+if [[ "${package_json_changed}" == "true" ]]; then
+  before=$(mktemp)
+  after=$(mktemp)
+  trap 'rm -f "$before" "$after"' EXIT
+  if git show "${BASE_SHA}:package.json" > "$before" 2>/dev/null && git show "${HEAD_SHA}:package.json" > "$after" 2>/dev/null; then
+    before_sig=$(jq -Sc '{dependencies,devDependencies,peerDependencies,optionalDependencies,engines,packageManager,buildScript:(.scripts.build // null)}' "$before")
+    after_sig=$(jq -Sc '{dependencies,devDependencies,peerDependencies,optionalDependencies,engines,packageManager,buildScript:(.scripts.build // null)}' "$after")
+    if [[ "${before_sig}" != "${after_sig}" ]]; then
+      frontend_artifact=true
+    fi
+  else
+    frontend_artifact=true
+  fi
+fi
+
 if [[ "${unknown}" == "true" ]]; then
   web=true
   e2e=true
+  frontend_artifact=true
 fi
 
 product_change=false
@@ -133,6 +161,7 @@ emit() {
 
 emit docs "${docs}"
 emit web "${web}"
+emit frontend_artifact "${frontend_artifact}"
 emit shared_app "${shared_app}"
 emit database "${database}"
 emit persona "${persona}"
@@ -154,6 +183,7 @@ if [[ -n "${GITHUB_STEP_SUMMARY:-}" ]]; then
     echo "### Change impact"
     echo
     echo "- Files changed: ${#changed_files[@]}"
+    echo "- Deployed frontend artifact: ${frontend_artifact}"
     echo "- Web CI: ${requires_web_ci}"
     echo "- Database QA: ${requires_db_qa}"
     echo "- Persona QA at acceptance: ${requires_persona_qa}"
