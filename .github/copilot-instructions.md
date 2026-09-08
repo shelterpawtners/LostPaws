@@ -9,7 +9,11 @@ Read `AGENTS.md` first. Then read only the active task context: the GitHub Issue
 - Phase 3 is not authorized.
 - No auto-merge, production/DNS changes, paid infrastructure, service-role browser credentials, RLS weakening, or material RED decisions without owner approval.
 
-## Autonomy
+## Invocation boundary
+
+This Copilot session must have been intentionally started for a bounded task. GitHub Actions/supervisors are not allowed to start Copilot automatically. Do not create or request a new coding-agent session as part of routine continuation, retry, CI success, or stall recovery.
+
+## Autonomy inside this session
 
 - GREEN: decide and continue.
 - YELLOW: make the safest reversible assumption, log it in `docs/OWNER-DECISION-BACKLOG.md`, and continue.
@@ -23,7 +27,7 @@ Read `AGENTS.md` first. Then read only the active task context: the GitHub Issue
 - Work through implementation, targeted validation, and related GREEN/YELLOW fixes in this same session where practical.
 - Do not request or trigger another Copilot session because a routine CI/Hosted QA run passed.
 - Do not use AI for deterministic formatting, polling, status checks, test reruns, or tasks GitHub Actions/scripts can perform.
-- Do not request Copilot code review on every commit. Default to one review at checkpoint acceptance only when materially useful.
+- Do not request Copilot code review on every commit. Default to one semantic review at checkpoint acceptance only when materially useful.
 - Keep context lean; do not read unrelated historical docs or explore unrelated code.
 
 ## Stack and invariants
