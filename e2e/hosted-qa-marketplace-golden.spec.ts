@@ -41,12 +41,15 @@ test.describe.serial("Hosted partner-to-guardian marketplace golden path", () =>
     await page.goto("/business");
     const saveDraftButton = page.getByRole("button", { name: "Save draft" });
     await expect(saveDraftButton).toBeEnabled({ timeout: 15_000 });
+    const organization = page.getByLabel("Organization");
+    await expect(organization).not.toHaveValue("");
     await page.getByLabel("Public description").fill(publicDescription);
     await page.getByLabel("Public email").fill(publicEmail);
     await page.getByLabel("How customers are served").selectOption("online");
     await saveDraftButton.click();
     await expect(saveDraftButton).toBeEnabled({ timeout: 15_000 });
-    const organization = page.getByLabel("Organization");
+    const saveStatus = page.locator(".panel > p[role='status']").last();
+    await expect(saveStatus).toContainText("Saved as a private draft.");
     const selectedOrganizationId = await organization.inputValue();
     await page.reload();
     await expect(saveDraftButton).toBeEnabled({ timeout: 15_000 });

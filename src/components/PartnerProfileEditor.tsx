@@ -26,6 +26,7 @@ export function PartnerProfileEditor({ session }: { session: Session | null }) {
     [id, setId] = useState(""),
     [status, setStatus] = useState(""),
     [saving, setSaving] = useState(false);
+  const [loadingSetup, setLoadingSetup] = useState(false);
   const [loadingProfile, setLoadingProfile] = useState(false);
   const [description, setDescription] = useState(""),
     [about, setAbout] = useState(""),
@@ -49,6 +50,8 @@ export function PartnerProfileEditor({ session }: { session: Session | null }) {
     [opsPhone, setOpsPhone] = useState("");
   useEffect(() => {
     if (!db || !session) return;
+    let cancelled = false;
+    setLoadingSetup(true);
     void Promise.all([
       db
         .from("organization_memberships")
@@ -60,21 +63,30 @@ export function PartnerProfileEditor({ session }: { session: Session | null }) {
         .select("id,label")
         .eq("is_active", true)
         .order("sort_order"),
-    ]).then(([m, c]) => {
-      const next = (m.data || [])
-        .map((r: any) => r.organizations)
-        .filter(Boolean)
-        .sort((a: Org, b: Org) => a.id.localeCompare(b.id)) as Org[];
-      const storedOrgId = selectionKey
-        ? localStorage.getItem(selectionKey)
-        : null;
-      const selectedOrgId = next.some((org) => org.id === storedOrgId)
-        ? storedOrgId || ""
-        : next[0]?.id || "";
-      setOrgs(next);
-      setId(selectedOrgId);
-      setCategories((c.data || []) as any);
-    });
+    ])
+      .then(([m, c]) => {
+        if (cancelled) return;
+        const next = (m.data || [])
+          .map((r: any) => r.organizations)
+          .filter(Boolean)
+          .sort((a: Org, b: Org) => a.id.localeCompare(b.id)) as Org[];
+        const storedOrgId = selectionKey
+          ? localStorage.getItem(selectionKey)
+          : null;
+        const selectedOrgId = next.some((org) => org.id === storedOrgId)
+          ? storedOrgId || ""
+          : next[0]?.id || "";
+        setOrgs(next);
+        setId(selectedOrgId);
+        setCategories((c.data || []) as any);
+      })
+      .finally(() => {
+        if (cancelled) return;
+        setLoadingSetup(false);
+      });
+    return () => {
+      cancelled = true;
+    };
   }, [selectionKey, session]);
   useEffect(() => {
     if (!selectionKey || !id) return;
@@ -327,7 +339,7 @@ export function PartnerProfileEditor({ session }: { session: Session | null }) {
             Loading saved profile details…
           </p>
         )}
-        <fieldset disabled={saving || loadingProfile}>
+        <fieldset disabled={saving || loadingProfile || loadingSetup || !id}>
           <div className="fields">
             <label>
               Public description
