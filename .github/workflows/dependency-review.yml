@@ -1,0 +1,59 @@
+name: Dependency Review
+
+on:
+  pull_request:
+    branches: [build/festival-mvp]
+
+concurrency:
+  group: dependency-review-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  classify:
+    runs-on: ubuntu-latest
+    outputs:
+      required: ${{ steps.impact.outputs.requires_dependency_review }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - id: impact
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: bash scripts/classify-change-impact.sh "$BASE_SHA" "$HEAD_SHA"
+
+  dependency-review:
+    name: dependency-review
+    needs: classify
+    if: needs.classify.outputs.required == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Review dependency changes
+        uses: actions/dependency-review-action@v4
+        with:
+          fail-on-severity: high
+
+  dependency-gate:
+    name: Dependency Review Gate
+    if: always()
+    needs: [classify, dependency-review]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require review only for dependency changes
+        env:
+          CLASSIFY: ${{ needs.classify.result }}
+          REQUIRED: ${{ needs.classify.outputs.required }}
+          RESULT: ${{ needs.dependency-review.result }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$CLASSIFY" == "success" ]] || exit 1
+          if [[ "$REQUIRED" == "true" && "$RESULT" != "success" ]]; then
+            exit 1
+          fi
+          echo "Dependency review requirement satisfied."

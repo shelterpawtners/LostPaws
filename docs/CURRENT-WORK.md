@@ -4,124 +4,74 @@
 
 Phase 2 — Partner Marketplace MVP is active.
 
-Phase 1 — Platform + Data Foundation is complete and remains the approved foundation baseline.
-
-Frozen phase structure:
-
-1. Platform + Data Foundation
-2. Partner Marketplace MVP
-3. Guardian + Shelter Passport MVP
-4. Impact + Giving + Financial Intelligence
-5. Integrations + Marketplace + Production Launch
+Phase 1 — Platform + Data Foundation is complete.
 
 Phase 3 remains explicitly unauthorized.
 
-## Phase 2 checkpoint status
+## Integrated baseline
 
-| Checkpoint                                                             | Status          | Primary evidence                                                           |
-| ---------------------------------------------------------------------- | --------------- | -------------------------------------------------------------------------- |
-| CP1 — Partner Organization Foundation                                  | ACCEPTED        | `docs/PHASE-2-CHECKPOINT-1-PROGRESS.md`, `docs/PHASE-2-CHECKPOINT-1-QA.md` |
-| CP2 — Partner Profile + Public Directory                               | ACCEPTED        | committed profile/directory RLS + hosted regression                        |
-| CP3 — Offer Engine                                                     | COMPLETE        | `docs/PHASE-2-CHECKPOINT-3-PROGRESS.md`                                    |
-| CP4 — Claim + QR/Code Redemption                                       | ACCEPTED        | `docs/PHASE-2-CHECKPOINT-4-PROGRESS.md`                                    |
-| CP5 — Verified Savings + Customer Attribution pre-decision engineering | COMPLETE        | Issue #13, Persona QA #62, CI #231, Hosted QA #128                         |
-| CP6 — Provider-agnostic Impact, Reputation + Giving Foundation         | AUTHORIZED NEXT | Issue #14; begin only after PR #2 merge gate                               |
+PR #2 was owner-approved and merged into `build/festival-mvp` on 2026-09-08.
 
-## Immediate integration gate
+Accepted Phase 2 status:
 
-PR #2 (`qa/guardian-registration-personas` → `build/festival-mvp`) contains the accumulated Phase 2 QA/integration foundation through accepted Checkpoint 5.
+| Checkpoint | Status |
+| --- | --- |
+| CP1 — Partner Organization Foundation | ACCEPTED |
+| CP2 — Partner Profile + Public Directory | ACCEPTED |
+| CP3 — Offer Engine | COMPLETE |
+| CP4 — Claim + QR/Code Redemption | ACCEPTED |
+| CP5 — Verified Savings + Customer Attribution pre-decision engineering | COMPLETE |
+| CP6 — Provider-agnostic Impact, Reputation + Giving Foundation | AUTHORIZED NEXT |
 
-Current policy:
+CP5 evidence remains recorded in the handoff/progress history and Issue #13 is closed.
 
-- PR #2 is merge-only; do not add CP6 features or unrelated cleanup.
-- CP5 is fully accepted and Issue #13 is closed.
-- PR #2 is mergeable and its accepted feature/test head has green Persona QA, CI, and full Hosted QA.
-- Auto-merge is prohibited, so owner approval is required for the merge itself.
-- After merge, confirm the integration branch state before starting the next checkpoint.
+## Active work
 
-## Clean execution model after PR #2
+**Issue #15 — Dev Loop v2 bootstrap** is active before CP6 implementation.
 
-Starting with CP6, use **one bounded checkpoint/feature PR at a time** instead of a long-lived integration PR.
+Branch: `ops/dev-loop-v2`
 
-Post-merge launch sequence:
+Goal: install the optimized native development control plane documented in `docs/DEV-LOOP-V2.md`.
 
-1. merge PR #2 into `build/festival-mvp` after owner approval;
-2. create `phase2/cp6-impact-giving` from the updated integration branch;
-3. open a small PR for Issue #14;
-4. place `<!-- ai-active-build-pr -->` on exactly one active implementation PR;
-5. set `docs/AI-HANDOFF.md` to `IN_PROGRESS` on that branch;
-6. implement the bounded checkpoint;
-7. use normal CI during implementation;
-8. use targeted Persona QA only for database/RLS/persona-sensitive changes;
-9. run full Hosted QA only at `READY_FOR_ACCEPTANCE`;
-10. mark COMPLETE only after deterministic acceptance is green;
-11. merge, then start the next checkpoint from a fresh integration base.
+Do not add CP6 feature behavior to the Dev Loop bootstrap PR.
 
-## MVP delivery strategy
+## Next product checkpoint
 
-Keep the vertical-slice balance:
+After Dev Loop v2 is accepted and integrated:
 
-- 65–70% critical MVP feature delivery;
-- 20–25% automated golden-path/RLS regression;
-- 5–10% human UX acceptance;
-- minimal cosmetic polish until major flows are connected.
+1. create `phase2/cp6-impact-giving` from the updated `build/festival-mvp`;
+2. open one bounded CP6 PR for Issue #14;
+3. move the `<!-- ai-active-build-pr -->` marker to that PR;
+4. set the handoff to `IN_PROGRESS`, owner decision `NO`, safe to continue `YES`, accepted SHA `NONE`;
+5. implement CP6 provider-agnostic impact/reputation/giving foundations;
+6. stop before provider-dependent production money movement.
 
-For each critical slice:
+## Operating model
 
-1. build the usable end-to-end path;
-2. protect it with targeted deterministic tests;
-3. fix GREEN/YELLOW blockers immediately;
-4. defer broad permutations and cosmetic work;
-5. move on after acceptance.
+Use `docs/DEV-LOOP-V2.md` as the current development process.
 
-Issue #5 remains the broader full-site QA/hardening epic and is not the gate for every checkpoint.
+Key rules:
 
-## Cost-controlled AI operating model
+- one Issue → one short branch → one bounded PR → acceptance → merge;
+- one primary coding agent per bounded code path;
+- GitHub Actions/scripts own deterministic work;
+- AI credits are reserved for implementation/reasoning;
+- Database QA runs during relevant DB implementation changes;
+- Persona and Hosted browser QA run at the acceptance boundary only when the classifier requires them;
+- Merge Gate validates evidence;
+- AI Ops status is one native Issue #12 record;
+- stale watchdog cadence is hourly.
 
-GitHub is the source of truth and zero-AI control plane.
+## Owner gates
 
-Use native GitHub Actions/scripts for:
-
-- polling and workflow status;
-- lint/unit/build;
-- migration replay and pgTAP/RLS;
-- Playwright execution;
-- targeted Persona QA;
-- Hosted QA gating;
-- stall detection and status reconciliation.
-
-Use AI only when reasoning or implementation adds material value:
-
-- bounded checkpoint implementation;
-- non-obvious defect diagnosis;
-- architecture/product/security reasoning;
-- semantic acceptance review;
-- RED-decision escalation.
-
-Do not invoke coding agents for routine green CI, polling, status updates, simple locator/test-plan fixes, or repetitive review. Prefer one substantial coding session per bounded checkpoint rather than many small steering prompts.
-
-Authoritative coordination:
-
-- active GitHub Issue — task contract;
-- `docs/AI-HANDOFF.md` — live baton/state;
-- `docs/AUTONOMOUS-EXECUTION-POLICY.md` — GREEN/YELLOW/RED behavior;
-- `docs/AI-COST-AND-TESTING-GOVERNANCE.md` — cost/test rules;
-- `docs/OWNER-DECISION-BACKLOG.md` — unresolved owner gates;
-- this file — phase/checkpoint status and immediate execution sequence.
-
-## Current owner policy
-
-Jim authorized autonomous completion of the remainder of Phase 2 on 2026-09-08.
+The remainder of Phase 2 is authorized.
 
 Still owner-gated:
 
-- auto-merge / merge approval when explicitly required by repo policy;
-- customer-facing verified-savings rules or totals (`OD-003`);
-- giving-provider selection, production charitable-money movement, settlement, APIs/webhooks/receipts (`OD-004`);
-- legal/privacy/security posture changes;
-- destructive data operations;
-- paid infrastructure;
+- `OD-003` verified-savings customer-facing rules/totals;
+- `OD-004` giving-provider selection and production charitable settlement/integration;
 - production deployment/DNS;
-- Phase 3 authorization.
-
-Newer explicit owner decisions and implemented repository state supersede stale historical planning notes.
+- paid infrastructure;
+- destructive operations;
+- material legal/privacy/security/financial/product RED decisions;
+- Phase 3.

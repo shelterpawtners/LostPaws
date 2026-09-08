@@ -1,28 +1,54 @@
 name: Persona QA
 
 on:
+  pull_request:
+    branches: [build/festival-mvp]
   workflow_dispatch:
-  push:
-    paths:
-      - "supabase/**"
-      - "e2e/guardian-dashboard.spec.ts"
-      - "e2e/persona-registration.spec.ts"
-      - "e2e/persona-access-isolation.spec.ts"
-      - "e2e/phase-2-offer-redemption.spec.ts"
-      - ".github/workflows/persona-qa.yml"
-      - "playwright.config.ts"
-      - "package.json"
-      - "package-lock.json"
 
 concurrency:
-  group: persona-qa-${{ github.ref }}
+  group: persona-qa-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 permissions:
   contents: read
 
 jobs:
-  persona-qa:
+  gate:
+    runs-on: ubuntu-latest
+    outputs:
+      run_persona: ${{ steps.gate.outputs.run_persona }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - id: impact
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before || github.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: bash scripts/classify-change-impact.sh "$BASE_SHA" "$HEAD_SHA"
+      - id: gate
+        name: Run browser personas only at acceptance
+        env:
+          REQUIRED: ${{ steps.impact.outputs.requires_persona_qa }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "${GITHUB_EVENT_NAME}" == "workflow_dispatch" ]]; then
+            echo "run_persona=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          status=$(sed -n 's/^STATUS:[[:space:]]*//p' docs/AI-HANDOFF.md | head -n 1)
+          safe=$(sed -n 's/^SAFE_TO_CONTINUE:[[:space:]]*//p' docs/AI-HANDOFF.md | head -n 1)
+          owner=$(sed -n 's/^OWNER_DECISION_REQUIRED:[[:space:]]*//p' docs/AI-HANDOFF.md | head -n 1)
+          if [[ "$REQUIRED" == "true" && "$status" == "READY_FOR_ACCEPTANCE" && "$safe" == "YES" && "$owner" == "NO" ]]; then
+            echo "run_persona=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "run_persona=false" >> "$GITHUB_OUTPUT"
+          fi
+
+  persona:
+    needs: gate
+    if: needs.gate.outputs.run_persona == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
@@ -32,25 +58,22 @@ jobs:
           cache: npm
       - run: npm ci
       - name: Start local Supabase
-        run: npx --yes supabase@2.117.0 start
+        run: bash scripts/supabase-cli.sh start
       - name: Reset and seed local database
-        run: npx --yes supabase@2.117.0 db reset
-      - name: Run pgTAP database tests
-        run: npx --yes supabase@2.117.0 test db
+        run: bash scripts/supabase-cli.sh db reset
       - name: Export local Supabase browser settings
         shell: bash
         run: |
-          npx --yes supabase@2.117.0 status -o env > supabase.env
+          bash scripts/supabase-cli.sh status -o env > supabase.env
           set -a
           source supabase.env
           set +a
           echo "PLAYWRIGHT_SUPABASE_URL=${API_URL}" >> "$GITHUB_ENV"
-          if [ -n "${ANON_KEY:-}" ]; then
+          if [[ -n "${ANON_KEY:-}" ]]; then
             echo "PLAYWRIGHT_SUPABASE_PUBLISHABLE_KEY=${ANON_KEY}" >> "$GITHUB_ENV"
-          elif [ -n "${PUBLISHABLE_KEY:-}" ]; then
+          elif [[ -n "${PUBLISHABLE_KEY:-}" ]]; then
             echo "PLAYWRIGHT_SUPABASE_PUBLISHABLE_KEY=${PUBLISHABLE_KEY}" >> "$GITHUB_ENV"
           else
-            echo "No local public Supabase key was returned by supabase status" >&2
             exit 1
           fi
       - name: Install Chromium
@@ -61,6 +84,26 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@v6
         with:
-          name: playwright-test-results
+          name: persona-playwright-results
           path: test-results/
           if-no-files-found: ignore
+
+  persona-gate:
+    name: Persona QA Gate
+    if: always()
+    needs: [gate, persona]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require full Persona QA only when gated on
+        env:
+          GATE_RESULT: ${{ needs.gate.result }}
+          REQUIRED: ${{ needs.gate.outputs.run_persona }}
+          PERSONA_RESULT: ${{ needs.persona.result }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$GATE_RESULT" == "success" ]] || exit 1
+          if [[ "$REQUIRED" == "true" && "$PERSONA_RESULT" != "success" ]]; then
+            exit 1
+          fi
+          echo "Persona QA requirement satisfied."

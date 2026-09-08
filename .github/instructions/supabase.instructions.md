@@ -2,16 +2,13 @@
 applyTo: "supabase/**"
 ---
 
-# ShelterPawtners Supabase Instructions
+# Supabase / RLS instructions
 
-- All persistent schema changes require version-controlled migrations.
-- Migrations are the database source of truth.
-- Enable and test RLS on user-facing/private tables.
-- Never expose or commit the service-role key, DB password, or secrets.
-- Enforce privileged operations server-side.
-- Financial/economic/audit history is append-oriented.
-- Do not allow ordinary users to silently UPDATE/DELETE finalized financial or audit events.
-- Use integer minor units plus ISO currency for money.
-- Preserve organization hierarchy, membership authorization, provenance, and demo-data isolation.
-- Test cross-user and cross-organization isolation.
-- Never use a destructive reset/drop against shared development data without explicit human approval and a verified backup/migration path.
+- Git migrations are the schema source of truth; never patch shared/prod schema manually.
+- Browser callers are untrusted. Privileged transitions belong in RLS-safe SQL/RPC or Edge Functions with server-side authorization.
+- Preserve append-oriented economic/audit history; corrections/reversals should not erase prior events.
+- Exclude demo/test activity from real reputation, impact, savings, or giving metrics.
+- Reuse existing economic/giving tables before creating a parallel ledger.
+- Every migration/RLS/RPC change requires local reset/replay plus pgTAP/RLS coverage through Database QA.
+- Persona-sensitive DB changes require full Persona QA at the checkpoint acceptance boundary.
+- Do not use service-role credentials in client code or logs.

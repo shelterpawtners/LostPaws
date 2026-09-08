@@ -1,0 +1,45 @@
+name: AI Ops Status
+
+on:
+  workflow_run:
+    workflows:
+      - CI
+      - Database QA
+      - Persona QA
+      - Hosted QA
+      - Merge Gate
+      - Dependency Review
+    types: [completed]
+  pull_request:
+    branches: [build/festival-mvp]
+    types: [opened, synchronize, reopened, ready_for_review, converted_to_draft, closed]
+  schedule:
+    - cron: "0 * * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: ai-ops-status
+  cancel-in-progress: true
+
+permissions:
+  actions: read
+  contents: read
+  issues: write
+  pull-requests: read
+
+jobs:
+  update-status:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || 'main' }}
+      - name: Update the single Issue #12 live status record
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          STATUS_ISSUE: "12"
+          ACTIVE_MARKER: "<!-- ai-active-build-pr -->"
+          STALE_MINUTES: "60"
+          QA_URL: ${{ vars.QA_BASE_URL }}
+        run: bash scripts/update-ai-ops-status.sh

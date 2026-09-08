@@ -2,126 +2,141 @@
 
 ## Principle
 
-Use deterministic native automation for repeatable work. Spend AI credits only where reasoning, implementation, diagnosis, or semantic review adds material value. This policy does not weaken product, security, RLS, data-integrity, or acceptance requirements.
+Use deterministic native automation for repeatable work. Spend AI credits only where implementation, diagnosis, architecture, semantic review, or product judgment adds material value.
 
-The GitHub control plane is **zero-AI by default**. GitHub Actions may detect, record, and surface READY / FAILED / STALLED / BLOCKED states, but it must not automatically mention or launch Copilot, Codex, Claude, or another coding agent.
+GitHub Actions is the **zero-AI control plane**. No workflow may automatically invoke Copilot, Codex, Claude, or another coding agent.
+
+See `docs/DEV-LOOP-V2.md` for the complete operating model.
 
 ## Execution-surface priority
 
-Choose the lowest-cost surface that can safely complete the task.
+1. **GitHub Actions/scripts** — formatting, lint, build, tests, migration replay, pgTAP/RLS, Playwright, dependency review, classification, status, merge evidence, watchdog.
+2. **Regular ChatGPT** — product/architecture/controller/acceptance/RED decisions.
+3. **Codex / ChatGPT Work** — substantial bounded repository implementation when included allowance is available.
+4. **Copilot IDE completions** — small human-driven edits/boilerplate.
+5. **Copilot coding agent** — intentional bounded fallback; never a scheduler.
+6. **Claude Code** — explicit alternate engineer/semantic reviewer when useful.
 
-- **Product/architecture/spec/acceptance reasoning:** use regular ChatGPT for decisions, issue contracts, architecture review, and semantic acceptance.
-- **Substantial code-centric repository implementation:** use Codex / ChatGPT Work when included agentic allowance is available. Use one bounded session for the checkpoint/defect cluster; do not run Work and Codex on the same task concurrently.
-- **Tiny local edits / boilerplate while a human is editing:** prefer Copilot IDE completions / next-edit suggestions over a cloud coding-agent session.
-- **Fallback code implementation when OpenAI agentic allowance is unavailable:** intentionally start a bounded Copilot session. Prefer a CLI session with an AI-credit cap when practical; cloud agent is a manual fallback, never an automatic scheduler.
-- **Formatting, lint, typecheck, tests, migration replay, pgTAP, browser regression, polling, status, dedup, and stall detection:** use native scripts / GitHub Actions. Never spend AI credits merely to run or watch deterministic checks.
-- **Code review:** run deterministic checks first; use one semantic AI review only when its reasoning value is material. Do not repeat review during iterative fixes.
-
-Do not route Codex through GitHub's third-party coding-agent surface merely to avoid GitHub Copilot usage; GitHub-hosted coding agents can still consume GitHub AI credits. Use the OpenAI execution surface directly when choosing Codex/Work.
+Do not run competing substantial coding agents on the same code path.
 
 ## AI-credit rules
 
-- No GitHub workflow may automatically invoke a coding agent.
-- Agent launch is an intentional operator decision after the native control plane reports the state.
-- One bounded coding-agent session per checkpoint or defect cluster by default.
-- Do not start a new agent session because routine CI/Hosted QA passed.
-- Keep one agent working through related GREEN/YELLOW defects instead of repeatedly steering/re-prompting it.
-- If a fallback Copilot CLI session is used, configure an explicit AI-credit session limit before starting work when supported.
-- Use native GitHub Actions/scripts for formatting, lint, typecheck, unit tests, builds, migration replay, pgTAP, Playwright, status polling, deduplication, and stall detection.
-- Prefer one complete task prompt with scope, validation, defect-fixing authority, stopping condition, and handoff contract over several small prompts.
-- Keep persistent agent instructions short. Route to canonical docs instead of duplicating large policy blocks across `AGENTS.md`, `CLAUDE.md`, Copilot instructions, skills, prompts, and READMEs.
-
-## Copilot review
-
-- Do not request review on every commit.
-- No Copilot review for docs-only, formatting-only, lockfile-only, or trivial workflow changes unless security/execution behavior materially changed.
-- Default to at most one Copilot review per checkpoint at acceptance, and only when its semantic value justifies AI-credit use.
-- A second review is justified only after material code/security changes caused by the first review.
-- One broader review may be used at final Phase 2 hardening.
-- Keep implementation PRs draft until the acceptance boundary when an automatic review ruleset is enabled, so opening the PR does not spend review credits early.
+- One primary coding-agent session per bounded checkpoint/defect cluster by default.
+- No AI invocation for routine CI success/failure polling, formatting, reruns, or status.
+- Do not re-prompt an agent because a routine workflow turned green.
+- Prefer one complete task contract with stopping conditions over many steering comments.
+- Automatic Copilot PR review remains disabled.
+- Default to at most one semantic AI review near checkpoint acceptance when it materially helps.
+- No AI review for docs-only, formatting-only, trivial workflow, or routine dependency updates.
 
 ## PR lifecycle
 
-Long-lived integration PRs increase AI review context, human review effort, merge-conflict risk, and semantic-review cost.
+Default:
 
-- Default future work to one bounded checkpoint/feature PR into `build/festival-mvp`.
-- Open the PR as **draft** during implementation.
-- Do not let a single active PR accumulate unrelated checkpoints indefinitely.
-- The five-minute supervisor discovers the active build lane from the `<!-- ai-active-build-pr -->` marker rather than a hardcoded PR number.
-- Exactly one open integration PR should carry that marker.
-- Move the marker to the next checkpoint PR after the prior PR reaches its approved integration boundary.
-- PR merging remains owner-gated unless a later policy explicitly changes that rule.
-- Push cohesive checkpoints/meaningful increments; do not push every tiny edit merely to make the cloud rerun checks.
+`Issue → short-lived branch → bounded draft PR → deterministic acceptance → owner-approved merge → fresh branch`
 
-PR #2 is the historical exception because it already accumulated the Phase 2 QA/integration foundation. Finish the current bounded Checkpoint 5 work there, then prefer smaller PRs.
-
-## Test tiers
-
-### Tier 1 — implementation loop
-
-For normal code commits: lint, unit tests, and production build. The production build includes TypeScript compilation; do not compile TypeScript twice in the same CI path. These deterministic checks are cheap and should not be replaced with AI review.
-
-### Tier 2 — checkpoint acceptance
-
-When `docs/AI-HANDOFF.md` is `READY_FOR_ACCEPTANCE` or equivalent: relevant Hosted QA golden path, relevant database/RLS/pgTAP checks, and targeted integration tests.
-
-Do not run the full hosted browser/database acceptance stack on every intermediate commit unless a specific defect requires it.
-
-### Tier 3 — phase/final hardening
-
-Broader Persona QA, browser/accessibility regression, security/RLS sweep, migration replay, and other cross-cutting phase checks.
+- Exactly one open PR targeting `build/festival-mvp` carries `<!-- ai-active-build-pr -->`.
+- Do not accumulate unrelated checkpoints.
+- PR size above roughly 25 files or 1,200 changed lines produces an advisory to split future unrelated scope.
+- Auto-merge remains prohibited unless the owner explicitly changes that policy.
 
 ## Change-aware testing
 
-Selective tests are allowed only when impact mapping is deterministic. Shared app/auth/routing files and cross-cutting database/security changes fall back to broader relevant deterministic tests.
+`scripts/classify-change-impact.sh` is the canonical risk mapping.
 
-- Docs-only: no app CI/browser QA.
-- Supabase migration/RLS/RPC: database/RLS tests mandatory; affected browser flow at acceptance.
-- Shared auth/routing/application shell: broader relevant web regression.
-- Package/workflow/config: run affected configuration checks.
+Workflows must consume the classifier rather than independently duplicating path rules.
 
-When impact is uncertain, run the broader deterministic test rather than spend AI credits deciding whether to skip it.
+Unknown paths fall back to broader deterministic testing.
+
+## Test tiers
+
+### Tier 1 — implementation
+
+**CI**
+- docs-only → formatting/instruction checks;
+- web/workflow/dependency/E2E/shared changes → formatting, unit tests, production build.
+
+**Database QA**
+- database/RLS/RPC/Supabase changes → local Supabase start/reset/replay + pgTAP/RLS.
+
+No Chromium is required for Database QA.
+
+### Tier 2 — checkpoint acceptance
+
+Only when `STATUS: READY_FOR_ACCEPTANCE`.
+
+**Persona QA**
+- runs only when persona-sensitive impact exists;
+- fresh local Supabase reset/seed + targeted Persona/Guardian/access/redemption Playwright.
+
+**Hosted QA**
+- runs only when product/browser impact exists and the PR is the active build lane;
+- verifies relevant Vercel readiness;
+- runs hosted golden paths once at acceptance.
+
+### Tier 3 — phase hardening
+
+Broader Issue #5 browser/accessibility/security/RLS sweeps run at planned phase boundaries, not after every checkpoint commit.
+
+## Merge evidence
+
+`docs/AI-HANDOFF.md` includes `ACCEPTED_CODE_SHA`.
+
+- Use `NONE` until acceptance exists.
+- At `COMPLETE`, record the exact accepted code SHA.
+- Merge Gate requires current-head CI and the applicable acceptance evidence on the accepted SHA.
+- Documentation/metadata commits after accepted code do not force redundant browser suites.
+- A workflow whose heavy job was skipped does not count as full acceptance.
+
+## Supabase CLI
+
+All CI/local automation calls `scripts/supabase-cli.sh`.
+
+That wrapper contains the single exact Supabase CLI pin (`2.117.0`). This central pin is intentionally used instead of adding a large CLI dependency tree to the application lockfile.
+
+## AI Ops and watchdog
+
+Issue #12 is the single native operational status record.
+
+The status updater changes one comment in place; it does not create repeated status comments or repository commits.
+
+Primary supervision is event-driven from PR/workflow state changes.
+
+The stale watchdog runs **hourly**.
+
+A stale signal never launches an AI agent automatically.
 
 ## Workflow deduplication
 
-- One canonical Hosted QA lane per PR/SHA; no duplicate push + PR copies of the same suite.
-- Use concurrency with cancellation for obsolete CI/QA runs.
-- Heavy hosted browser QA is acceptance-gated.
-- Persona QA is deliberate: schema/RLS/persona changes and planned hardening, not every commit.
-- Upload failure artifacts only on failure.
-- A prior failed run is resolved when the latest run for that workflow/current SHA succeeds; do not react to historical failures.
+- Use concurrency + `cancel-in-progress` on PR workflows.
+- One canonical Hosted QA lane.
+- Database pgTAP is not repeated inside Persona browser QA.
+- Full Persona/Hosted Chromium is acceptance-only.
+- Upload heavy artifacts only on failure.
+- Ignore historical failed runs once a later required run satisfies the current evidence contract.
 
-## Zero-AI supervisor
+## Dependency maintenance
 
-The supervisor may poll frequently with native GitHub APIs/Actions without invoking AI.
+- Dependabot runs weekly using grouped dependency PRs.
+- Dependency-changing PRs run native Dependency Review.
+- High-severity newly introduced vulnerabilities fail the dependency review gate.
+- No AI review is required for routine safe update PRs unless semantics warrant it.
 
-- It may post deduplicated READY / FAILED / STALLED / BLOCKED status comments.
-- It must never include an `@copilot`, Codex, Claude, or other coding-agent invocation.
-- Only the PR marked `<!-- ai-active-build-pr -->` is supervised as the active lane.
-- Default stale signal threshold is 30 minutes.
-- A stalled signal is informational; it does not authorize an AI session automatically.
-- The next implementation session is intentionally started by the owner/operator using the execution-surface priority above.
+## Deployment
 
-## Deployment and hosted acceptance
+Vercel's Ignored Build Step uses `scripts/vercel-ignore-build.sh`, which delegates to the canonical change classifier.
 
-Vercel should not rebuild the frontend for docs-only, GitHub-workflow-only, E2E-only, or Supabase-only commits.
+Skip frontend builds when the commit cannot change the deployed web artifact.
 
-- Use `bash scripts/vercel-ignore-build.sh` as the Vercel Ignored Build Step when enabled in project settings.
-- The script builds conservatively when frontend/build inputs change and skips only commits that cannot alter the deployed web artifact.
-- Acceptance-boundary `READY_FOR_ACCEPTANCE` / `COMPLETE` SHAs always deploy so Hosted QA can prove the exact SHA under test is Ready on the stable QA URL.
-- Keep Vercel's native dependency/build cache enabled.
-- Do not introduce another CI/CD provider just to optimize preview builds.
-- Heavy Hosted QA must not claim acceptance until the relevant web deployment for the tested code is Ready. The workflow uses a native Vercel/GitHub readiness signal rather than an AI judgment call.
-
-## Handoff
-
-Every bounded agent session must leave enough structured evidence that another AI call is not needed just to discover state: task/issue, branch/SHA, areas changed, exact tests/results, CI/Hosted QA state, blocker classification, next action, `SAFE_TO_CONTINUE`, and `OWNER_DECISION_REQUIRED`.
+Do not add another CI/CD or deployment provider to optimize this flow.
 
 ## Cost guardrails
 
-- Standard GitHub-hosted runners only; no paid larger runners without owner approval.
-- No new paid testing/monitoring SaaS while GitHub/Vercel/Supabase native capabilities are sufficient.
-- No added paid Supabase/Vercel infrastructure without owner approval.
-- Prefer repo-native status/JSON + GitHub APIs for AI Ops monitoring.
-- Treat AI credits as scarce reasoning budget, not a scheduler, polling mechanism, or retry loop.
-- Maintain account-level AI budgets/alerts as the final financial circuit breaker; automation must not assume an unlimited overage budget.
+- Standard GitHub-hosted runners only.
+- No paid/larger runners without owner approval.
+- No new monitoring/testing/orchestration SaaS while native capabilities are sufficient.
+- No paid Supabase/Vercel expansion without owner approval.
+- No automatic AI-agent launch.
+- No automatic AI review.
+- No giant long-lived implementation PRs.
+- Treat AI credits/tokens as scarce reasoning budget, not scheduler/polling budget.

@@ -1,0 +1,46 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "09:00"
+      timezone: America/Detroit
+    open-pull-requests-limit: 5
+    groups:
+      frontend-core:
+        patterns:
+          - react
+          - react-dom
+          - react-router-dom
+          - "@types/react*"
+          - vite
+          - "@vitejs/*"
+          - typescript
+      test-tooling:
+        patterns:
+          - "@playwright/*"
+          - vitest
+          - prettier
+      supabase:
+        patterns:
+          - "@supabase/*"
+      styling:
+        patterns:
+          - tailwindcss
+          - "@tailwindcss/*"
+          - lucide-react
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "09:30"
+      timezone: America/Detroit
+    open-pull-requests-limit: 3
+    groups:
+      github-actions:
+        patterns:
+          - "*"
