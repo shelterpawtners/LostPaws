@@ -106,6 +106,7 @@ async function invoke(path: string, body: Record<string, unknown>) {
 export function QaBanner() {
   const [acting, setActing] = useState<Session | null>(null);
   const [returning, setReturning] = useState(false);
+  const [notice, setNotice] = useState("");
   const navigate = useNavigate();
   useEffect(() => {
     const refresh = () =>
@@ -116,16 +117,27 @@ export function QaBanner() {
     window.addEventListener("sp-qa-changed", refresh);
     return () => window.removeEventListener("sp-qa-changed", refresh);
   }, []);
-  if (!acting) return null;
   async function stop() {
     setReturning(true);
     try {
       await invoke("admin-qa-session", { action: "stop" });
+    } catch (error: any) {
+      setNotice(
+        `Returned to Admin, but the QA audit request failed: ${error.message || "try again after checking the QA function."}`,
+      );
     } finally {
       clearActingSupabase();
       navigate("/dashboard", { replace: true });
     }
   }
+  if (!acting && !notice) return null;
+  if (!acting)
+    return (
+      <div className="qaBanner" role="alert">
+        {notice}
+        <button onClick={() => setNotice("")}>Dismiss</button>
+      </div>
+    );
   return (
     <div className="qaBanner" role="status" aria-live="polite">
       <b>ADMIN QA MODE</b> — Acting as{" "}
