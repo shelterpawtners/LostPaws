@@ -19,7 +19,7 @@ permissions:
   actions: read
   contents: read
   issues: write
-  pull-requests: read
+  pull-requests: write
 
 jobs:
   record-acceptance-state:
@@ -60,7 +60,7 @@ jobs:
           next_checkpoint=$(sed -n 's/^NEXT_CHECKPOINT:[[:space:]]*//p' <<<"${handoff}" | head -n 1)
           checkpoint_key=$(printf '%s' "${next_checkpoint:-none}" | sha256sum | cut -c1-16)
           marker="<!-- ai-build-ready:${checkpoint_key} -->"
-          comments=$(gh api "repos/${REPO}/issues/${PR_NUMBER}/comments?per_page=100" --paginate)
+          comments=$(gh api "repos/${REPO}/issues/${PR_NUMBER}/comments?per_page=100")
           if jq -e --arg marker "${marker}" '[.[] | select(.body | contains($marker))] | length > 0' <<<"${comments}" >/dev/null; then
             echo "Ready state already recorded."
             exit 0
@@ -101,7 +101,7 @@ jobs:
         run: |
           set -euo pipefail
           marker="<!-- ai-build-failed:${WORKFLOW_NAME}:${HEAD_SHA} -->"
-          comments=$(gh api "repos/${REPO}/issues/${PR_NUMBER}/comments?per_page=100" --paginate)
+          comments=$(gh api "repos/${REPO}/issues/${PR_NUMBER}/comments?per_page=100")
           if jq -e --arg marker "${marker}" '[.[] | select(.body | contains($marker))] | length > 0' <<<"${comments}" >/dev/null; then
             exit 0
           fi
@@ -170,7 +170,7 @@ jobs:
           owner=$(sed -n 's/^OWNER_DECISION_REQUIRED:[[:space:]]*//p' <<<"${handoff}" | head -n 1)
           safe=$(sed -n 's/^SAFE_TO_CONTINUE:[[:space:]]*//p' <<<"${handoff}" | head -n 1)
           marker="<!-- ai-build-stalled:${head_sha} -->"
-          comments=$(gh api "repos/${REPO}/issues/${PR_NUMBER}/comments?per_page=100" --paginate)
+          comments=$(gh api "repos/${REPO}/issues/${PR_NUMBER}/comments?per_page=100")
           if jq -e --arg marker "${marker}" '[.[] | select(.body | contains($marker))] | length > 0' <<<"${comments}" >/dev/null; then
             exit 0
           fi
