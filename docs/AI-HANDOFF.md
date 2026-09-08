@@ -13,11 +13,11 @@ This file is the shared baton between ChatGPT, Codex, Copilot, GitHub Actions, a
 
 ## Current handoff
 
-Updated by: Codex
+Updated by: ChatGPT
 Branch: `qa/guardian-registration-personas`
-Last completed product task: GitHub Issue #11 — Partner Marketplace golden-path stabilization
-Final implementation SHA: `d0914d950d4ceb40e261f0af5c672aa0186eed09`
-Active implementation task: none
+Last completed product task: GitHub Issue #9 — MVP Profile & Data Model Review
+Issue #11 status: NOT ACCEPTED — targeted Persona QA exposed a Partner profile persistence blocker
+Active implementation task: fix Issue #11 persistence blocker before any next slice
 
 ### Completed
 
@@ -25,10 +25,19 @@ Active implementation task: none
 - Persona QA pgTAP harness defect corrected after CI exposed an invalid permission assertion.
 - Issue #9 MVP profile/data-model review completed; the current schema was sufficient for that foundation.
 - RAVE Vendor remains a Partner-architecture classification/channel rather than a duplicate organization model.
-- Issue #11 stabilizes the existing Partner Marketplace vertical slice without a migration or a new model.
-- The public marketplace now has an explicit loading/error state, so a slow public-offer RPC does not briefly present a valid offer as unavailable.
-- Partner Offer Manager now shows the organization’s public-profile state, making the companion profile visibility clear while offers are managed.
-- The targeted Playwright golden-path regression now covers Partner public-profile draft/save/reload/publish, offer creation/publish, Guardian detail reload/claim, and the existing redemption path.
+- Issue #11 implementation added marketplace loading/error handling, Partner profile publication visibility in Offer Manager, and expanded the Partner -> Guardian golden-path regression.
+- GitHub Actions CI run #111 passed.
+- Persona QA database layer passed 84/84 pgTAP tests.
+
+### Active blocker
+
+Persona QA run #39 failed in `e2e/phase-2-offer-redemption.spec.ts` during the Partner profile persistence check:
+
+Partner Admin saves a private draft with a non-empty `Public description`, receives the success message, reloads `/business`, and the saved description reloads as an empty string.
+
+This violates Issue #11 acceptance. Do not weaken the regression assertion to make CI green. Fix the root cause.
+
+Reference: `docs/prompts/ISSUE-11-PARTNER-PROFILE-PERSISTENCE-BLOCKER.md`.
 
 ### Current strategic findings
 
@@ -38,17 +47,23 @@ Active implementation task: none
 - Shelter onboarding should gain duplicate/claim protections comparable to Partner organization onboarding.
 - Broad full-site Issue #5 QA is intentionally deferred until major MVP vertical slices connect.
 
-### Completion report
+### Required completion report from coding agent
 
-- **Issue / task:** GitHub Issue #11 — stabilize Partner Marketplace golden path + targeted regression.
-- **Agent:** Codex.
-- **Branch:** `qa/guardian-registration-personas`.
-- **Final remote SHA:** `d0914d950d4ceb40e261f0af5c672aa0186eed09` (implementation commit; this documentation-only handoff update follows it).
-- **What changed:** Added a marketplace loading/error state; surfaced the selected Partner organization’s public-profile state in Offer Manager; expanded the existing offer/redemption Playwright journey to exercise profile draft/save/reload/publish and Guardian offer-detail reload before the established claim/redeem flow.
-- **Migrations / RLS:** None. Issue #11 reuses the accepted Checkpoint 2/3/4 schema, RLS policies, public RPCs, and opaque redemption model.
-- **Tests run + results:** `npm run check` PASS; `npm run build` PASS; `git diff --check` PASS. The targeted Playwright suite was attempted but is blocked in this Work environment because the required Chromium executable is unavailable; the standard Playwright install did not complete. `supabase test db` is blocked because the Supabase CLI/Docker runtime is not installed here. No application test failure was observed.
-- **CI / hosted QA status:** GitHub Actions initially found a repository-wide Prettier failure in `AI-OPERATING-PROTOCOL.md`; its formatting correction is included in this handoff update. Vercel reported a successful deployment. Persona QA is running in its provisioned CI environment.
-- **Open defects:** No code defect found in this slice. Environment blockers remain for local browser and database execution only.
-- **Product-owner decisions needed:** None for Issue #11. The existing Checkpoint 4 redemption UX review remains the current product gate.
-- **Deferred items:** Broad Issue #5 audit, Phase 2 Checkpoint 5, Phase 3, adoption verification, and full Passport transfer/handoff remain out of scope.
-- **Recommended next action:** After the required Checkpoint 4 redemption UX review, implement the approved small private Guardian profile-lite vertical slice; do not begin Checkpoint 5 without explicit authorization.
+Before finishing the active blocker task, update this file with:
+
+- **Issue / task:**
+- **Agent:**
+- **Branch:**
+- **Final remote SHA:**
+- **Root cause:**
+- **What changed:**
+- **Tests run + results:**
+- **CI / hosted QA status:**
+- **Open defects:**
+- **Product-owner decisions needed:**
+- **Deferred items:**
+- **Recommended next action:**
+
+### Human action required
+
+None until the Partner profile persistence blocker is fixed and Persona QA is green.
