@@ -15,7 +15,29 @@ test.describe.serial("Phase 2 offer and redemption journey", () => {
     page,
   }) => {
     await signIn(page, "partner-admin@example.invalid", "Demo-only-Partner!");
+    await page.goto("/business");
+    await page
+      .getByLabel("Public description")
+      .fill(
+        "A focused Playwright Partner profile for the marketplace golden path.",
+      );
+    await page.getByLabel("Public email").fill("partner@example.invalid");
+    await page.getByLabel("How customers are served").selectOption("online");
+    await page.getByRole("button", { name: "Save draft" }).click();
+    await expect(page.getByRole("status")).toContainText(
+      "Saved as a private draft",
+    );
+    await page.reload();
+    await expect(page.getByLabel("Public description")).toHaveValue(
+      "A focused Playwright Partner profile for the marketplace golden path.",
+    );
+    await page.getByRole("button", { name: "Publish profile" }).click();
+    await expect(page.getByRole("status")).toContainText("Published.");
+
     await page.goto("/partner/offers");
+    await expect(page.getByTestId("marketplace-profile-state")).toContainText(
+      "Marketplace profile: published",
+    );
     await page.getByLabel("Title").fill("Playwright welcome offer");
     await page
       .getByLabel("Short description")
@@ -47,6 +69,7 @@ test.describe.serial("Phase 2 offer and redemption journey", () => {
     });
     await expect(card).toBeVisible();
     await card.getByRole("link", { name: "View offer details" }).click();
+    await page.reload();
     await expect(
       page.getByText("Demo only. One claim per guardian."),
     ).toBeVisible();

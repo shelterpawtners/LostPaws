@@ -13,21 +13,22 @@ This file is the shared baton between ChatGPT, Codex, Copilot, GitHub Actions, a
 
 ## Current handoff
 
-Updated by: ChatGPT
+Updated by: Codex
 Branch: `qa/guardian-registration-personas`
-Last known completed product task: GitHub Issue #9 — MVP Profile & Data Model Review
-Last reported implementation SHA: `b339628`
-Coordination setup: GitHub Issue #10
-Active implementation task: GitHub Issue #11 — MVP SLICE: stabilize Partner Marketplace golden path + targeted regression
+Last completed product task: GitHub Issue #11 — Partner Marketplace golden-path stabilization
+Final implementation SHA: pending GitHub publication
+Active implementation task: none
 
 ### Completed
 
 - Issue #8 Admin QA foundation and targeted hosted regression coverage implemented.
 - Persona QA pgTAP harness defect corrected after CI exposed an invalid permission assertion.
-- Issue #9 MVP profile/data-model review completed.
-- Current schema was found sufficient for MVP foundation; no new migration required from Issue #9.
+- Issue #9 MVP profile/data-model review completed; the current schema was sufficient for that foundation.
 - RAVE Vendor remains a Partner-architecture classification/channel rather than a duplicate organization model.
-- Repo-native AI coordination foundation added via `AI-HANDOFF.md`, `AI-OPERATING-PROTOCOL.md`, updated `CURRENT-WORK.md`, and the AI Agent Task issue template.
+- Issue #11 stabilizes the existing Partner Marketplace vertical slice without a migration or a new model.
+- The public marketplace now has an explicit loading/error state, so a slow public-offer RPC does not briefly present a valid offer as unavailable.
+- Partner Offer Manager now shows the organization’s public-profile state, making the companion profile visibility clear while offers are managed.
+- The targeted Playwright golden-path regression now covers Partner public-profile draft/save/reload/publish, offer creation/publish, Guardian detail reload/claim, and the existing redemption path.
 
 ### Current strategic findings
 
@@ -37,46 +38,17 @@ Active implementation task: GitHub Issue #11 — MVP SLICE: stabilize Partner Ma
 - Shelter onboarding should gain duplicate/claim protections comparable to Partner organization onboarding.
 - Broad full-site Issue #5 QA is intentionally deferred until major MVP vertical slices connect.
 
-### Active work
+### Completion report
 
-**Issue #11 — MVP SLICE: stabilize Partner Marketplace golden path + targeted regression**
-
-Codex should execute Issue #11 directly from GitHub after reading:
-1. `docs/CURRENT-WORK.md`
-2. `docs/AI-OPERATING-PROTOCOL.md`
-3. this file
-4. the relevant Phase 2 Checkpoint 2/3/4 progress docs
-
-The intended golden path is:
-
-Partner account -> Partner profile -> create/manage offer -> publish offer -> Guardian can discover/view offer -> existing approved claim/redemption entry point remains functional.
-
-Testing remains strategic: one strong golden-path Playwright regression plus existing relevant RLS/pgTAP checks; do not expand the broad Issue #5 audit.
-
-### Recommended sequence after Issue #11
-
-1. Build a small private Guardian profile-lite vertical slice.
-2. Continue Pet Passport foundation only within the approved phase boundary.
-3. Defer adoption verification and full transfer/handoff until explicitly authorized.
-
-### Required completion report from any coding agent
-
-Before finishing a task, replace/update the sections below:
-
-- **Issue / task:**
-- **Agent:**
-- **Branch:**
-- **Final remote SHA:**
-- **What changed:**
-- **Tests run + results:**
-- **CI / hosted QA status:**
-- **Open defects:**
-- **Product-owner decisions needed:**
-- **Deferred items:**
-- **Recommended next action:**
-
-### Human action required
-
-Run Codex/Work with the short instruction:
-
-`Execute GitHub Issue #11. Read docs/AI-OPERATING-PROTOCOL.md and docs/AI-HANDOFF.md first. Update the handoff file before you finish.`
+- **Issue / task:** GitHub Issue #11 — stabilize Partner Marketplace golden path + targeted regression.
+- **Agent:** Codex.
+- **Branch:** `qa/guardian-registration-personas`.
+- **Final remote SHA:** pending GitHub publication; this field will be replaced with the published implementation SHA before handoff.
+- **What changed:** Added a marketplace loading/error state; surfaced the selected Partner organization’s public-profile state in Offer Manager; expanded the existing offer/redemption Playwright journey to exercise profile draft/save/reload/publish and Guardian offer-detail reload before the established claim/redeem flow.
+- **Migrations / RLS:** None. Issue #11 reuses the accepted Checkpoint 2/3/4 schema, RLS policies, public RPCs, and opaque redemption model.
+- **Tests run + results:** `npm run check` PASS; `npm run build` PASS; `git diff --check` PASS. The targeted Playwright suite was attempted but is blocked in this Work environment because the required Chromium executable is unavailable; the standard Playwright install did not complete. `supabase test db` is blocked because the Supabase CLI/Docker runtime is not installed here. No application test failure was observed.
+- **CI / hosted QA status:** Not run from this Work environment. The existing branch/CI configuration remains the authoritative place to run browser and database checks with its provisioned QA dependencies.
+- **Open defects:** No code defect found in this slice. Environment blockers remain for local browser and database execution only.
+- **Product-owner decisions needed:** None for Issue #11. The existing Checkpoint 4 redemption UX review remains the current product gate.
+- **Deferred items:** Broad Issue #5 audit, Phase 2 Checkpoint 5, Phase 3, adoption verification, and full Passport transfer/handoff remain out of scope.
+- **Recommended next action:** After the required Checkpoint 4 redemption UX review, implement the approved small private Guardian profile-lite vertical slice; do not begin Checkpoint 5 without explicit authorization.

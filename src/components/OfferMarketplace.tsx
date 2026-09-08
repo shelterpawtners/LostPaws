@@ -11,6 +11,7 @@ export function OfferMarketplace({
   const route = useParams();
   const offerId = route.offerId;
   const [offers, setOffers] = useState<PublicOffer[]>([]);
+  const [loading, setLoading] = useState(true);
   const [status, setStatus] = useState("");
   const [claim, setClaim] = useState<{
     redeem_code: string;
@@ -18,15 +19,27 @@ export function OfferMarketplace({
   } | null>(null);
   useEffect(() => {
     if (!db) return;
-    db.rpc("public_active_offers", {
-      p_organization_id: organizationId || null,
-    }).then(({ data }) =>
-      setOffers(
-        ((data || []) as PublicOffer[]).filter(
-          (x) => !offerId || x.offer_id === offerId,
-        ),
-      ),
-    );
+    setLoading(true);
+    setStatus("");
+    void (async () => {
+      try {
+        const { data, error } = await db.rpc("public_active_offers", {
+          p_organization_id: organizationId || null,
+        });
+        if (error) {
+          setStatus("Unable to load current offers. Please try again.");
+          setOffers([]);
+          return;
+        }
+        setOffers(
+          ((data || []) as PublicOffer[]).filter(
+            (x) => !offerId || x.offer_id === offerId,
+          ),
+        );
+      } finally {
+        setLoading(false);
+      }
+    })();
   }, [organizationId, offerId]);
   async function claimOffer(id: string) {
     if (!db) return;
@@ -43,7 +56,13 @@ export function OfferMarketplace({
       "Claim ready. Show the code or open the secure link at the Partner.",
     );
   }
-  if (!offers.length)
+  if (loading)
+    return (
+      <section className="section shell">
+        <p role="status">Loading current offers…</p>
+      </section>
+    );
+  if (!offers.length && !status)
     return (
       <section className="section shell">
         <h1>Offer not available</h1>
@@ -86,7 +105,7 @@ export function OfferMarketplace({
           <p>The opaque code contains no name, email, or pet information.</p>
         </div>
       )}
-      <p role="status" aria-live="polite">
+      <p role="status" aria-live="polite" aria-atomic="true">
         {status}
       </p>
     </section>
