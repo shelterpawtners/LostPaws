@@ -2,16 +2,18 @@
 
 ## Purpose
 
-Use GitHub as the coordination/control plane so ChatGPT, Codex, Copilot, CI, and the product owner do not depend on copying large prompts or completion reports between tools.
+Use GitHub as the coordination/control plane so ChatGPT, Codex, Copilot, Claude Code, CI, and the product owner do not depend on copying large prompts or completion reports between tools.
 
 ## Source-of-truth hierarchy
 
 1. **GitHub Issue** — task contract, scope, acceptance criteria, guardrails.
 2. **Repository code/docs** — implemented truth.
 3. **Pull request + CI** — review and verification evidence.
-4. **`docs/AI-HANDOFF.md`** — latest concise agent-to-agent baton.
-5. **`docs/CURRENT-WORK.md`** — current phase, priorities, and execution state.
-6. **`docs/DECISION-LOG.md`** — durable approved/autonomous decisions.
+4. **`docs/AUTONOMOUS-EXECUTION-POLICY.md`** — standing autonomy/escalation rules for invoked agents.
+5. **`docs/AI-HANDOFF.md`** — latest concise agent-to-agent baton.
+6. **`docs/CURRENT-WORK.md`** — current phase, priorities, and execution state.
+7. **`docs/OWNER-DECISION-BACKLOG.md`** — provisional owner preferences and true blocking decisions.
+8. **`docs/DECISION-LOG.md`** — durable approved/autonomous decisions.
 
 Do not create parallel planning documents when an authoritative file already exists.
 
@@ -23,23 +25,42 @@ Do not create parallel planning documents when an authoritative file already exi
 - Reads GitHub state directly before issuing new implementation direction.
 - Creates or updates Issues for meaningful work.
 - Reviews commits, PRs, CI failures, and handoff state.
-- Separates blockers into application defect, test defect, environment defect, or product decision.
-- Updates priorities and decision records when appropriate.
+- Separates blockers into application defect, test defect, environment/configuration defect, or product-owner decision.
+- Updates priorities, operating rules, and decision records when appropriate.
+- Performs or triggers acceptance checks when the required tooling is available.
 
 ### Codex
 
-- Primary implementation agent.
-- Starts from the GitHub Issue and current `AI-HANDOFF.md` rather than relying on a pasted chat transcript.
+- Primary heavy implementation/debugging agent when OpenAI work credits are available.
+- Starts from the GitHub Issue and current repository instructions rather than relying on a pasted chat transcript.
 - Preserves newer branch work and checks current remote state before editing.
-- Implements, tests, commits, pushes, updates the relevant Issue, and updates `AI-HANDOFF.md` before completion.
+- Follows `docs/AUTONOMOUS-EXECUTION-POLICY.md`: GREEN decide/continue, YELLOW provisionalize/continue, RED stop narrowly.
+- Implements, tests, commits, pushes, and updates `AI-HANDOFF.md` before completion/blockage.
 - Does not merge unless explicitly authorized.
 
-### Copilot
+### GitHub Copilot coding agent
 
-- Independent bounded reviewer / QA engineer.
+- Primary GitHub-hosted implementation fallback and bounded autonomous engineer.
+- Works from the active Issue/PR branch and repository-native instructions.
+- Follows `docs/AUTONOMOUS-EXECUTION-POLICY.md` and continues through routine in-scope blockers without requesting approval.
+- Uses clearly labeled demo/QA placeholders for reversible YELLOW content decisions and records them in `OWNER-DECISION-BACKLOG.md`.
+- Updates `AI-HANDOFF.md` before completion/blockage.
+- Does not merge unless explicitly authorized.
+
+### GitHub Copilot code review
+
+- Independent reviewer / QA layer.
 - Reviews PR changes for correctness, security/RLS, maintainability, and missing test coverage.
-- Should comment on the PR/Issue rather than creating a parallel task narrative.
-- May implement bounded fixes when explicitly assigned.
+- Should comment on the PR rather than creating a parallel task narrative.
+- Automatic review is intentionally low-noise; re-review after substantial fixes may be requested manually.
+
+### Claude Code / Claude coding agent
+
+- Fallback implementation agent and independent second-opinion reviewer when available.
+- Reads `CLAUDE.md`, `AGENTS.md`, the active Issue/PR, `AI-HANDOFF.md`, and the autonomous execution policy.
+- Must not reinterpret a provisional owner decision as durable approval.
+- Particularly useful for independent review of RLS/auth, concurrency, financial/redemption logic, and architectural changes.
+- Updates `AI-HANDOFF.md` before completion/blockage when acting as the implementation agent.
 
 ### GitHub Actions / Playwright / pgTAP
 
@@ -50,22 +71,45 @@ Do not create parallel planning documents when an authoritative file already exi
 
 ### Product owner (Jim)
 
-- Needed for material product/legal/financial/privacy/security/production decisions and key UX acceptance.
+- Needed for RED decisions, explicit progression gates, and key UX/business acceptance.
 - Should not be required to shuttle routine agent status text between systems.
+- Non-blocking YELLOW decisions should be batched in `docs/OWNER-DECISION-BACKLOG.md` for efficient later review.
+
+## Autonomous execution model
+
+Every invoked coding agent must follow `docs/AUTONOMOUS-EXECUTION-POLICY.md`.
+
+The desired behavior is:
+
+1. Read current Issue/PR, instructions, handoff, roadmap, and relevant authoritative docs.
+2. Implement the currently authorized objective.
+3. Run relevant validation.
+4. Classify failures.
+5. Fix GREEN/YELLOW in-scope failures autonomously.
+6. Rerun validation.
+7. Continue until acceptance criteria are met or a RED/hard blocker is reached.
+8. Record deferred owner preferences in `OWNER-DECISION-BACKLOG.md` instead of interrupting Jim.
+9. Update `AI-HANDOFF.md` before completion or blockage.
+10. Do not cross an explicit checkpoint/phase gate without authorization.
+
+Instruction files govern behavior after an agent is invoked; they do not themselves schedule or launch the next independent agent session.
 
 ## Standard task lifecycle
 
-1. ChatGPT reads `CURRENT-WORK.md`, `AI-HANDOFF.md`, relevant Issue/PR, and CI state.
-2. ChatGPT creates/updates one GitHub Issue with scope, acceptance criteria, and guardrails.
-3. Codex is instructed to execute that Issue and read this protocol first.
-4. Codex implements on the designated branch and pushes commits.
-5. CI runs automatically.
-6. Copilot reviews the PR where appropriate.
-7. Codex fixes blocking review/CI findings.
-8. Codex updates `AI-HANDOFF.md` with final SHA, tests, open items, and recommended next action.
+1. ChatGPT reads `CURRENT-WORK.md`, `AI-HANDOFF.md`, relevant Issue/PR, owner-decision backlog, and CI state.
+2. ChatGPT creates/updates one GitHub Issue with scope, acceptance criteria, guardrails, and the authorized range.
+3. One implementation agent (Copilot, Codex, or Claude) is assigned/invoked against the designated branch/PR.
+4. The implementation agent works autonomously under the execution policy and pushes completed work.
+5. Lightweight CI runs automatically during iteration.
+6. Copilot code review or another independent agent reviews when appropriate.
+7. The implementation agent fixes blocking in-scope review/CI findings.
+8. The implementation agent updates `AI-HANDOFF.md` with status, SHA, tests, blockers, and next safe action.
 9. ChatGPT reads GitHub directly and performs acceptance/review.
-10. Human UX review occurs only where useful or required.
-11. Merge/phase advancement happens only after the applicable gate is met.
+10. Targeted Persona/Hosted QA runs at the acceptance gate when configured/needed.
+11. Human UX review occurs only where useful or required.
+12. Merge/phase advancement happens only after the applicable gate is met.
+
+Avoid multiple implementation agents editing the same active code path/branch simultaneously unless explicitly coordinated. Independent review may run in parallel when it does not mutate the same files.
 
 ## GitHub Copilot PR review configuration
 
@@ -82,9 +126,39 @@ Until an automatic ChatGPT Work GitHub-event trigger is configured, the lightwei
 
 > `check the GitHub handoff`
 
-No pasted Codex completion report is required. ChatGPT should then read `docs/AI-HANDOFF.md`, the active Issue/PR, and CI directly.
+No pasted coding-agent completion report is required. ChatGPT should then read `docs/AI-HANDOFF.md`, the active Issue/PR, owner-decision backlog, and CI directly.
 
 When a supported GitHub-event-triggered Work task is configured later, use PR/Issue activity as the trigger and keep this same repository contract.
+
+## Handoff status contract
+
+Every meaningful implementation-agent update to `docs/AI-HANDOFF.md` must keep a compact status block near the top:
+
+```text
+STATUS: IN_PROGRESS | BLOCKED | READY_FOR_ACCEPTANCE | COMPLETE
+CURRENT_PHASE: <phase>
+CURRENT_CHECKPOINT: <checkpoint or issue>
+NEXT_CHECKPOINT: <next authorized checkpoint or NONE>
+OWNER_DECISION_REQUIRED: YES | NO
+SAFE_TO_CONTINUE: YES | NO
+```
+
+The rest of the handoff must include:
+
+- Issue/task number and title;
+- agent;
+- branch;
+- final/current remote SHA;
+- root cause for defects where applicable;
+- implementation summary;
+- tests run and exact outcomes;
+- CI/hosted QA state;
+- unresolved defects;
+- owner decisions needed (reference decision backlog IDs);
+- deferred work;
+- recommended next action.
+
+A task is not considered handed off until the file is updated and pushed.
 
 ## MVP testing policy
 
@@ -108,22 +182,16 @@ Priority testing now:
 - Guardian/Pet golden path;
 - Admin QA switching only to the level needed to support testing.
 
-## Required Codex completion contract
+## Current progression gates
 
-Every meaningful Codex task must update `docs/AI-HANDOFF.md` and include:
+The autonomous policy does **not** lift existing explicit product-owner gates.
 
-- Issue/task number and title
-- branch
-- final remote SHA
-- implementation summary
-- tests run and exact outcomes
-- CI/hosted QA state
-- unresolved defects
-- product-owner decisions needed
-- deferred work
-- recommended next action
+Current gates:
 
-A task is not considered handed off until the file is updated and pushed.
+- Do not begin Phase 2 Checkpoint 5 without explicit authorization.
+- Do not begin Phase 3 without explicit authorization.
+
+These are recorded in `docs/OWNER-DECISION-BACKLOG.md` so an agent reaching the boundary stops narrowly instead of asking repeatedly during earlier work.
 
 ## Guardrails
 
@@ -132,4 +200,7 @@ A task is not considered handed off until the file is updated and pushed.
 - No production DNS or production Supabase changes without explicit approval.
 - No paid infrastructure without approval.
 - No force push or destructive reset of valid work.
+- Never weaken RLS or a valid regression test just to make a gate pass.
+- Prefer reversible, explicitly labeled QA/demo placeholders for YELLOW decisions over blocking development.
+- Do not fabricate real partnerships, claims, discounts, donations, testimonials, statistics, affiliations, or customer data.
 - Do not begin Phase 2 Checkpoint 5 or Phase 3 without explicit authorization.
