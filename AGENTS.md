@@ -8,7 +8,20 @@ Do not connect to or create production infrastructure, modify public DNS, or dep
 
 Do not copy code, CSS, HTML, components, or architecture from Core or RaveShelter. Do not modify another ShelterPawtners repository. Inspect a specific legacy item only when explicitly instructed; permission to inspect does not imply permission to copy.
 
-The documents capture authoritative user requirements. Explicit subsequent user decisions supersede earlier project choices; update affected documents when a decision changes. Do not invent business requirements. Ask for clarification only when an unresolved decision creates material product, security, legal, privacy, or architectural risk. Otherwise make a reasonable implementation choice and document its rationale and tradeoffs in the relevant document.
+The documents capture authoritative user requirements. Explicit subsequent user decisions supersede earlier project choices; update affected documents when a decision changes. Do not invent business requirements. Ask for clarification only when an unresolved decision creates material product, security, legal, privacy, financial, production, or architectural risk. Otherwise make a reasonable implementation choice and document its rationale and tradeoffs in the relevant document.
+
+## Autonomous execution
+
+Read and follow [Autonomous execution policy](docs/AUTONOMOUS-EXECUTION-POLICY.md) for every meaningful coding task.
+
+- GREEN decisions: decide, implement, test, and continue without asking the product owner.
+- YELLOW decisions: use the safest reversible provisional assumption, record it in [Owner decision backlog](docs/OWNER-DECISION-BACKLOG.md), and continue.
+- RED decisions: complete safely separable work, record the blocker, update `docs/AI-HANDOFF.md`, and stop at the narrowest boundary.
+- Do not stop for routine engineering choices or ordinary in-scope defects.
+- Continue fixing related in-scope blockers until the active Issue acceptance criteria are met or a RED/hard blocker is reached.
+- A repository instruction file governs an invoked agent session; it does not itself authorize a new phase or launch another agent session.
+
+Current explicit progression gates remain in force: do not begin Phase 2 Checkpoint 5 or Phase 3 without explicit product-owner authorization.
 
 ## Read before working
 
@@ -25,12 +38,14 @@ Read [README.md](README.md) for current state and [.agents/skills/shelterpawtner
 | Terminology, claims, customer copy                             | [Content standards](docs/CONTENT-STANDARDS.md)                                  |
 | Technical direction and engineering choices                    | [Architecture](docs/ARCHITECTURE.md)                                            |
 | Phasing, dependencies, unresolved decisions                    | [Roadmap](docs/ROADMAP.md)                                                      |
+| Autonomous execution / escalation                              | [Autonomous execution policy](docs/AUTONOMOUS-EXECUTION-POLICY.md)              |
+| Deferred owner preferences / blockers                          | [Owner decision backlog](docs/OWNER-DECISION-BACKLOG.md)                        |
 | Autonomous implementation decisions                            | [Phase 1 decision log](docs/DECISION-LOG.md)                                    |
 | Privacy, authorization, transfer safeguards                    | [Security and privacy](docs/SECURITY-AND-PRIVACY.md)                            |
 
-Keep detailed guidance in its canonical document and link to it elsewhere. Resolve contradictions instead of adding competing instructions. Preserve the distinction between required behavior, preferred technology, proposed implementation choices, and deferred decisions.
+Keep detailed guidance in its canonical document and link to it elsewhere. Resolve contradictions instead of adding competing instructions. Preserve the distinction between required behavior, preferred technology, proposed implementation choices, provisional assumptions, and deferred decisions.
 
-Record every meaningful product, design, technical, security, sequencing, or operational decision made without direct user approval in the [Phase 1 decision log](docs/DECISION-LOG.md). Add the entry in the same change that implements the decision, including rationale and consequences. Do not use the log as permission to decide matters requiring user authority.
+Record every meaningful product, design, technical, security, sequencing, or operational decision made without direct user approval in the [Phase 1 decision log](docs/DECISION-LOG.md) when it is durable. Reversible YELLOW preferences belong in [Owner decision backlog](docs/OWNER-DECISION-BACKLOG.md) until resolved. Add durable entries in the same change that implements the decision, including rationale and consequences. Do not use either log as permission to decide matters requiring user authority.
 
 ## Engineering conduct
 
@@ -47,3 +62,5 @@ Record every meaningful product, design, technical, security, sequencing, or ope
 ## Completion reporting
 
 State what changed, what was checked, material limitations, and unresolved decisions. Keep README current state accurate. The implementation gate is lifted for the approved development MVP. Production deployment remains separately gated.
+
+Before completing or stopping a meaningful task, update `docs/AI-HANDOFF.md` using the status contract in `docs/AUTONOMOUS-EXECUTION-POLICY.md`, including whether an owner decision is required and whether it is safe for another agent to continue.
