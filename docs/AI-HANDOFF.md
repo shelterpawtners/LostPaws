@@ -57,7 +57,7 @@ Acceptance evidence: Persona QA run #51 (`34210680064`) passed.
 Issue #6 — make hosted shared QA the normal acceptance environment.
 
 Issue #6 implementation SHA: `a4f492df2f49df011470fbcb7b80e2ec99e29e0d`
-Issue #6 final remote SHA: `1c0dcf9e200d0cff841588d039773e544894e783`
+Issue #6 final remote SHA: `e7de111bad77bb3a9c5367ba859cdcda041df973`
 
 Issue #6 root-cause gap addressed:
 
@@ -79,6 +79,7 @@ What changed for Issue #6:
 - Recorded the durable workflow decision in `docs/DECISION-LOG.md` as D-039.
 - Stabilized hosted partner-profile persistence coverage by preventing save interaction before organization bootstrap completes in `PartnerProfileEditor`.
 - Stabilized hosted golden-path role-switching by routing sign-out through `/dashboard`, where the sign-out control is guaranteed.
+- Stabilized hosted save-confirmation assertion by replacing brittle `.panel > p[role='status']` targeting with a dedicated `data-testid="partner-profile-save-status"` contract on the Partner profile save status element.
 
 Issue #6 validation run locally:
 
@@ -91,9 +92,9 @@ Issue #6 validation run locally:
 Issue #6 CI/Hosted QA state at completion:
 
 - Base branch (`build/festival-mvp`) CI remains passing.
-- Feature branch (`qa/guardian-registration-personas`) CI run #149 (`34217922764`) passed on final SHA.
-- Hosted QA push run #44 (`34217917559`) passed on final SHA.
-- Hosted QA PR run #45 (`34217922736`) passed on final SHA.
+- Feature branch (`qa/guardian-registration-personas`) CI run #151 (`34218538966`) passed on final SHA.
+- Hosted QA push run #47 (`34218533561`) passed on final SHA.
+- Hosted QA PR run #48 (`34218538905`) passed on final SHA.
 
 Target operating model:
 
