@@ -3,7 +3,7 @@
 STATUS: IN_PROGRESS
 CURRENT_PHASE: Phase 2 — Partner Marketplace MVP
 CURRENT_CHECKPOINT: Phase 2 Checkpoint 5 — Verified Savings + Customer Attribution
-NEXT_CHECKPOINT: Finish Checkpoint 5 pre-decision engineering and acceptance evidence, then stop at the verified-savings RED rule gate if customer-facing verified totals would be enabled
+NEXT_CHECKPOINT: Fix the CP5 pgTAP plan count mismatch, rerun Persona QA, then finish remaining Checkpoint 5 acceptance evidence before the verified-savings RED rule gate
 OWNER_DECISION_REQUIRED: NO
 SAFE_TO_CONTINUE: YES
 
@@ -24,10 +24,11 @@ This file is the shared baton between ChatGPT, Codex, Copilot, GitHub Actions, a
 
 ## Current handoff
 
-Updated by: ChatGPT sleep sprint
+Updated by: ChatGPT supervisory validator
 Branch: `qa/guardian-registration-personas`
 Active PR: #2 (`<!-- ai-active-build-pr -->`)
 Active Issue: #13
+Current remote SHA at validation: `92f2fe72464061d0fc3a04daa1d03dd4d3576c1d`
 
 ### Accepted prior work
 
@@ -35,14 +36,14 @@ Active Issue: #13
 - Issue #6 Hosted shared QA hardening: COMPLETE and accepted by green hosted QA.
 - Phase 2 Checkpoints 1-4 remain accepted/complete per `docs/CURRENT-WORK.md`.
 
-### Checkpoint 5 progress in this pass
+### Checkpoint 5 implemented scope
 
-Implementation commits before this handoff:
+Implementation commits in the current slice include:
 
-- `a64dcc24b4f771a4c472947ff8425bd7a917a465` — adds CP5 savings/attribution database foundation.
-- `016fc2fb4a6a4abae2640f3ba05cfa542b352d79` — adds CP5 pgTAP coverage.
-- `765808866d4e10a1b65a0bbd589d86ef92b364bd` / `496b581e61c94d99071a1355ffb3cdeb8f9fd747` — adds exact bigint candidate-savings helper and unit tests.
-- `fa48bbb204886c6f3894cdf5e76e556d59a69be6` — restores heavy Persona QA to deliberate/manual execution after confirming that PR path triggers would cause repeated heavy runs on this long-lived PR.
+- `a64dcc24b4f771a4c472947ff8425bd7a917a465` — CP5 savings/attribution database foundation.
+- `016fc2fb4a6a4abae2640f3ba05cfa542b352d79` — CP5 pgTAP coverage.
+- `765808866d4e10a1b65a0bbd589d86ef92b364bd` / `496b581e61c94d99071a1355ffb3cdeb8f9fd747` — exact bigint candidate-savings helper and unit tests.
+- `fa48bbb204886c6f3894cdf5e76e556d59a69be6` — Persona QA restored to deliberate/manual execution.
 
 Implemented behavior:
 
@@ -56,30 +57,34 @@ Implemented behavior:
 - protect `redemption_events` from update/delete mutation with the existing append-only trigger function;
 - add unit + pgTAP coverage for exact math, provenance, first-known/returning classification, separate Partner attestation, non-negative candidate savings, append-only adjustments, and reversal compatibility.
 
-### Validation state
+### Validation state — meaningful FAILED state
 
-- CI run #183 for `496b581e61c94d99071a1355ffb3cdeb8f9fd747`: PASS.
-- Hosted QA run #81 for the same SHA: PASS (acceptance-gated lightweight path; Checkpoint remains IN_PROGRESS).
-- Persona QA run #54 (`34235351085`) was started natively to validate migration replay, pgTAP, and persona/redemption regression. It was still running during this handoff, with local Supabase startup in progress.
-- A prior automatic Persona QA experiment was intentionally reverted because it caused repeated heavy executions on subsequent commits in this long-lived PR. Persona QA remains `workflow_dispatch` only.
+- Current head `92f2fe72464061d0fc3a04daa1d03dd4d3576c1d`: CI #185 PASS.
+- Current head: Hosted QA #83 PASS (lightweight IN_PROGRESS gate).
+- Persona QA #54 (`34235351085`) on CP5 implementation SHA `496b581e61c94d99071a1355ffb3cdeb8f9fd747`: FAIL in pgTAP only.
+- Classification: **test defect**, not application, RLS, migration, or environment failure.
+- Migration replay/reset succeeded.
+- Existing pgTAP suites passed.
+- Every CP5 assertion passed, but `supabase/tests/phase_2_checkpoint_5_savings_attribution.sql` declares `select plan(12);` while 14 assertions run. pg_prove reports `Bad plan. You planned 12 tests but ran 14.`
+- Browser persona/redemption tests were skipped only because the pgTAP step failed first.
+
+### Recommended bounded next task
+
+Change only the CP5 pgTAP declared plan from 12 to 14, preserving all assertions and RLS/application behavior. Then rerun Persona QA. If pgTAP is green, allow the persona/redemption browser suite to execute and classify any resulting failure independently. Do not weaken or remove assertions.
 
 ### Vercel environment blocker
 
-The ChatGPT Vercel connector is installed, but `list_teams` returns an empty team list. Direct protected-deployment access to `https://lost-paws-one.vercel.app/` also fails while creating a share URL with `403 Forbidden`.
+The ChatGPT Vercel connector previously returned an empty team list / 403 due to OAuth/account scope. This remains an external connector issue unless separately confirmed resolved; it is not the cause of the current Persona QA failure.
 
-This is an external Vercel OAuth/account-scope blocker, not an application or repository defect. The connector cannot currently verify team `jims-projects-acec6bcb` or project `lost-paws`. Reauthorization/reconnection to the Vercel account that owns that team/project is still required. Do not create replacement Vercel infrastructure.
+### Remaining Checkpoint 5 work after the test-plan correction
 
-### Remaining Checkpoint 5 work
-
-- inspect Persona QA #54 result; fix any GREEN migration/test/application defects without weakening RLS/tests;
-- add targeted Playwright coverage for attribution capture only if it remains provider/rule-independent and does not expose customer-facing verified totals;
+- obtain green Persona QA migration/pgTAP/persona-redemption evidence;
+- add targeted Playwright coverage for attribution capture only if still needed and provider/rule-independent;
 - evaluate whether adjusted candidate totals need a read model/helper over append-only correction events before CP5 acceptance;
-- update the active progress/decision docs for durable CP5 implementation choices;
+- update active progress/decision docs for durable CP5 implementation choices;
 - when implementation and deterministic validation are complete, move to `READY_FOR_ACCEPTANCE` and run the acceptance-boundary hosted gate;
 - stop narrowly if a rule is required for what evidence/calculation qualifies as customer-facing `verified savings`.
 
 ### Human action required
 
-None for GitHub/Checkpoint 5 engineering right now.
-
-Vercel connector access remains externally blocked until its OAuth/account connection is reauthorized to the owning team. Continue independent GitHub-safe CP5 work in the meantime.
+No RED/product-owner decision is required. Operator attention is needed only to run the bounded test-plan correction task; this validator intentionally does not launch a coding agent under the zero-AI control-plane policy.
