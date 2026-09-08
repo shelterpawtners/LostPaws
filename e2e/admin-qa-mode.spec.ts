@@ -17,6 +17,10 @@ function requiredSetting(name: string) {
   return value;
 }
 
+function adminQaBanner(page: Page) {
+  return page.getByRole("status").filter({ hasText: "ADMIN QA MODE" });
+}
+
 async function signIn(page: Page, email: string, password: string) {
   await page.goto("/login");
   await page.getByLabel("Email address").fill(email);
@@ -86,7 +90,7 @@ test.describe.serial("Admin QA mode hosted regression", () => {
     await expect(guardianCard).toHaveCSS("cursor", "pointer");
     await guardianCard.click();
     await expect(page).toHaveURL(/\/dashboard$/);
-    await expect(page.getByRole("status")).toContainText(
+    await expect(adminQaBanner(page)).toContainText(
       "ADMIN QA MODE — Acting as Guardian A (Guardian)",
     );
     await expect(
@@ -94,9 +98,9 @@ test.describe.serial("Admin QA mode hosted regression", () => {
     ).toBeVisible();
 
     await page.goto("/marketplace");
-    await expect(page.getByRole("status")).toContainText("Guardian A");
+    await expect(adminQaBanner(page)).toContainText("Guardian A");
     await page.reload();
-    await expect(page.getByRole("status")).toContainText(
+    await expect(adminQaBanner(page)).toContainText(
       "ADMIN QA MODE — Acting as Guardian A (Guardian)",
     );
     await page.goto("/admin-qa");
@@ -111,7 +115,7 @@ test.describe.serial("Admin QA mode hosted regression", () => {
       .getByText("Act as", { exact: true });
     await partnerCta.click();
     await expect(page).toHaveURL(/\/dashboard$/);
-    await expect(page.getByRole("status")).toContainText(
+    await expect(adminQaBanner(page)).toContainText(
       "ADMIN QA MODE — Acting as Partner Admin (Partner)",
     );
 
@@ -122,7 +126,7 @@ test.describe.serial("Admin QA mode hosted regression", () => {
     await shelterCard.focus();
     await page.keyboard.press("Enter");
     await expect(page).toHaveURL(/\/dashboard$/);
-    await expect(page.getByRole("status")).toContainText(
+    await expect(adminQaBanner(page)).toContainText(
       "ADMIN QA MODE — Acting as Shelter Admin (Shelter)",
     );
 
@@ -143,7 +147,7 @@ test.describe.serial("Admin QA mode hosted regression", () => {
       .getByRole("button", { name: "Create fresh Guardian test account" })
       .click();
     await expect(page).toHaveURL(/\/onboarding\/guardian$/);
-    await expect(page.getByRole("status")).toContainText("ADMIN QA MODE");
+    await expect(adminQaBanner(page)).toContainText("ADMIN QA MODE");
     await expect(page.getByLabel("Pet name")).toBeVisible();
   });
 
