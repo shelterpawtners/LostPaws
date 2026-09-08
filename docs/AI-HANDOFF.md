@@ -1,9 +1,9 @@
 # AI Handoff
 
-STATUS: IN_PROGRESS
+STATUS: BLOCKED
 CURRENT_PHASE: Phase 2 — Partner Marketplace MVP
 CURRENT_CHECKPOINT: Phase 2 Checkpoint 5 — Verified Savings + Customer Attribution
-NEXT_CHECKPOINT: Validate the Admin QA hard-navigation restoration fix; when CI and Hosted QA are green, mark the CP5 pre-decision slice COMPLETE, keep verified-savings rules owner-gated, and continue only safely separable provider-agnostic Phase 2 Checkpoint 6 work
+NEXT_CHECKPOINT: Retry deployment/Hosted QA for frontend fix `11b23ef4` when the Vercel build-rate limit clears; if green, mark the CP5 pre-decision slice COMPLETE, keep verified-savings rules owner-gated, and continue only safely separable provider-agnostic Phase 2 Checkpoint 6 work
 OWNER_DECISION_REQUIRED: NO
 SAFE_TO_CONTINUE: YES
 
@@ -53,9 +53,10 @@ CP5 prevents duplicate `first_known` attribution by serializing Guardian + Partn
 - Hosted QA #112: FAILED in Admin QA because a generic `getByRole("status")` selector matched two legitimate live regions. Vercel exact-SHA readiness passed first. This was a GREEN test defect; `4614e3c` scoped banner assertions to the `ADMIN QA MODE` status region without weakening authorization/session coverage.
 - CI #217: PASS after the selector correction.
 - Hosted QA #116 on READY head `36ed211c3cf13f93221b04358a1cc140a11146a5`: FAILED later in the same Admin QA persistence test after `page.goto("/marketplace")` because no Admin QA banner appeared after the hard navigation. Six hosted tests passed; two later serial tests did not run.
-- #116 classification: GREEN application state-restoration defect, not a selector defect. `/marketplace` is wrapped in `Page` and therefore renders `QaBanner`, but a hard navigation recreates JS module state while the acting Supabase session remains in `sessionStorage`. `QaBanner` previously checked only the in-memory acting client on mount, so it could render no banner while `AuthProvider` restored the session independently.
-- Fix `11b23ef4`: `QaBanner` now restores the tab-scoped acting session itself when the in-memory client is absent, while still listening for `sp-qa-changed`; it guards async state updates on unmount. This preserves the explicit cross-route/reload Admin QA session contract instead of weakening the regression test.
-- CI #219 is the current native validation for `11b23ef4`; Hosted QA must rerun after CI and a usable frontend deployment are available.
+- #116 classification: GREEN application state-restoration defect. `/marketplace` is wrapped in `Page` and renders `QaBanner`, but a hard navigation recreates JS module state while the acting Supabase session remains in `sessionStorage`. `QaBanner` previously checked only the in-memory acting client on mount and could miss the restored session.
+- Fix `11b23ef4`: `QaBanner` restores the tab-scoped acting session itself when the in-memory acting client is absent, still listens for `sp-qa-changed`, and guards async state updates after unmount. This preserves the explicit cross-route/reload QA-session contract rather than weakening the regression test.
+- CI #219 for `11b23ef4`: PASS.
+- Hosted acceptance for `11b23ef4` is not yet possible because no deployment containing that frontend change has become available.
 
 ### Cost-control state
 
@@ -73,8 +74,10 @@ This RED rule does not block provider-agnostic Checkpoint 6 engineering that is 
 
 Direct ChatGPT Vercel access remains unauthorized/incomplete: `list_teams` returns exactly `{"teams": []}`, so team `jims-projects-acec6bcb` and project `lost-paws` cannot be enumerated through the connector. This remains an OAuth/account-scope blocker.
 
-Separately, GitHub's Vercel commit status on the READY handoff head reported `failure` with target `https://vercel.com/jims-projects-acec6bcb?upgradeToPro=build-rate-limit`, indicating a Vercel build-rate-limit condition. Do not upgrade or alter paid infrastructure autonomously. Hosted QA #116 still safely used the previously Ready latest frontend-impacting deployment (`4de911d8884866772fdb5e8eb3c022de7b9e4541`) because its head changed only tests/handoff. The new `11b23ef4` fix changes frontend code, so Hosted QA acceptance requires a deployment containing that fix; do not claim acceptance against the older frontend.
+GitHub's Vercel commit status for frontend fix `11b23ef41861f0d2e26272ed588019ddaa217f94` is `failure`, with target `https://vercel.com/jims-projects-acec6bcb?upgradeToPro=build-rate-limit`. This is an external Vercel build-rate-limit condition. Do not upgrade or alter paid infrastructure autonomously. Hosted QA #116 safely used the previously Ready frontend-impacting deployment `4de911d8884866772fdb5e8eb3c022de7b9e4541`, but that deployment predates `11b23ef4` and cannot establish acceptance for the application fix.
+
+The narrow safe next action is to retry/check deployment and Hosted QA after the build-rate limit clears. If it clears without a paid-plan decision, no owner action is required. Choosing a paid Vercel upgrade remains RED and must not be inferred.
 
 ### Human action required
 
-None for the GREEN application fix itself. If the Vercel build-rate limit prevents deployment of `11b23ef4`, that is an external environment/cost blocker; do not cross the paid-plan gate. Verified-savings rules remain an owner decision only after the CP5 pre-decision engineering slice is accepted.
+None unless immediate acceptance requires a paid Vercel plan change. The current blocker may clear on its own, so no paid-infrastructure decision is requested at this time. Verified-savings rules remain an owner decision only after the CP5 pre-decision engineering slice is accepted.
