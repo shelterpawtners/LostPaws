@@ -28,20 +28,26 @@ Do not load unrelated historical documents merely for completeness. Keep task co
 
 ## Autonomous execution
 
+Once an agent session has been intentionally started for a bounded task:
+
 - GREEN: decide, implement, test, and continue.
 - YELLOW: use the safest reversible assumption, record it in `docs/OWNER-DECISION-BACKLOG.md`, and continue.
 - RED: finish safely separable work, record the blocker, update `docs/AI-HANDOFF.md`, and stop narrowly.
 - Continue through related in-scope defects until acceptance criteria are met or a RED/hard blocker is reached.
 - Do not ask Jim to approve routine engineering decisions.
 
+Autonomy inside an invoked session is **not** permission for GitHub Actions or another agent to automatically launch a new AI session.
+
 ## AI-cost discipline
 
 Follow `docs/AI-COST-AND-TESTING-GOVERNANCE.md`.
 
+- GitHub Actions is a zero-AI control plane: it may test, poll, classify explicit state, and report READY / FAILED / STALLED / BLOCKED, but it must never automatically invoke a coding agent.
+- Coding-agent sessions are started intentionally using the lowest-cost suitable execution surface.
 - Treat each invoked coding-agent session as one bounded checkpoint/defect-cluster session.
 - Do not request another agent session just because CI or Hosted QA turned green.
 - Do not use AI for deterministic formatting, polling, reruns, lint/typecheck/build, or other native automation work.
-- Do not request Copilot code review on every commit; default to one review at checkpoint acceptance when materially useful.
+- Do not request Copilot code review on every commit; default to one review at checkpoint acceptance only when materially useful.
 - Prefer one complete task prompt and a clear stopping condition over repeated steering comments.
 
 ## Engineering rules
@@ -57,7 +63,7 @@ Follow `docs/AI-COST-AND-TESTING-GOVERNANCE.md`.
 
 Use the tiered testing strategy in `docs/AI-COST-AND-TESTING-GOVERNANCE.md`:
 
-- implementation: lint, typecheck, unit tests, build;
+- implementation: lint, unit tests, build/typecheck;
 - checkpoint acceptance: relevant hosted Playwright + relevant database/RLS tests;
 - phase hardening: broader Persona QA/browser/security regression.
 
