@@ -198,7 +198,7 @@ export function AdminQaMode() {
         reason,
         action: getActingSupabase() ? "switch" : "start",
       });
-      await startActingSupabase(result.email, result.token_hash);
+      await startActingSupabase(result.token_hash);
       setStatus(`Now acting as ${result.user.display_name}.`);
       navigate("/dashboard");
     } catch (e: any) {
@@ -217,7 +217,7 @@ export function AdminQaMode() {
         display_name: name || undefined,
         test_label: label || undefined,
       });
-      await startActingSupabase(result.email, result.token_hash);
+      await startActingSupabase(result.token_hash);
       setStatus(`Created and switched to ${result.user.display_name}.`);
       navigate(`/onboarding/${kind}`);
     } catch (e: any) {
