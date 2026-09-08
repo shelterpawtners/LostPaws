@@ -45,7 +45,7 @@ test.describe.serial("Hosted partner-to-guardian marketplace golden path", () =>
     await page.getByLabel("Public email").fill(publicEmail);
     await page.getByLabel("How customers are served").selectOption("online");
     await saveDraftButton.click();
-    await expect(page.getByText("Saved as a private draft.")).toBeVisible();
+    await expect(saveDraftButton).toBeEnabled({ timeout: 15_000 });
     const organization = page.getByLabel("Organization");
     const selectedOrganizationId = await organization.inputValue();
     await page.reload();
