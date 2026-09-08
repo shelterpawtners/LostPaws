@@ -1,0 +1,73 @@
+# AI Cost and Testing Governance
+
+## Principle
+
+Use deterministic native automation for repeatable work. Spend AI credits only where reasoning, implementation, diagnosis, or semantic review adds material value. This policy does not weaken product, security, RLS, data-integrity, or acceptance requirements.
+
+## AI-credit rules
+
+- One bounded coding-agent session per checkpoint or defect cluster by default.
+- Do not start a new agent session because routine CI/Hosted QA passed.
+- Keep one agent working through related GREEN/YELLOW defects instead of repeatedly steering/re-prompting it.
+- Re-engage after a failure only when the failure remains unresolved and there has been no meaningful newer activity for the configured stall window.
+- Use native GitHub Actions/scripts for formatting, lint, typecheck, unit tests, builds, migration replay, pgTAP, Playwright, status polling, deduplication, and stall detection.
+- Prefer one complete task prompt with scope, validation, defect-fixing authority, stopping condition, and handoff contract over several small prompts.
+
+## Copilot review
+
+- Do not request review on every commit.
+- No Copilot review for docs-only, formatting-only, lockfile-only, or trivial workflow-comment changes unless security/execution behavior materially changed.
+- Default to at most one Copilot review per checkpoint at acceptance.
+- A second review is justified only after material code/security changes caused by the first review.
+- One broader review may be used at final Phase 2 hardening.
+
+## Test tiers
+
+### Tier 1 — implementation loop
+
+For normal code commits: lint, typecheck, unit tests, production build. These deterministic checks are cheap and should not be replaced with AI review.
+
+### Tier 2 — checkpoint acceptance
+
+When `docs/AI-HANDOFF.md` is `READY_FOR_ACCEPTANCE` or equivalent: relevant Hosted QA golden path, relevant database/RLS/pgTAP checks, and targeted integration tests.
+
+Do not run the full hosted browser/database acceptance stack on every intermediate commit unless a specific defect requires it.
+
+### Tier 3 — phase/final hardening
+
+Broader Persona QA, browser/accessibility regression, security/RLS sweep, migration replay, and other cross-cutting phase checks.
+
+## Change-aware testing
+
+Selective tests are allowed only when impact mapping is deterministic. Shared app/auth/routing files and cross-cutting database/security changes fall back to broader relevant deterministic tests.
+
+- Docs-only: no app CI/browser QA.
+- Supabase migration/RLS/RPC: database/RLS tests mandatory; affected browser flow at acceptance.
+- Shared auth/routing/application shell: broader relevant web regression.
+- Package/workflow/config: run affected configuration checks.
+
+When impact is uncertain, run the broader deterministic test rather than spend AI credits deciding whether to skip it.
+
+## Workflow deduplication
+
+- One canonical Hosted QA lane per PR/SHA; no duplicate push + PR copies of the same suite.
+- Use concurrency with cancellation for obsolete CI/QA runs.
+- Heavy hosted browser QA is acceptance-gated.
+- Persona QA is deliberate: schema/RLS/persona changes and planned hardening, not every commit.
+- Upload failure artifacts only on failure.
+
+## Orchestrator
+
+The supervisor may poll frequently with native GitHub APIs/Actions without invoking AI. It should invoke an agent only for a bounded authorized next task or a genuinely stale unresolved defect. A green workflow by itself is not a reason for another AI session.
+
+## Handoff
+
+Every bounded agent session must leave enough structured evidence that another AI call is not needed just to discover state: task/issue, branch/SHA, areas changed, exact tests/results, CI/Hosted QA state, blocker classification, next action, `SAFE_TO_CONTINUE`, and `OWNER_DECISION_REQUIRED`.
+
+## Cost guardrails
+
+- Standard GitHub-hosted runners only; no paid larger runners without owner approval.
+- No new paid testing/monitoring SaaS while GitHub/Vercel/Supabase native capabilities are sufficient.
+- No added paid Supabase/Vercel infrastructure without owner approval.
+- Prefer repo-native status/JSON + GitHub APIs for AI Ops monitoring.
+- Treat AI credits as scarce reasoning budget, not a scheduler or polling mechanism.
