@@ -35,7 +35,9 @@ jobs:
         shell: bash
         run: |
           [[ "$PLAYWRIGHT_BASE_URL" == https://* ]] || { echo "Set qa_url or QA_BASE_URL to the Vercel Preview HTTPS URL" >&2; exit 1; }
+          [[ "$PLAYWRIGHT_BASE_URL" =~ ^https://[^/]+\.vercel\.app(/.*)?$ ]] || { echo "QA URL must be a Vercel Preview URL on vercel.app" >&2; exit 1; }
           [[ -n "$PLAYWRIGHT_SUPABASE_URL" ]] || { echo "Set QA_SUPABASE_URL" >&2; exit 1; }
+          [[ "$PLAYWRIGHT_SUPABASE_URL" =~ ^https://jukmlmryykcnjtpblbja\.supabase\.co/?$ ]] || { echo "QA_SUPABASE_URL must point to shelterpawtners-dev" >&2; exit 1; }
           [[ -n "$PLAYWRIGHT_SUPABASE_PUBLISHABLE_KEY" ]] || { echo "Set QA_SUPABASE_PUBLISHABLE_KEY" >&2; exit 1; }
       - run: npx playwright install --with-deps chromium
       - name: Run hosted smoke
