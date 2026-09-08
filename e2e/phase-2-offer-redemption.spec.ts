@@ -1,3 +1,4 @@
+import { createClient } from "@supabase/supabase-js";
 import { expect, test, type Page } from "@playwright/test";
 
 test.describe.serial("Phase 2 offer and redemption journey", () => {
@@ -91,7 +92,7 @@ test.describe.serial("Phase 2 offer and redemption journey", () => {
     );
   });
 
-  test("Partner validates and confirms once; replay fails safely", async ({
+  test("Partner captures candidate savings context, confirms once, and replay fails safely", async ({
     page,
   }) => {
     await signIn(page, "partner-admin@example.invalid", "Demo-only-Partner!");
@@ -100,10 +101,58 @@ test.describe.serial("Phase 2 offer and redemption journey", () => {
       page.getByRole("heading", { name: "Playwright welcome offer" }),
     ).toBeVisible();
     await expect(page.getByText("Valid claim")).toBeVisible();
+
+    await page.getByLabel("Reference/list value in minor units").fill("2500");
+    await page
+      .getByLabel("Amount actually paid in minor units")
+      .fill("1800");
+    await page.getByLabel("Currency code").fill("usd");
+    await page.getByLabel("Reference value type").selectOption("retail_price");
+    await page.getByLabel("Reference source").selectOption("receipt");
+    await page.getByLabel("Evidence/reference note").fill("qa-receipt-ui-001");
+    await page
+      .getByLabel("Partner customer attestation")
+      .selectOption("new_to_business");
+
     await page.getByRole("button", { name: "Confirm utilization" }).click();
-    await expect(page.getByRole("status")).toContainText(
-      "Utilization confirmed",
-    );
+    const status = page.getByRole("status");
+    await expect(status).toContainText("Utilization confirmed");
+    await expect(status).toContainText("not a verified savings total");
+    const statusText = (await status.textContent()) || "";
+    const redemptionId = statusText.match(
+      /Record ([0-9a-f]{8}-[0-9a-f-]{27,})\./i,
+    )?.[1];
+    expect(redemptionId).toBeTruthy();
+
+    const supabaseUrl = process.env.PLAYWRIGHT_SUPABASE_URL;
+    const supabaseKey = process.env.PLAYWRIGHT_SUPABASE_PUBLISHABLE_KEY;
+    expect(supabaseUrl).toBeTruthy();
+    expect(supabaseKey).toBeTruthy();
+    const partnerDb = createClient(supabaseUrl!, supabaseKey!);
+    const signInResult = await partnerDb.auth.signInWithPassword({
+      email: "partner-admin@example.invalid",
+      password: "Demo-only-Partner!",
+    });
+    expect(signInResult.error).toBeNull();
+    const { data: captured, error: capturedError } = await partnerDb
+      .from("redemptions")
+      .select(
+        "retail_amount_minor,paid_amount_minor,candidate_savings_minor,currency_code,reference_value_kind,reference_value_source,evidence_reference,partner_customer_attestation",
+      )
+      .eq("id", redemptionId!)
+      .single();
+    expect(capturedError).toBeNull();
+    expect(captured).toMatchObject({
+      retail_amount_minor: 2500,
+      paid_amount_minor: 1800,
+      candidate_savings_minor: 700,
+      currency_code: "USD",
+      reference_value_kind: "retail_price",
+      reference_value_source: "receipt",
+      evidence_reference: "qa-receipt-ui-001",
+      partner_customer_attestation: "new_to_business",
+    });
+
     await page.getByLabel("Manual redemption code").fill(redeemCode);
     await page.getByRole("button", { name: "Validate code" }).click();
     await expect(page.getByRole("status")).toContainText(
