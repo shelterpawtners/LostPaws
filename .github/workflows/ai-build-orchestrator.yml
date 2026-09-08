@@ -1,0 +1,116 @@
+name: AI Build Orchestrator
+
+on:
+  workflow_run:
+    workflows:
+      - CI
+      - Persona QA
+      - Hosted QA
+    types:
+      - completed
+
+concurrency:
+  group: ai-build-orchestrator-${{ github.event.workflow_run.head_branch }}
+  cancel-in-progress: false
+
+permissions:
+  actions: read
+  contents: read
+  issues: write
+  pull-requests: write
+
+jobs:
+  delegate-failure:
+    if: >-
+      github.event.workflow_run.head_repository.full_name == github.repository &&
+      github.event.workflow_run.pull_requests[0].number != null &&
+      contains(fromJSON('["failure","timed_out","cancelled","action_required"]'), github.event.workflow_run.conclusion)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Delegate failed run to Copilot on the existing PR
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.workflow_run.pull_requests[0].number }}
+          WORKFLOW_NAME: ${{ github.event.workflow_run.name }}
+          RUN_URL: ${{ github.event.workflow_run.html_url }}
+          HEAD_BRANCH: ${{ github.event.workflow_run.head_branch }}
+          HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          marker="<!-- ai-build-orchestrator-failure:${WORKFLOW_NAME}:${HEAD_SHA} -->"
+
+          if gh api "repos/${REPO}/issues/${PR_NUMBER}/comments" --paginate --jq '.[].body' | grep -Fq "${marker}"; then
+            echo "Failure for this workflow/SHA was already delegated."
+            exit 0
+          fi
+
+          body=$(cat <<EOF
+          ${marker}
+          @copilot Automated failure triage request.
+
+          **${WORKFLOW_NAME}** failed for branch \`${HEAD_BRANCH}\` at \`${HEAD_SHA}\`.
+          Run: ${RUN_URL}
+
+          Work autonomously on this existing PR/branch. Inspect the failed run and logs, determine the root cause, and fix GREEN/YELLOW engineering defects without waiting for Jim. Read \`AGENTS.md\`, \`docs/CURRENT-WORK.md\`, \`docs/AI-OPERATING-PROTOCOL.md\`, \`docs/AUTONOMOUS-EXECUTION-POLICY.md\`, \`docs/OWNER-DECISION-BACKLOG.md\`, and \`docs/AI-HANDOFF.md\` first.
+
+          Guardrails: do not weaken tests or RLS, do not expose secrets, do not touch production/DNS, do not auto-merge, and do not begin Phase 3. The remainder of Phase 2 is authorized. Update \`docs/AI-HANDOFF.md\` before declaring the blocker resolved.
+          EOF
+          )
+
+          gh api --method POST "repos/${REPO}/issues/${PR_NUMBER}/comments" -f body="${body}"
+
+  advance-after-acceptance:
+    if: >-
+      github.event.workflow_run.head_repository.full_name == github.repository &&
+      github.event.workflow_run.pull_requests[0].number != null &&
+      github.event.workflow_run.conclusion == 'success' &&
+      (github.event.workflow_run.name == 'Persona QA' || github.event.workflow_run.name == 'Hosted QA')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Continue next authorized task when handoff allows it
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.workflow_run.pull_requests[0].number }}
+          WORKFLOW_NAME: ${{ github.event.workflow_run.name }}
+          RUN_URL: ${{ github.event.workflow_run.html_url }}
+          HEAD_BRANCH: ${{ github.event.workflow_run.head_branch }}
+          HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          handoff=$(gh api "repos/${REPO}/contents/docs/AI-HANDOFF.md?ref=${HEAD_BRANCH}" --jq '.content' | base64 --decode)
+
+          if ! grep -Eq '^SAFE_TO_CONTINUE:[[:space:]]*YES[[:space:]]*$' <<<"${handoff}"; then
+            echo "Handoff does not authorize automatic continuation."
+            exit 0
+          fi
+
+          if ! grep -Eq '^OWNER_DECISION_REQUIRED:[[:space:]]*NO[[:space:]]*$' <<<"${handoff}"; then
+            echo "Handoff requires an owner decision."
+            exit 0
+          fi
+
+          marker="<!-- ai-build-orchestrator-advance:${HEAD_SHA} -->"
+          if gh api "repos/${REPO}/issues/${PR_NUMBER}/comments" --paginate --jq '.[].body' | grep -Fq "${marker}"; then
+            echo "This accepted SHA was already advanced."
+            exit 0
+          fi
+
+          next_checkpoint=$(sed -n 's/^NEXT_CHECKPOINT:[[:space:]]*//p' <<<"${handoff}" | head -n 1)
+          body=$(cat <<EOF
+          ${marker}
+          @copilot Automated continuation after successful **${WORKFLOW_NAME}** acceptance.
+
+          Accepted run: ${RUN_URL}
+          Accepted SHA: \`${HEAD_SHA}\`
+          Next checkpoint from \`docs/AI-HANDOFF.md\`: **${next_checkpoint:-read the current handoff and continue the next authorized Phase 2 task}**
+
+          Continue autonomously on this PR/branch under \`docs/AUTONOMOUS-EXECUTION-POLICY.md\`. Make routine GREEN decisions directly, log reversible YELLOW assumptions, and stop only for a RED decision or hard blocker. The remainder of Phase 2 is authorized; Phase 3 is not. Do not auto-merge. Update \`docs/AI-HANDOFF.md\` before declaring completion.
+          EOF
+          )
+
+          gh api --method POST "repos/${REPO}/issues/${PR_NUMBER}/comments" -f body="${body}"
