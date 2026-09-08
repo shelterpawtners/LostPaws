@@ -13,10 +13,12 @@ ACCEPTED_CODE_SHA: NONE
 - PR #2 is merged into `build/festival-mvp` at merge commit `e248f8b3ae754da7faccf41ebe2c0a4bb3857f27`.
 - Active work branch: `ops/dev-loop-v2`.
 - Active Issue: #15.
-- The deterministic formatting defect is fixed. CI #239 passed on `fd905eee638c0d3c8b2810f26a799d0130291ebc`.
-- Merge Gate #7 correctly identified that the required Hosted QA `hosted-smoke` job had been skipped because the handoff had not entered `READY_FOR_ACCEPTANCE` before COMPLETE was recorded.
-- Failure classification: GREEN workflow/state-contract defect. No application, RLS, security, product, or environment defect is indicated.
-- This handoff now enters the required acceptance boundary. Full Hosted QA must execute successfully on this head before COMPLETE is restored.
+- The deterministic formatting defect is fixed.
+- The acceptance-state sequencing defect is fixed: real Hosted QA now runs only from `READY_FOR_ACCEPTANCE`.
+- Hosted QA #138 exposed a brittle mutable-comment Vercel readiness check. Native commit status confirms the exact frontend-impacting SHA `31e9ac67936ae8328e920934dd1f9885c4caa8fe` deployed successfully.
+- Hosted QA #139 then proved commit-aware readiness works, but it selected a mutable branch Preview URL from the latest Vercel comment. That target redirected the admin account from `/admin-qa` to the dashboard even though the exact frontend SHA contains the `/admin-qa` route. Four other hosted tests passed before the serial Admin QA suite stopped.
+- Failure classification: GREEN workflow/test-environment targeting defect. Hosted QA now uses the configured canonical `QA_BASE_URL` (or an explicit manual-dispatch override) as the browser target while still requiring successful Vercel status for the exact latest frontend-impacting PR SHA. This preserves deployment freshness without switching acceptance onto a mutable/stale branch alias.
+- Full Hosted QA must execute successfully on the corrected acceptance head before COMPLETE is restored.
 - CP6 Issue #14 remains authorized next after Dev Loop v2 acceptance and integration.
 - Phase 3 remains unauthorized.
 
@@ -54,5 +56,5 @@ Implement and validate:
 
 1. Let native CI and Hosted QA execute on this `READY_FOR_ACCEPTANCE` head.
 2. Require the actual Hosted QA `hosted-smoke` job to pass; a skipped heavy job is not acceptance.
-3. If required evidence is green, set `ACCEPTED_CODE_SHA` to this acceptance head, restore `STATUS: COMPLETE`, close Issue #15, and require Merge Gate to pass on the final documentation-only head.
+3. If required evidence is green, set `ACCEPTED_CODE_SHA` to this corrected acceptance head, restore `STATUS: COMPLETE`, close Issue #15, and require Merge Gate to pass on the final documentation-only head.
 4. Do not merge automatically.
