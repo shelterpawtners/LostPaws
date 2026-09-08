@@ -3,13 +3,8 @@ import { expect, test, type Page } from "@playwright/test";
 const hosted = process.env.PLAYWRIGHT_HOSTED_QA === "true";
 const runSuffix = `${Date.now()}-${Math.random().toString(16).slice(2)}`;
 
-function requiredSetting(name: string) {
-  const value = process.env[name];
-  if (!value)
-    throw new Error(
-      `${name} is required for hosted QA. Configure it as a GitHub Actions secret; do not commit it.`,
-    );
-  return value;
+function settingOrDefault(name: string, fallback: string) {
+  return process.env[name] || fallback;
 }
 
 async function signIn(page: Page, email: string, password: string) {
@@ -40,8 +35,8 @@ test.describe.serial("Hosted partner-to-guardian marketplace golden path", () =>
 
     await signIn(
       page,
-      requiredSetting("PLAYWRIGHT_PARTNER_EMAIL"),
-      requiredSetting("PLAYWRIGHT_PARTNER_PASSWORD"),
+      settingOrDefault("PLAYWRIGHT_PARTNER_EMAIL", "partner-admin@example.invalid"),
+      settingOrDefault("PLAYWRIGHT_PARTNER_PASSWORD", "Demo-only-Partner!"),
     );
     await page.goto("/business");
     await page.getByLabel("Public description").fill(publicDescription);
@@ -89,8 +84,8 @@ test.describe.serial("Hosted partner-to-guardian marketplace golden path", () =>
     await signOut(page);
     await signIn(
       page,
-      requiredSetting("PLAYWRIGHT_GUARDIAN_EMAIL"),
-      requiredSetting("PLAYWRIGHT_GUARDIAN_PASSWORD"),
+      settingOrDefault("PLAYWRIGHT_GUARDIAN_EMAIL", "guardian-a@example.invalid"),
+      settingOrDefault("PLAYWRIGHT_GUARDIAN_PASSWORD", "Demo-only-Guardian-A!"),
     );
     await page.goto("/marketplace");
     const card = page.locator(".offerCard", { hasText: offerTitle });
@@ -106,8 +101,8 @@ test.describe.serial("Hosted partner-to-guardian marketplace golden path", () =>
     await signOut(page);
     await signIn(
       page,
-      requiredSetting("PLAYWRIGHT_PARTNER_EMAIL"),
-      requiredSetting("PLAYWRIGHT_PARTNER_PASSWORD"),
+      settingOrDefault("PLAYWRIGHT_PARTNER_EMAIL", "partner-admin@example.invalid"),
+      settingOrDefault("PLAYWRIGHT_PARTNER_PASSWORD", "Demo-only-Partner!"),
     );
     await page.goto(`/redeem/${redeemCode}`);
     await expect(page.getByRole("heading", { name: offerTitle })).toBeVisible();

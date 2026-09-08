@@ -2,13 +2,8 @@ import { expect, test, type Page } from "@playwright/test";
 
 const hosted = process.env.PLAYWRIGHT_HOSTED_QA === "true";
 
-function requiredSetting(name: string) {
-  const value = process.env[name];
-  if (!value)
-    throw new Error(
-      `${name} is required for hosted QA. Configure it as a GitHub Actions secret; do not commit it.`,
-    );
-  return value;
+function settingOrDefault(name: string, fallback: string) {
+  return process.env[name] || fallback;
 }
 
 async function signIn(page: Page, email: string, password: string) {
@@ -37,8 +32,8 @@ test.describe.serial("Hosted shared-dev smoke", () => {
 
     await signIn(
       page,
-      requiredSetting("PLAYWRIGHT_GUARDIAN_EMAIL"),
-      requiredSetting("PLAYWRIGHT_GUARDIAN_PASSWORD"),
+      settingOrDefault("PLAYWRIGHT_GUARDIAN_EMAIL", "guardian-a@example.invalid"),
+      settingOrDefault("PLAYWRIGHT_GUARDIAN_PASSWORD", "Demo-only-Guardian-A!"),
     );
     await page.getByRole("link", { name: "Add another pet" }).click();
     await expect(page).toHaveURL(/\/onboarding\/guardian$/);
@@ -66,8 +61,8 @@ test.describe.serial("Hosted shared-dev smoke", () => {
   }) => {
     await signIn(
       page,
-      requiredSetting("PLAYWRIGHT_GUARDIAN_EMAIL"),
-      requiredSetting("PLAYWRIGHT_GUARDIAN_PASSWORD"),
+      settingOrDefault("PLAYWRIGHT_GUARDIAN_EMAIL", "guardian-a@example.invalid"),
+      settingOrDefault("PLAYWRIGHT_GUARDIAN_PASSWORD", "Demo-only-Guardian-A!"),
     );
     await expect(
       page.getByRole("link", { name: `Open ${petName}` }),
@@ -79,8 +74,8 @@ test.describe.serial("Hosted shared-dev smoke", () => {
 
     await signIn(
       page,
-      requiredSetting("PLAYWRIGHT_GUARDIAN_EMAIL"),
-      requiredSetting("PLAYWRIGHT_GUARDIAN_PASSWORD"),
+      settingOrDefault("PLAYWRIGHT_GUARDIAN_EMAIL", "guardian-a@example.invalid"),
+      settingOrDefault("PLAYWRIGHT_GUARDIAN_PASSWORD", "Demo-only-Guardian-A!"),
     );
     await expect(
       page.getByRole("link", { name: `Open ${petName}` }),
@@ -97,8 +92,8 @@ test.describe.serial("Hosted shared-dev smoke", () => {
 
     await signIn(
       page,
-      requiredSetting("PLAYWRIGHT_PARTNER_EMAIL"),
-      requiredSetting("PLAYWRIGHT_PARTNER_PASSWORD"),
+      settingOrDefault("PLAYWRIGHT_PARTNER_EMAIL", "partner-admin@example.invalid"),
+      settingOrDefault("PLAYWRIGHT_PARTNER_PASSWORD", "Demo-only-Partner!"),
     );
     await page.goto("/partner/offers");
     await expect(

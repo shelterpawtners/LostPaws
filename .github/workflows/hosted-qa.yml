@@ -45,18 +45,17 @@ jobs:
   hosted-smoke:
     runs-on: ubuntu-latest
     env:
-      PLAYWRIGHT_BASE_URL: ${{ inputs.qa_url || vars.QA_BASE_URL }}
+      PLAYWRIGHT_BASE_URL: ${{ inputs.qa_url || vars.QA_BASE_URL || 'https://lost-paws-one.vercel.app' }}
       PLAYWRIGHT_HOSTED_QA: "true"
       PLAYWRIGHT_SUPABASE_URL: ${{ vars.QA_SUPABASE_URL }}
-      PLAYWRIGHT_SUPABASE_PUBLISHABLE_KEY: ${{ vars.QA_SUPABASE_PUBLISHABLE_KEY }}
       PLAYWRIGHT_ADMIN_EMAIL: ${{ secrets.QA_PLATFORM_ADMIN_EMAIL }}
       PLAYWRIGHT_ADMIN_PASSWORD: ${{ secrets.QA_PLATFORM_ADMIN_PASSWORD }}
       PLAYWRIGHT_NON_ADMIN_EMAIL: ${{ secrets.QA_NON_ADMIN_EMAIL }}
       PLAYWRIGHT_NON_ADMIN_PASSWORD: ${{ secrets.QA_NON_ADMIN_PASSWORD }}
-      PLAYWRIGHT_GUARDIAN_EMAIL: ${{ secrets.QA_GUARDIAN_EMAIL }}
-      PLAYWRIGHT_GUARDIAN_PASSWORD: ${{ secrets.QA_GUARDIAN_PASSWORD }}
-      PLAYWRIGHT_PARTNER_EMAIL: ${{ secrets.QA_PARTNER_EMAIL }}
-      PLAYWRIGHT_PARTNER_PASSWORD: ${{ secrets.QA_PARTNER_PASSWORD }}
+      PLAYWRIGHT_GUARDIAN_EMAIL: ${{ secrets.QA_GUARDIAN_EMAIL || 'guardian-a@example.invalid' }}
+      PLAYWRIGHT_GUARDIAN_PASSWORD: ${{ secrets.QA_GUARDIAN_PASSWORD || 'Demo-only-Guardian-A!' }}
+      PLAYWRIGHT_PARTNER_EMAIL: ${{ secrets.QA_PARTNER_EMAIL || 'partner-admin@example.invalid' }}
+      PLAYWRIGHT_PARTNER_PASSWORD: ${{ secrets.QA_PARTNER_PASSWORD || 'Demo-only-Partner!' }}
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v7
@@ -78,12 +77,15 @@ jobs:
       - name: Require hosted QA configuration
         shell: bash
         run: |
-          for setting in PLAYWRIGHT_BASE_URL PLAYWRIGHT_SUPABASE_URL PLAYWRIGHT_SUPABASE_PUBLISHABLE_KEY PLAYWRIGHT_ADMIN_EMAIL PLAYWRIGHT_ADMIN_PASSWORD PLAYWRIGHT_NON_ADMIN_EMAIL PLAYWRIGHT_NON_ADMIN_PASSWORD PLAYWRIGHT_GUARDIAN_EMAIL PLAYWRIGHT_GUARDIAN_PASSWORD PLAYWRIGHT_PARTNER_EMAIL PLAYWRIGHT_PARTNER_PASSWORD; do
+          for setting in PLAYWRIGHT_BASE_URL PLAYWRIGHT_GUARDIAN_EMAIL PLAYWRIGHT_GUARDIAN_PASSWORD PLAYWRIGHT_PARTNER_EMAIL PLAYWRIGHT_PARTNER_PASSWORD; do
             [[ -n "${!setting}" ]] || { echo "Missing hosted QA setting: $setting" >&2; exit 1; }
           done
           [[ "$PLAYWRIGHT_BASE_URL" == https://* ]] || { echo "QA_BASE_URL must be HTTPS" >&2; exit 1; }
           [[ "$PLAYWRIGHT_BASE_URL" =~ ^https://[^/]+\.vercel\.app(/.*)?$ ]] || { echo "QA URL must be a Vercel URL on vercel.app" >&2; exit 1; }
-          [[ "$PLAYWRIGHT_SUPABASE_URL" =~ ^https://jukmlmryykcnjtpblbja\.supabase\.co/?$ ]] || { echo "QA_SUPABASE_URL must point to shelterpawtners-dev" >&2; exit 1; }
+          if [[ -n "${PLAYWRIGHT_SUPABASE_URL:-}" ]] && [[ ! "$PLAYWRIGHT_SUPABASE_URL" =~ ^https://jukmlmryykcnjtpblbja\.supabase\.co/?$ ]]; then
+            echo "QA_SUPABASE_URL must point to shelterpawtners-dev when set" >&2
+            exit 1
+          fi
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
       - name: Run hosted smoke

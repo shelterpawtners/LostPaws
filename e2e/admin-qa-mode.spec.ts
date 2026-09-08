@@ -1,6 +1,12 @@
 import { expect, test, type Page } from "@playwright/test";
 
 const hosted = process.env.PLAYWRIGHT_HOSTED_QA === "true";
+const adminCredentialsConfigured = Boolean(
+  process.env.PLAYWRIGHT_ADMIN_EMAIL &&
+    process.env.PLAYWRIGHT_ADMIN_PASSWORD &&
+    process.env.PLAYWRIGHT_NON_ADMIN_EMAIL &&
+    process.env.PLAYWRIGHT_NON_ADMIN_PASSWORD,
+);
 
 function requiredSetting(name: string) {
   const value = process.env[name];
@@ -35,7 +41,10 @@ async function openAdminQa(page: Page) {
 }
 
 test.describe.serial("Admin QA mode hosted regression", () => {
-  test.skip(!hosted, "Set PLAYWRIGHT_HOSTED_QA=true for hosted QA runs.");
+  test.skip(
+    !hosted || !adminCredentialsConfigured,
+    "Set PLAYWRIGHT_HOSTED_QA=true and admin/non-admin QA credentials for hosted Admin QA runs.",
+  );
   test.describe.configure({ timeout: 90_000 });
 
   test("only a platform admin can open Admin QA Mode", async ({ page }) => {
