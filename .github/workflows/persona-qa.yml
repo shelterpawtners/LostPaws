@@ -20,19 +20,16 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - uses: supabase/setup-cli@v1
-        with:
-          version: 2.117.0
       - name: Start local Supabase
-        run: supabase start
+        run: npx --yes supabase@2.117.0 start
       - name: Reset and seed local database
-        run: supabase db reset
+        run: npx --yes supabase@2.117.0 db reset
       - name: Run pgTAP database tests
-        run: supabase test db
+        run: npx --yes supabase@2.117.0 test db
       - name: Export local Supabase browser settings
         shell: bash
         run: |
-          supabase status -o env > supabase.env
+          npx --yes supabase@2.117.0 status -o env > supabase.env
           set -a
           source supabase.env
           set +a
