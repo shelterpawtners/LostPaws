@@ -1,30 +1,28 @@
 # AI Handoff
 
-STATUS: READY_FOR_ACCEPTANCE
+STATUS: COMPLETE
 CURRENT_PHASE: Phase 2 — Partner Marketplace MVP
 CURRENT_CHECKPOINT: Dev Loop v2 bootstrap — Issue #15
-NEXT_CHECKPOINT: Complete and integrate Dev Loop v2; then launch CP6 Issue #14 from a fresh `phase2/cp6-impact-giving` branch
+NEXT_CHECKPOINT: Manually integrate accepted PR #16; then begin CP6 Issue #14 from fresh `phase2/cp6-impact-giving`
 OWNER_DECISION_REQUIRED: NO
 SAFE_TO_CONTINUE: YES
-ACCEPTED_CODE_SHA: NONE
+ACCEPTED_CODE_SHA: 7d3f69782da7365400fbce639837b692b37c995c
 
 ## Current state
 
 - PR #2 is merged into `build/festival-mvp` at merge commit `e248f8b3ae754da7faccf41ebe2c0a4bb3857f27`.
-- Active work branch: `ops/dev-loop-v2`.
-- Active Issue: #15.
-- The deterministic formatting defect is fixed.
-- The acceptance-state sequencing defect is fixed: real Hosted QA now runs only from `READY_FOR_ACCEPTANCE`.
-- Hosted QA #138 exposed a brittle mutable-comment Vercel readiness check. Native commit status confirms the exact frontend-impacting SHA `31e9ac67936ae8328e920934dd1f9885c4caa8fe` deployed successfully.
-- Hosted QA #139 then proved commit-aware readiness works, but it selected a mutable branch Preview URL from the latest Vercel comment. That target redirected the admin account from `/admin-qa` to the dashboard even though the exact frontend SHA contains the `/admin-qa` route. Four other hosted tests passed before the serial Admin QA suite stopped.
-- Failure classification: GREEN workflow/test-environment targeting defect. Hosted QA now uses the configured canonical `QA_BASE_URL` (or an explicit manual-dispatch override) as the browser target while still requiring successful Vercel status for the exact latest frontend-impacting PR SHA. This preserves deployment freshness without switching acceptance onto a mutable/stale branch alias.
-- Full Hosted QA must execute successfully on the corrected acceptance head before COMPLETE is restored.
-- CP6 Issue #14 remains authorized next after Dev Loop v2 acceptance and integration.
+- Dev Loop v2 branch: `ops/dev-loop-v2`; active PR #16.
+- Issue #15 completion contract is satisfied at accepted code SHA `7d3f69782da7365400fbce639837b692b37c995c`.
+- Exact native evidence on the accepted SHA: CI #244 PASS; Database QA #9 PASS; Persona QA #74 PASS; Hosted QA #140 PASS with actual `hosted-smoke` SUCCESS; Merge Gate #10 PASS at the acceptance boundary; Dependency Review #9 PASS; AI Ops Status #10 PASS.
+- Two GREEN Hosted QA control-plane defects were corrected during acceptance: mutable Vercel-comment readiness was replaced by exact frontend-commit Vercel status, and the browser target was restored to canonical `QA_BASE_URL` rather than a mutable branch Preview alias.
+- No application, RLS, security, product, production, paid-infrastructure, or RED decision blocker remains for Dev Loop v2.
+- PR #16 is ready for manual integration into `build/festival-mvp`; auto-merge remains prohibited.
+- CP6 Issue #14 is the next already-authorized Phase 2 checkpoint after integration.
 - Phase 3 remains unauthorized.
 
-## Dev Loop v2 scope
+## Dev Loop v2 delivered scope
 
-Implement and validate:
+Accepted:
 
 - one change-impact classifier;
 - change-aware CI;
@@ -43,8 +41,7 @@ Implement and validate:
 - No automatic coding-agent invocation.
 - No automatic AI review.
 - Native GitHub Actions/scripts own deterministic validation/status.
-- One primary coding agent per bounded checkpoint by default.
-- No CP6 product work in this bootstrap branch.
+- No CP6 product work belongs in the bootstrap branch.
 
 ## RED boundaries
 
@@ -52,9 +49,10 @@ Implement and validate:
 - `OD-004` remains blocking only for provider-dependent charitable-money movement/settlement/integration.
 - No production/DNS, paid infrastructure, destructive migration, auto-merge, or Phase 3.
 
-## Acceptance action
+## Next action
 
-1. Let native CI and Hosted QA execute on this `READY_FOR_ACCEPTANCE` head.
-2. Require the actual Hosted QA `hosted-smoke` job to pass; a skipped heavy job is not acceptance.
-3. If required evidence is green, set `ACCEPTED_CODE_SHA` to this corrected acceptance head, restore `STATUS: COMPLETE`, close Issue #15, and require Merge Gate to pass on the final documentation-only head.
-4. Do not merge automatically.
+1. Manually merge accepted PR #16 into `build/festival-mvp` without changing accepted implementation.
+2. Create `phase2/cp6-impact-giving` from the updated `build/festival-mvp`.
+3. Open one bounded CP6 PR for Issue #14 and move `<!-- ai-active-build-pr -->` to it.
+4. Set the handoff to `IN_PROGRESS`, `OWNER_DECISION_REQUIRED: NO`, `SAFE_TO_CONTINUE: YES`, `ACCEPTED_CODE_SHA: NONE`.
+5. Implement the provider-agnostic CP6 impact/reputation/giving foundation only; stop before provider-dependent production money movement or any unresolved RED decision.

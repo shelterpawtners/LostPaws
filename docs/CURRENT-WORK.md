@@ -25,17 +25,25 @@ Accepted Phase 2 status:
 
 CP5 evidence remains recorded in the handoff/progress history and Issue #13 is closed.
 
-## Active work
+## Dev Loop v2 bootstrap
 
-**Issue #15 — Dev Loop v2 bootstrap** is at `READY_FOR_ACCEPTANCE` on branch `ops/dev-loop-v2`.
+**Issue #15 — Dev Loop v2 bootstrap** is COMPLETE at accepted code SHA `7d3f69782da7365400fbce639837b692b37c995c`.
 
-The implementation and deterministic formatting fix are complete. The remaining acceptance requirement is to execute the actual heavy Hosted QA `hosted-smoke` job at the acceptance boundary; earlier wrapper workflow success with that job skipped does not satisfy the Merge Gate contract.
+Accepted native evidence:
 
-Do not add CP6 feature behavior to this bootstrap PR.
+- CI #244 PASS;
+- Database QA #9 PASS;
+- Persona QA #74 PASS;
+- Hosted QA #140 PASS with actual `hosted-smoke` job SUCCESS;
+- Merge Gate #10 PASS at the acceptance boundary;
+- Dependency Review #9 PASS;
+- AI Ops Status #10 PASS.
+
+PR #16 remains open only for manual integration because auto-merge is prohibited. No engineering or owner-decision blocker remains for this bootstrap.
 
 ## Next product checkpoint
 
-After Dev Loop v2 is accepted and manually integrated:
+After PR #16 is manually integrated:
 
 1. create `phase2/cp6-impact-giving` from the updated `build/festival-mvp`;
 2. open one bounded CP6 PR for Issue #14;
@@ -51,7 +59,6 @@ Use `docs/DEV-LOOP-V2.md` as the current development process.
 Key rules:
 
 - one Issue → one short branch → one bounded PR → acceptance → merge;
-- one primary coding agent per bounded code path;
 - GitHub Actions/scripts own deterministic work;
 - AI credits are reserved for implementation/reasoning;
 - Database QA runs during relevant DB implementation changes;
