@@ -7,7 +7,7 @@ on:
       - ".github/workflows/devloop-format-once.yml"
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   format:
@@ -17,23 +17,20 @@ jobs:
       - uses: actions/checkout@v7
         with:
           ref: ${{ github.event.pull_request.head.ref }}
-          fetch-depth: 0
       - uses: actions/setup-node@v7
         with:
           node-version: 22
           cache: npm
       - run: npm ci
-      - name: Format bootstrap files and remove this one-shot workflow
-        run: |
-          npx prettier --write docs/AI-COST-AND-TESTING-GOVERNANCE.md docs/CURRENT-WORK.md CLAUDE.md .github/workflows/ai-ops-status.yml
-          git rm .github/workflows/devloop-format-once.yml
-      - name: Commit formatting if needed
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A
-          if git diff --cached --quiet; then
-            exit 0
-          fi
-          git commit -m "Format Dev Loop v2 bootstrap"
-          git push origin HEAD:${{ github.event.pull_request.head.ref }}
+      - name: Format bootstrap files
+        run: npx prettier --write docs/AI-COST-AND-TESTING-GOVERNANCE.md docs/CURRENT-WORK.md CLAUDE.md .github/workflows/ai-ops-status.yml
+      - name: Upload exact formatted files
+        uses: actions/upload-artifact@v6
+        with:
+          name: devloop-formatted-files
+          path: |
+            docs/AI-COST-AND-TESTING-GOVERNANCE.md
+            docs/CURRENT-WORK.md
+            CLAUDE.md
+            .github/workflows/ai-ops-status.yml
+          if-no-files-found: error
