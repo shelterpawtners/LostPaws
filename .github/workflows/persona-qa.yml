@@ -2,8 +2,7 @@ name: Persona QA
 
 on:
   workflow_dispatch:
-  pull_request:
-    branches: [build/festival-mvp]
+  push:
     paths:
       - "supabase/**"
       - "e2e/guardian-dashboard.spec.ts"
@@ -16,7 +15,7 @@ on:
       - "package-lock.json"
 
 concurrency:
-  group: persona-qa-${{ github.event.pull_request.number || github.ref }}
+  group: persona-qa-${{ github.ref }}
   cancel-in-progress: true
 
 permissions:
