@@ -1,0 +1,52 @@
+name: Hosted QA
+
+on:
+  workflow_dispatch:
+    inputs:
+      qa_url:
+        description: Vercel Preview HTTPS URL (defaults to the QA_BASE_URL repository variable)
+        required: false
+        type: string
+      full_browser_audit:
+        description: Run the broader Issue #5 browser suite
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+
+jobs:
+  hosted-smoke:
+    runs-on: ubuntu-latest
+    env:
+      PLAYWRIGHT_BASE_URL: ${{ inputs.qa_url || vars.QA_BASE_URL }}
+      PLAYWRIGHT_HOSTED_QA: "true"
+      PLAYWRIGHT_SUPABASE_URL: ${{ vars.QA_SUPABASE_URL }}
+      PLAYWRIGHT_SUPABASE_PUBLISHABLE_KEY: ${{ vars.QA_SUPABASE_PUBLISHABLE_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Require an HTTPS QA target and public Supabase settings
+        shell: bash
+        run: |
+          [[ "$PLAYWRIGHT_BASE_URL" == https://* ]] || { echo "Set qa_url or QA_BASE_URL to the Vercel Preview HTTPS URL" >&2; exit 1; }
+          [[ -n "$PLAYWRIGHT_SUPABASE_URL" ]] || { echo "Set QA_SUPABASE_URL" >&2; exit 1; }
+          [[ -n "$PLAYWRIGHT_SUPABASE_PUBLISHABLE_KEY" ]] || { echo "Set QA_SUPABASE_PUBLISHABLE_KEY" >&2; exit 1; }
+      - run: npx playwright install --with-deps chromium
+      - name: Run hosted smoke
+        run: npm run test:e2e:hosted
+      - name: Run Issue 5 browser audit
+        if: ${{ inputs.full_browser_audit }}
+        run: npx playwright test e2e/phase-1-accessibility.spec.ts e2e/phase-1-auth.spec.ts e2e/guardian-dashboard.spec.ts e2e/persona-access-isolation.spec.ts e2e/persona-registration.spec.ts e2e/phase-2-partner-onboarding.spec.ts e2e/phase-2-offer-redemption.spec.ts
+      - name: Upload Playwright failure evidence
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: hosted-playwright-results
+          path: test-results/
+          if-no-files-found: ignore

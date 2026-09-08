@@ -78,6 +78,10 @@ The local flow supports exact-version Guardian claims, opaque PII-free codes, Pa
 
 Checkpoint 5 must not begin until the redemption UX is reviewed and approval is recorded.
 
+### Shared QA preview
+
+GitHub Issue #6 adds branch-scoped Vercel Preview configuration, SPA refresh routing, deterministic shared-dev seeding guidance, and hosted Playwright smoke/audit entry points. The preview is limited to `shelterpawtners-dev`; production hosting, DNS, Supabase, and credentials remain untouched. See `docs/HOSTED-QA.md`.
+
 ## User-involvement policy
 
 Automate routine engineering, QA, documentation, and implementation decisions. Escalate to the user only when a decision materially affects:

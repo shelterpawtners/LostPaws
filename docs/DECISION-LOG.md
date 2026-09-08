@@ -235,3 +235,10 @@ This is the canonical review list for implementation choices and explicit user-a
 - **Decision:** The Guardian dashboard resolves every pet through the signed-in user's active, non-ended guardianships. Existing pets open a read-only current-scope detail route, while creating another pet remains a separate explicit action.
 - **Reason:** A permanent static setup prompt concealed saved pets and could send an existing Guardian back through create-new onboarding.
 - **Consequence:** Empty and populated Guardian states are now distinct, multiple pets remain first-class, and no full Phase 3 editing, transfer, co-guardian, lifecycle, or Passport expansion is implied.
+
+## D-035 — Shared-development preview isolation
+
+- **Status:** Active; user-directed Issue #6 QA infrastructure
+- **Decision:** Human QA uses branch-scoped Vercel Preview deployments connected only to `shelterpawtners-dev` through the project URL and publishable client key. Deterministic shared data comes from the idempotent committed seed; hosted browser tests never receive privileged Supabase credentials.
+- **Reason:** Reviewers need a normal HTTPS surface without local Docker while production hosting, DNS, data, and credentials remain separately gated.
+- **Consequence:** Preview success is evidence for review, not production promotion. Shared Auth rate limits make seeded identities the stable automation path; disposable hosted-test pets are clearly prefixed and administrative cleanup remains deliberate.

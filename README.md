@@ -29,6 +29,8 @@ npm run build
 
 Development work is limited to `shelterpawtners-dev`. Production connection, project creation, DNS changes, and deployment require explicit user instruction.
 
+Human QA can use the branch-scoped Vercel Preview described in [Hosted shared-development QA](docs/HOSTED-QA.md). It uses only the shared development Supabase URL and publishable key; production remains untouched.
+
 ## Architecture
 
 The frontend uses React, TypeScript, and Vite with a small custom CSS design system. Supabase provides PostgreSQL, authentication, storage, RLS, and APIs. Edge Functions will be added only for privileged workflows such as external adoption confirmation and email delivery. See [Architecture](docs/ARCHITECTURE.md) and [Security and privacy](docs/SECURITY-AND-PRIVACY.md).

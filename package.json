@@ -9,6 +9,7 @@
     "preview": "vite preview",
     "test": "vitest run --exclude=\"e2e/**\"",
     "test:e2e": "playwright test",
+    "test:e2e:hosted": "playwright test e2e/hosted-qa-smoke.spec.ts",
     "lint": "prettier --check src docs README.md AGENTS.md",
     "typecheck": "tsc -b --pretty false",
     "check": "npm run lint && npm run typecheck && npm test"
