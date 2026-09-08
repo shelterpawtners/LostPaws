@@ -43,11 +43,9 @@ Resolution:
 
 ## Current decisions
 
-No provisional owner decisions are currently required by this framework.
-
 ### OD-001 — Phase 2 Checkpoint 5 authorization
 
-Status: BLOCKING
+Status: RESOLVED
 Category: PRODUCT
 Introduced by: ChatGPT
 Date: 2026-09-08
@@ -57,16 +55,16 @@ Question:
 May agents begin Phase 2 Checkpoint 5 under the autonomous execution policy?
 
 Provisional assumption:
-N/A. Existing product-owner instruction explicitly requires authorization before starting Checkpoint 5.
+N/A. Existing product-owner instruction required authorization before starting Checkpoint 5.
 
 Why safe to defer:
-Agents may continue all currently authorized Issue #11 implementation, debugging, regression, and acceptance work. They must stop before Checkpoint 5.
+The gate remained blocking until explicit product-owner authorization.
 
 Affected areas:
 Phase 2 roadmap/progression only.
 
 Resolution:
-PENDING
+APPROVED 2026-09-08. Jim explicitly authorized autonomous completion of the remainder of Phase 2 under `docs/AUTONOMOUS-EXECUTION-POLICY.md`. Agents may advance checkpoint-to-checkpoint through the remaining Phase 2 work without seeking routine approval, but all RED gates, production restrictions, no-auto-merge policy, and the Phase 3 gate remain in force.
 
 ### OD-002 — Phase 3 authorization
 
@@ -83,7 +81,7 @@ Provisional assumption:
 N/A. Existing product-owner instruction explicitly requires authorization before starting Phase 3.
 
 Why safe to defer:
-Agents can complete and validate authorized Phase 2 work first. They must stop before Phase 3.
+Agents can complete and validate all authorized Phase 2 work first. They must stop before Phase 3.
 
 Affected areas:
 Phase 3 roadmap/progression only.
