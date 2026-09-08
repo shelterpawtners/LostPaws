@@ -1,7 +1,8 @@
 name: Hosted QA
 
 on:
-  push:
+  pull_request:
+    branches: [build/festival-mvp]
     paths:
       - "src/**"
       - "public/**"
@@ -28,7 +29,7 @@ on:
         type: boolean
 
 concurrency:
-  group: hosted-qa-${{ github.ref }}
+  group: hosted-qa-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 permissions:
@@ -60,7 +61,7 @@ jobs:
           owner=$(sed -n 's/^OWNER_DECISION_REQUIRED:[[:space:]]*//p' docs/AI-HANDOFF.md | head -n 1)
 
           prs=$(gh api "repos/${REPO}/pulls?state=open&base=build/festival-mvp&per_page=100")
-          pr_number=$(jq -r --arg branch "${GITHUB_REF_NAME}" --arg marker "${ACTIVE_MARKER}" \
+          pr_number=$(jq -r --arg branch "${GITHUB_HEAD_REF:-${GITHUB_REF_NAME}}" --arg marker "${ACTIVE_MARKER}" \
             '[.[] | select(.head.ref == $branch) | select((.body // "") | contains($marker))] | if length == 1 then .[0].number else empty end' <<<"${prs}")
           echo "pr_number=${pr_number}" >> "$GITHUB_OUTPUT"
 
