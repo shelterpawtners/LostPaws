@@ -61,13 +61,11 @@ export function clearActingSupabase() {
   actingSupabase = null;
   window.dispatchEvent(new Event("sp-qa-changed"));
 }
-export async function startActingSupabase(
-  email: string,
-  tokenHash: string,
-): Promise<Session> {
+export async function startActingSupabase(tokenHash: string): Promise<Session> {
   const client = createActingClient();
+  // generateLink() returns a token hash. Supabase Auth's token-hash flow must
+  // provide only token_hash + type; combining email with token_hash is rejected.
   const { data, error } = await client.auth.verifyOtp({
-    email,
     token_hash: tokenHash,
     type: "email",
   });
