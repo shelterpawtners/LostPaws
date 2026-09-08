@@ -1,15 +1,18 @@
 name: Hosted QA
 
 on:
-  pull_request:
-    branches: [build/festival-mvp]
+  push:
     paths:
       - "src/**"
+      - "public/**"
       - "e2e/**"
       - ".github/workflows/hosted-qa.yml"
       - "playwright.config.ts"
       - "package.json"
       - "package-lock.json"
+      - "index.html"
+      - "vite.config.ts"
+      - "tsconfig*.json"
       - "supabase/**"
       - "docs/AI-HANDOFF.md"
   workflow_dispatch:
@@ -25,7 +28,7 @@ on:
         type: boolean
 
 concurrency:
-  group: hosted-qa-${{ github.event.pull_request.number || github.ref }}
+  group: hosted-qa-${{ github.ref }}
   cancel-in-progress: true
 
 permissions:
@@ -38,10 +41,17 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       run_hosted: ${{ steps.gate.outputs.run_hosted }}
+      pr_number: ${{ steps.gate.outputs.pr_number }}
     steps:
       - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
       - id: gate
-        name: Run heavy hosted QA only at acceptance boundary
+        name: Run heavy hosted QA only at active acceptance boundary
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          ACTIVE_MARKER: "<!-- ai-active-build-pr -->"
         shell: bash
         run: |
           set -euo pipefail
@@ -49,17 +59,36 @@ jobs:
           safe=$(sed -n 's/^SAFE_TO_CONTINUE:[[:space:]]*//p' docs/AI-HANDOFF.md | head -n 1)
           owner=$(sed -n 's/^OWNER_DECISION_REQUIRED:[[:space:]]*//p' docs/AI-HANDOFF.md | head -n 1)
 
-          if [[ "${safe}" == "YES" && "${owner}" == "NO" && ( "${status}" == "READY_FOR_ACCEPTANCE" || "${status}" == "COMPLETE" ) ]]; then
+          prs=$(gh api "repos/${REPO}/pulls?state=open&base=build/festival-mvp&per_page=100")
+          pr_number=$(jq -r --arg branch "${GITHUB_REF_NAME}" --arg marker "${ACTIVE_MARKER}" \
+            '[.[] | select(.head.ref == $branch) | select((.body // "") | contains($marker))] | if length == 1 then .[0].number else empty end' <<<"${prs}")
+          echo "pr_number=${pr_number}" >> "$GITHUB_OUTPUT"
+
+          if [[ "${GITHUB_EVENT_NAME}" == "workflow_dispatch" ]]; then
             echo "run_hosted=true" >> "$GITHUB_OUTPUT"
-            echo "Checkpoint is at an acceptance boundary; run hosted QA."
+            echo "Manual Hosted QA requested."
+            exit 0
+          fi
+
+          if [[ -z "${pr_number}" ]]; then
+            echo "run_hosted=false" >> "$GITHUB_OUTPUT"
+            echo "This branch is not the single active build PR; skip hosted QA."
+            exit 0
+          fi
+
+          # Automatic full browser acceptance is run exactly when a checkpoint
+          # is READY. COMPLETE is documentary state and must not repeat the suite.
+          if [[ "${safe}" == "YES" && "${owner}" == "NO" && "${status}" == "READY_FOR_ACCEPTANCE" ]]; then
+            echo "run_hosted=true" >> "$GITHUB_OUTPUT"
+            echo "Active checkpoint is READY_FOR_ACCEPTANCE; run hosted QA."
           else
             echo "run_hosted=false" >> "$GITHUB_OUTPUT"
-            echo "Checkpoint is ${status:-unknown}; skip heavy hosted browser QA for this intermediate commit."
+            echo "Checkpoint is ${status:-unknown}; skip heavy hosted browser QA."
           fi
 
   hosted-smoke:
     needs: acceptance-gate
-    if: needs.acceptance-gate.outputs.run_hosted == 'true' || github.event_name == 'workflow_dispatch'
+    if: needs.acceptance-gate.outputs.run_hosted == 'true'
     runs-on: ubuntu-latest
     env:
       PLAYWRIGHT_BASE_URL: ${{ inputs.qa_url || vars.QA_BASE_URL || 'https://lost-paws-one.vercel.app' }}
@@ -75,7 +104,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7
         with:
-          fetch-depth: 2
+          fetch-depth: 0
       - uses: actions/setup-node@v7
         with:
           node-version: 22
@@ -113,21 +142,27 @@ jobs:
             echo "QA_SUPABASE_URL must point to shelterpawtners-dev" >&2
             exit 1
           }
-      - name: Wait for this acceptance SHA to be Ready on Vercel
-        if: github.event_name == 'pull_request'
+      - name: Wait for latest frontend-impacting SHA to be Ready on Vercel
+        if: needs.acceptance-gate.outputs.pr_number != ''
         env:
           GH_TOKEN: ${{ github.token }}
           REPO: ${{ github.repository }}
-          PR_NUMBER: ${{ github.event.pull_request.number }}
-          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          PR_NUMBER: ${{ needs.acceptance-gate.outputs.pr_number }}
           QA_URL: ${{ vars.QA_BASE_URL }}
         shell: bash
         run: |
           set -euo pipefail
 
-          commit_time=$(gh api "repos/${REPO}/commits/${HEAD_SHA}" --jq '.commit.committer.date')
+          frontend_sha=$(git log -1 --format=%H -- \
+            src public index.html package.json package-lock.json vite.config.ts tsconfig.json tsconfig.app.json tsconfig.node.json || true)
+          if [[ -z "${frontend_sha}" ]]; then
+            echo "No frontend-impacting commit found; use the existing QA deployment."
+            exit 0
+          fi
+
+          commit_time=$(gh api "repos/${REPO}/commits/${frontend_sha}" --jq '.commit.committer.date')
           qa_url=${QA_URL%/}
-          echo "Waiting for Vercel to report Ready for acceptance SHA ${HEAD_SHA}."
+          echo "Waiting for Vercel Ready state at or after frontend SHA ${frontend_sha}."
 
           for attempt in $(seq 1 30); do
             comments=$(gh api "repos/${REPO}/issues/${PR_NUMBER}/comments?per_page=100" --paginate)
@@ -135,14 +170,14 @@ jobs:
               '[.[] | select(.user.login == "vercel[bot]") | select(.updated_at >= $commit_time) | select(.body | contains("Ready")) | select(.body | contains($qa_url))] | length' \
               <<<"${comments}")
             if [[ "${ready}" -gt 0 ]]; then
-              echo "Vercel reports the exact acceptance-boundary deployment Ready."
+              echo "Vercel reports the latest frontend-impacting deployment Ready."
               exit 0
             fi
             echo "Vercel deployment not Ready yet (attempt ${attempt}/30)."
             sleep 10
           done
 
-          echo "Timed out waiting for Vercel Ready state for the current acceptance SHA. Hosted QA will not test a potentially stale deployment." >&2
+          echo "Timed out waiting for Vercel Ready state after the latest frontend-impacting commit. Hosted QA will not test a potentially stale deployment." >&2
           exit 1
       - run: npm ci
       - name: Install Chromium
