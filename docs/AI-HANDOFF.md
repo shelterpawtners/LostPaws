@@ -16,7 +16,7 @@ This file is the shared baton between ChatGPT, Codex, Copilot, GitHub Actions, a
 Updated by: Codex
 Branch: `qa/guardian-registration-personas`
 Last completed product task: GitHub Issue #11 — Partner Marketplace golden-path stabilization
-Final implementation SHA: pending GitHub publication
+Final implementation SHA: `d0914d950d4ceb40e261f0af5c672aa0186eed09`
 Active implementation task: none
 
 ### Completed
@@ -43,7 +43,7 @@ Active implementation task: none
 - **Issue / task:** GitHub Issue #11 — stabilize Partner Marketplace golden path + targeted regression.
 - **Agent:** Codex.
 - **Branch:** `qa/guardian-registration-personas`.
-- **Final remote SHA:** pending GitHub publication; this field will be replaced with the published implementation SHA before handoff.
+- **Final remote SHA:** `d0914d950d4ceb40e261f0af5c672aa0186eed09` (implementation commit; this documentation-only handoff update follows it).
 - **What changed:** Added a marketplace loading/error state; surfaced the selected Partner organization’s public-profile state in Offer Manager; expanded the existing offer/redemption Playwright journey to exercise profile draft/save/reload/publish and Guardian offer-detail reload before the established claim/redeem flow.
 - **Migrations / RLS:** None. Issue #11 reuses the accepted Checkpoint 2/3/4 schema, RLS policies, public RPCs, and opaque redemption model.
 - **Tests run + results:** `npm run check` PASS; `npm run build` PASS; `git diff --check` PASS. The targeted Playwright suite was attempted but is blocked in this Work environment because the required Chromium executable is unavailable; the standard Playwright install did not complete. `supabase test db` is blocked because the Supabase CLI/Docker runtime is not installed here. No application test failure was observed.
