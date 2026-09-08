@@ -1,13 +1,13 @@
 # AI Handoff
 
-STATUS: READY_FOR_ACCEPTANCE
+STATUS: FAILED
 CURRENT_PHASE: Phase 2 — Partner Marketplace MVP
 CURRENT_CHECKPOINT: Phase 2 Checkpoint 5 — Verified Savings + Customer Attribution
-NEXT_CHECKPOINT: Run the deliberate exact-SHA Vercel/Hosted QA acceptance for the current head; if green, mark the CP5 pre-decision slice COMPLETE, keep verified-savings rules owner-gated, and continue only safely separable provider-agnostic Phase 2 Checkpoint 6 work
+NEXT_CHECKPOINT: Correct the stale Hosted Admin QA locator for the fresh Guardian CTA, rerun deterministic validation, and if Hosted QA is green mark the CP5 pre-decision slice COMPLETE. Do not begin CP6 until CP5 acceptance is green and recorded COMPLETE.
 OWNER_DECISION_REQUIRED: NO
 SAFE_TO_CONTINUE: YES
 
-This file is the shared baton between ChatGPT, Codex, Copilot, GitHub Actions, and human review.
+This file is the shared baton between ChatGPT, repository automation, GitHub Actions, and human review.
 
 ## Rules
 
@@ -20,76 +20,63 @@ This file is the shared baton between ChatGPT, Codex, Copilot, GitHub Actions, a
 
 ## Current handoff
 
-Updated by: ChatGPT automation execution
+Updated by: supervisory validator
 Branch: `qa/guardian-registration-personas`
 Active PR: #2 (`<!-- ai-active-build-pr -->`)
 Active Issue: #13
-Concurrency migration SHA: `882c958b804c4466b47bfe108364c45427186d1a`
-Concurrency test fix SHA: `c2003df199d57d96660fd842e817a07314fd5879`
-Hosted Admin QA selector fix SHA: `4614e3cef2f67378cb8cf827b364abda2a9b84e5`
-Admin QA reload-state fix SHA: `11b23ef41861f0d2e26272ed588019ddaa217f94`
-Vercel ignored-build wiring SHA: `f7840015794528c66cdd5474caf4f10892119640`
-Cost-state handoff SHA: `4f375db164537622d94d22bb266a08f6ab78b351`
+Current acceptance head: `6c141dd74736927a55e9f00c3397289f6fad6b74`
+Admin QA reload-state application fix: `11b23ef41861f0d2e26272ed588019ddaa217f94`
 
-### Checkpoint 5 implemented scope
+## Checkpoint 5 implemented scope
 
-- Reuse `retail_amount_minor`, `paid_amount_minor`, and `currency_code`; no duplicate money model.
+- Reuses `retail_amount_minor`, `paid_amount_minor`, and `currency_code`; no duplicate money model.
 - Non-customer-facing `candidate_savings_minor` uses exact integer minor-unit math with zero floor.
 - Reference value kind/source and evidence metadata preserve provenance.
-- `shelterpawtners_relationship` derives `first_known` / `returning` only from prior non-demo confirmed Guardian + Partner redemptions.
-- Partner customer attestation is independent (`new_to_business` / `existing_customer` / `unknown`); ShelterPawtners history does not imply business-newness.
+- `shelterpawtners_relationship` derives `first_known` / `returning` only from non-demo confirmed Guardian + Partner redemptions and is concurrency-hardened.
+- Partner customer attestation remains independent (`new_to_business` / `existing_customer` / `unknown`).
 - Redemption confirmation accepts optional attribution without breaking existing callers.
-- Corrections are append-only delta events; reversal audit history remains compatible.
-- Partner redemption UI optionally captures reference/list value, amount actually paid, currency, reference type/source, evidence reference, and Partner customer attestation while explicitly stating the values are not verified savings.
-- Targeted Playwright verifies the Partner UI values persist and produce exact candidate savings.
+- Corrections remain append-only delta events; reversal/audit history remains intact.
+- Partner redemption UI captures optional candidate-savings context without presenting it as verified savings.
 
-### Concurrency/data-integrity hardening
+## Deterministic evidence
 
-CP5 prevents duplicate `first_known` attribution by serializing Guardian + Partner relationship classification with a transaction-scoped advisory lock and enforcing a unique partial index for confirmed non-demo `first_known` redemptions. Migration replay fails loudly rather than silently rewriting pre-existing history, and existing secure-token/RLS controls remain intact.
+- Persona QA #62: PASS after CP5 concurrency hardening, including migration replay, pgTAP/RLS, and Guardian/persona/access/redemption Playwright.
+- CI #219: PASS for the Admin QA reload-state application fix `11b23ef4`.
+- Vercel status for acceptance head `6c141dd7`: SUCCESS. The prior Vercel build-rate-limit blocker is not the current failure.
+- CI #224 on `6c141dd7`: PASS.
+- Hosted QA #121 on `6c141dd7`: FAILED in `e2e/admin-qa-mode.spec.ts` after Vercel readiness succeeded.
+- Hosted QA #121 result: 7 passed, 1 failed, 1 did not run.
 
-### Deterministic evidence and current defect cluster
+## Hosted QA #121 failure classification
 
-- Persona QA #62 on concurrency-hardened head `c2003df199d57d96660fd842e817a07314fd5879`: PASS (local reset/seed, all pgTAP/RLS including 16 CP5 assertions, Guardian/persona/access/redemption Playwright).
-- CI #211: PASS on the concurrency-hardened slice.
-- CI #214 on pre-fix acceptance head `a98b5ac387892629e92c633390b99ebc21e0f3d2`: PASS.
-- Hosted QA #112: FAILED in Admin QA because a generic `getByRole("status")` selector matched two legitimate live regions. Vercel exact-SHA readiness passed first. This was a GREEN test defect; `4614e3c` scoped banner assertions to the `ADMIN QA MODE` status region without weakening authorization/session coverage.
-- CI #217: PASS after the selector correction.
-- Hosted QA #116 on READY head `36ed211c3cf13f93221b04358a1cc140a11146a5`: FAILED later in the same Admin QA persistence test after `page.goto("/marketplace")` because no Admin QA banner appeared after the hard navigation. Six hosted tests passed; two later serial tests did not run.
-- #116 classification: GREEN application state-restoration defect. `/marketplace` is wrapped in `Page` and renders `QaBanner`, but a hard navigation recreates JS module state while the acting Supabase session remains in `sessionStorage`. `QaBanner` previously checked only the in-memory acting client on mount and could miss the restored session.
-- Fix `11b23ef4`: `QaBanner` restores the tab-scoped acting session itself when the in-memory acting client is absent, still listens for `sp-qa-changed`, and guards async state updates after unmount. This preserves the explicit cross-route/reload QA-session contract rather than weakening the regression test.
-- CI #219 for `11b23ef4`: PASS.
-- CI #221 on prior handoff head `943bbc862973816f111d131a8776dc5ac41d1c3b`: PASS.
-- CI #223 on cost-state head `4f375db164537622d94d22bb266a08f6ab78b351`: PASS.
-- Vercel processed `4f375db164537622d94d22bb266a08f6ab78b351` successfully and returned `Canceled by Ignored Build Step`, proving the repository-controlled ignored-build configuration is active for docs-only work.
-- CP5 is now deliberately `READY_FOR_ACCEPTANCE`; the next handoff commit is expected to force an exact-SHA Vercel build through the existing acceptance-boundary rule, after which Hosted QA should exercise the frontend state-restoration fix.
+**GREEN test defect — stale accessible-name locator.**
 
-### Cost-control state
+The failing test waits for:
 
-- Owner reports GitHub Copilot monthly credits should be treated as exhausted/unavailable for the remainder of the month unless later confirmed otherwise.
-- Do not invoke Copilot or request Copilot review during this sprint; use direct safe repository changes and deterministic GitHub-native validation.
-- No Copilot/Copilot review was invoked for the CP5 defect cluster or the Vercel cost-control adjustment.
-- Diagnosis used native GitHub Actions/status evidence and direct repository inspection.
-- Persona QA remains change-aware/deliberate; no schema/RLS change was made in this defect cluster.
-- `vercel.json` now wires the existing repository-controlled `bash scripts/vercel-ignore-build.sh` via Vercel `ignoreCommand`. This aligns actual repo configuration with the existing cost policy so docs/workflow/E2E/Supabase-only intermediate commits can be skipped without depending on a dashboard-only Ignored Build Step setting. Acceptance-boundary `READY_FOR_ACCEPTANCE` / `COMPLETE` commits still force a build through the script.
+`getByRole("button", { name: "Create fresh Guardian test account" })`
 
-### Deliberate RED boundary
+The captured Playwright page snapshot proves the Admin QA page loaded correctly and rendered the fresh-account controls. The actual accessible button name is:
 
-No effective/adjusted customer-facing savings total or lifetime verified total is introduced. Original captured values stay immutable and corrections stay append-only. The owner must approve what evidence/calculation qualifies as customer-facing `verified savings`, including corrections, refunds, reversals, bundles, free items, evidence strength, and Partner-entered values.
+`Create fresh Guardian`
 
-This RED rule does not block provider-agnostic Checkpoint 6 engineering that is independent of verified-savings totals or charitable-money provider selection. Issue #14 is prepared as the bounded CP6 contract, but implementation must not advance until the CP5 pre-decision acceptance evidence is green and recorded COMPLETE.
+The failure is therefore not an application authorization, session-restoration, deployment, Supabase, RLS, or CP5 financial behavior defect. It is a stale test expectation after the UI label changed.
 
-### Vercel blockers/state
+### Bounded next task
 
-ChatGPT plugin permission for Vercel is set to `Allow all actions`, but direct Vercel account visibility remains incomplete. `list_teams` returns `{"teams": []}`. Direct access to the known deployment scope now returns the more precise 403: `Not authorized: Trying to access resource under scope "jims-projects-acec6bcb". You must re-authenticate to this scope or use a token with access to this scope.` Vercel identifies that scope as team ID `team_VQxwR4q9AE0Yq7TecipqpTQ2`. This confirms the remaining plugin blocker is OAuth/team-scope authorization, not the ChatGPT `Allow all actions` setting.
+Update only the fresh-Guardian CTA locator in `e2e/admin-qa-mode.spec.ts` to target the current accessible name (`Create fresh Guardian`) using the existing role-based locator. Do not remove the test, broaden it to an unrelated element, weaken subsequent onboarding/banner assertions, or change RLS. Then rerun the relevant deterministic validation and Hosted QA acceptance.
 
-The earlier Vercel build-rate-limit status on `943bbc862973816f111d131a8776dc5ac41d1c3b` is no longer the active immediate result for routine docs-only work: Vercel accepted the newer `4f375db164537622d94d22bb266a08f6ab78b351` event and correctly skipped it through the configured Ignored Build Step. This does not yet prove a full build slot is available, so the current READY_FOR_ACCEPTANCE commit intentionally tests exactly that once, rather than repeatedly retrying.
+If Hosted QA is green, record the CP5 pre-decision engineering slice COMPLETE and keep the verified-savings product/financial rule owner-gated. Only then identify provider-agnostic CP6 Issue #14 as the next already-authorized Phase 2 task; do not begin Phase 3.
 
-A configuration issue was corrected safely: repository policy expected `scripts/vercel-ignore-build.sh` to control unnecessary builds, but `vercel.json` did not previously declare an `ignoreCommand`, leaving the behavior dependent on a dashboard project setting that could not be verified through the blocked Vercel connector. Commit `f7840015794528c66cdd5474caf4f10892119640` wires the existing script in repository configuration.
+## Deliberate RED boundaries
 
-Hosted QA #116 safely used the previously Ready frontend-impacting deployment `4de911d8884866772fdb5e8eb3c022de7b9e4541`, but that deployment predates `11b23ef4` and cannot establish acceptance for the application fix.
+Customer-facing `verified savings` remains blocked until the owner approves the evidence/calculation standard, including treatment of corrections, refunds, reversals, bundles, free items, evidence strength, and Partner-entered values.
 
-The narrow safe next action is one deliberate exact-SHA acceptance deployment/Hosted QA cycle. If the build is rate-limited again, return to BLOCKED without repeated retries or paid-plan changes. If it becomes Ready and Hosted QA passes, record CP5 COMPLETE and proceed only within the authorized Phase 2 boundary.
+Provider-dependent charitable-money movement remains owner-gated. Phase 3 is not authorized.
 
-### Human action required
+## Vercel state
 
-No action is required to continue the current exact-SHA acceptance attempt. To restore direct Vercel inspection, reconnect/re-authorize the Vercel plugin against the Vercel account/team that owns `jims-projects-acec6bcb` / `team_VQxwR4q9AE0Yq7TecipqpTQ2`; the current `Allow all actions` ChatGPT permission alone does not grant that OAuth team scope. Do not purchase or upgrade a Vercel plan unless the owner explicitly chooses to do so.
+The acceptance deployment itself is no longer blocked: Vercel reported success for `6c141dd7`, and Hosted QA passed its deployment-readiness gate before executing browser tests. Direct Vercel account/team inspection may still require separate OAuth team-scope authorization, but that connector limitation is not the cause of Hosted QA #121.
+
+## Human action required
+
+No RED decision is required for the current failure. The next operator task is the single stale test-locator correction described above, followed by deterministic acceptance rerun. Do not purchase/upgrade infrastructure or begin Phase 3.
