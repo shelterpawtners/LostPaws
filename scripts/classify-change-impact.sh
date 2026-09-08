@@ -60,6 +60,18 @@ for file in "${changed_files[@]}"; do
       dependency=true
       web=true
       ;;
+    .github/workflows/persona-qa.yml)
+      workflow=true
+      persona=true
+      ;;
+    .github/workflows/database-qa.yml|scripts/supabase-cli.sh)
+      workflow=true
+      database=true
+      ;;
+    .github/workflows/hosted-qa.yml)
+      workflow=true
+      e2e=true
+      ;;
     .github/workflows/*|.github/actions/*|scripts/*)
       workflow=true
       ;;
@@ -67,7 +79,7 @@ for file in "${changed_files[@]}"; do
       workflow=true
       docs=true
       ;;
-    vercel.json)
+    vercel.json|scripts/vercel-ignore-build.sh)
       deployment=true
       web=true
       ;;
