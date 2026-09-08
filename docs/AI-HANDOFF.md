@@ -56,7 +56,7 @@ Acceptance evidence: Persona QA run #51 (`34210680064`) passed.
 
 Issue #6 — make hosted shared QA the normal acceptance environment.
 
-Issue #6 implementation SHA (current branch head at handoff update): `acc27b48b07d626655a333aca3b5030a7a3ea3f6`
+Issue #6 implementation SHA: `a4f492df2f49df011470fbcb7b80e2ec99e29e0d`
 
 Issue #6 root-cause gap addressed:
 
