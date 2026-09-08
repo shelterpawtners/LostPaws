@@ -68,8 +68,11 @@ jobs:
       PLAYWRIGHT_SUPABASE_PUBLISHABLE_KEY: ${{ vars.QA_SUPABASE_PUBLISHABLE_KEY }}
       PLAYWRIGHT_ADMIN_EMAIL: ${{ secrets.QA_PLATFORM_ADMIN_EMAIL }}
       PLAYWRIGHT_ADMIN_PASSWORD: ${{ secrets.QA_PLATFORM_ADMIN_PASSWORD }}
-      PLAYWRIGHT_NON_ADMIN_EMAIL: ${{ secrets.QA_NON_ADMIN_EMAIL }}
-      PLAYWRIGHT_NON_ADMIN_PASSWORD: ${{ secrets.QA_NON_ADMIN_PASSWORD }}
+      # A Guardian is a valid non-admin identity for the Admin QA denial test.
+      # Dedicated non-admin credentials remain supported when configured, but
+      # they are not required in addition to the existing Guardian QA account.
+      PLAYWRIGHT_NON_ADMIN_EMAIL: ${{ secrets.QA_NON_ADMIN_EMAIL || secrets.QA_GUARDIAN_EMAIL }}
+      PLAYWRIGHT_NON_ADMIN_PASSWORD: ${{ secrets.QA_NON_ADMIN_PASSWORD || secrets.QA_GUARDIAN_PASSWORD }}
       PLAYWRIGHT_GUARDIAN_EMAIL: ${{ secrets.QA_GUARDIAN_EMAIL }}
       PLAYWRIGHT_GUARDIAN_PASSWORD: ${{ secrets.QA_GUARDIAN_PASSWORD }}
       PLAYWRIGHT_PARTNER_EMAIL: ${{ secrets.QA_PARTNER_EMAIL }}
