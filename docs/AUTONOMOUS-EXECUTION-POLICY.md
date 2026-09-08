@@ -83,16 +83,16 @@ When blocked by a RED decision, complete all safely separable work first, add th
 
 ## Current phase authorization gate
 
-The current explicit product-owner gate remains in force:
+Jim explicitly authorized autonomous completion of the remainder of Phase 2 on 2026-09-08.
 
-- Do **not** begin Phase 2 Checkpoint 5 without explicit authorization.
-- Do **not** begin Phase 3 without explicit authorization.
+Therefore:
 
-This policy does not override those gates.
+- Phase 2 Checkpoint 5 and subsequent remaining Phase 2 checkpoints are authorized to proceed checkpoint-to-checkpoint after required acceptance evidence passes.
+- Agents do not need a separate routine owner approval to enter Checkpoint 5.
+- Material RED decisions encountered inside Phase 2 remain blocking and must be escalated.
+- Do **not** begin Phase 3 without a new explicit product-owner authorization.
 
-Within already-authorized work before those gates, agents should continue autonomously through in-scope implementation, bug fixing, validation, and acceptance preparation.
-
-When the product owner later authorizes an entire phase or checkpoint range under this policy, agents may move checkpoint-to-checkpoint within that explicitly authorized range after each prior checkpoint's required acceptance evidence passes, unless a RED decision or hard blocker is encountered.
+Within the authorized Phase 2 range, agents should continue autonomously through implementation, bug fixing, validation, and acceptance preparation.
 
 ## Placeholder and demo-data policy
 
@@ -167,7 +167,7 @@ Use the repository's vertical-slice testing strategy:
 - hosted/manual acceptance where configured and warranted;
 - broader full-site audit only at the planned maturity point.
 
-An agent may continue fixing failures exposed by the current authorized acceptance path when those failures are within scope. It must not broaden the task into a new gated phase merely because the current tests pass.
+An agent may continue fixing failures exposed by the current authorized acceptance path when those failures are within scope. It must not broaden the task into Phase 3 merely because the current tests pass.
 
 ## Conflict resolution
 
