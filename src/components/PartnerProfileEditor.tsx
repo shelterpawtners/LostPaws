@@ -498,7 +498,11 @@ export function PartnerProfileEditor({ session }: { session: Session | null }) {
             </button>
           </div>
         </fieldset>
-        <p role="status" aria-live="polite">
+        <p
+          role="status"
+          aria-live="polite"
+          data-testid="partner-profile-save-status"
+        >
           {status}
         </p>
       </div>

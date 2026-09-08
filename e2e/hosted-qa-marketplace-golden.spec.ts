@@ -49,7 +49,7 @@ test.describe.serial("Hosted partner-to-guardian marketplace golden path", () =>
     await page.getByLabel("How customers are served").selectOption("online");
     await saveDraftButton.click();
     await expect(saveDraftButton).toBeEnabled({ timeout: 15_000 });
-    const saveStatus = page.locator(".panel > p[role='status']").last();
+    const saveStatus = page.getByTestId("partner-profile-save-status");
     await expect(saveStatus).toContainText("Saved as a private draft.");
     const selectedOrganizationId = await organization.inputValue();
     await page.reload();
