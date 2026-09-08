@@ -12,6 +12,7 @@ Use deterministic native automation for repeatable work. Spend AI credits only w
 - Re-engage after a failure only when the failure remains unresolved and there has been no meaningful newer activity for the configured stall window.
 - Use native GitHub Actions/scripts for formatting, lint, typecheck, unit tests, builds, migration replay, pgTAP, Playwright, status polling, deduplication, and stall detection.
 - Prefer one complete task prompt with scope, validation, defect-fixing authority, stopping condition, and handoff contract over several small prompts.
+- Keep persistent agent instructions short. Route to canonical docs instead of duplicating large policy blocks across `AGENTS.md`, `CLAUDE.md`, Copilot instructions, skills, prompts, and READMEs.
 
 ## Copilot review
 
@@ -21,11 +22,24 @@ Use deterministic native automation for repeatable work. Spend AI credits only w
 - A second review is justified only after material code/security changes caused by the first review.
 - One broader review may be used at final Phase 2 hardening.
 
+## PR lifecycle
+
+Long-lived integration PRs increase AI review context, human review effort, merge-conflict risk, and semantic-review cost.
+
+- Default future work to one bounded checkpoint/feature PR into the integration branch.
+- Do not let a single active PR accumulate unrelated checkpoints indefinitely.
+- The five-minute supervisor discovers the active build lane from the `<!-- ai-active-build-pr -->` marker rather than a hardcoded PR number.
+- Exactly one open integration PR should carry that marker.
+- Move the marker to the next checkpoint PR after the prior PR reaches its approved integration boundary.
+- PR merging remains owner-gated unless a later policy explicitly changes that rule.
+
+PR #2 is the historical exception because it already accumulated the Phase 2 QA/integration foundation. Finish the current bounded Checkpoint 5 work there, then prefer smaller PRs.
+
 ## Test tiers
 
 ### Tier 1 — implementation loop
 
-For normal code commits: lint, typecheck, unit tests, production build. These deterministic checks are cheap and should not be replaced with AI review.
+For normal code commits: lint, unit tests, and production build. The production build includes TypeScript compilation; do not compile TypeScript twice in the same CI path. These deterministic checks are cheap and should not be replaced with AI review.
 
 ### Tier 2 — checkpoint acceptance
 
@@ -55,10 +69,25 @@ When impact is uncertain, run the broader deterministic test rather than spend A
 - Heavy hosted browser QA is acceptance-gated.
 - Persona QA is deliberate: schema/RLS/persona changes and planned hardening, not every commit.
 - Upload failure artifacts only on failure.
+- A prior failed run is resolved when the latest run for that workflow/current SHA succeeds; do not re-invoke AI for historical failures.
 
 ## Orchestrator
 
 The supervisor may poll frequently with native GitHub APIs/Actions without invoking AI. It should invoke an agent only for a bounded authorized next task or a genuinely stale unresolved defect. A green workflow by itself is not a reason for another AI session.
+
+- Only the PR marked `<!-- ai-active-build-pr -->` may receive automatic AI continuation/recovery.
+- Default stale threshold is 30 minutes.
+- At most one automatic stale-recovery AI invocation per checkpoint.
+- Further unresolved work after that recovery should be surfaced as status/blocker rather than repeatedly spending AI credits.
+
+## Vercel build efficiency
+
+Vercel should not rebuild the frontend for docs-only, GitHub-workflow-only, E2E-only, or Supabase-only commits.
+
+- Use `bash scripts/vercel-ignore-build.sh` as the Vercel Ignored Build Step when enabled in project settings.
+- The script builds conservatively when frontend/build inputs change and skips only commits that cannot alter the deployed web artifact.
+- Keep Vercel's native dependency/build cache enabled.
+- Do not introduce another CI/CD provider just to optimize preview builds.
 
 ## Handoff
 
