@@ -27,7 +27,6 @@
     "@types/react": "19.2.14",
     "@types/react-dom": "19.2.3",
     "@vitejs/plugin-react": "6.0.1",
-    "@playwright/test": "^1.55.0",
     "prettier": "3.9.6",
     "tailwindcss": "^4.3.3",
     "typescript": "7.0.2",
