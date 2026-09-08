@@ -3,7 +3,7 @@
 STATUS: IN_PROGRESS
 CURRENT_PHASE: Phase 2 — Partner Marketplace MVP
 CURRENT_CHECKPOINT: Phase 2 Checkpoint 5 — Verified Savings + Customer Attribution
-NEXT_CHECKPOINT: Fix the CP5 pgTAP plan count mismatch, rerun Persona QA, then finish remaining Checkpoint 5 acceptance evidence before the verified-savings RED rule gate
+NEXT_CHECKPOINT: Complete the fresh Persona QA run, classify any remaining failure, then finish CP5 acceptance evidence before the verified-savings RED rule gate
 OWNER_DECISION_REQUIRED: NO
 SAFE_TO_CONTINUE: YES
 
@@ -11,16 +11,12 @@ This file is the shared baton between ChatGPT, Codex, Copilot, GitHub Actions, a
 
 ## Rules
 
-- The agent that completes a meaningful task must update this file before declaring the task complete.
-- Keep this file current; do not append an unbounded transcript.
-- GitHub Issues define the task contract. Pull requests/commits contain implementation. This file summarizes the latest handoff state.
-- Never store passwords, tokens, service-role keys, private customer data, or other secrets here.
-- If a material product/legal/privacy/security/financial decision is unresolved, record it as `OPEN DECISION` and reference `docs/DECISION-LOG.md` and/or `docs/OWNER-DECISION-BACKLOG.md`.
-- Jim explicitly authorized autonomous completion of the remainder of Phase 2 on 2026-09-08 under `docs/AUTONOMOUS-EXECUTION-POLICY.md`.
-- Phase 2 Checkpoint 5 is authorized. Implement the provider-/rule-independent engineering scope autonomously.
-- Do not expose customer-facing values as `verified savings` until the calculation/evidence rule is explicitly approved; that remains a RED financial/product decision.
-- Phase 3 remains explicitly unauthorized. Do not begin Phase 3 without a new owner authorization.
-- Do not auto-merge pull requests. Production/DNS, paid infrastructure, legal/privacy/security posture, and real financial behavior remain RED gates.
+- GitHub Issues define task scope; code/commits contain implementation; this file records current state.
+- Never store secrets/private customer data here.
+- Phase 2 remainder is authorized under `docs/AUTONOMOUS-EXECUTION-POLICY.md`.
+- Do not expose customer-facing `verified savings` until its evidence/calculation standard is explicitly approved.
+- Phase 3, production/DNS, paid infrastructure, material RED decisions, auto-merge, and destructive production actions remain owner-gated.
+- Follow `docs/AI-COST-AND-TESTING-GOVERNANCE.md`: GitHub Actions is the deterministic control plane; do not spend AI credits for polling or routine green validation.
 
 ## Current handoff
 
@@ -28,63 +24,41 @@ Updated by: ChatGPT supervisory validator
 Branch: `qa/guardian-registration-personas`
 Active PR: #2 (`<!-- ai-active-build-pr -->`)
 Active Issue: #13
-Current remote SHA at validation: `92f2fe72464061d0fc3a04daa1d03dd4d3576c1d`
-
-### Accepted prior work
-
-- Issue #11 Partner Marketplace golden path: ACCEPTED and CLOSED.
-- Issue #6 Hosted shared QA hardening: COMPLETE and accepted by green hosted QA.
-- Phase 2 Checkpoints 1-4 remain accepted/complete per `docs/CURRENT-WORK.md`.
+Code/workflow head before this handoff update: `c0e9951918dfa2072b1a9599dd0e7fc033c86ff5`
 
 ### Checkpoint 5 implemented scope
 
-Implementation commits in the current slice include:
+- Reuse `retail_amount_minor`, `paid_amount_minor`, and `currency_code`; no duplicate money model.
+- Non-customer-facing `candidate_savings_minor` uses exact integer minor-unit math with zero floor.
+- Reference value kind/source and evidence metadata preserve provenance.
+- `shelterpawtners_relationship` derives `first_known` / `returning` only from prior non-demo confirmed Guardian + Partner redemptions.
+- Partner customer attestation is independent (`new_to_business` / `existing_customer` / `unknown`); ShelterPawtners history does not imply business-newness.
+- Redemption confirmation accepts optional attribution without breaking existing callers.
+- Corrections are append-only delta events; reversal audit history remains compatible.
+- Unit + pgTAP coverage exists for exact math, provenance, attribution separation, relationship classification, non-negative savings, adjustments, and reversal compatibility.
 
-- `a64dcc24b4f771a4c472947ff8425bd7a917a465` — CP5 savings/attribution database foundation.
-- `016fc2fb4a6a4abae2640f3ba05cfa542b352d79` — CP5 pgTAP coverage.
-- `765808866d4e10a1b65a0bbd589d86ef92b364bd` / `496b581e61c94d99071a1355ffb3cdeb8f9fd747` — exact bigint candidate-savings helper and unit tests.
-- `fa48bbb204886c6f3894cdf5e76e556d59a69be6` — Persona QA restored to deliberate/manual execution.
+### Validation / automation state
 
-Implemented behavior:
+- Prior CP5 Persona QA #54 failed only because the pgTAP file planned 12 tests while running 14; every CP5 assertion itself passed. Classified as a test-plan defect, not app/RLS/migration behavior.
+- Commit `2b6fc4cac752c0ff2e7f1dd00f62562f9ebc56ea` corrected only `select plan(12)` → `select plan(14)`; no assertion was removed or weakened.
+- Commit `c0e9951918dfa2072b1a9599dd0e7fc033c86ff5` makes Persona QA automatically run only for database/RLS/persona-sensitive PR changes while retaining manual dispatch. This removes a human/AI trigger without running the heavy suite on ordinary frontend/docs commits.
+- Fresh Persona QA #55 (`34239115732`) is currently in progress on `c0e9951918dfa2072b1a9599dd0e7fc033c86ff5`.
+- Hosted QA #86 ran the lightweight IN_PROGRESS gate; heavy hosted browser acceptance remains skipped until the checkpoint reaches the acceptance boundary.
+- CI is running/expected on the same head; prior CI was green.
 
-- preserve existing `retail_amount_minor`, `paid_amount_minor`, and `currency_code` instead of creating a duplicate money model;
-- add non-customer-facing `candidate_savings_minor` generated with exact integer minor-unit math and a zero floor;
-- add reference-value kind/source plus evidence reference/metadata provenance;
-- add `shelterpawtners_relationship` classification (`first_known` / `returning`) derived only from prior non-demo confirmed redemptions for the same Guardian + Partner organization;
-- add independent Partner customer attestation (`new_to_business` / `existing_customer` / `unknown`) without inferring business-newness from ShelterPawtners history;
-- extend redemption confirmation with optional attribution while preserving existing callers via a defaulted third JSON argument;
-- add append-only redemption correction delta events and retain existing reversal audit history;
-- protect `redemption_events` from update/delete mutation with the existing append-only trigger function;
-- add unit + pgTAP coverage for exact math, provenance, first-known/returning classification, separate Partner attestation, non-negative candidate savings, append-only adjustments, and reversal compatibility.
+### Vercel connector
 
-### Validation state — meaningful FAILED state
+The ChatGPT Vercel connector still returns an empty team list, so direct Vercel API access remains an OAuth/account-scope blocker. This is independent of LostPaws application QA and does not block GitHub/Supabase work.
 
-- Current head `92f2fe72464061d0fc3a04daa1d03dd4d3576c1d`: CI #185 PASS.
-- Current head: Hosted QA #83 PASS (lightweight IN_PROGRESS gate).
-- Persona QA #54 (`34235351085`) on CP5 implementation SHA `496b581e61c94d99071a1355ffb3cdeb8f9fd747`: FAIL in pgTAP only.
-- Classification: **test defect**, not application, RLS, migration, or environment failure.
-- Migration replay/reset succeeded.
-- Existing pgTAP suites passed.
-- Every CP5 assertion passed, but `supabase/tests/phase_2_checkpoint_5_savings_attribution.sql` declares `select plan(12);` while 14 assertions run. pg_prove reports `Bad plan. You planned 12 tests but ran 14.`
-- Browser persona/redemption tests were skipped only because the pgTAP step failed first.
+### Remaining CP5 work
 
-### Recommended bounded next task
-
-Change only the CP5 pgTAP declared plan from 12 to 14, preserving all assertions and RLS/application behavior. Then rerun Persona QA. If pgTAP is green, allow the persona/redemption browser suite to execute and classify any resulting failure independently. Do not weaken or remove assertions.
-
-### Vercel environment blocker
-
-The ChatGPT Vercel connector previously returned an empty team list / 403 due to OAuth/account scope. This remains an external connector issue unless separately confirmed resolved; it is not the cause of the current Persona QA failure.
-
-### Remaining Checkpoint 5 work after the test-plan correction
-
-- obtain green Persona QA migration/pgTAP/persona-redemption evidence;
-- add targeted Playwright coverage for attribution capture only if still needed and provider/rule-independent;
-- evaluate whether adjusted candidate totals need a read model/helper over append-only correction events before CP5 acceptance;
-- update active progress/decision docs for durable CP5 implementation choices;
-- when implementation and deterministic validation are complete, move to `READY_FOR_ACCEPTANCE` and run the acceptance-boundary hosted gate;
-- stop narrowly if a rule is required for what evidence/calculation qualifies as customer-facing `verified savings`.
+1. Finish Persona QA #55 and classify any result.
+2. Add targeted attribution Playwright only if current coverage leaves a meaningful gap.
+3. Decide whether adjusted candidate totals need a read helper over append-only correction events before CP5 acceptance.
+4. Update durable progress/decision docs.
+5. Move to `READY_FOR_ACCEPTANCE` only when deterministic evidence is green; then run full Hosted QA acceptance.
+6. Stop narrowly if the customer-facing verified-savings rule is required.
 
 ### Human action required
 
-No RED/product-owner decision is required. Operator attention is needed only to run the bounded test-plan correction task; this validator intentionally does not launch a coding agent under the zero-AI control-plane policy.
+None for CP5 right now. Vercel reconnect is still needed if direct Vercel management from ChatGPT is desired.
