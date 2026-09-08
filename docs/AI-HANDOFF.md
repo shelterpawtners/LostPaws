@@ -1,9 +1,9 @@
 # AI Handoff
 
-STATUS: IN_PROGRESS
+STATUS: READY_FOR_ACCEPTANCE
 CURRENT_PHASE: Phase 2 — Partner Marketplace MVP
 CURRENT_CHECKPOINT: Phase 2 Checkpoint 5 — Verified Savings + Customer Attribution
-NEXT_CHECKPOINT: Finish the rerun Persona QA on the final CP5 attribution UI/test SHA, then move to acceptance only if deterministic evidence is green
+NEXT_CHECKPOINT: Run the full Hosted QA acceptance boundary for the CP5 pre-decision slice; after acceptance, stop at the customer-facing verified-savings RED rule gate
 OWNER_DECISION_REQUIRED: NO
 SAFE_TO_CONTINUE: YES
 
@@ -24,8 +24,7 @@ Updated by: ChatGPT automation execution
 Branch: `qa/guardian-registration-personas`
 Active PR: #2 (`<!-- ai-active-build-pr -->`)
 Active Issue: #13
-Latest non-doc/workflow CP5 code/test SHA: `7ecaf0359ab8d2cba0c68cb39a45bce9acd487c5`
-Current branch head before this handoff update: `ae2bc5e5d838078205ce02e9bf60a7cc967b66d6`
+Final CP5 code/test SHA: `7ecaf0359ab8d2cba0c68cb39a45bce9acd487c5`
 
 ### Checkpoint 5 implemented scope
 
@@ -36,21 +35,27 @@ Current branch head before this handoff update: `ae2bc5e5d838078205ce02e9bf60a7c
 - Partner customer attestation is independent (`new_to_business` / `existing_customer` / `unknown`); ShelterPawtners history does not imply business-newness.
 - Redemption confirmation accepts optional attribution without breaking existing callers.
 - Corrections are append-only delta events; reversal audit history remains compatible.
-- The Partner redemption UI now optionally captures reference/list value, amount actually paid, currency, reference type/source, evidence reference, and Partner customer attestation while explicitly stating the values are not verified savings.
-- Targeted Playwright now verifies those UI-captured values persist and produce exact candidate savings.
+- The Partner redemption UI optionally captures reference/list value, amount actually paid, currency, reference type/source, evidence reference, and Partner customer attestation while explicitly stating the values are not verified savings.
+- Targeted Playwright verifies the Partner UI values persist and produce exact candidate savings.
 
-### Validation state
+### Deterministic validation — GREEN
 
-- Persona QA #56 passed the CP5 database foundation end to end: local Supabase start/reset/seed, all pgTAP database tests, and Guardian/persona/access/redemption Playwright.
+- Persona QA #56 passed the CP5 database foundation end to end.
 - The earlier pgTAP plan mismatch was corrected from 12 to 14 without weakening any assertion.
-- CI on `7ecaf0359ab8d2cba0c68cb39a45bce9acd487c5` passed lint, unit tests, and production build after a formatting-only GREEN fix.
-- Hosted QA on the implementation slice passed the lightweight IN_PROGRESS gate; full hosted acceptance remains intentionally deferred until `READY_FOR_ACCEPTANCE`.
-- Persona QA run #59 on the final UI/test SHA was cancelled by subsequent documentation/workflow commits before reaching database/browser assertions. The cancelled job has been intentionally rerun as attempt 2 on the exact code/test SHA; it is currently pending.
-- Current branch head `ae2bc5e5d838078205ce02e9bf60a7cc967b66d6` has green CI and green lightweight Hosted QA.
+- CI on the final code/test SHA passed lint, unit tests, and production build after a formatting-only GREEN fix.
+- Persona QA #59 attempt 2 on exact final code/test SHA `7ecaf0359ab8d2cba0c68cb39a45bce9acd487c5` PASSED:
+  - npm install/setup;
+  - local Supabase start;
+  - database reset and deterministic seed;
+  - all pgTAP database/RLS tests;
+  - browser environment export;
+  - Chromium install;
+  - Guardian/persona/access/redemption Playwright, including CP5 attribution persistence.
+- Lightweight Hosted QA gates on the implementation/workflow heads passed. Full Hosted QA is now authorized at this READY boundary.
 
 ### Cost-control correction
 
-The temporary `pull_request.paths` Persona QA trigger was removed. On this long-lived PR, GitHub evaluates PR path filters against the whole PR, so docs/status commits could repeatedly launch the heavy local-Supabase + Chromium suite after any sensitive file had entered the PR. Persona QA is deliberate/manual again; a cancelled final-code job was rerun directly instead of reintroducing the noisy trigger.
+Persona QA is deliberate/manual again. A temporary `pull_request.paths` trigger was removed because GitHub evaluates path filters against the whole long-lived PR, which could repeatedly launch the heavy local-Supabase + Chromium suite on later documentation/status commits. The final cancelled Persona job was rerun directly on the exact code SHA instead.
 
 ### Durable progress record
 
@@ -62,14 +67,14 @@ No effective/adjusted customer-facing savings total or lifetime verified total i
 
 ### Vercel connector
 
-The ChatGPT Vercel connector still returns an empty team list, so direct API access to team `jims-projects-acec6bcb` / project `lost-paws` remains blocked by Vercel OAuth/account scope. This does not block GitHub/Supabase validation.
+The ChatGPT Vercel connector still returns an empty team list, so direct API access to team `jims-projects-acec6bcb` / project `lost-paws` remains blocked by Vercel OAuth/account scope. This does not block repository acceptance because Hosted QA uses the configured GitHub/Vercel integration and stable QA surface.
 
 ### Remaining CP5 work
 
-1. Finish Persona QA run #59 attempt 2 on `7ecaf0359ab8d2cba0c68cb39a45bce9acd487c5` and classify the result.
-2. If green, update this handoff to `READY_FOR_ACCEPTANCE` and run the full Hosted QA acceptance boundary on the resulting exact READY SHA.
-3. Stop before enabling customer-facing `verified savings`; that rule still requires owner approval.
+1. Run and inspect the full Hosted QA acceptance boundary on this READY handoff state.
+2. If acceptance is green, mark the pre-decision CP5 engineering slice complete/accepted and stop narrowly at the verified-savings calculation/evidence rule gate.
+3. Do not enable customer-facing `verified savings` until the owner approves that rule.
 
 ### Human action required
 
-None for the active engineering slice. Vercel reconnect remains external account work if direct Vercel management from ChatGPT is desired.
+None until the Hosted QA acceptance result is known. The next product decision is the explicit verified-savings rule gate after the pre-decision engineering slice is accepted.
