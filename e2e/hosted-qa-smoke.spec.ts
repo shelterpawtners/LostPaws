@@ -1,8 +1,15 @@
 import { expect, test, type Page } from "@playwright/test";
 
 const hosted = process.env.PLAYWRIGHT_HOSTED_QA === "true";
-const guardianEmail = "guardian-b@example.invalid";
-const guardianPassword = "Demo-only-Guardian-B!";
+
+function requiredSetting(name: string) {
+  const value = process.env[name];
+  if (!value)
+    throw new Error(
+      `${name} is required for hosted QA. Configure it as a GitHub Actions secret; do not commit it.`,
+    );
+  return value;
+}
 
 async function signIn(page: Page, email: string, password: string) {
   await page.goto("/login");
@@ -28,7 +35,11 @@ test.describe.serial("Hosted shared-dev smoke", () => {
     ).toBeVisible();
     await expect(page.getByLabel("Email address")).toBeVisible();
 
-    await signIn(page, guardianEmail, guardianPassword);
+    await signIn(
+      page,
+      requiredSetting("PLAYWRIGHT_GUARDIAN_EMAIL"),
+      requiredSetting("PLAYWRIGHT_GUARDIAN_PASSWORD"),
+    );
     await page.getByRole("link", { name: "Add another pet" }).click();
     await expect(page).toHaveURL(/\/onboarding\/guardian$/);
 
@@ -53,7 +64,11 @@ test.describe.serial("Hosted shared-dev smoke", () => {
   test("logout invalidates the session and login restores pet access", async ({
     page,
   }) => {
-    await signIn(page, guardianEmail, guardianPassword);
+    await signIn(
+      page,
+      requiredSetting("PLAYWRIGHT_GUARDIAN_EMAIL"),
+      requiredSetting("PLAYWRIGHT_GUARDIAN_PASSWORD"),
+    );
     await expect(
       page.getByRole("link", { name: `Open ${petName}` }),
     ).toBeVisible();
@@ -62,7 +77,11 @@ test.describe.serial("Hosted shared-dev smoke", () => {
     await page.goto("/dashboard");
     await expect(page).toHaveURL(/\/login$/);
 
-    await signIn(page, guardianEmail, guardianPassword);
+    await signIn(
+      page,
+      requiredSetting("PLAYWRIGHT_GUARDIAN_EMAIL"),
+      requiredSetting("PLAYWRIGHT_GUARDIAN_PASSWORD"),
+    );
     await expect(
       page.getByRole("link", { name: `Open ${petName}` }),
     ).toBeVisible();
@@ -76,7 +95,11 @@ test.describe.serial("Hosted shared-dev smoke", () => {
       page.getByRole("heading", { name: "Find value that fits your world." }),
     ).toBeVisible();
 
-    await signIn(page, "partner-admin@example.invalid", "Demo-only-Partner!");
+    await signIn(
+      page,
+      requiredSetting("PLAYWRIGHT_PARTNER_EMAIL"),
+      requiredSetting("PLAYWRIGHT_PARTNER_PASSWORD"),
+    );
     await page.goto("/partner/offers");
     await expect(
       page.getByRole("heading", {

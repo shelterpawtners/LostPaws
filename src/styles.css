@@ -297,6 +297,26 @@ nav > a:not(.btn):hover {
   box-shadow: var(--shadow);
   border-color: #bda8e9;
 }
+.qaPersonaCard {
+  width: 100%;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.qaPersonaCard:disabled {
+  cursor: wait;
+  opacity: 0.7;
+  transform: none;
+}
+.qaPersonaCard h2 {
+  margin: 0;
+  font-family: Outfit;
+  font-size: 1.25rem;
+}
+.qaPersonaCta {
+  margin-top: auto;
+}
 .card > svg {
   color: var(--purple);
   width: 32px;

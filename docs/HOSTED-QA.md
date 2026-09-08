@@ -50,7 +50,16 @@ PLAYWRIGHT_SUPABASE_PUBLISHABLE_KEY=<publishable-key> \
 npm run test:e2e:hosted
 ```
 
-GitHub's **Hosted QA** workflow provides the same run without local Docker. Configure repository variables `QA_BASE_URL`, `QA_SUPABASE_URL`, and `QA_SUPABASE_PUBLISHABLE_KEY`, then run the workflow. Select `full_browser_audit` to run the practical hosted portion of the Issue #5 audit. The local-only database reset, pgTAP, and direct database setup remain in the Persona QA workflow.
+GitHub's **Hosted QA** workflow runs automatically on pushes and pull requests for the QA branch, and remains available through `workflow_dispatch`. Configure repository variables `QA_BASE_URL`, `QA_SUPABASE_URL`, and `QA_SUPABASE_PUBLISHABLE_KEY`, plus these GitHub Actions **secrets** (never repository variables or source code):
+
+| Secret                                                   | Purpose                                                                        |
+| -------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| `QA_PLATFORM_ADMIN_EMAIL` / `QA_PLATFORM_ADMIN_PASSWORD` | Authorized platform-admin login used to exercise the server-side QA functions. |
+| `QA_NON_ADMIN_EMAIL` / `QA_NON_ADMIN_PASSWORD`           | Ordinary account used to prove `/admin-qa` rejects non-admins.                 |
+| `QA_GUARDIAN_EMAIL` / `QA_GUARDIAN_PASSWORD`             | Deterministic Guardian used by the existing hosted smoke.                      |
+| `QA_PARTNER_EMAIL` / `QA_PARTNER_PASSWORD`               | Deterministic Partner used by the existing hosted smoke.                       |
+
+The workflow fails before browser execution if the target, shared-dev project, public key, or any required QA secret is missing. Its Admin QA suite also fails visibly if the QA UI flag, server-side QA secret, seeded personas, session exchange, or original persisted admin session is unavailable. Select `full_browser_audit` to run the practical hosted portion of the Issue #5 audit. The local-only database reset, pgTAP, and direct database setup remain in the Persona QA workflow.
 
 ## Promotion rule
 

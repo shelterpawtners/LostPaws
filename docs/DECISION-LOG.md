@@ -246,6 +246,13 @@ This is the canonical review list for implementation choices and explicit user-a
 ## D-036 — Delegated, audited test-only Admin QA sessions
 
 - **Status:** Active; Issue #7 implementation decision
-- **Decision:** QA persona switching uses a server-issued, one-time session exchange for reserved `@example.invalid` accounts. The persisted administrator session is never replaced; a second non-persisted client carries the acting test user's actual Supabase JWT.
+- **Decision:** QA persona switching uses a server-issued, one-time session exchange for reserved `@example.invalid` accounts. The persisted administrator session is never replaced; a separately scoped client carries the acting test user's actual Supabase JWT.
 - **Reason:** This preserves real RLS fidelity without revealing passwords or server credentials, and makes return-to-admin immediate.
 - **Consequence:** Server functions remain role-authorized, environment-guarded, and audited. Arbitrary production-user impersonation is explicitly unsupported.
+
+## D-037 — Tab-scoped QA persona continuity
+
+- **Status:** Active; Issue #8 QA remediation decision
+- **Decision:** The separate acting-user client uses its own `sessionStorage` key so an active QA persona survives a page reload in the same browser tab, while the real administrator remains in the normal persisted Supabase storage key.
+- **Reason:** Hosted regression and human QA both need to test navigation and refresh without silently reverting identity; a tab boundary limits this temporary delegated session to the current QA tab.
+- **Consequence:** Closing the tab ends the acting-session continuity, `Return to Admin` removes the dedicated key and restores the existing admin session without credentials, and neither client overwrites the other.

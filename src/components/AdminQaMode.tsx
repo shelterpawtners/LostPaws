@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Navigate, useNavigate } from "react-router-dom";
 import type { Session } from "@supabase/supabase-js";
 import {
   adminSupabase,
@@ -60,6 +61,21 @@ const seeded: Persona[] = [
 ];
 export const qaEnabled = import.meta.env.VITE_ADMIN_QA_MODE_ENABLED === "true";
 
+function personaRole(session: Session) {
+  const seededPersona = seeded.find(
+    (persona) => persona.email === session.user.email,
+  );
+  if (seededPersona) return seededPersona.role;
+  const kind = String(session.user.user_metadata.onboarding_type || "");
+  const labels: Record<string, string> = {
+    guardian: "Guardian",
+    shelter: "Shelter",
+    petbiz: "Pet Business",
+    rave_vendor: "RAVE Vendor",
+  };
+  return labels[kind] || "QA test account";
+}
+
 export function AdminQaNavLink() {
   const [allowed, setAllowed] = useState(false);
   useEffect(() => {
@@ -89,6 +105,8 @@ async function invoke(path: string, body: Record<string, unknown>) {
 }
 export function QaBanner() {
   const [acting, setActing] = useState<Session | null>(null);
+  const [returning, setReturning] = useState(false);
+  const navigate = useNavigate();
   useEffect(() => {
     const refresh = () =>
       void getActingSupabase()
@@ -100,46 +118,65 @@ export function QaBanner() {
   }, []);
   if (!acting) return null;
   async function stop() {
+    setReturning(true);
     try {
       await invoke("admin-qa-session", { action: "stop" });
     } finally {
       clearActingSupabase();
+      navigate("/dashboard", { replace: true });
     }
   }
   return (
-    <div className="qaBanner" role="status">
+    <div className="qaBanner" role="status" aria-live="polite">
       <b>ADMIN QA MODE</b> — Acting as{" "}
       {acting.user.user_metadata.full_name || acting.user.email} (
-      {acting.user.email}) <a href="/admin-qa">Switch Persona</a>
-      <button onClick={() => void stop()}>Return to Admin</button>
+      {personaRole(acting)}) <a href="/admin-qa">Switch Persona</a>
+      <button onClick={() => void stop()} disabled={returning}>
+        {returning ? "Returning…" : "Return to Admin"}
+      </button>
     </div>
   );
 }
 export function AdminQaMode() {
   const [adminSession, setAdminSession] = useState<Session | null>(null);
+  const [checking, setChecking] = useState(true);
   const [allowed, setAllowed] = useState(false),
     [status, setStatus] = useState(""),
     [name, setName] = useState(""),
-    [label, setLabel] = useState("");
+    [label, setLabel] = useState(""),
+    [busyAction, setBusyAction] = useState<string | null>(null);
+  const navigate = useNavigate();
   useEffect(() => {
-    if (!adminSupabase || !qaEnabled) return;
+    if (!adminSupabase || !qaEnabled) {
+      setChecking(false);
+      return;
+    }
     void adminSupabase.auth
       .getSession()
-      .then(({ data }) => setAdminSession(data.session));
+      .then(({ data }) => setAdminSession(data.session))
+      .finally(() => setChecking(false));
   }, []);
   useEffect(() => {
     if (!adminSupabase || !adminSession || !qaEnabled) return;
-    adminSupabase
-      .from("user_roles")
-      .select("role_code")
-      .eq("user_id", adminSession.user.id)
-      .eq("role_code", "platform_admin")
-      .is("revoked_at", null)
-      .maybeSingle()
-      .then(({ data }) => setAllowed(Boolean(data)));
+    void (async () => {
+      try {
+        const { data } = await adminSupabase
+          .from("user_roles")
+          .select("role_code")
+          .eq("user_id", adminSession.user.id)
+          .eq("role_code", "platform_admin")
+          .is("revoked_at", null)
+          .maybeSingle();
+        setAllowed(Boolean(data));
+      } finally {
+        setChecking(false);
+      }
+    })();
   }, [adminSession]);
   async function act(targetId: string, reason?: string) {
+    if (busyAction) return;
     try {
+      setBusyAction(targetId);
       setStatus("Starting QA persona…");
       const result = await invoke("admin-qa-session", {
         target_user_id: targetId,
@@ -148,12 +185,17 @@ export function AdminQaMode() {
       });
       await startActingSupabase(result.email, result.token_hash);
       setStatus(`Now acting as ${result.user.display_name}.`);
+      navigate("/dashboard");
     } catch (e: any) {
-      setStatus(e.message || "Unable to start QA mode.");
+      setStatus(`Unable to start QA mode. ${e.message || "Try again."}`);
+    } finally {
+      setBusyAction(null);
     }
   }
   async function create(kind: string) {
+    if (busyAction) return;
     try {
+      setBusyAction(kind);
       setStatus("Creating confirmed QA account…");
       const result = await invoke("admin-create-test-user", {
         persona_kind: kind,
@@ -162,11 +204,20 @@ export function AdminQaMode() {
       });
       await startActingSupabase(result.email, result.token_hash);
       setStatus(`Created and switched to ${result.user.display_name}.`);
+      navigate(`/onboarding/${kind}`);
     } catch (e: any) {
-      setStatus(e.message || "Unable to create QA account.");
+      setStatus(`Unable to create QA account. ${e.message || "Try again."}`);
+    } finally {
+      setBusyAction(null);
     }
   }
-  if (!qaEnabled || !allowed) return null;
+  if (checking)
+    return (
+      <section className="section shell">
+        <p>Checking Admin QA access…</p>
+      </section>
+    );
+  if (!qaEnabled || !allowed) return <Navigate to="/dashboard" replace />;
   return (
     <section className="section shell formPage">
       <span className="eyebrow">Restricted support tool</span>
@@ -177,7 +228,15 @@ export function AdminQaMode() {
       </p>
       <div className="cards">
         {seeded.map((p) => (
-          <article className="card" key={p.id}>
+          <button
+            type="button"
+            className="card qaPersonaCard"
+            key={p.id}
+            onClick={() => void act(p.id)}
+            disabled={Boolean(busyAction)}
+            aria-busy={busyAction === p.id}
+            aria-label={`Act as ${p.name}, ${p.role}${p.pet ? `, ${p.pet}` : ""}`}
+          >
             <h2>{p.name}</h2>
             <p>
               {p.email}
@@ -185,10 +244,10 @@ export function AdminQaMode() {
               {p.role}
               {p.pet ? ` · ${p.pet}` : ""}
             </p>
-            <button className="btn" onClick={() => act(p.id)}>
-              Act as
-            </button>
-          </article>
+            <span className="btn qaPersonaCta" aria-hidden="true">
+              {busyAction === p.id ? "Switching…" : "Act as"}
+            </span>
+          </button>
         ))}
       </div>
       <div className="panel">
@@ -213,12 +272,17 @@ export function AdminQaMode() {
             <button
               className="btn quiet"
               key={kind}
-              onClick={() => create(kind)}
+              onClick={() => void create(kind)}
+              disabled={Boolean(busyAction)}
             >{`Create fresh ${title}`}</button>
           ))}
         </div>
       </div>
-      <p role="status" aria-live="polite">
+      <p
+        role={status.startsWith("Unable") ? "alert" : "status"}
+        aria-live="polite"
+        aria-atomic="true"
+      >
         {status}
       </p>
     </section>

@@ -37,6 +37,7 @@ import {
   adminSupabase,
   getActingSupabase,
   googleAuthEnabled,
+  restoreActingSupabase,
   supabase as db,
 } from "./lib/supabase";
 import {
@@ -101,14 +102,14 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
       return;
     }
     const persistedClient = adminSupabase;
-    const refresh = () => {
-      (getActingSupabase() || persistedClient).auth
-        .getSession()
-        .then(({ data }) =>
-          setState({ session: data.session, loading: false }),
-        );
+    const refresh = async () => {
+      if (!getActingSupabase()) await restoreActingSupabase();
+      const { data } = await (
+        getActingSupabase() || persistedClient
+      ).auth.getSession();
+      setState({ session: data.session, loading: false });
     };
-    refresh();
+    void refresh();
     window.addEventListener("sp-qa-changed", refresh);
     const { data } = persistedClient.auth.onAuthStateChange(() => {
       if (!getActingSupabase()) refresh();
