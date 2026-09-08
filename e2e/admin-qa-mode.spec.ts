@@ -169,6 +169,6 @@ test.describe.serial("Admin QA mode hosted regression", () => {
     await expect(page.getByRole("alert")).toContainText(
       /Unable to start QA mode|Edge Function|QA simulated/,
     );
-    await expect(page.getByText("ADMIN QA MODE")).toHaveCount(0);
+    await expect(adminQaBanner(page)).toHaveCount(0);
   });
 });
