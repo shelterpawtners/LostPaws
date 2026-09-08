@@ -99,7 +99,7 @@ jobs:
           grep -q "^STATUS: READY_FOR_ACCEPTANCE$" docs/AI-HANDOFF.md
           grep -q "^SAFE_TO_CONTINUE: YES$" docs/AI-HANDOFF.md
           grep -q "^OWNER_DECISION_REQUIRED: NO$" docs/AI-HANDOFF.md
-      - name: Resolve tested Vercel URL and verify deployed frontend SHA
+      - name: Resolve tested Vercel URL and verify deployed frontend artifact
         env:
           GH_TOKEN: ${{ github.token }}
           REPO: ${{ github.repository }}
@@ -114,10 +114,10 @@ jobs:
           if [[ "${GITHUB_EVENT_NAME}" == "workflow_dispatch" || -z "${PR_NUMBER}" ]]; then
             qa_url="${INPUT_QA_URL:-${FALLBACK_QA_URL}}"
           else
-            frontend_sha=$(git log -1 --format=%H "${BASE_SHA}..HEAD" -- src public index.html package.json package-lock.json vite.config.ts tsconfig.json tsconfig.app.json tsconfig.node.json || true)
+            frontend_sha=$(bash scripts/latest-frontend-artifact-sha.sh "${BASE_SHA}" HEAD)
 
             if [[ -n "${frontend_sha}" ]]; then
-              echo "Latest frontend-impacting PR SHA: ${frontend_sha}"
+              echo "Latest deployed-artifact PR SHA: ${frontend_sha}"
               for attempt in $(seq 1 30); do
                 vercel_state=$(gh api "repos/${REPO}/commits/${frontend_sha}/status" --jq '[.statuses[] | select(.context == "Vercel")] | first | .state // "missing"')
                 case "${vercel_state}" in
@@ -139,7 +139,7 @@ jobs:
                 esac
               done
             else
-              echo "No frontend-impacting commit in this PR; existing QA deployment is valid."
+              echo "No deployed frontend artifact changed in this PR; existing QA deployment is valid."
             fi
 
             comments=$(gh api "repos/${REPO}/issues/${PR_NUMBER}/comments?per_page=100" --paginate)
