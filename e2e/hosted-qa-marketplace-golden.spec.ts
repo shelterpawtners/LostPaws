@@ -16,6 +16,7 @@ async function signIn(page: Page, email: string, password: string) {
 }
 
 async function signOut(page: Page) {
+  await page.goto("/dashboard");
   await page.getByRole("button", { name: "Sign out" }).click();
   await expect(page).toHaveURL(/\/$/);
 }
