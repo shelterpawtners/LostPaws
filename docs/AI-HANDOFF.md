@@ -1,26 +1,27 @@
 # AI Handoff
 
-STATUS: IN_PROGRESS
+STATUS: COMPLETE
 CURRENT_PHASE: Phase 2 — Partner Marketplace MVP
 CURRENT_CHECKPOINT: Dev Loop v2 bootstrap — Issue #15
-NEXT_CHECKPOINT: Complete and integrate Dev Loop v2; then launch CP6 Issue #14 from a fresh `phase2/cp6-impact-giving` branch
+NEXT_CHECKPOINT: Integrate accepted PR #16 manually, then launch CP6 Issue #14 from a fresh `phase2/cp6-impact-giving` branch
 OWNER_DECISION_REQUIRED: NO
-SAFE_TO_CONTINUE: YES
-ACCEPTED_CODE_SHA: NONE
+SAFE_TO_CONTINUE: NO
+ACCEPTED_CODE_SHA: fd905eee638c0d3c8b2810f26a799d0130291ebc
 
 ## Current state
 
 - PR #2 is merged into `build/festival-mvp` at merge commit `e248f8b3ae754da7faccf41ebe2c0a4bb3857f27`.
-- Active work branch: `ops/dev-loop-v2`.
-- Active Issue: #15.
-- CP6 Issue #14 remains authorized next, but feature implementation must wait until Dev Loop v2 is integrated.
+- Dev Loop v2 implementation branch: `ops/dev-loop-v2`.
+- Issue #15 acceptance contract is satisfied at `fd905eee638c0d3c8b2810f26a799d0130291ebc`.
+- Native acceptance evidence on that SHA: CI #239 PASS, Database QA #4 PASS, Persona QA #69 PASS, Hosted QA #135 PASS, Merge Gate #4 PASS, Dependency Review #4 PASS, AI Ops Status #4 PASS.
+- The prior CI #238 formatting failure was a GREEN formatting defect. The deterministic formatter artifact was applied exactly and the temporary one-shot formatter workflow was removed before the accepted run.
+- CP6 Issue #14 remains the next authorized Phase 2 product checkpoint.
+- PR #16 must be integrated into `build/festival-mvp` before creating the fresh CP6 branch. Current controller policy prohibits auto-merge, so that integration remains an operator action rather than an engineering blocker or RED product decision.
 - Phase 3 remains unauthorized.
-- CI #238 failed only at `npm run lint`; Database QA #3, Persona QA #68, Hosted QA #134, Merge Gate #3, Dependency Review #3, AI Ops Status #3, and the read-only formatting artifact workflow all passed on head `45c6a87303565c63b325dbf037245b5497bb494c`.
-- Failure classification: GREEN formatting defect. The deterministic formatting artifact was applied exactly and the temporary one-shot formatter workflow was removed. Native CI/QA must now validate the corrected head before this bootstrap can be marked COMPLETE.
 
-## Dev Loop v2 scope
+## Dev Loop v2 delivered scope
 
-Implement and validate:
+Accepted:
 
 - one change-impact classifier;
 - change-aware CI;
@@ -40,7 +41,7 @@ Implement and validate:
 - No automatic AI review.
 - Native GitHub Actions/scripts own deterministic validation/status.
 - One primary coding agent per bounded checkpoint by default.
-- No CP6 product work in this bootstrap branch.
+- No CP6 product work belongs in the bootstrap branch.
 
 ## RED boundaries
 
@@ -48,15 +49,10 @@ Implement and validate:
 - `OD-004` remains blocking only for provider-dependent charitable-money movement/settlement/integration.
 - No production/DNS, paid infrastructure, destructive migration, auto-merge, or Phase 3.
 
-## Completion contract
+## Next action
 
-Before marking this bootstrap COMPLETE:
-
-1. new native workflows must validate on the Dev Loop PR;
-2. classifier and shell scripts must pass syntax/behavior checks;
-3. CI must be green;
-4. the new single-record AI Ops status path must be working;
-5. document any deliberately deferred optimization;
-6. set `ACCEPTED_CODE_SHA` to the exact accepted bootstrap implementation SHA;
-7. update Issue #15 and this handoff;
-8. integrate only under the owner's already-granted authorization for this optimization rollout, then create the fresh CP6 branch/PR.
+1. Manually merge accepted PR #16 into `build/festival-mvp` without changing the accepted implementation.
+2. Create `phase2/cp6-impact-giving` from the updated `build/festival-mvp`.
+3. Open the bounded CP6 PR for Issue #14 and move `<!-- ai-active-build-pr -->` to it.
+4. Set the handoff back to `IN_PROGRESS` with `ACCEPTED_CODE_SHA: NONE` for CP6.
+5. Implement only the provider-agnostic CP6 foundation allowed before `OD-004`.

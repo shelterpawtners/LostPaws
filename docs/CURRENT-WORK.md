@@ -25,19 +25,25 @@ Accepted Phase 2 status:
 
 CP5 evidence remains recorded in the handoff/progress history and Issue #13 is closed.
 
-## Active work
+## Dev Loop v2 bootstrap
 
-**Issue #15 — Dev Loop v2 bootstrap** is active before CP6 implementation.
+**Issue #15 — Dev Loop v2 bootstrap** is COMPLETE at accepted code SHA `fd905eee638c0d3c8b2810f26a799d0130291ebc`.
 
-Branch: `ops/dev-loop-v2`
+Accepted native evidence:
 
-Goal: install the optimized native development control plane documented in `docs/DEV-LOOP-V2.md`.
+- CI #239 PASS;
+- Database QA #4 PASS;
+- Persona QA #69 PASS;
+- Hosted QA #135 PASS;
+- Merge Gate #4 PASS;
+- Dependency Review #4 PASS;
+- AI Ops Status #4 PASS.
 
-Do not add CP6 feature behavior to the Dev Loop bootstrap PR.
+PR #16 remains open only because current controller policy prohibits auto-merge. Integrate it manually into `build/festival-mvp` before creating the CP6 branch.
 
 ## Next product checkpoint
 
-After Dev Loop v2 is accepted and integrated:
+After PR #16 is integrated:
 
 1. create `phase2/cp6-impact-giving` from the updated `build/festival-mvp`;
 2. open one bounded CP6 PR for Issue #14;
