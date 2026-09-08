@@ -1,5 +1,12 @@
 # AI Handoff
 
+STATUS: COMPLETE
+CURRENT_PHASE: Phase 2 — Partner Marketplace MVP
+CURRENT_CHECKPOINT: Issue #11 — Partner Marketplace golden path
+NEXT_CHECKPOINT: NONE — Phase 2 Checkpoint 5 remains owner-gated
+OWNER_DECISION_REQUIRED: YES
+SAFE_TO_CONTINUE: NO
+
 This file is the shared baton between ChatGPT, Codex, Copilot, GitHub Actions, and human review.
 
 ## Rules
@@ -13,45 +20,48 @@ This file is the shared baton between ChatGPT, Codex, Copilot, GitHub Actions, a
 
 ## Current handoff
 
-Updated by: GitHub Copilot
+Updated by: ChatGPT acceptance
 Branch: `qa/guardian-registration-personas`
-Last completed product task: GitHub Issue #11 — Partner profile persistence blocker root-cause fix
-Issue #11 status: READY FOR RE-VALIDATION — root-cause fix and focused regression updates committed
-Active implementation task: rerun provisioned Persona QA acceptance on the latest branch SHA
+Last completed product task: GitHub Issue #11 — Partner Marketplace golden path + Partner profile persistence blocker
+Issue #11 status: ACCEPTED
+Acceptance SHA: `c774634bb7cf38e1cf8042183141be58f64c2da0`
+Acceptance evidence: Persona QA run #51 (`34210680064`) passed.
 
 ### Completed
 
-- Issue / task: #11 Partner profile persistence blocker.
-- Agent: GitHub Copilot.
+- Issue / task: #11 Partner Marketplace golden path and Partner profile persistence blocker.
+- Agent: GitHub Copilot + ChatGPT acceptance.
 - Branch: `qa/guardian-registration-personas`.
-- Final remote SHA: `9ca86f3a46321988009a07dbf9ba6a9885e5ffa8`.
-- Verified root cause: Partner profile editor allowed editing before async profile load completed, so late-loading server data could overwrite freshly typed form values before save; organization selection was also reset from an unordered membership query on reload.
+- Root-cause implementation SHA: `9ca86f3a46321988009a07dbf9ba6a9885e5ffa8`.
+- Accepted branch SHA: `c774634bb7cf38e1cf8042183141be58f64c2da0`.
+- Root cause: Partner profile editor allowed editing before async profile load completed, so late-loading server data could overwrite freshly typed values before save; organization selection also needed deterministic persistence across reload.
 - What changed:
-  - `src/components/PartnerProfileEditor.tsx`
-    - Persist selected organization per signed-in user in `localStorage`.
-    - Deterministically order memberships by organization UUID before default selection.
-    - Load selected profile with cancellation-safe async handling and explicit `loadingProfile` state.
-    - Disable editable controls while profile data is loading to prevent late-load clobbering of newly entered values.
-    - Guard `save()` during active profile loading.
-  - `e2e/phase-2-offer-redemption.spec.ts`
-    - Preserve and assert same selected organization across reload.
-    - Preserve and assert both `Public description` and `Public email` across reload before publish/offer steps continue.
+  - Partner organization selection is deterministic and persisted per signed-in user.
+  - Partner profile loading is cancellation-safe and blocks edits until loaded.
+  - Save is guarded while profile loading is active.
+  - Playwright now asserts same organization plus `Public description` and `Public email` survive reload.
+  - The publish-profile selector was corrected to exact matching without weakening persistence coverage.
+  - Persona QA no longer uses the deprecated Node-20-based `supabase/setup-cli@v1`; the pinned Supabase CLI is invoked through npm instead.
 - Tests run + results:
-  - `npm run check` ✅ pass (prettier, typecheck, vitest: 3 files / 9 tests).
-  - `npm run build` ✅ pass.
-  - `npx playwright test e2e/phase-2-offer-redemption.spec.ts` ⚠️ blocked locally without provisioned seeded/local Supabase auth session; sign-in remained on `/login`.
+  - Lightweight CI on accepted branch SHA: PASS.
+  - Persona QA run #51: PASS.
+  - pgTAP: 84/84 PASS.
+  - Playwright: 24/24 PASS.
+  - Covered Guardian dashboard, persona registration, access isolation, Partner profile save/reload, profile publication, offer publication, Guardian discovery/claim, Partner redemption confirmation/replay denial, and manual camera fallback.
 - CI / hosted QA status:
-  - Base branch `build/festival-mvp`: recent CI runs are passing.
-  - Feature branch: multiple older Persona QA runs failed on this persistence assertion; recent CI/Hosted QA runs are passing on newer workflow commits.
-  - Acceptance signal still required: rerun Persona QA on the latest SHA that includes this fix.
+  - Persona QA accepted green.
+  - Hosted shared QA remains the recommended primary human/acceptance environment for next work; disposable Supabase remains a lower-level deterministic regression/security gate.
 - Open defects:
-  - None newly identified beyond awaiting provisioned Persona QA confirmation for this fix.
+  - None blocking Issue #11 acceptance.
 - Product-owner decisions needed:
-  - None for this blocker fix.
+  - Phase 2 Checkpoint 5 remains explicitly gated.
+  - Phase 3 remains explicitly gated.
 - Deferred items:
-  - Broad full-site audit remains deferred per current MVP testing strategy.
+  - Broad full-site Issue #5 audit remains deferred until major MVP slices connect.
+  - Hosted QA workflow/environment should be promoted to the normal acceptance path after this checkpoint.
 - Recommended next action:
-  - Run Persona QA against latest branch SHA; if green, mark Issue #11 accepted and continue the active Phase 2 sequence without expanding scope.
+  - Do not begin Phase 2 Checkpoint 5 until product-owner authorization.
+  - Before the next product slice, harden the hosted shared QA workflow so GitHub + shared Supabase DEV/STAGING + Vercel is the normal acceptance path, while disposable local Supabase remains an automated regression/security layer.
 
 ### Current strategic findings
 
@@ -61,23 +71,6 @@ Active implementation task: rerun provisioned Persona QA acceptance on the lates
 - Shelter onboarding should gain duplicate/claim protections comparable to Partner organization onboarding.
 - Broad full-site Issue #5 QA is intentionally deferred until major MVP vertical slices connect.
 
-### Required completion report from coding agent
-
-Before finishing the active blocker task, update this file with:
-
-- **Issue / task:**
-- **Agent:**
-- **Branch:**
-- **Final remote SHA:**
-- **Root cause:**
-- **What changed:**
-- **Tests run + results:**
-- **CI / hosted QA status:**
-- **Open defects:**
-- **Product-owner decisions needed:**
-- **Deferred items:**
-- **Recommended next action:**
-
 ### Human action required
 
-None until the Partner profile persistence blocker is fixed and Persona QA is green.
+Owner authorization is required before Phase 2 Checkpoint 5 or Phase 3 begins.
