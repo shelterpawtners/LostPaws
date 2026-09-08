@@ -40,9 +40,17 @@ jobs:
           RUN_URL: ${{ github.event.workflow_run.html_url }}
           HEAD_BRANCH: ${{ github.event.workflow_run.head_branch }}
           HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
+          ACTIVE_MARKER: "<!-- ai-active-build-pr -->"
         shell: bash
         run: |
           set -euo pipefail
+
+          pr=$(gh api "repos/${REPO}/pulls/${PR_NUMBER}")
+          pr_body=$(jq -r '.body // ""' <<<"${pr}")
+          if [[ "${pr_body}" != *"${ACTIVE_MARKER}"* ]]; then
+            echo "PR is not the marked active build lane; do not spend AI credits advancing it."
+            exit 0
+          fi
 
           handoff=$(gh api "repos/${REPO}/contents/docs/AI-HANDOFF.md?ref=${HEAD_BRANCH}" --jq '.content' | base64 --decode)
 
@@ -62,8 +70,8 @@ jobs:
           next_checkpoint=$(sed -n 's/^NEXT_CHECKPOINT:[[:space:]]*//p' <<<"${handoff}" | head -n 1)
           checkpoint_key=$(printf '%s' "${next_checkpoint:-none}" | sha256sum | cut -c1-16)
           marker="<!-- ai-build-orchestrator-advance:${checkpoint_key} -->"
-
           comments=$(gh api "repos/${REPO}/issues/${PR_NUMBER}/comments?per_page=100" --paginate)
+
           if jq -e --arg marker "${marker}" '[.[] | select(.body | contains($marker))] | length > 0' <<<"${comments}" >/dev/null; then
             echo "This next checkpoint was already delegated."
             exit 0
