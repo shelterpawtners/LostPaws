@@ -35,7 +35,14 @@ test.describe.serial("Hosted shared-dev smoke", () => {
       settingOrDefault("PLAYWRIGHT_GUARDIAN_EMAIL", "guardian-a@example.invalid"),
       settingOrDefault("PLAYWRIGHT_GUARDIAN_PASSWORD", "Demo-only-Guardian-A!"),
     );
-    await page.getByRole("link", { name: "Add another pet" }).click();
+    const addAnotherPet = page.getByRole("link", { name: "Add another pet" });
+    const setUpPet = page.getByRole("link", { name: "Set up your pet" });
+    if (await addAnotherPet.isVisible().catch(() => false)) {
+      await addAnotherPet.click();
+    } else {
+      await expect(setUpPet).toBeVisible();
+      await setUpPet.click();
+    }
     await expect(page).toHaveURL(/\/onboarding\/guardian$/);
 
     await page.getByLabel("Pet name").fill(petName);
