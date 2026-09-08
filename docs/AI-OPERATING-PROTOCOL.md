@@ -67,6 +67,15 @@ Do not create parallel planning documents when an authoritative file already exi
 10. Human UX review occurs only where useful or required.
 11. Merge/phase advancement happens only after the applicable gate is met.
 
+## GitHub Copilot PR review configuration
+
+- Keep exactly one repository ruleset for automatic Copilot PR review: `Automatic Copilot Review`.
+- Target branch: `build/festival-mvp`.
+- Enforcement should be active when automatic review is desired.
+- `Review new pushes` stays **off** to avoid repeated review/credit/notification noise during agent iteration.
+- `Review draft pull requests` stays **off** so drafts remain a low-noise workspace.
+- Do not create a duplicate Copilot review ruleset unless the review policy materially changes.
+
 ## Handoff trigger convention
 
 Until an automatic ChatGPT Work GitHub-event trigger is configured, the lightweight human trigger is simply:
