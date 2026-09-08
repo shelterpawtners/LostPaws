@@ -39,20 +39,26 @@ test.describe.serial("Hosted partner-to-guardian marketplace golden path", () =>
       settingOrDefault("PLAYWRIGHT_PARTNER_PASSWORD", "Demo-only-Partner!"),
     );
     await page.goto("/business");
+    const saveDraftButton = page.getByRole("button", { name: "Save draft" });
+    await expect(saveDraftButton).toBeEnabled({ timeout: 15_000 });
     await page.getByLabel("Public description").fill(publicDescription);
     await page.getByLabel("Public email").fill(publicEmail);
     await page.getByLabel("How customers are served").selectOption("online");
     const profileStatus = page.locator(".panel > p[role='status']").last();
-    await page.getByRole("button", { name: "Save draft" }).click();
+    await saveDraftButton.click();
     await expect(profileStatus).toContainText("Saved as a private draft");
     const organization = page.getByLabel("Organization");
     const selectedOrganizationId = await organization.inputValue();
     await page.reload();
+    await expect(saveDraftButton).toBeEnabled({ timeout: 15_000 });
     await expect(organization).toHaveValue(selectedOrganizationId);
     await expect(page.getByLabel("Public description")).toHaveValue(
       publicDescription,
+      { timeout: 15_000 },
     );
-    await expect(page.getByLabel("Public email")).toHaveValue(publicEmail);
+    await expect(page.getByLabel("Public email")).toHaveValue(publicEmail, {
+      timeout: 15_000,
+    });
     const publishProfile = page.getByRole("button", {
       name: "Publish profile",
       exact: true,
