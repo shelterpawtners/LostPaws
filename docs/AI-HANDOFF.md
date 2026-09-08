@@ -17,6 +17,8 @@ Updated by: ChatGPT
 Branch: `qa/guardian-registration-personas`
 Last known completed product task: GitHub Issue #9 — MVP Profile & Data Model Review
 Last reported implementation SHA: `b339628`
+Coordination setup: GitHub Issue #10
+Active implementation task: GitHub Issue #11 — MVP SLICE: stabilize Partner Marketplace golden path + targeted regression
 
 ### Completed
 
@@ -25,6 +27,7 @@ Last reported implementation SHA: `b339628`
 - Issue #9 MVP profile/data-model review completed.
 - Current schema was found sufficient for MVP foundation; no new migration required from Issue #9.
 - RAVE Vendor remains a Partner-architecture classification/channel rather than a duplicate organization model.
+- Repo-native AI coordination foundation added via `AI-HANDOFF.md`, `AI-OPERATING-PROTOCOL.md`, updated `CURRENT-WORK.md`, and the AI Agent Task issue template.
 
 ### Current strategic findings
 
@@ -36,13 +39,25 @@ Last reported implementation SHA: `b339628`
 
 ### Active work
 
-`NEXT TASK TO ASSIGN`
+**Issue #11 — MVP SLICE: stabilize Partner Marketplace golden path + targeted regression**
 
-Recommended sequence:
-1. Stabilize/complete the currently active Partner Marketplace golden path with focused support/moderation visibility and one strong regression path.
-2. Build a small private Guardian profile-lite vertical slice.
-3. Continue Pet Passport foundation only within the approved phase boundary.
-4. Defer adoption verification and full transfer/handoff until explicitly authorized.
+Codex should execute Issue #11 directly from GitHub after reading:
+1. `docs/CURRENT-WORK.md`
+2. `docs/AI-OPERATING-PROTOCOL.md`
+3. this file
+4. the relevant Phase 2 Checkpoint 2/3/4 progress docs
+
+The intended golden path is:
+
+Partner account -> Partner profile -> create/manage offer -> publish offer -> Guardian can discover/view offer -> existing approved claim/redemption entry point remains functional.
+
+Testing remains strategic: one strong golden-path Playwright regression plus existing relevant RLS/pgTAP checks; do not expand the broad Issue #5 audit.
+
+### Recommended sequence after Issue #11
+
+1. Build a small private Guardian profile-lite vertical slice.
+2. Continue Pet Passport foundation only within the approved phase boundary.
+3. Defer adoption verification and full transfer/handoff until explicitly authorized.
 
 ### Required completion report from any coding agent
 
@@ -62,4 +77,6 @@ Before finishing a task, replace/update the sections below:
 
 ### Human action required
 
-None for this coordination-file setup.
+Run Codex/Work with the short instruction:
+
+`Execute GitHub Issue #11. Read docs/AI-OPERATING-PROTOCOL.md and docs/AI-HANDOFF.md first. Update the handoff file before you finish.`
