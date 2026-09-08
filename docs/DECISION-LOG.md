@@ -256,3 +256,10 @@ This is the canonical review list for implementation choices and explicit user-a
 - **Decision:** The separate acting-user client uses its own `sessionStorage` key so an active QA persona survives a page reload in the same browser tab, while the real administrator remains in the normal persisted Supabase storage key.
 - **Reason:** Hosted regression and human QA both need to test navigation and refresh without silently reverting identity; a tab boundary limits this temporary delegated session to the current QA tab.
 - **Consequence:** Closing the tab ends the acting-session continuity, `Return to Admin` removes the dedicated key and restores the existing admin session without credentials, and neither client overwrites the other.
+
+## D-038 — Profile/data review locks relationship-first MVP sequencing
+
+- **Status:** Active; Issue #9 review decision
+- **Decision:** Preserve the existing normalized identity, organization, pet, guardianship, offer, and verification foundations without speculative schema expansion. Treat `created_by` as provenance rather than permanent pet authority, and activate shelter-created Passport transfer, co-guardian control, and responder-linked adoption verification only through dedicated transactional vertical slices.
+- **Reason:** The necessary base relations already exist, while premature nullable fields or form edits would not solve the real access-control and provenance risks.
+- **Consequence:** No migration is added for Issue #9. The documented transfer, co-guardian, organization-claim, and adoption-response gates become prerequisites for their respective future UI slices.
