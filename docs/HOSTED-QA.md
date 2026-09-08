@@ -40,7 +40,7 @@ Run this only against `shelterpawtners-dev`. Do not use `db reset --linked`; a r
 
 ## Hosted Playwright
 
-The focused smoke verifies Guardian registration entry/login, pet save, dashboard persistence through reload, logout and session protection, login persistence, public marketplace access, and seeded Partner offer-management access:
+The focused hosted suite verifies Guardian registration entry/login, pet save, dashboard persistence through reload, logout and session protection, login persistence, public marketplace access, and seeded Partner offer-management access. It also covers the practical Partner → Guardian golden path by creating a unique Partner offer in hosted QA, claiming it as a seeded Guardian, and confirming redemption as the seeded Partner while preserving the Issue #11 profile save/reload regression check:
 
 ```bash
 PLAYWRIGHT_BASE_URL=https://preview.example.vercel.app \
@@ -50,7 +50,13 @@ PLAYWRIGHT_SUPABASE_PUBLISHABLE_KEY=<publishable-key> \
 npm run test:e2e:hosted
 ```
 
-GitHub's **Hosted QA** workflow runs automatically on pushes and pull requests for the QA branch, and remains available through `workflow_dispatch`. Configure repository variables `QA_BASE_URL`, `QA_SUPABASE_URL`, and `QA_SUPABASE_PUBLISHABLE_KEY`, plus these GitHub Actions **secrets** (never repository variables or source code):
+GitHub's **Hosted QA** workflow runs automatically on:
+
+- pushes to `qa/guardian-registration-personas`,
+- pull requests targeting `build/festival-mvp`,
+- and manual `workflow_dispatch`.
+
+The workflow requires `docs/AI-HANDOFF.md` to declare `SAFE_TO_CONTINUE: YES` and `OWNER_DECISION_REQUIRED: NO` before acceptance execution. Configure repository variables `QA_BASE_URL`, `QA_SUPABASE_URL`, and `QA_SUPABASE_PUBLISHABLE_KEY`, plus these GitHub Actions **secrets** (never repository variables or source code):
 
 | Secret                                                   | Purpose                                                                        |
 | -------------------------------------------------------- | ------------------------------------------------------------------------------ |
@@ -59,7 +65,15 @@ GitHub's **Hosted QA** workflow runs automatically on pushes and pull requests f
 | `QA_GUARDIAN_EMAIL` / `QA_GUARDIAN_PASSWORD`             | Deterministic Guardian used by the existing hosted smoke.                      |
 | `QA_PARTNER_EMAIL` / `QA_PARTNER_PASSWORD`               | Deterministic Partner used by the existing hosted smoke.                       |
 
-The workflow fails before browser execution if the target, shared-dev project, public key, or any required QA secret is missing. Its Admin QA suite also fails visibly if the QA UI flag, server-side QA secret, seeded personas, session exchange, or original persisted admin session is unavailable. Select `full_browser_audit` to run the practical hosted portion of the Issue #5 audit. The local-only database reset, pgTAP, and direct database setup remain in the Persona QA workflow.
+The workflow fails before browser execution if the handoff authorization, target, shared-dev project, public key, or any required QA secret is missing. Its Admin QA suite also fails visibly if the QA UI flag, server-side QA secret, seeded personas, session exchange, or original persisted admin session is unavailable. Select `full_browser_audit` to run the practical hosted portion of the Issue #5 audit. Persona QA remains the targeted deterministic lower-level gate for local disposable Supabase reset, pgTAP, and direct database setup.
+
+## Normal acceptance flow
+
+1. Implement on the active QA branch and run lightweight CI.
+2. Use Persona QA for deterministic local migration/RLS/regression checks when needed.
+3. Use Hosted QA against Vercel + shared `shelterpawtners-dev` as the normal acceptance surface.
+4. Keep acceptance and next-step authorization in `docs/AI-HANDOFF.md`.
+5. Keep production deployment as a separate explicit gate.
 
 ## Promotion rule
 

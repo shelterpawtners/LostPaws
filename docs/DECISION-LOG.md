@@ -263,3 +263,10 @@ This is the canonical review list for implementation choices and explicit user-a
 - **Decision:** Preserve the existing normalized identity, organization, pet, guardianship, offer, and verification foundations without speculative schema expansion. Treat `created_by` as provenance rather than permanent pet authority, and activate shelter-created Passport transfer, co-guardian control, and responder-linked adoption verification only through dedicated transactional vertical slices.
 - **Reason:** The necessary base relations already exist, while premature nullable fields or form edits would not solve the real access-control and provenance risks.
 - **Consequence:** No migration is added for Issue #9. The documented transfer, co-guardian, organization-claim, and adoption-response gates become prerequisites for their respective future UI slices.
+
+## D-039 — Hosted QA as default Phase 2 acceptance lane
+
+- **Status:** Active; Issue #6 implementation decision
+- **Decision:** Hosted QA now runs automatically for push events on `qa/guardian-registration-personas` and pull requests targeting `build/festival-mvp`, while Persona QA remains a manual deterministic lower-level local-Supabase/pgTAP regression gate. Hosted acceptance includes an explicit handoff-authorization guard (`SAFE_TO_CONTINUE: YES` and `OWNER_DECISION_REQUIRED: NO`) plus a practical Partner → Guardian golden-path regression that preserves the Issue #11 profile persistence check.
+- **Reason:** Jim's normal acceptance workflow must use Vercel + shared `shelterpawtners-dev` instead of local Docker resets, but progression still needs explicit repository-state authorization and diagnosable automated evidence.
+- **Consequence:** Hosted acceptance evidence becomes the routine signal for ongoing Phase 2 QA while maintaining non-production boundaries, seeded deterministic personas, and no privileged credential exposure in browser tests.

@@ -1,6 +1,26 @@
 name: Hosted QA
 
 on:
+  pull_request:
+    branches: [build/festival-mvp]
+    paths:
+      - "src/**"
+      - "e2e/**"
+      - ".github/workflows/hosted-qa.yml"
+      - "playwright.config.ts"
+      - "package.json"
+      - "package-lock.json"
+      - "supabase/**"
+  push:
+    branches: [qa/guardian-registration-personas]
+    paths:
+      - "src/**"
+      - "e2e/**"
+      - ".github/workflows/hosted-qa.yml"
+      - "playwright.config.ts"
+      - "package.json"
+      - "package-lock.json"
+      - "supabase/**"
   workflow_dispatch:
     inputs:
       qa_url:
@@ -43,6 +63,17 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
+      - name: Require handoff continuation authorization
+        shell: bash
+        run: |
+          grep -q "^SAFE_TO_CONTINUE: YES$" docs/AI-HANDOFF.md || {
+            echo "Hosted QA cannot advance when AI handoff is not SAFE_TO_CONTINUE: YES" >&2
+            exit 1
+          }
+          grep -q "^OWNER_DECISION_REQUIRED: NO$" docs/AI-HANDOFF.md || {
+            echo "Hosted QA cannot advance while OWNER_DECISION_REQUIRED is not NO" >&2
+            exit 1
+          }
       - name: Require hosted QA configuration
         shell: bash
         run: |

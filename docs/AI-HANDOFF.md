@@ -1,6 +1,6 @@
 # AI Handoff
 
-STATUS: IN_PROGRESS
+STATUS: READY_FOR_ACCEPTANCE
 CURRENT_PHASE: Phase 2 — Partner Marketplace MVP
 CURRENT_CHECKPOINT: Hosted shared QA hardening / Issue #6
 NEXT_CHECKPOINT: Continue remaining Phase 2 work from the approved roadmap after hosted QA acceptance
@@ -22,7 +22,7 @@ This file is the shared baton between ChatGPT, Codex, Copilot, GitHub Actions, a
 
 ## Current handoff
 
-Updated by: ChatGPT acceptance / build orchestration
+Updated by: GitHub Copilot
 Branch: `qa/guardian-registration-personas`
 Last completed product task: GitHub Issue #11 — Partner Marketplace golden path + Partner profile persistence blocker
 Issue #11 status: ACCEPTED and CLOSED
@@ -55,6 +55,41 @@ Acceptance evidence: Persona QA run #51 (`34210680064`) passed.
 ### Current authorized task
 
 Issue #6 — make hosted shared QA the normal acceptance environment.
+
+Issue #6 implementation SHA (current branch head at handoff update): `acc27b48b07d626655a333aca3b5030a7a3ea3f6`
+
+Issue #6 root-cause gap addressed:
+
+- Hosted QA documentation and intended operating model said hosted acceptance was the normal path, but the Hosted QA workflow trigger was still manual-only (`workflow_dispatch`), leaving acceptance execution non-routine and less predictable.
+
+What changed for Issue #6:
+
+- Hosted QA workflow now auto-runs on push to `qa/guardian-registration-personas` and PRs targeting `build/festival-mvp`, while keeping `workflow_dispatch`.
+- Hosted QA now verifies handoff progression authorization before execution by requiring:
+  - `SAFE_TO_CONTINUE: YES`
+  - `OWNER_DECISION_REQUIRED: NO`
+- Added hosted Playwright golden-path coverage (`e2e/hosted-qa-marketplace-golden.spec.ts`) for:
+  - Partner profile draft save + reload persistence (Issue #11 guard),
+  - Partner offer creation/publication,
+  - Guardian claim of the unique hosted-run offer,
+  - Partner redemption confirmation with 64-char opaque code.
+- Extended `npm run test:e2e:hosted` to include the new hosted golden-path test.
+- Updated `docs/HOSTED-QA.md` to align with implemented triggers, orchestration gate, and normal acceptance flow.
+- Recorded the durable workflow decision in `docs/DECISION-LOG.md` as D-039.
+
+Issue #6 validation run locally:
+
+- `npm run lint` — PASS
+- `npm run typecheck` — PASS
+- `npm test` — PASS (3 files, 9 tests)
+- `npm run build` — PASS
+- `npx playwright test e2e/hosted-qa-marketplace-golden.spec.ts` — PASS (skipped locally without hosted env flags/secrets by design)
+
+Issue #6 CI state at implementation handoff:
+
+- Base branch (`build/festival-mvp`) CI remains passing.
+- Feature branch (`qa/guardian-registration-personas`) CI run #138 (`34211816225`) passed before this change set.
+- Hosted QA acceptance for this latest SHA is pending CI execution on the updated workflow.
 
 Target operating model:
 
