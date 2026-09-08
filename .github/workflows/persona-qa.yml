@@ -2,6 +2,14 @@ name: Persona QA
 
 on:
   pull_request:
+    paths:
+      - "src/**"
+      - "e2e/**"
+      - "supabase/**"
+      - "package.json"
+      - "package-lock.json"
+      - "playwright.config.*"
+      - ".github/workflows/persona-qa.yml"
   workflow_dispatch:
 
 permissions:
@@ -11,8 +19,8 @@ jobs:
   persona-qa:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
           node-version: 22
           cache: npm
@@ -48,7 +56,7 @@ jobs:
         run: npx playwright test e2e/guardian-dashboard.spec.ts e2e/persona-registration.spec.ts e2e/persona-access-isolation.spec.ts e2e/phase-2-offer-redemption.spec.ts
       - name: Upload Playwright failure evidence
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: playwright-test-results
           path: test-results/
