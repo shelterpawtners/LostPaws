@@ -1,9 +1,9 @@
 # AI Handoff
 
-STATUS: BLOCKED
+STATUS: READY_FOR_ACCEPTANCE
 CURRENT_PHASE: Phase 2 — Partner Marketplace MVP
 CURRENT_CHECKPOINT: Phase 2 Checkpoint 5 — Verified Savings + Customer Attribution
-NEXT_CHECKPOINT: Retry deployment/Hosted QA for frontend fix `11b23ef4` when the Vercel build-rate limit clears; if green, mark the CP5 pre-decision slice COMPLETE, keep verified-savings rules owner-gated, and continue only safely separable provider-agnostic Phase 2 Checkpoint 6 work
+NEXT_CHECKPOINT: Run the deliberate exact-SHA Vercel/Hosted QA acceptance for the current head; if green, mark the CP5 pre-decision slice COMPLETE, keep verified-savings rules owner-gated, and continue only safely separable provider-agnostic Phase 2 Checkpoint 6 work
 OWNER_DECISION_REQUIRED: NO
 SAFE_TO_CONTINUE: YES
 
@@ -29,6 +29,7 @@ Concurrency test fix SHA: `c2003df199d57d96660fd842e817a07314fd5879`
 Hosted Admin QA selector fix SHA: `4614e3cef2f67378cb8cf827b364abda2a9b84e5`
 Admin QA reload-state fix SHA: `11b23ef41861f0d2e26272ed588019ddaa217f94`
 Vercel ignored-build wiring SHA: `f7840015794528c66cdd5474caf4f10892119640`
+Cost-state handoff SHA: `4f375db164537622d94d22bb266a08f6ab78b351`
 
 ### Checkpoint 5 implemented scope
 
@@ -58,7 +59,9 @@ CP5 prevents duplicate `first_known` attribution by serializing Guardian + Partn
 - Fix `11b23ef4`: `QaBanner` restores the tab-scoped acting session itself when the in-memory acting client is absent, still listens for `sp-qa-changed`, and guards async state updates after unmount. This preserves the explicit cross-route/reload QA-session contract rather than weakening the regression test.
 - CI #219 for `11b23ef4`: PASS.
 - CI #221 on prior handoff head `943bbc862973816f111d131a8776dc5ac41d1c3b`: PASS.
-- Hosted acceptance for `11b23ef4` is not yet possible because no deployment containing that frontend change has become available.
+- CI #223 on cost-state head `4f375db164537622d94d22bb266a08f6ab78b351`: PASS.
+- Vercel processed `4f375db164537622d94d22bb266a08f6ab78b351` successfully and returned `Canceled by Ignored Build Step`, proving the repository-controlled ignored-build configuration is active for docs-only work.
+- CP5 is now deliberately `READY_FOR_ACCEPTANCE`; the next handoff commit is expected to force an exact-SHA Vercel build through the existing acceptance-boundary rule, after which Hosted QA should exercise the frontend state-restoration fix.
 
 ### Cost-control state
 
@@ -77,16 +80,16 @@ This RED rule does not block provider-agnostic Checkpoint 6 engineering that is 
 
 ### Vercel blockers/state
 
-ChatGPT plugin permission for Vercel is now set to `Allow all actions`, but direct Vercel account visibility remains incomplete: `list_teams` still returns exactly `{"teams": []}`, and direct project listing for team slug `jims-projects-acec6bcb` fails. This indicates a remaining Vercel OAuth/account-scope connection blocker rather than a ChatGPT action-permission blocker.
+ChatGPT plugin permission for Vercel is set to `Allow all actions`, but direct Vercel account visibility remains incomplete. `list_teams` returns `{"teams": []}`. Direct access to the known deployment scope now returns the more precise 403: `Not authorized: Trying to access resource under scope "jims-projects-acec6bcb". You must re-authenticate to this scope or use a token with access to this scope.` Vercel identifies that scope as team ID `team_VQxwR4q9AE0Yq7TecipqpTQ2`. This confirms the remaining plugin blocker is OAuth/team-scope authorization, not the ChatGPT `Allow all actions` setting.
 
-GitHub's Vercel commit status for prior handoff head `943bbc862973816f111d131a8776dc5ac41d1c3b` is `failure` with description `Deployment rate limited — retry in 24 hours.` and a target under `jims-projects-acec6bcb` with `upgradeToPro=build-rate-limit`. This is an external Vercel build-rate-limit condition. Do not upgrade or alter paid infrastructure autonomously.
+The earlier Vercel build-rate-limit status on `943bbc862973816f111d131a8776dc5ac41d1c3b` is no longer the active immediate result for routine docs-only work: Vercel accepted the newer `4f375db164537622d94d22bb266a08f6ab78b351` event and correctly skipped it through the configured Ignored Build Step. This does not yet prove a full build slot is available, so the current READY_FOR_ACCEPTANCE commit intentionally tests exactly that once, rather than repeatedly retrying.
 
-A second configuration issue was identified safely: repository policy expected `scripts/vercel-ignore-build.sh` to control unnecessary builds, but `vercel.json` did not previously declare an `ignoreCommand`, leaving the behavior dependent on a dashboard project setting that cannot currently be verified through the blocked Vercel connector. Commit `f7840015794528c66cdd5474caf4f10892119640` now wires the existing script in repository configuration. This should reduce future unnecessary preview builds but does not itself bypass or purchase capacity for the existing rate-limit condition.
+A configuration issue was corrected safely: repository policy expected `scripts/vercel-ignore-build.sh` to control unnecessary builds, but `vercel.json` did not previously declare an `ignoreCommand`, leaving the behavior dependent on a dashboard project setting that could not be verified through the blocked Vercel connector. Commit `f7840015794528c66cdd5474caf4f10892119640` wires the existing script in repository configuration.
 
 Hosted QA #116 safely used the previously Ready frontend-impacting deployment `4de911d8884866772fdb5e8eb3c022de7b9e4541`, but that deployment predates `11b23ef4` and cannot establish acceptance for the application fix.
 
-The narrow safe next action is to observe the Vercel status for the repo-config wiring commit without forcing retries, then retry/check the frontend deployment and Hosted QA only when Vercel accepts builds again. If it clears without a paid-plan decision, no owner decision is required. Choosing a paid Vercel upgrade remains RED and must not be inferred.
+The narrow safe next action is one deliberate exact-SHA acceptance deployment/Hosted QA cycle. If the build is rate-limited again, return to BLOCKED without repeated retries or paid-plan changes. If it becomes Ready and Hosted QA passes, record CP5 COMPLETE and proceed only within the authorized Phase 2 boundary.
 
 ### Human action required
 
-No action is required to continue GitHub-safe Phase 2 work within the existing CP5 boundary. To restore direct Vercel inspection, reconnect/re-authorize the Vercel plugin against the Vercel account/team that owns `jims-projects-acec6bcb`; the current `Allow all actions` ChatGPT permission alone has not restored team visibility. Do not purchase or upgrade a Vercel plan unless the owner explicitly chooses to do so.
+No action is required to continue the current exact-SHA acceptance attempt. To restore direct Vercel inspection, reconnect/re-authorize the Vercel plugin against the Vercel account/team that owns `jims-projects-acec6bcb` / `team_VQxwR4q9AE0Yq7TecipqpTQ2`; the current `Allow all actions` ChatGPT permission alone does not grant that OAuth team scope. Do not purchase or upgrade a Vercel plan unless the owner explicitly chooses to do so.
