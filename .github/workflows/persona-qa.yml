@@ -57,6 +57,11 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
+      - name: Enable local-only Admin QA Edge Functions
+        shell: bash
+        run: |
+          mkdir -p supabase/functions
+          printf 'QA_MODE_ENABLED=true\n' > supabase/functions/.env
       - name: Start local Supabase
         run: bash scripts/supabase-cli.sh start
       - name: Reset and seed local database
