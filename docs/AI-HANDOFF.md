@@ -1,9 +1,9 @@
 # AI Handoff
 
-STATUS: IN_PROGRESS
+STATUS: READY_FOR_ACCEPTANCE
 CURRENT_PHASE: Phase 2 — Partner Marketplace MVP
 CURRENT_CHECKPOINT: Phase 2 Checkpoint 5 — Verified Savings + Customer Attribution
-NEXT_CHECKPOINT: Harden first-known/returning attribution against concurrent confirmations, rerun Persona QA, then return to full Hosted QA acceptance
+NEXT_CHECKPOINT: Run full Hosted QA for the hardened CP5 pre-decision slice; if green, mark that slice COMPLETE, record verified-savings rules as an owner decision gate, and continue only safely separable Phase 2 Checkpoint 6 provider-agnostic work
 OWNER_DECISION_REQUIRED: NO
 SAFE_TO_CONTINUE: YES
 
@@ -24,7 +24,8 @@ Updated by: ChatGPT architecture acceptance review
 Branch: `qa/guardian-registration-personas`
 Active PR: #2 (`<!-- ai-active-build-pr -->`)
 Active Issue: #13
-Current head before concurrency hardening: `de34405ee92363f8f54ee1c2a7df5311f01d1cdc`
+Concurrency migration SHA: `882c958b804c4466b47bfe108364c45427186d1a`
+Concurrency test fix SHA: `c2003df199d57d96660fd842e817a07314fd5879`
 
 ### Checkpoint 5 implemented scope
 
@@ -38,30 +39,31 @@ Current head before concurrency hardening: `de34405ee92363f8f54ee1c2a7df5311f01d
 - Partner redemption UI optionally captures reference/list value, amount actually paid, currency, reference type/source, evidence reference, and Partner customer attestation while explicitly stating the values are not verified savings.
 - Targeted Playwright verifies the Partner UI values persist and produce exact candidate savings.
 
-### Accepted deterministic evidence before final hardening
+### Concurrency/data-integrity hardening
 
-- Persona QA #56 passed the CP5 database foundation end to end.
-- pgTAP plan mismatch was corrected from 12 to 14 without weakening assertions.
-- Persona QA #59 attempt 2 on feature/test SHA `7ecaf0359ab8d2cba0c68cb39a45bce9acd487c5` PASSED local Supabase reset/seed, all pgTAP/RLS tests, and Guardian/persona/access/redemption Playwright including CP5 attribution persistence.
-- Hosted QA credential duplication was removed by reusing the validated Guardian QA identity for non-admin denial coverage; authorization assertions remain unchanged.
-- CI remained green through the hosted-QA and QA-user-factory fixes.
+Architecture review identified that two different claims for the same Guardian + Partner could be confirmed concurrently and both observe no prior redemption. CP5 now prevents duplicate `first_known` attribution by:
 
-### Architecture finding — GREEN concurrency hardening
+- taking a transaction-scoped advisory lock keyed to Guardian + Partner before relationship classification;
+- enforcing a unique partial index allowing at most one confirmed non-demo `first_known` redemption per Guardian + Partner;
+- failing migration loudly instead of silently rewriting history if pre-existing duplicate first-known classifications are ever detected;
+- retaining secure-token replay locking and all existing RLS/authorization controls.
 
-The current `confirm_redemption` classification is correct sequentially but can race when two different claims for the same Guardian + Partner are confirmed concurrently. Both transactions could observe no prior confirmed redemption and both persist `first_known`, corrupting customer-attribution analytics.
+### Deterministic acceptance evidence
 
-This is a GREEN data-integrity defect within CP5, not a product-owner decision. Harden before acceptance by:
-
-1. serializing non-demo Guardian + Partner relationship classification with a transaction-scoped advisory lock;
-2. adding a unique partial index that guarantees at most one persisted `first_known` confirmed non-demo redemption per Guardian + Partner;
-3. extending pgTAP to guard both the serialized implementation and the one-first-known invariant;
-4. rerunning Persona QA and Hosted QA acceptance.
-
-Do not weaken existing attribution, RLS, replay, or append-only assertions.
+- Earlier CP5 Persona QA runs established migration/RLS/attribution/UI behavior.
+- Persona QA #62 on concurrency-hardened head `c2003df199d57d96660fd842e817a07314fd5879`: PASS.
+  - local Supabase start/reset/seed: PASS;
+  - all pgTAP/RLS suites including 16 CP5 assertions: PASS;
+  - Chromium install: PASS;
+  - Guardian/persona/access/redemption Playwright: PASS.
+- CI #211: PASS.
+- Hosted QA remains lightweight while IN_PROGRESS and must now run full browser acceptance from this READY handoff state.
 
 ### Deliberate RED boundary
 
-No effective/adjusted customer-facing savings total or lifetime verified total is introduced. Original captured values stay immutable and corrections stay append-only. Deciding how corrections, refunds, reversals, bundles, free items, evidence strength, or Partner-entered values roll into customer-facing `verified savings` remains the explicit Checkpoint 5 financial/product rule gate.
+No effective/adjusted customer-facing savings total or lifetime verified total is introduced. Original captured values stay immutable and corrections stay append-only. The owner must still approve what evidence/calculation qualifies as customer-facing `verified savings`, including treatment of corrections, refunds, reversals, bundles, free items, evidence strength, and Partner-entered values.
+
+This RED rule does not automatically block provider-agnostic Checkpoint 6 engineering that does not depend on verified-savings totals or charitable-money provider selection. Complete and record the CP5 pre-decision slice first, then continue only safely separable Phase 2 work.
 
 ### Vercel connector blocker
 
@@ -69,4 +71,4 @@ Direct ChatGPT Vercel API access still returns an empty team list after reconnec
 
 ### Human action required
 
-None for this concurrency hardening. Continue autonomously, then return to the verified-savings owner gate after green acceptance.
+None until full Hosted QA completes. After CP5 pre-decision acceptance, the verified-savings rule is an owner decision before any customer-facing verified totals are enabled; independent provider-agnostic Phase 2 work may continue.
