@@ -18,14 +18,14 @@ Phase 3 remains explicitly unauthorized.
 
 ## Phase 2 checkpoint status
 
-| Checkpoint | Status | Primary evidence |
-| --- | --- | --- |
-| CP1 — Partner Organization Foundation | ACCEPTED | `docs/PHASE-2-CHECKPOINT-1-PROGRESS.md`, `docs/PHASE-2-CHECKPOINT-1-QA.md` |
-| CP2 — Partner Profile + Public Directory | ACCEPTED | committed profile/directory RLS + hosted regression |
-| CP3 — Offer Engine | COMPLETE | `docs/PHASE-2-CHECKPOINT-3-PROGRESS.md` |
-| CP4 — Claim + QR/Code Redemption | ACCEPTED | `docs/PHASE-2-CHECKPOINT-4-PROGRESS.md` |
-| CP5 — Verified Savings + Customer Attribution pre-decision engineering | COMPLETE | Issue #13, Persona QA #62, CI #231, Hosted QA #128 |
-| CP6 — Provider-agnostic Impact, Reputation + Giving Foundation | AUTHORIZED NEXT | Issue #14; begin only after PR #2 merge gate |
+| Checkpoint                                                             | Status          | Primary evidence                                                           |
+| ---------------------------------------------------------------------- | --------------- | -------------------------------------------------------------------------- |
+| CP1 — Partner Organization Foundation                                  | ACCEPTED        | `docs/PHASE-2-CHECKPOINT-1-PROGRESS.md`, `docs/PHASE-2-CHECKPOINT-1-QA.md` |
+| CP2 — Partner Profile + Public Directory                               | ACCEPTED        | committed profile/directory RLS + hosted regression                        |
+| CP3 — Offer Engine                                                     | COMPLETE        | `docs/PHASE-2-CHECKPOINT-3-PROGRESS.md`                                    |
+| CP4 — Claim + QR/Code Redemption                                       | ACCEPTED        | `docs/PHASE-2-CHECKPOINT-4-PROGRESS.md`                                    |
+| CP5 — Verified Savings + Customer Attribution pre-decision engineering | COMPLETE        | Issue #13, Persona QA #62, CI #231, Hosted QA #128                         |
+| CP6 — Provider-agnostic Impact, Reputation + Giving Foundation         | AUTHORIZED NEXT | Issue #14; begin only after PR #2 merge gate                               |
 
 ## Immediate integration gate
 
