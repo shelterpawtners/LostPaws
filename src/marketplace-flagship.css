@@ -1,3 +1,11 @@
+.market > .shell > .eyebrow,
+.market > .shell > h1,
+.market > .shell > .search,
+.market > .shell > .filters,
+.market > .shell > .notice {
+  display: none;
+}
+
 .marketplaceFlagship {
   margin-inline: -18px;
   padding: 36px;
