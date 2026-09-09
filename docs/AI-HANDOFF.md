@@ -1,9 +1,9 @@
 # AI Handoff
 
-STATUS: IN_PROGRESS
+STATUS: READY_FOR_ACCEPTANCE
 CURRENT_PHASE: MVP Design Hardening + Human Release Readiness
 CURRENT_CHECKPOINT: Stream 1 — GitHub Copilot + repo-native design/build capability
-NEXT_CHECKPOINT: Validate/merge Stream 1, configure Stream 2 ChatGPT capability, establish Stream 3 minimum QA tooling, then begin the Marketplace Sprint immediately.
+NEXT_CHECKPOINT: Prove the migrated main-target CI/QA control plane on this exact Stream 1 configuration, record acceptance, then await owner-authorized merge before Stream 2.
 OWNER_DECISION_REQUIRED: NO
 SAFE_TO_CONTINUE: YES
 ACCEPTED_CODE_SHA: NONE
@@ -32,9 +32,9 @@ The owner authorized setting up three capability streams before the large Market
 
 The owner prefers visible product progress over design-process overhead. Figma must not block implementation.
 
-## Stream 1 work on `ops/stream1-copilot-design-tooling`
+## Stream 1 implementation
 
-Implemented so far:
+Implemented on `ops/stream1-copilot-design-tooling`:
 
 - updated `AGENTS.md` from Phase-2 execution rules to design-hardening/release-readiness rules;
 - updated `.github/copilot-instructions.md` for the current post-Phase-2 state;
@@ -53,7 +53,17 @@ Implemented so far:
   - `responsive-visual-qa`;
   - `release-readiness-review`;
 - added `.github/copilot/settings.json` enabling the official `vercel/vercel-plugin` declaratively for supported repository/cloud Copilot contexts;
-- documented current official local setup paths for Vercel, Supabase Agent Skills, and Chrome DevTools.
+- documented current official local setup paths for Vercel, Supabase Agent Skills, and Chrome DevTools;
+- migrated live pull-request automation from `build/festival-mvp` to `main` for:
+  - CI;
+  - Database QA;
+  - Persona QA;
+  - Dependency Review;
+  - Merge Gate;
+  - Hosted QA;
+- migrated Hosted QA PR discovery, AI Build Orchestrator supervision, and AI Ops status discovery to open PRs targeting `main`;
+- kept expensive Database/Persona/Hosted checks classifier/acceptance gated rather than enabling full suites on every design iteration;
+- updated current Dev Loop and Hosted QA documentation while preserving historical Phase 2 prompts/decision records unchanged.
 
 ## Tooling decisions
 
@@ -90,6 +100,21 @@ Sprint sequence is documented in `docs/AI-TOOLING-AND-DESIGN-ROADMAP.md`:
 9. Issue #5 broad release-readiness audit;
 10. owner decision on domain cutover.
 
+## Acceptance evidence so far
+
+On configuration head `0dde07cb2ce8dae7db3880f6547afa6624e8b599`:
+
+- CI classification passed;
+- Prettier/lint passed after one batched formatting correction;
+- shell validation passed;
+- unit tests passed;
+- TypeScript/Vite production build passed;
+- CI Gate passed;
+- Database/Persona/Hosted/Dependency/Merge workflows now successfully trigger on a PR targeting `main`;
+- ordinary heavy QA remained gated while the handoff was `IN_PROGRESS`, demonstrating cost-control behavior.
+
+PR #22 now carries the single active-build marker for one acceptance cycle. This `READY_FOR_ACCEPTANCE` commit intentionally asks the migrated control plane to prove the applicable heavier evidence once before Stream 1 is marked complete.
+
 ## Still deferred / owner-gated
 
 - `shelterpawtners.com` / `www.shelterpawtners.com` DNS changes;
@@ -102,9 +127,9 @@ Sprint sequence is documented in `docs/AI-TOOLING-AND-DESIGN-ROADMAP.md`:
 
 ## Next action
 
-1. Run deterministic CI/format validation on this Stream 1 branch.
-2. Correct any configuration/formatting defects without weakening checks.
-3. Open a bounded PR to `main` describing Stream 1 capability setup.
-4. Merge only with explicit owner authority and green checks.
-5. After merge, move immediately to Stream 2 ChatGPT capability setup, then Stream 3 minimum QA setup.
+1. Let CI, Database QA, Persona QA, Hosted QA, Dependency Review, Merge Gate, and security checks resolve on the READY head.
+2. Fix real failures without weakening checks.
+3. If required acceptance evidence is green, record the exact accepted code/config SHA and set `STATUS: COMPLETE`.
+4. Do not merge PR #22 without explicit owner authority.
+5. After owner-authorized merge, move immediately to Stream 2 ChatGPT capability setup, then Stream 3 minimum QA setup.
 6. Begin Marketplace Sprint immediately after those minimum setups; do not postpone it for Figma or Storybook.
