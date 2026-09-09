@@ -203,6 +203,19 @@ test.describe("Hosted public and branded-surface design QA", () => {
       await expect(page.locator(".dashboardHero")).toBeVisible();
       await expect(page.locator(".rolePanel")).toBeVisible();
       await waitForFonts(page);
+
+      if (viewport.name === "phone") {
+        await expect(page.locator(".rolePanel")).toHaveCSS("position", "static");
+        await page.getByRole("button", { name: "Open menu" }).click();
+        await expect(
+          page.getByRole("navigation", { name: "Primary navigation" }),
+        ).toBeVisible();
+        await expect(
+          page.getByRole("link", { name: "Marketplace", exact: true }),
+        ).toBeVisible();
+        await page.getByRole("button", { name: "Close menu" }).click();
+      }
+
       await page.screenshot({
         path: testInfo.outputPath(`guardian-dashboard-${viewport.name}.png`),
         fullPage: true,
@@ -246,6 +259,9 @@ test.describe("Hosted public and branded-surface design QA", () => {
       page.getByRole("heading", { name: "Make your business easy to understand." }),
     ).toBeVisible();
     await expect(page.locator(".panel").first()).toBeVisible();
+    await expect(
+      page.getByText("Loading saved profile details…"),
+    ).toBeHidden();
     await waitForFonts(page);
     await attachAxe(page, testInfo, "axe-partner-profile", "/partner/profile");
     await page.screenshot({
@@ -268,6 +284,18 @@ test.describe("Hosted public and branded-surface design QA", () => {
       fullPage: true,
       animations: "disabled",
     });
+
+    await page.goto("/forgot-password");
+    await expect(
+      page.getByRole("heading", { name: "Reset your password" }),
+    ).toBeVisible();
+    const unrelatedFormWidth = await page.locator(".formPage").evaluate((element) =>
+      Math.round(element.getBoundingClientRect().width),
+    );
+    expect(
+      unrelatedFormWidth,
+      "brand propagation must not widen unrelated generic form pages",
+    ).toBeLessThanOrEqual(620);
 
     expectNoRuntimeFailures(failures, "Guardian / PetBiz brand propagation");
   });
