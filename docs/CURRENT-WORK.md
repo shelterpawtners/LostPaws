@@ -36,7 +36,7 @@ Before the large Marketplace redesign, establish the minimum capability stack do
 
 ### Stream 1 — GitHub Copilot + repo-native design/build capability
 
-**Current bounded task:** `ops/stream1-copilot-design-tooling`.
+**Status:** implemented on PR #22; final Persona/Hosted acceptance proof is resolving before merge.
 
 Includes:
 
@@ -52,11 +52,23 @@ Includes:
 - Release Readiness Review skill;
 - repository-level Vercel plugin enablement;
 - local Copilot setup instructions for Vercel, official Supabase Agent Skills, and Chrome DevTools;
+- `main`-target CI/QA/AI-Ops control-plane migration;
 - explicit Figma/Storybook timing decisions.
 
 ### Stream 2 — ChatGPT product/operator capability
 
-Configure ChatGPT as the complementary researcher/operator/reviewer rather than a duplicate coding agent. Focus on product research, competitive pattern analysis, visual critique, GitHub/Vercel/Supabase operations, architecture, release readiness, imagery/brand ideation, and later analytics/observability strategy.
+**Current bounded task:** Issue #23 on `ops/stream2-chatgpt-operator`.
+
+Keep ChatGPT complementary to Copilot rather than a duplicate coding agent.
+
+Implemented/current scope:
+
+- `docs/CHATGPT-OPERATING-PROTOCOL.md` defines source-of-truth order, role split, tool routing, cost rules, owner gates, and implementation handoff contract;
+- `docs/prompts/CHATGPT-SESSION-BOOTSTRAP.md` gives a reusable fresh-session startup prompt that makes ChatGPT read the repository and connected execution state before acting;
+- GitHub/Vercel/Supabase connected tools are the default for current private/project state;
+- web research is reserved for current external facts, competitive research, standards, pricing, and documentation;
+- ChatGPT handles product/research/operator/release reasoning while substantial coding is routed to the lowest-cost capable coding surface;
+- deterministic checks remain owned by GitHub Actions/scripts.
 
 ### Stream 3 — Shared design + deterministic quality toolchain
 
@@ -98,9 +110,12 @@ For new design-hardening work:
 
 - one bounded Issue -> one short-lived branch -> one PR -> acceptance -> `main`;
 - `main` is the integration/production branch;
-- do not target new product work at `build/festival-mvp` unless legacy automation is deliberately refactored;
+- stacked branches/PRs may be used briefly when a prior bounded stream is already in final acceptance and waiting would create avoidable idle time;
+- do not target new product work at `build/festival-mvp`;
 - GitHub Actions/scripts own deterministic validation;
 - specialist AI agents provide independent product/design/QA perspectives;
+- ChatGPT owns controller/product/operator decisions and connected-system coordination;
+- substantial coding defaults to a coding agent rather than duplicating implementation in ChatGPT;
 - never let the implementation agent be the only reviewer of its own UX/design;
 - preserve/strengthen tests rather than weakening them to make CI green.
 
