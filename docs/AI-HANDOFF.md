@@ -1,9 +1,9 @@
 # AI Handoff
 
-STATUS: READY_FOR_ACCEPTANCE
+STATUS: IN_PROGRESS
 CURRENT_PHASE: MVP Design Hardening + Human Release Readiness
-CURRENT_CHECKPOINT: Stream 1 — GitHub Copilot + repo-native design/build capability
-NEXT_CHECKPOINT: Prove the migrated main-target CI/QA control plane on this exact Stream 1 configuration, record acceptance, then await owner-authorized merge before Stream 2.
+CURRENT_CHECKPOINT: Stream 2 — ChatGPT product/operator capability
+NEXT_CHECKPOINT: Finish Stream 2 documentation/validation, merge only after Stream 1 PR #22 is accepted/merged, then complete Stream 3 minimum deterministic design QA and begin the Marketplace Sprint immediately.
 OWNER_DECISION_REQUIRED: NO
 SAFE_TO_CONTINUE: YES
 ACCEPTED_CODE_SHA: NONE
@@ -20,50 +20,61 @@ ACCEPTED_CODE_SHA: NONE
 - ShelterPawtners DNS remains unchanged.
 - Phase 3 remains owner-gated.
 
-## Owner direction — design hardening
+## Stream 1 status
 
-The owner explicitly wants the product to move quickly from functional/minimal to polished, professional, valuable, and distinctive, with the Marketplace receiving the highest design priority.
+PR #22 (`ops/stream1-copilot-design-tooling` -> `main`) implements the Copilot/repo-native capability layer and the migration of live PR automation from the retired `build/festival-mvp` target to `main`.
 
-The owner authorized setting up three capability streams before the large Marketplace redesign:
+Accepted/green evidence already observed on the Stream 1 acceptance head includes:
 
-1. GitHub Copilot/repo-native build + design capability;
-2. ChatGPT product/operator capability;
-3. shared design + deterministic QA tooling.
+- CI/lint/shell/unit/build success;
+- Merge Gate success;
+- Database QA gate success with the actual database job skipped because no database change exists;
+- Dependency Review gate success;
+- Persona and Hosted acceptance lanes correctly activated for one deliberate proof cycle.
 
-The owner prefers visible product progress over design-process overhead. Figma must not block implementation.
+Stream 2 is intentionally developed as a temporary stacked branch from the Stream 1 acceptance head so the project does not sit idle. Do not merge Stream 2 ahead of Stream 1.
 
-## Stream 1 implementation
+## Stream 2 implementation
 
-Implemented on `ops/stream1-copilot-design-tooling`:
+Issue #23 on `ops/stream2-chatgpt-operator`.
 
-- updated `AGENTS.md` from Phase-2 execution rules to design-hardening/release-readiness rules;
-- updated `.github/copilot-instructions.md` for the current post-Phase-2 state;
-- strengthened `.github/instructions/frontend.instructions.md` with design-hardening/Marketplace rules;
-- added `docs/AI-TOOLING-AND-DESIGN-ROADMAP.md`;
-- added `docs/COPILOT-LOCAL-SETUP.md`;
-- added custom agents:
-  - Marketplace Product Designer;
-  - Frontend Design-System Engineer;
-  - UX + Accessibility QA;
-  - Product Critic;
-- added project skills:
-  - `shelterpawtners-brand-system`;
-  - `marketplace-ux-design`;
-  - `marketplace-value-merchandising`;
-  - `responsive-visual-qa`;
-  - `release-readiness-review`;
-- added `.github/copilot/settings.json` enabling the official `vercel/vercel-plugin` declaratively for supported repository/cloud Copilot contexts;
-- documented current official local setup paths for Vercel, Supabase Agent Skills, and Chrome DevTools;
-- migrated live pull-request automation from `build/festival-mvp` to `main` for:
-  - CI;
-  - Database QA;
-  - Persona QA;
-  - Dependency Review;
-  - Merge Gate;
-  - Hosted QA;
-- migrated Hosted QA PR discovery, AI Build Orchestrator supervision, and AI Ops status discovery to open PRs targeting `main`;
-- kept expensive Database/Persona/Hosted checks classifier/acceptance gated rather than enabling full suites on every design iteration;
-- updated current Dev Loop and Hosted QA documentation while preserving historical Phase 2 prompts/decision records unchanged.
+Implemented:
+
+- `docs/CHATGPT-OPERATING-PROTOCOL.md`:
+  - source-of-truth order;
+  - ChatGPT vs coding-agent vs deterministic-automation role split;
+  - connected GitHub/Vercel/Supabase routing;
+  - web-research boundary;
+  - fresh-session startup sequence;
+  - implementation handoff contract;
+  - cost/speed rules;
+  - owner/RED decision boundaries;
+  - operator-session done criteria;
+- `docs/prompts/CHATGPT-SESSION-BOOTSTRAP.md`:
+  - reusable new-chat bootstrap;
+  - forces repository/context recovery before asking the owner to restate project history;
+  - routes current private/project state through connected tools;
+  - prevents duplicate AI implementation work and preserves RED gates;
+- `docs/CURRENT-WORK.md` updated with current Stream 1/2 state and stacked-branch operating rule;
+- `docs/AI-TOOLING-AND-DESIGN-ROADMAP.md` updated with Stream 2 minimum viable deliverables and operating split.
+
+## Stream 2 operating decision
+
+ChatGPT is the product/controller/operator layer, not the default code builder.
+
+Use ChatGPT for:
+
+- product strategy/prioritization;
+- current marketplace/competitive research;
+- value and information architecture;
+- independent critique;
+- GitHub/Vercel/Supabase connected operations;
+- architecture/release-readiness/cost decisions;
+- concise implementation briefs.
+
+Use Copilot/Codex/another coding surface for substantial source implementation, repetitive component construction, tests, migrations/functions after approval, and repository-local code debugging.
+
+Use GitHub Actions/scripts for deterministic validation and supervision.
 
 ## Tooling decisions
 
@@ -100,21 +111,6 @@ Sprint sequence is documented in `docs/AI-TOOLING-AND-DESIGN-ROADMAP.md`:
 9. Issue #5 broad release-readiness audit;
 10. owner decision on domain cutover.
 
-## Acceptance evidence so far
-
-On configuration head `0dde07cb2ce8dae7db3880f6547afa6624e8b599`:
-
-- CI classification passed;
-- Prettier/lint passed after one batched formatting correction;
-- shell validation passed;
-- unit tests passed;
-- TypeScript/Vite production build passed;
-- CI Gate passed;
-- Database/Persona/Hosted/Dependency/Merge workflows now successfully trigger on a PR targeting `main`;
-- ordinary heavy QA remained gated while the handoff was `IN_PROGRESS`, demonstrating cost-control behavior.
-
-PR #22 now carries the single active-build marker for one acceptance cycle. This `READY_FOR_ACCEPTANCE` commit intentionally asks the migrated control plane to prove the applicable heavier evidence once before Stream 1 is marked complete.
-
 ## Still deferred / owner-gated
 
 - `shelterpawtners.com` / `www.shelterpawtners.com` DNS changes;
@@ -127,9 +123,10 @@ PR #22 now carries the single active-build marker for one acceptance cycle. This
 
 ## Next action
 
-1. Let CI, Database QA, Persona QA, Hosted QA, Dependency Review, Merge Gate, and security checks resolve on the READY head.
-2. Fix real failures without weakening checks.
-3. If required acceptance evidence is green, record the exact accepted code/config SHA and set `STATUS: COMPLETE`.
-4. Do not merge PR #22 without explicit owner authority.
-5. After owner-authorized merge, move immediately to Stream 2 ChatGPT capability setup, then Stream 3 minimum QA setup.
-6. Begin Marketplace Sprint immediately after those minimum setups; do not postpone it for Figma or Storybook.
+1. Let the final Stream 1 Persona/Hosted proof cycle resolve.
+2. Fix real Stream 1 acceptance failures if any; do not weaken checks.
+3. When Stream 1 is accepted, record its exact accepted SHA and merge PR #22 under the owner's continuation authorization.
+4. Validate Stream 2 formatting/CI through a small stacked PR.
+5. After Stream 1 merge, retarget Stream 2 to `main`, merge when green, and close Issue #23.
+6. Complete only the minimum Stream 3 QA setup required for the Marketplace Sprint.
+7. Begin the Marketplace Sprint immediately; do not postpone it for Figma or Storybook.
