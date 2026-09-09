@@ -2,12 +2,13 @@
 
 STATUS: IN_PROGRESS
 CURRENT_PHASE: MVP Design Hardening + Human Release Readiness
-CURRENT_CHECKPOINT: Marketplace Sprint 1 — A+B flagship review hardening
-NEXT_CHECKPOINT: Pass fast CI on Copilot review fixes, obtain an exact-code preview or local acceptance target, then rerun final Stream 3 Hosted acceptance.
+CURRENT_CHECKPOINT: Marketplace Sprint 1 — exact-code A+B acceptance fallback
+NEXT_CHECKPOINT: Validate the local exact-code Hosted QA fallback, then move to READY_FOR_ACCEPTANCE and rerun final Stream 3 acceptance on the current PR head.
 OWNER_DECISION_REQUIRED: NO
 SAFE_TO_CONTINUE: YES
 ACCEPTED_CODE_SHA: NONE
 ACCEPTANCE_DEPLOYED_SHA: NONE
+ACCEPTANCE_RUNTIME: LOCAL_HEAD
 
 ## Completed foundation
 
@@ -43,11 +44,11 @@ The selected Marketplace keeps provider identity, offer title/value, eligibility
 
 No new offer schema fields or fabricated savings, pricing, ratings, logos, distance, impact, or partnership claims are introduced.
 
-## Copilot review hardening now in progress
+## Copilot review hardening completed in code
 
-The first final-acceptance run passed, but the later GitHub Copilot review identified edge cases that must be corrected before merge. That earlier acceptance evidence is therefore historical only and is **not** the final accepted code.
+The first final-acceptance run passed, but the later GitHub Copilot review identified edge cases that required correction before merge. That earlier acceptance evidence is historical only and is **not** the final accepted code.
 
-Current hardening batch addresses:
+Current hardening addresses:
 
 1. separate RPC load failure, true catalog-empty, and filtered-empty states;
 2. humanize enum-backed classification/eligibility/applicability values before search matching;
@@ -57,14 +58,22 @@ Current hardening batch addresses:
 6. require hosted design QA to prove at least one real `.offerCard` loaded before axe checks/screenshots;
 7. retain phone, tablet, and desktop visual evidence.
 
-Because these changes modify runtime behavior, the prior READY Vercel artifact at `69164a9a040122039202454a35c027da3cbb6a5a` can no longer be reused for final acceptance. Do not force equivalence or merge against stale runtime evidence.
+Fast CI on the review-hardening runtime code has passed Prettier, shell validation, unit tests, TypeScript, and Vite build.
+
+## Exact-code acceptance fallback
+
+Vercel Hobby build-rate limits are currently preventing a fresh preview for the final review-hardening commit. Do not pay for an upgrade solely to obtain this acceptance artifact.
+
+`ACCEPTANCE_RUNTIME: LOCAL_HEAD` tells the acceptance-gated Hosted QA workflow to leave `PLAYWRIGHT_BASE_URL` unset. The existing Playwright config then starts the exact PR-head Vite application locally on the GitHub runner and injects the same QA Supabase URL/publishable key used by Hosted QA.
+
+This fallback must remain explicit and acceptance-gated. Ordinary PR runs stay cheap, and normal Vercel-backed acceptance remains the default when `ACCEPTANCE_RUNTIME` is not `LOCAL_HEAD`.
 
 ## Final QA contract
 
 Before Issue #27 can be accepted:
 
 1. Prettier/lint, shell validation, unit tests, TypeScript, and Vite build pass on the review-fix code;
-2. the exact current frontend is tested, using a fresh Vercel preview if available or an explicitly reviewed exact-code local-hosted fallback if the Vercel free-tier cap still blocks deployment;
+2. the exact current frontend is tested, using a fresh Vercel preview when available or the explicit `LOCAL_HEAD` exact-code fallback when the Vercel free-tier cap blocks deployment;
 3. axe WCAG A/AA checks pass on home and `/marketplace`;
 4. no meaningful page/console/network failures occur;
 5. phone (390x844), tablet (768x1024), and desktop (1440x1000) full-page Marketplace evidence is captured;
@@ -97,9 +106,8 @@ After final acceptance passes, record its exact code SHA as `ACCEPTED_CODE_SHA`,
 
 ## Next action
 
-1. commit the Copilot review fixes as one bounded batch;
-2. pass fast CI and relevant deterministic gates;
-3. resolve review threads already fixed by the new code and verify no new review blockers;
-4. establish an exact-code acceptance target;
-5. rerun one final Stream 3 Hosted acceptance cycle;
-6. record the accepted code SHA and complete Issue #27.
+1. validate the `LOCAL_HEAD` workflow change under normal fast CI while `STATUS: IN_PROGRESS` keeps heavy Hosted QA skipped;
+2. resolve review threads already fixed by code where evidence is sufficient;
+3. move handoff to `READY_FOR_ACCEPTANCE`;
+4. run one final Stream 3 Hosted acceptance cycle against exact PR-head code;
+5. record the accepted code SHA and complete Issue #27.
