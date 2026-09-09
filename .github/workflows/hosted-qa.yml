@@ -139,13 +139,14 @@ jobs:
                     ;;
                 esac
               done
-            else
-              echo "No deployed frontend artifact changed in this PR; existing QA deployment is valid."
-            fi
 
-            comments=$(gh api "repos/${REPO}/issues/${PR_NUMBER}/comments?per_page=100" --paginate)
-            qa_url=$(jq -r '[.[] | select(.user.login == "vercel[bot]")] | last | (.body // "") | try capture("\\[Preview\\]\\((?<url>https://[^)]+\\.vercel\\.app[^)]*)\\)").url catch ""' <<<"${comments}")
-            if [[ -z "${qa_url}" ]]; then
+              comments=$(gh api "repos/${REPO}/issues/${PR_NUMBER}/comments?per_page=100" --paginate)
+              qa_url=$(jq -r '[.[] | select(.user.login == "vercel[bot]")] | last | (.body // "") | try capture("\\[Preview\\]\\((?<url>https://[^)]+\\.vercel\\.app[^)]*)\\)").url catch ""' <<<"${comments}")
+              if [[ -z "${qa_url}" ]]; then
+                qa_url="${FALLBACK_QA_URL}"
+              fi
+            else
+              echo "No deployed frontend artifact changed in this PR; use the stable QA deployment."
               qa_url="${FALLBACK_QA_URL}"
             fi
           fi
