@@ -2,7 +2,7 @@ name: Dependency Review
 
 on:
   pull_request:
-    branches: [build/festival-mvp]
+    branches: [main]
 
 concurrency:
   group: dependency-review-${{ github.event.pull_request.number }}
