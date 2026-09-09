@@ -22,15 +22,24 @@ The project is now in **MVP Design Hardening + Human Release Readiness** before 
 
 **Marketplace Sprint 1 — Issue #27 — is active now.**
 
-Branch:
+Branch: `design/marketplace-concepts`
 
-`design/marketplace-concepts`
+PR: #28
 
-Goal:
+Owner-selected direction on September 9, 2026: **A+B hybrid**.
 
-Make the Marketplace the flagship ShelterPawtners experience by improving both the visual system and the value/information architecture before broad brand propagation to the rest of the site.
+The final flagship direction combines:
 
-The Marketplace must communicate more than a minimal grid of offer records. A Guardian should quickly understand:
+- Concept A's fast scanability, search/filter discovery, strong CTA hierarchy, and three-column desktop offer grid;
+- Concept B's premium dark frame, stronger brand character, and clearer provider/trust context;
+- a compact trust strip rather than B's larger explanatory side rail;
+- no Concept C editorial ranking or first-two prominence without an approved curation rule.
+
+The prototype A/B/C selector has been removed from the active implementation.
+
+## Marketplace information hierarchy
+
+A Guardian should quickly understand:
 
 1. the offer/benefit;
 2. the provider;
@@ -39,6 +48,8 @@ The Marketplace must communicate more than a minimal grid of offer records. A Gu
 5. expiration/current status when available;
 6. source/terms context;
 7. the next action.
+
+Current flagship implementation preserves that order without inventing new savings/value fields.
 
 ## Capability setup
 
@@ -54,7 +65,7 @@ The Marketplace must communicate more than a minimal grid of offer records. A Gu
 
 **COMPLETE — PR #26.**
 
-Available for Marketplace work:
+Available for Marketplace acceptance:
 
 - axe accessibility checks;
 - phone/tablet/desktop screenshot evidence;
@@ -63,69 +74,37 @@ Available for Marketplace work:
 - existing Hosted Guardian/Partner golden paths;
 - acceptance-gated browser execution so ordinary iteration remains cheaper.
 
-## Marketplace Sprint 1
+## Marketplace Sprint 1 status
 
-Issue #27 covers the first design decision loop.
+Completed:
 
-### Research/value architecture
+- baseline and competitive/product-pattern research;
+- Guardian jobs-to-be-done and Marketplace information hierarchy;
+- three code-first concepts;
+- owner review and A+B direction selection;
+- Product Critic review;
+- search/filter/result-count functional improvements;
+- provider/eligibility/applicability/expiration hierarchy;
+- accessible filter pressed states and live result-count updates;
+- final A+B flagship implementation in the branch;
+- QA spec collapsed from three prototype concepts to one flagship target.
 
-`docs/MARKETPLACE-DESIGN-SPRINT.md` is the sprint design brief and records current research, Guardian jobs-to-be-done, the information hierarchy, existing `PublicOffer` field boundary, no-fabrication rules, and the three concept directions.
+Remaining before Issue #27 is complete:
 
-### Three code-first concepts
-
-A — **Value-first Deal Feed**
-
-- fastest scanning;
-- commerce-forward visual hierarchy;
-- strong title/provider/eligibility/action priority;
-- 3-column desktop / 1-column phone target.
-
-B — **Local + Trust Marketplace**
-
-- provider/context first;
-- premium darker presentation;
-- trust/context rail;
-- wider offer rows and fewer competing items per viewport.
-
-C — **Curated Guardian Savings Hub**
-
-- editorial/value-destination feel;
-- larger opening offers and calmer follow-on browsing;
-- strongest membership/value-hub framing.
-
-The prototype selector is a sprint-review device only. It should be removed after the winning direction is selected.
-
-### Functional improvements included in the prototypes
-
-Use only existing public offer data:
-
-- keyword search across current offer text/provider/context;
-- dynamically generated classification filters;
-- visible result count;
-- clear applied-search/filter reset;
-- stronger provider, eligibility, applicability, expiration, and CTA hierarchy.
-
-Do not invent or migrate offer fields during this concept sprint.
+1. pass fast CI on the selected flagship code;
+2. verify a READY Vercel preview for the exact final product SHA;
+3. move `docs/AI-HANDOFF.md` to `READY_FOR_ACCEPTANCE`;
+4. run one real Stream 3 Hosted acceptance cycle;
+5. inspect phone/tablet/desktop visual evidence plus axe/runtime results;
+6. preserve Partner → Guardian → claim → redemption golden paths;
+7. record `ACCEPTED_CODE_SHA` and make docs-only completion changes;
+8. merge PR #28 and close Issue #27.
 
 ## Figma / Storybook decisions
 
-Figma remains **deferred and is not a prerequisite**. Code-first Vercel previews are the review surface.
+Figma remains **deferred and is not a prerequisite**. Code-first Vercel previews remain the review surface.
 
-Storybook is introduced **after the winning Marketplace direction is selected**, and only when the reusable component/state volume makes isolated component work faster.
-
-## Immediate execution sequence
-
-1. finish Issue #27 concept implementation;
-2. open draft PR to `main`;
-3. pass fast CI/lint/unit/build checks;
-4. obtain Vercel preview;
-5. compare all three concepts at phone and desktop widths;
-6. run Product Critic / independent review;
-7. request GitHub Copilot code review explicitly on the PR when ready;
-8. run Stream 3 Hosted QA at acceptance;
-9. owner selects the flagship direction;
-10. remove prototype-only controls and harden the selected design;
-11. then propagate the winning brand system to the highest-value remaining screens.
+Storybook is now eligible for evaluation because a design direction has been selected, but it is **not an Issue #27 acceptance dependency**. Add it only when isolated reusable component/state work becomes faster than direct page iteration.
 
 ## Operating model
 
@@ -142,7 +121,7 @@ Storybook is introduced **after the winning Marketplace direction is selected**,
 
 Authorized now:
 
-- Marketplace design research, concepts, and visual implementation using existing approved product rules/data;
+- Marketplace flagship visual hardening using existing approved product rules/data;
 - human QA and brand/design hardening;
 - reversible free/low-cost tooling that does not weaken security.
 
