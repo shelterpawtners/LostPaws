@@ -4,8 +4,8 @@ STATUS: COMPLETE
 CURRENT_PHASE: MVP Design Hardening + Human Release Readiness
 CURRENT_CHECKPOINT: Issue #29 — flagship brand propagation accepted; PR #30 awaiting owner-authorized merge
 NEXT_CHECKPOINT: Owner-authorized merge of PR #30, then execute Issue #5 full-site human-style browser/persistence audit before any ShelterPawtners domain cutover.
-OWNER_DECISION_REQUIRED: YES
-SAFE_TO_CONTINUE: NO
+OWNER_DECISION_REQUIRED: NO
+SAFE_TO_CONTINUE: YES
 ACCEPTED_CODE_SHA: 38449c1796b5e30542a3c2e88f898119b1d315ee
 ACCEPTANCE_DEPLOYED_SHA: NONE
 ACCEPTANCE_RUNTIME: LOCAL_HEAD
@@ -101,7 +101,9 @@ Figma remains deferred. Storybook remains optional and should be added only if i
 
 ## Owner-controlled boundary
 
-PR #30 is product/design accepted and ready for final docs-only gates. Do not merge it until the owner explicitly authorizes that merge.
+`OWNER_DECISION_REQUIRED: NO` means there is no unresolved product/technical decision blocking deterministic completion. It is not merge permission.
+
+PR #30 is product/design accepted and ready for final docs-only gates. **Do not merge it until the owner explicitly authorizes that merge.**
 
 After the merge:
 
