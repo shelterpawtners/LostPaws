@@ -165,7 +165,7 @@ jobs:
           [[ "$PLAYWRIGHT_SUPABASE_URL" =~ ^https://jukmlmryykcnjtpblbja\.supabase\.co/?$ ]]
       - run: npm ci
       - name: Install Chromium
-        run: npx playwright install --with-deps chromium
+        run: bash scripts/install-playwright-chromium.sh
       - name: Run hosted golden paths
         run: npm run test:e2e:hosted
       - name: Run Issue 5 browser audit
