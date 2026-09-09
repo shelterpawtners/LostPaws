@@ -1,75 +1,110 @@
 # AI Handoff
 
-STATUS: COMPLETE
-CURRENT_PHASE: Phase 2 — Partner Marketplace MVP — COMPLETE
-CURRENT_CHECKPOINT: Main baseline promoted; Vercel production alignment + human QA/branding next
-NEXT_CHECKPOINT: Change the Vercel production branch to `main`, promote/verify the validated `main` deployment, then begin human QA + branding hardening. Keep ShelterPawtners DNS unchanged. Phase 3 remains owner-gated.
+STATUS: IN_PROGRESS
+CURRENT_PHASE: MVP Design Hardening + Human Release Readiness
+CURRENT_CHECKPOINT: Stream 1 — GitHub Copilot + repo-native design/build capability
+NEXT_CHECKPOINT: Validate/merge Stream 1, configure Stream 2 ChatGPT capability, establish Stream 3 minimum QA tooling, then begin the Marketplace Sprint immediately.
 OWNER_DECISION_REQUIRED: NO
 SAFE_TO_CONTINUE: YES
-ACCEPTED_CODE_SHA: b727e26df064acdc11972e98be7a92958bc5fc6d
+ACCEPTED_CODE_SHA: NONE
 
-## Current state
+## Completed foundation
 
 - Phase 1 is complete.
 - Phase 2 CP1–CP6 are complete.
-- CP1–CP5 were integrated through PR #2.
-- CP6 Issue #14 was accepted at implementation SHA `b727e26df064acdc11972e98be7a92958bc5fc6d` and integrated through PR #19 at merge commit `4ed0495b8f9b573c3a22d8705343e8ee382f872c`.
-- The default-branch-only `.github/workflows/ai-build-orchestrator.yml` was preserved in the integration baseline.
-- `main` control-plane history was reconciled into `build/festival-mvp` without a force push at `34c08567bff0bc44ff01753d5f4551504a70a4a4`.
-- Final PR #1 security/CI hardening fixed the CodeQL privileged untrusted-checkout alert in `.github/workflows/ai-ops-status.yml`; CodeQL then reported no new alerts and CI Gate passed on `dc488eca63f4524222d6fa73602e7f4e2f9bba67`.
 - PR #1 merged the completed Phase 2 baseline to `main` at `fdc3b1e76063af86970f31a996740d29fa2024d1`.
-- `build/festival-mvp` was fast-forwarded to the same `fdc3b1e76063af86970f31a996740d29fa2024d1` baseline, leaving the two branches identical.
-- Vercel built `main` SHA `fdc3b1e76063af86970f31a996740d29fa2024d1` successfully as deployment `dpl_9zRWFXQ4HfWxqUt5Q49Vrw5MmCmg`; the persistent `main` branch URL returns HTTP 200.
-- Vercel still treats `qa/guardian-registration-personas` deployment `dpl_4E8PQwx7MchTkjpyjk59MnU3WdhD` as production. The connected Vercel toolset exposes read/deploy inspection but not the project production-branch setting or deployment-promotion write action.
-- Phase 3 remains unauthorized.
+- `main` is canonical.
+- Vercel Production Branch is `main`.
+- Vercel production deployment `dpl_7n3zhia8RF3DrJ4RjFi6SQWkQGdG` is READY and serves the accepted Phase 2 application build from `main` SHA `fdc3b1e76063af86970f31a996740d29fa2024d1`.
+- `lost-paws-one.vercel.app` returns HTTP 200 from the main-backed production deployment.
+- ShelterPawtners DNS remains unchanged.
+- Phase 3 remains owner-gated.
 
-## Phase 2 acceptance summary
+## Owner direction — design hardening
 
-- CP1 — Partner Organization Foundation: ACCEPTED.
-- CP2 — Partner Profile + Public Directory: ACCEPTED.
-- CP3 — Offer Engine: COMPLETE.
-- CP4 — Claim + QR/Code Redemption: ACCEPTED.
-- CP5 — Verified Savings + Customer Attribution pre-decision engineering: COMPLETE.
-- CP6 — Provider-agnostic Impact, Reputation + Giving Foundation: COMPLETE.
+The owner explicitly wants the product to move quickly from functional/minimal to polished, professional, valuable, and distinctive, with the Marketplace receiving the highest design priority.
 
-The accepted baseline includes Guardian persistence/dashboard protections, secure Admin QA persona tooling, Partner profile and offer flows, Guardian marketplace claim/redemption, savings/customer-attribution foundations, provider-agnostic impact/reputation/giving foundations, RLS/pgTAP coverage, hosted Vercel + shared Supabase acceptance paths, and the repo-native AI/CI control plane.
+The owner authorized setting up three capability streams before the large Marketplace redesign:
 
-## Owner authorization update — 2026-09-08
+1. GitHub Copilot/repo-native build + design capability;
+2. ChatGPT product/operator capability;
+3. shared design + deterministic QA tooling.
 
-Jim explicitly instructed the operator to finish/wrap Phase 2, synchronize the branches, establish `main` as the canonical baseline, and proceed toward using the Vercel-hosted application for human testing and branding.
+The owner prefers visible product progress over design-process overhead. Figma must not block implementation.
 
-Completed under that authorization:
+## Stream 1 work on `ops/stream1-copilot-design-tooling`
 
-- accepted Phase 2 work integrated;
-- `build/festival-mvp` and `main` reconciled without destructive history rewriting;
-- accepted Phase 2 baseline promoted to `main`;
-- `build/festival-mvp` synchronized to the same baseline;
-- final main-backed Vercel build verified successfully.
+Implemented so far:
 
-Still authorized but pending because the current Vercel connector does not expose the necessary write control:
+- updated `AGENTS.md` from Phase-2 execution rules to design-hardening/release-readiness rules;
+- updated `.github/copilot-instructions.md` for the current post-Phase-2 state;
+- strengthened `.github/instructions/frontend.instructions.md` with design-hardening/Marketplace rules;
+- added `docs/AI-TOOLING-AND-DESIGN-ROADMAP.md`;
+- added `docs/COPILOT-LOCAL-SETUP.md`;
+- added custom agents:
+  - Marketplace Product Designer;
+  - Frontend Design-System Engineer;
+  - UX + Accessibility QA;
+  - Product Critic;
+- added project skills:
+  - `shelterpawtners-brand-system`;
+  - `marketplace-ux-design`;
+  - `marketplace-value-merchandising`;
+  - `responsive-visual-qa`;
+  - `release-readiness-review`;
+- added `.github/copilot/settings.json` enabling the official `vercel/vercel-plugin` declaratively for supported repository/cloud Copilot contexts;
+- documented current official local setup paths for Vercel, Supabase Agent Skills, and Chrome DevTools.
 
-- set Vercel Production Branch to `main`;
-- promote the validated main deployment to production;
-- verify the resulting production alias.
+## Tooling decisions
 
-Still deferred:
+### Figma
 
-- attaching or changing `shelterpawtners.com` / `www.shelterpawtners.com` DNS;
-- production charitable money movement/provider integration (`OD-004`);
-- unresolved customer-facing verified-savings policy (`OD-003`);
-- paid infrastructure;
+**Deferred; not a prerequisite.**
+
+Use code-first design, the real React/Tailwind application, Vercel previews, screenshots, and reusable components. Reconsider Figma only when collaboration/design-system complexity makes it faster than maintaining code-first design alone.
+
+### Storybook
+
+**Planned for the Marketplace Sprint, not before it.**
+
+Introduce Storybook after reusable Marketplace components/states emerge and isolated component iteration becomes faster than route-only work.
+
+### Cost
+
+Default to free/native/open-source tooling. Do not add paid visual-regression/device/design SaaS until native tools are demonstrably insufficient.
+
+## Marketplace Sprint timing
+
+The Marketplace Sprint is the **next product-design sprint** and starts immediately after Streams 1–3 have minimum viable setup.
+
+Sprint sequence is documented in `docs/AI-TOOLING-AND-DESIGN-ROADMAP.md`:
+
+1. research + value/information architecture;
+2. 2–3 code-first visual concepts;
+3. independent critique and direction selection;
+4. reusable component system;
+5. Storybook when justified by component/state volume;
+6. flagship implementation;
+7. responsive/accessibility/browser/Playwright QA;
+8. brand propagation to the highest-value remaining screens;
+9. Issue #5 broad release-readiness audit;
+10. owner decision on domain cutover.
+
+## Still deferred / owner-gated
+
+- `shelterpawtners.com` / `www.shelterpawtners.com` DNS changes;
+- Phase 3 feature development;
+- `OD-003` verified-savings customer-facing rules/totals;
+- `OD-004` giving-provider selection/production charitable settlement;
+- paid infrastructure/tooling;
 - destructive operations;
-- Phase 3.
-
-## QA / backlog treatment after Phase 2
-
-Open QA/ops issues may remain for broader human-style regression, observability, or stale bookkeeping. They do not automatically reopen an accepted checkpoint. Issue #5 remains useful as broad release-readiness/human-style regression before the ShelterPawtners domain cutover, especially after the branding pass. Any real blocker rediscovered by that testing must be fixed before domain cutover.
+- material legal/privacy/security/financial/product RED decisions.
 
 ## Next action
 
-1. In Vercel project `lost-paws`, change the Production Branch from `qa/guardian-registration-personas` to `main`.
-2. Promote validated deployment `dpl_9zRWFXQ4HfWxqUt5Q49Vrw5MmCmg` (`main`, SHA `fdc3b1e76063af86970f31a996740d29fa2024d1`) to production, or trigger a fresh production deployment from `main`.
-3. Verify `lost-paws-one.vercel.app` resolves to the main-backed production deployment and returns HTTP 200.
-4. Keep `shelterpawtners.com` and `www.shelterpawtners.com` DNS unchanged.
-5. Begin human QA and branding hardening on the main-backed hosted app.
-6. Use Issue #5 as the broad release-readiness audit before any domain cutover.
+1. Run deterministic CI/format validation on this Stream 1 branch.
+2. Correct any configuration/formatting defects without weakening checks.
+3. Open a bounded PR to `main` describing Stream 1 capability setup.
+4. Merge only with explicit owner authority and green checks.
+5. After merge, move immediately to Stream 2 ChatGPT capability setup, then Stream 3 minimum QA setup.
+6. Begin Marketplace Sprint immediately after those minimum setups; do not postpone it for Figma or Storybook.
