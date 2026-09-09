@@ -2,7 +2,7 @@ name: Persona QA
 
 on:
   pull_request:
-    branches: [build/festival-mvp]
+    branches: [main]
   workflow_dispatch:
 
 concurrency:
