@@ -1,0 +1,43 @@
+name: AI Ops Status
+
+on:
+  workflow_run:
+    workflows:
+      - CI
+      - Database QA
+      - Persona QA
+      - Hosted QA
+      - Merge Gate
+      - Dependency Review
+    types: [completed]
+  schedule:
+    - cron: "0 * * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: ai-ops-status
+  cancel-in-progress: true
+
+permissions:
+  actions: read
+  contents: read
+  issues: write
+  pull-requests: read
+
+jobs:
+  update-status:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out trusted default-branch automation only
+        uses: actions/checkout@v7
+        with:
+          ref: main
+      - name: Update the single Issue #12 live status record
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          STATUS_ISSUE: "12"
+          ACTIVE_MARKER: "<!-- ai-active-build-pr -->"
+          STALE_MINUTES: "60"
+          QA_URL: ${{ vars.QA_BASE_URL }}
+        run: bash scripts/update-ai-ops-status.sh

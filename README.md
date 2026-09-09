@@ -4,9 +4,9 @@ LostPaws is the new application repository for the ShelterPawtners business and 
 
 ## Current state
 
-This repository contains the project knowledge and agent instruction foundation only. GitHub access and read-only access to the empty Supabase development project, `shelterpawtners-dev`, have been confirmed. The revised MVP and implementation scope still require explicit user approval before application implementation begins.
+MVP implementation was authorized on September 6, 2026. The repository now contains a React and TypeScript application plus a committed Supabase migration applied to `shelterpawtners-dev`.
 
-There is no application, React scaffold, installed package set, database schema, migration, repository Supabase configuration, authentication flow, or deployed product in this repository. Capabilities below are plans, not completed features.
+The current implementation includes responsive public pages, email authentication, protected multi-role routes, a pet-centric Guardian dashboard with active multi-pet selection, Partner organization/profile management, a public Partner directory, immutable Partner offers, exact-version Guardian claims, and an opaque-code Partner redemption workflow. The working redemption UX is awaiting its required Checkpoint 4 review; verified-savings work has not begun. Google sign-in remains disabled until provider credentials and approved redirect URLs are configured. Nothing has been deployed to the public ShelterPawtners domain.
 
 ## Planned capabilities
 
@@ -18,13 +18,22 @@ LostPaws connects music festival and electronic music communities to this missio
 
 ## Development setup
 
-For now, clone this repository and review the documents. Read [AGENTS.md](AGENTS.md) before changes. No package installation, environment configuration, database setup, or application command is required or available at this stage.
+Clone the repository, copy `.env.example` to `.env.local`, and supply the development Supabase URL and publishable key. Never commit secret or service-role credentials.
 
-After the MVP and implementation slice are approved, document real setup, test, and build commands here as they are introduced. Do not add speculative commands or credentials. Development work is limited to `shelterpawtners-dev` when specifically authorized. Production connection, project creation, and deployment require explicit user instruction.
+```bash
+npm install
+npm run dev
+npm test
+npm run build
+```
+
+Development work is limited to `shelterpawtners-dev`. Production connection, project creation, DNS changes, and deployment require explicit user instruction.
+
+Human QA can use the branch-scoped Vercel Preview described in [Hosted shared-development QA](docs/HOSTED-QA.md). It uses only the shared development Supabase URL and publishable key; production remains untouched.
 
 ## Architecture
 
-The preferred frontend is React, TypeScript, Vite, and Tailwind CSS. The planned backend is Supabase for PostgreSQL, authentication, storage, RLS, and APIs, with Realtime and Edge Functions used selectively. These are directions, not installed services. See [Architecture](docs/ARCHITECTURE.md) and [Security and privacy](docs/SECURITY-AND-PRIVACY.md).
+The frontend uses React, TypeScript, and Vite with a small custom CSS design system. Supabase provides PostgreSQL, authentication, storage, RLS, and APIs. Edge Functions will be added only for privileged workflows such as external adoption confirmation and email delivery. See [Architecture](docs/ARCHITECTURE.md) and [Security and privacy](docs/SECURITY-AND-PRIVACY.md).
 
 ## Documentation
 
@@ -36,5 +45,7 @@ The preferred frontend is React, TypeScript, Vite, and Tailwind CSS. The planned
 - [Content standards](docs/CONTENT-STANDARDS.md): terminology, writing, and truthful claims.
 - [Architecture](docs/ARCHITECTURE.md): technical direction and engineering standards.
 - [Roadmap](docs/ROADMAP.md): MVP slices, later phases, approval gates, and human decisions.
+- [Phase 1 decision log](docs/DECISION-LOG.md): canonical, reviewable implementation choices.
+- [Phase 1 execution](docs/PHASE-1-EXECUTION.md): rebuild order, migrations, and remaining configuration.
 - [Security and privacy](docs/SECURITY-AND-PRIVACY.md): data protection and authorization requirements.
 - [Project skill](.agents/skills/shelterpawtners/SKILL.md): task-specific document routing for Codex.

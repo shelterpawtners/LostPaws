@@ -1,136 +1,146 @@
 # AI Cost and Testing Governance
 
-## Purpose
+## Principle
 
-Keep ShelterPawtners engineering fast and safe while minimizing AI-credit consumption, duplicated validation, unnecessary cloud-agent sessions, and avoidable human review effort.
+Use deterministic native automation for repeatable work. Spend AI credits only where implementation, diagnosis, architecture, semantic review, or product judgment adds material value.
 
-This policy complements `docs/AUTONOMOUS-EXECUTION-POLICY.md` and the GitHub Actions orchestration workflows. It does not weaken product, security, RLS, data-integrity, or acceptance requirements.
+GitHub Actions is the **zero-AI control plane**. No workflow may automatically invoke Copilot, Codex, Claude, or another coding agent.
 
-## Core principle
+See `docs/DEV-LOOP-V2.md` for the complete operating model.
 
-Use deterministic native automation for repeatable work. Spend AI credits only where reasoning, implementation, diagnosis, or semantic review adds material value.
+## Execution-surface priority
 
-Prefer:
+1. **GitHub Actions/scripts** — formatting, lint, build, tests, migration replay, pgTAP/RLS, Playwright, dependency review, classification, status, merge evidence, watchdog.
+2. **Regular ChatGPT** — product/architecture/controller/acceptance/RED decisions.
+3. **Codex / ChatGPT Work** — substantial bounded repository implementation when included allowance is available.
+4. **Copilot IDE completions** — small human-driven edits/boilerplate.
+5. **Copilot coding agent** — intentional bounded fallback; never a scheduler.
+6. **Claude Code** — explicit alternate engineer/semantic reviewer when useful.
 
-1. GitHub Actions / scripts for lint, typecheck, unit tests, builds, migration replay, pgTAP, Playwright, status checks, diff classification, deduplication, and stall detection.
-2. One coding-agent session for one bounded checkpoint or defect cluster.
-3. One semantic AI review only when the checkpoint is materially ready for acceptance or a security/business-rule change warrants it.
-4. Human/product-owner input only for RED decisions or explicit phase gates.
+Do not run competing substantial coding agents on the same code path.
 
 ## AI-credit rules
 
-### Coding agents
+- One primary coding-agent session per bounded checkpoint/defect cluster by default.
+- No AI invocation for routine CI success/failure polling, formatting, reruns, or status.
+- Do not re-prompt an agent because a routine workflow turned green.
+- Prefer one complete task contract with stopping conditions over many steering comments.
+- Automatic Copilot PR review remains disabled.
+- Default to at most one semantic AI review near checkpoint acceptance when it materially helps.
+- No AI review for docs-only, formatting-only, trivial workflow, or routine dependency updates.
 
-- Do not start a new Copilot/Codex/Claude cloud-agent session merely because a routine CI or hosted-QA run succeeded.
-- Keep the current agent working through GREEN/YELLOW defects inside the same bounded task instead of repeatedly re-prompting it.
-- Re-engage an agent after failure only when the failure remains unresolved and there has been no meaningful newer activity for the configured stall window.
-- Prefer one comprehensive task prompt that includes implementation, validation, defect fixing, handoff update, and completion contract over several small steering prompts.
-- Do not use an AI agent for deterministic formatting, status polling, test reruns, branch/SHA checks, artifact upload, or other work that native tooling can perform.
+## PR lifecycle
 
-### Copilot code review
+Default:
 
-- Do not request Copilot review on every commit or minor fix.
-- Do not request Copilot review for docs-only, formatting-only, dependency-lock-only, or workflow-comment-only changes unless the change materially affects security or execution behavior.
-- Default to at most one Copilot code review per checkpoint when the checkpoint is ready for acceptance.
-- A second review is justified only when the first review caused material code/security changes that need an independent re-check.
-- Final phase hardening may use one broader review after deterministic checks are green.
+`Issue → short-lived branch → bounded draft PR → deterministic acceptance → owner-approved merge → fresh branch`
 
-## Test tiers
-
-### Tier 1 — implementation loop
-
-Run on normal code PR commits where applicable:
-
-- lint / formatting check;
-- TypeScript typecheck;
-- unit tests;
-- production build.
-
-These are deterministic and cheap. Do not replace them with AI review.
-
-### Tier 2 — checkpoint acceptance
-
-Run when the handoff is `READY_FOR_ACCEPTANCE` or equivalent:
-
-- relevant hosted Playwright golden path;
-- relevant database/RLS/pgTAP checks;
-- targeted integration tests for the completed checkpoint;
-- failure artifacts only when needed.
-
-Do not run the full browser/database acceptance stack on every intermediate implementation commit unless a specific defect requires it.
-
-### Tier 3 — phase/final hardening
-
-Run at phase acceptance or when cross-cutting risk justifies it:
-
-- broader Persona QA;
-- broader browser/accessibility regression;
-- security/RLS sweep;
-- migration replay;
-- exports/reporting consistency where applicable.
-
-Broad full-site QA should not block every vertical slice.
+- Exactly one open PR targeting `build/festival-mvp` carries `<!-- ai-active-build-pr -->`.
+- Do not accumulate unrelated checkpoints.
+- PR size above roughly 25 files or 1,200 changed lines produces an advisory to split future unrelated scope.
+- Auto-merge remains prohibited unless the owner explicitly changes that policy.
 
 ## Change-aware testing
 
-Selective tests are allowed when the mapping from changed code to affected behavior is deterministic and maintained. However, shared application files or cross-cutting database/security changes must fall back to the broader applicable suite.
+`scripts/classify-change-impact.sh` is the canonical risk mapping.
 
-Safe examples:
+Workflows must consume the classifier rather than independently duplicating path rules.
 
-- docs-only changes: no app CI or browser QA;
-- isolated test-file changes: run the affected test plus lightweight CI if code/config also changed;
-- Supabase migrations/RLS/RPC changes: database/RLS tests are mandatory and affected browser flows should run at acceptance;
-- shared routing/auth/profile/application-shell changes: run the broader relevant web regression rather than assuming one feature is isolated;
-- package/workflow/config changes: run the checks affected by that configuration.
+Unknown paths fall back to broader deterministic testing.
 
-When confidence in impact mapping is low, choose the broader deterministic test rather than spend AI credits deciding whether to skip it.
+## Test tiers
+
+### Tier 1 — implementation
+
+**CI**
+
+- docs-only → formatting/instruction checks;
+- web/workflow/dependency/E2E/shared changes → formatting, unit tests, production build.
+
+**Database QA**
+
+- database/RLS/RPC/Supabase changes → local Supabase start/reset/replay + pgTAP/RLS.
+
+No Chromium is required for Database QA.
+
+### Tier 2 — checkpoint acceptance
+
+Only when `STATUS: READY_FOR_ACCEPTANCE`.
+
+**Persona QA**
+
+- runs only when persona-sensitive impact exists;
+- fresh local Supabase reset/seed + targeted Persona/Guardian/access/redemption Playwright.
+
+**Hosted QA**
+
+- runs only when product/browser impact exists and the PR is the active build lane;
+- verifies relevant Vercel readiness;
+- runs hosted golden paths once at acceptance.
+
+### Tier 3 — phase hardening
+
+Broader Issue #5 browser/accessibility/security/RLS sweeps run at planned phase boundaries, not after every checkpoint commit.
+
+## Merge evidence
+
+`docs/AI-HANDOFF.md` includes `ACCEPTED_CODE_SHA`.
+
+- Use `NONE` until acceptance exists.
+- At `COMPLETE`, record the exact accepted code SHA.
+- Merge Gate requires current-head CI and the applicable acceptance evidence on the accepted SHA.
+- Documentation/metadata commits after accepted code do not force redundant browser suites.
+- A workflow whose heavy job was skipped does not count as full acceptance.
+
+## Supabase CLI
+
+All CI/local automation calls `scripts/supabase-cli.sh`.
+
+That wrapper contains the single exact Supabase CLI pin (`2.117.0`). This central pin is intentionally used instead of adding a large CLI dependency tree to the application lockfile.
+
+## AI Ops and watchdog
+
+Issue #12 is the single native operational status record.
+
+The status updater changes one comment in place; it does not create repeated status comments or repository commits.
+
+Primary supervision is event-driven from PR/workflow state changes.
+
+The stale watchdog runs **hourly**.
+
+A stale signal never launches an AI agent automatically.
 
 ## Workflow deduplication
 
-- One canonical Hosted QA lane per PR/SHA. Avoid simultaneous push + pull-request copies of the same acceptance suite.
-- Use `concurrency` with `cancel-in-progress` for obsolete CI/QA runs.
-- Heavy hosted browser tests should be gated by handoff readiness, not every implementation commit.
-- Persona QA remains a deliberate deterministic lower-level gate and should run only when schema/RLS/persona behavior changes or at planned hardening points.
-- Upload failure artifacts only on failure and use short retention where supported.
+- Use concurrency + `cancel-in-progress` on PR workflows.
+- One canonical Hosted QA lane.
+- Database pgTAP is not repeated inside Persona browser QA.
+- Full Persona/Hosted Chromium is acceptance-only.
+- Upload heavy artifacts only on failure.
+- Ignore historical failed runs once a later required run satisfies the current evidence contract.
 
-## Orchestrator behavior
+## Dependency maintenance
 
-The supervisor may inspect state frequently using native GitHub APIs/Actions without spending AI credits. It should invoke an AI agent only when one of these is true:
+- Dependabot runs weekly using grouped dependency PRs.
+- Dependency-changing PRs run native Dependency Review.
+- High-severity newly introduced vulnerabilities fail the dependency review gate.
+- No AI review is required for routine safe update PRs unless semantics warrant it.
 
-1. a bounded authorized next checkpoint is ready to start and has not already been delegated;
-2. a genuine failure remains unresolved after the stall window and no active/newer work is visible;
-3. a semantic acceptance/review task materially benefits from AI reasoning.
+## Deployment
 
-A green workflow by itself is not a reason to create another AI session.
+Vercel's Ignored Build Step uses `scripts/vercel-ignore-build.sh`, which delegates to the canonical change classifier.
 
-## Agent handoff requirements
+Skip frontend builds when the commit cannot change the deployed web artifact.
 
-Each bounded agent session should leave enough structured evidence that another AI call is not needed just to discover state:
-
-- task / issue;
-- branch and final SHA;
-- files/areas changed;
-- tests run and exact results;
-- CI / hosted QA state;
-- blocker classification;
-- next action;
-- `SAFE_TO_CONTINUE` and `OWNER_DECISION_REQUIRED`.
+Do not add another CI/CD or deployment provider to optimize this flow.
 
 ## Cost guardrails
 
-- Keep standard GitHub-hosted runners; do not introduce paid larger runners without owner approval.
-- Do not add a paid SaaS testing/observability provider while native GitHub/Vercel/Supabase capabilities are sufficient.
-- Do not create additional Supabase projects/branches or paid Vercel infrastructure without owner approval.
-- Prefer repository-native JSON/status artifacts and GitHub APIs for the AI Ops dashboard rather than a new monitoring service.
-- Treat AI credits as a scarce reasoning budget, not as a scheduler or polling mechanism.
-
-## Review cadence
-
-Revisit this policy when:
-
-- the repository becomes private;
-- GitHub/Copilot billing changes materially;
-- test duration becomes a real delivery bottleneck;
-- the app is modular enough for reliable changed-component test selection;
-- production deployment begins;
-- a new coding agent/provider is added.
+- Standard GitHub-hosted runners only.
+- No paid/larger runners without owner approval.
+- No new monitoring/testing/orchestration SaaS while native capabilities are sufficient.
+- No paid Supabase/Vercel expansion without owner approval.
+- No automatic AI-agent launch.
+- No automatic AI review.
+- No giant long-lived implementation PRs.
+- Treat AI credits/tokens as scarce reasoning budget, not scheduler/polling budget.

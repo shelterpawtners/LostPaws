@@ -33,11 +33,11 @@ The release should degrade safely. A failed email or incomplete optional profile
 
 Use one offer foundation with explicit audience and channel classification.
 
-| Channel | Intended audience | Typical content |
-| --- | --- | --- |
-| ShelterPawtners marketplace | Guardians and adopters | Pet products, pet services, veterinary savings, medication, care, training, boarding, and adoption support |
+| Channel                             | Intended audience               | Typical content                                                                                                                                                                |
+| ----------------------------------- | ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| ShelterPawtners marketplace         | Guardians and adopters          | Pet products, pet services, veterinary savings, medication, care, training, boarding, and adoption support                                                                     |
 | LostPaws / Rave Shelter marketplace | Ravers and festival communities | Human apparel, accessories, art, food, wellness, festival preparation, music-community services, and other lawful attendee-focused products or offers that support the mission |
-| Shared or community | More than one audience | Offers with accurate terms that legitimately serve both groups |
+| Shared or community                 | More than one audience          | Offers with accurate terms that legitimately serve both groups                                                                                                                 |
 
 Rave Shelter content does not need to be pet-related. It must still be lawful, accurately described, suitable for the platform, and connected to a real participating business or community offer. The experience may use a dedicated branded page and filters while sharing the same underlying offer administration and reporting concepts.
 

@@ -24,6 +24,14 @@ Future research and insight products must not expose guardian personally identif
 - Restrict platform administrative access and audit sensitive actions. Define operational access policies before implementing support tools.
 - Revoke access when membership or sharing permission ends, accounting for any time-limited file access mechanism.
 
+### Organization claims and matching
+
+Partner onboarding may preserve private draft business details and return possible organization candidates, but a matching name, website, phone, or address is not proof of representation. Candidate matching must be authenticated, conservative, and explainable. A request for membership or ownership review must remain pending until an authorized organization manager or platform process resolves it; it must not create a membership or transfer control as a side effect.
+
+Parent/child and franchise relationships are not authorization grants. An independently owned franchise, sibling, or branded business must not receive the parent or brand's contacts, memberships, private records, redemption information, financial data, or administrative capabilities. Duplicate review must preserve historical references and create private audit evidence; automated merges or destructive deletion are out of scope until separately approved.
+
+When an organization is created, the organization, first owner membership, locations, relationship record, and onboarding resolution must commit atomically. `created_by` records provenance and may bootstrap that first owner, but ongoing authority must depend on active membership; a revoked membership remains retained as a revoked record rather than being deleted.
+
 ## Transfer safeguards
 
 A transfer must use secure, hard-to-guess claim material with expiration and replay prevention. Bind the claim to the intended pet and an authorized workflow. Validate issuer authority and recipient identity before completion. Do not log usable transfer secrets or expose them to unrelated users.
@@ -57,3 +65,11 @@ Offer eligibility, adoption confirmation, transfer completion, administrative ch
 Capture attributable, time-stamped audit events for verification, transfers, guardianship changes, provider contributions, redemptions, and administrative actions. Record the relevant target and outcome without unnecessarily duplicating sensitive content. Protect audit history against unauthorized alteration and define retention before release.
 
 Test denial as well as success: cross-organization access, former guardians, expired sharing, revoked memberships, forged claims, repeated redemptions, and unauthorized private-file access should fail appropriately. Confirm intentionally public fields do not expose private data. Applicable checks accompany each feature; this foundation contains no implemented controls to test yet.
+
+### Admin QA Mode
+
+Admin QA Mode is limited to enabled shared-development environments. It uses a separately configured non-persisted client session issued through a server-authorized one-time exchange for an `@example.invalid` test user. The original administrator session remains in the persisted client. The Edge Function validates the caller's current `platform_admin` role from `user_roles`, validates the test-only target scope, and records QA activity in the private immutable audit store. It is not a general impersonation capability and is disabled by default outside QA.
+
+### Offer claims and redemption codes
+
+Public offer reads use an explicit current-active field allowlist. Partner writes are server-authorized against active organization membership. Redemption QR/deep-link payloads contain only a high-entropy opaque code; Guardian and pet identifiers are never embedded. Only the digest is stored privately. Validation reveals bounded offer context only to a member of the responsible Partner organization, and confirmation locks and consumes the token to prevent replay.

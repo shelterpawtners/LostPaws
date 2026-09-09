@@ -2,19 +2,23 @@
 
 ## Status
 
-This is conceptual direction, not an implemented architecture or database schema. No application scaffolding, packages, Supabase connection, or production infrastructure belongs in the current foundation work. See [Roadmap](ROADMAP.md) for the approval gate.
+The development architecture is implemented in its first vertical slice. Production infrastructure remains unapproved. See [Roadmap](ROADMAP.md) for delivery boundaries.
 
 ## Preferred stack
 
-| Layer | Direction |
-| --- | --- |
-| Frontend | React, TypeScript, Vite, Tailwind CSS; reusable components. |
-| Backend | Supabase PostgreSQL, authentication, storage, RLS, and APIs. |
+| Layer                 | Direction                                                                                    |
+| --------------------- | -------------------------------------------------------------------------------------------- |
+| Frontend              | React, TypeScript, Vite, accessible CSS tokens, reusable components.                         |
+| Backend               | Supabase PostgreSQL, authentication, private and public storage, RLS, and APIs.              |
 | Optional capabilities | Supabase Realtime where useful; Edge Functions for appropriate privileged server-side logic. |
-| Development project | `shelterpawtners-dev`, only when connection is authorized. |
-| Production | Do not connect to or create a production project without explicit instruction. |
+| Development project   | `shelterpawtners-dev`, only when connection is authorized.                                   |
+| Production            | Do not connect to or create a production project without explicit instruction.               |
 
 Avoid unnecessary dependencies. Document the reason before introducing a large framework. Prefer low initial cost, fast iteration, maintainability, security, and reasonable future scale. Do not add microservices or paid infrastructure when a reliable free or inexpensive approach meets the stage's needs. Avoid shortcuts that would require a wholesale rewrite after adoption grows.
+
+## Authentication implementation
+
+The client subscribes to Supabase authentication state and protects dashboard and onboarding routes from anonymous access. Email and password registration, sign-in, sign-out, and password recovery are implemented. Participant roles are stored relationally and selected as an interface context; switching the active role never grants permissions by itself. Google authentication remains feature-disabled until its provider credentials and hosted redirect URLs are configured in the development project.
 
 ## Conceptual boundaries
 
@@ -35,6 +39,14 @@ Transfers must coordinate claim validation, guardianship changes, permission cha
 All schema changes must be migrations committed to this repository. Avoid unmanaged production dashboard changes. Review migrations together with authorization and data handling effects. Never weaken RLS to make a feature work. Keep secrets out of source control and ensure privileged credentials remain server-side.
 
 Auditability is required for shelter verification, pet transfers, guardianship changes, provider contributions, offer redemptions, and administrative actions. Reporting data must preserve meaningful definitions and provenance without exposing guardian personal information.
+
+### Phase 2 Checkpoint 1 organization resolution
+
+Partner organization resolution uses an entry-first draft record, an authenticated exact-signal candidate function, distinct access/ownership request records, typed relationship records, and platform-only duplicate review cases. Candidate results contain only public identifying context and explainable match reasons; they never represent proof of control. Corporate parent assignment is limited to a parent the creator already manages. Independent franchises remain separate organizations related through a pending typed relationship, without inheriting membership or private data.
+
+### Phase 2 marketplace transaction boundary
+
+Partner offer commands append immutable numbered terms and expose only the current active version through a public allowlist. Guardian claims lock that version while enforcing inventory and limits. Redemption codes are random bearer capabilities stored only as private digests; Partner-scoped validation and confirmation consume them atomically. Claim, utilization, redemption history, and later verified-savings evidence remain separate concepts.
 
 ## Implementation and validation after approval
 

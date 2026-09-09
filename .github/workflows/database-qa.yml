@@ -1,0 +1,67 @@
+name: Database QA
+
+on:
+  pull_request:
+    branches: [build/festival-mvp]
+  workflow_dispatch:
+
+concurrency:
+  group: database-qa-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  classify:
+    runs-on: ubuntu-latest
+    outputs:
+      requires_db_qa: ${{ steps.impact.outputs.requires_db_qa }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - id: impact
+        env:
+          BASE_SHA: ${{ github.event.before || github.event.pull_request.base.sha || github.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: bash scripts/classify-change-impact.sh "$BASE_SHA" "$HEAD_SHA"
+
+  database:
+    needs: classify
+    if: github.event_name == 'workflow_dispatch' || needs.classify.outputs.requires_db_qa == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Start local Supabase
+        run: bash scripts/supabase-cli.sh start
+      - name: Reset and seed local database
+        run: bash scripts/supabase-cli.sh db reset
+      - name: Run pgTAP database and RLS tests
+        run: bash scripts/supabase-cli.sh test db
+
+  database-gate:
+    name: Database QA Gate
+    if: always()
+    needs: [classify, database]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require database QA when applicable
+        env:
+          CLASSIFY: ${{ needs.classify.result }}
+          REQUIRED: ${{ needs.classify.outputs.requires_db_qa }}
+          RESULT: ${{ needs.database.result }}
+          MANUAL: ${{ github.event_name == 'workflow_dispatch' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$CLASSIFY" == "success" ]] || { echo "Change classification failed."; exit 1; }
+          if [[ "$MANUAL" == "true" || "$REQUIRED" == "true" ]]; then
+            [[ "$RESULT" == "success" ]] || { echo "Required database QA did not pass."; exit 1; }
+          fi
+          echo "Database QA requirement satisfied."

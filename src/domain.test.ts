@@ -1,0 +1,24 @@
+import { describe, expect, it } from "vitest";
+import {
+  accountRegistrationPath,
+  legacyRegistrationTarget,
+  verificationExpiryDays,
+  verificationReminderDays,
+} from "./domain";
+describe("festival entry rules", () => {
+  it("preserves the printed guardian QR destination", () => {
+    expect(legacyRegistrationTarget).toContain("type=guardian");
+    expect(legacyRegistrationTarget).toContain("source=business-card");
+  });
+  it("builds each account entry path", () => {
+    expect(accountRegistrationPath("rave_vendor")).toBe(
+      "/register?type=rave_vendor",
+    );
+  });
+  it("keeps reminders before the 30-day expiry", () => {
+    expect(verificationReminderDays).toEqual([10, 20, 27]);
+    expect(Math.max(...verificationReminderDays)).toBeLessThan(
+      verificationExpiryDays,
+    );
+  });
+});

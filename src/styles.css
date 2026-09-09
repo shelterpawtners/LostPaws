@@ -1,0 +1,968 @@
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Outfit:wght@600;700&display=swap");
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities);
+:root {
+  font-family: Manrope, system-ui, sans-serif;
+  color: #17213a;
+  background: #fbfcff;
+  --navy: #13213b;
+  --muted: #5f6b82;
+  --line: #dfe5ee;
+  --purple: #7c3aed;
+  --teal: #0e9f9a;
+  --shadow: 0 22px 65px #1d23441d;
+  --background: #fbfcff;
+  --surface: #ffffff;
+  --text: #17213a;
+  --muted-text: #5f6b82;
+  --primary: #654ab7;
+  --secondary: #0e9f9a;
+  --accent: #d94fa8;
+  --success: #157a63;
+  --warning: #9a5b00;
+  --error: #b42318;
+  --border: #dfe5ee;
+  --focus: #14b8a6;
+}
+.appNav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 22px;
+  color: var(--text);
+}
+.appNav a {
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 9px 13px;
+  background: var(--surface);
+}
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+}
+a {
+  color: inherit;
+  text-decoration: none;
+}
+button,
+input,
+select {
+  font: inherit;
+}
+button {
+  cursor: pointer;
+}
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.58;
+}
+svg {
+  width: 22px;
+}
+.shell {
+  width: min(1160px, calc(100% - 40px));
+  margin: auto;
+}
+.narrow {
+  max-width: 980px;
+}
+.skip {
+  position: fixed;
+  top: 5px;
+  left: 5px;
+  transform: translateY(-150%);
+  background: #fff;
+  padding: 12px;
+  z-index: 100;
+}
+.skip:focus {
+  transform: none;
+}
+.qaBanner {
+  position: sticky;
+  top: 78px;
+  z-index: 19;
+  padding: 10px 20px;
+  background: #7a1d48;
+  color: #fff;
+  text-align: center;
+  font-size: 0.88rem;
+}
+.qaBanner a,
+.qaBanner button {
+  margin-left: 12px;
+  color: #fff;
+  font: inherit;
+  font-weight: 800;
+}
+.qaBanner button {
+  border: 1px solid #fff;
+  border-radius: 8px;
+  background: transparent;
+  padding: 4px 8px;
+}
+:focus-visible {
+  outline: 3px solid #14b8a6;
+  outline-offset: 3px;
+}
+header {
+  height: 78px;
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: #0d172bf2;
+  border-bottom: 1px solid #263552;
+  box-shadow: 0 10px 30px #07102033;
+  backdrop-filter: blur(15px);
+}
+.head {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: Outfit;
+  font-weight: 700;
+  font-size: 1.2rem;
+  background: linear-gradient(90deg, #f3a8e5, #8fb9ff, #75e3d4);
+  color: transparent;
+  background-clip: text;
+}
+.brand img {
+  width: 43px;
+  height: 43px;
+  object-fit: contain;
+}
+nav {
+  display: flex;
+  align-items: center;
+  gap: 25px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: #f5f7ff;
+}
+nav > a:not(.btn):hover {
+  color: #75e3d4;
+}
+.menu {
+  display: none;
+  width: 44px;
+  height: 44px;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  background: none;
+  color: #fff;
+}
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 13px 19px;
+  border: 0;
+  border-radius: 13px;
+  background: linear-gradient(110deg, #8b26c9, #3d62dd, #0e9f9a);
+  color: #fff;
+  font-weight: 800;
+  box-shadow: 0 10px 26px #5c36be38;
+}
+.btn.quiet {
+  background: #fff;
+  color: var(--navy);
+  border: 1px solid var(--line);
+  box-shadow: none;
+}
+.full {
+  width: 100%;
+}
+.hero {
+  padding: 85px 0;
+  background:
+    radial-gradient(circle at 15% 15%, #dff9f1, transparent 31%),
+    radial-gradient(circle at 82% 25%, #eee6ff, transparent 31%),
+    linear-gradient(#fff, #f7f8fd);
+}
+.heroGrid {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  align-items: center;
+  gap: 65px;
+}
+.eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: #6550b7;
+}
+.hero h1,
+.section > h1,
+.section > h2,
+.raveHero h1,
+.market h1,
+.center h1,
+.signup h1 {
+  font-family: Outfit;
+  font-size: clamp(2.7rem, 5.5vw, 5rem);
+  line-height: 1.03;
+  letter-spacing: -0.04em;
+  margin: 15px 0;
+}
+.section > h2 {
+  font-size: clamp(2.2rem, 4vw, 3.6rem);
+}
+.lead {
+  font-size: 1.1rem;
+  line-height: 1.7;
+  color: var(--muted);
+  max-width: 700px;
+}
+.actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin: 28px 0 17px;
+}
+.hero small,
+.signup small,
+.raveHero small {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--muted);
+}
+.passport {
+  background: #fff;
+  padding: 24px;
+  border: 1px solid #cbb8ee;
+  border-radius: 28px;
+  box-shadow: var(--shadow);
+  transform: rotate(1.5deg);
+}
+.passport > div {
+  display: flex;
+  justify-content: space-between;
+}
+.passport .paw {
+  height: 210px;
+  margin: 18px 0;
+  display: grid;
+  place-items: center;
+  border-radius: 20px;
+  background: linear-gradient(135deg, #f2e5f8, #d8ecff, #d9f8ef);
+}
+.passport .paw svg {
+  width: 86px;
+  height: 86px;
+  color: #7655c3;
+}
+.passport h2 {
+  font-family: Outfit;
+  font-size: 2rem;
+  margin: 4px 0;
+}
+.passport p {
+  color: var(--muted);
+  line-height: 1.55;
+}
+.section {
+  padding: 85px 0;
+}
+.cards {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-top: 38px;
+}
+.card {
+  padding: 23px;
+  border: 1px solid var(--line);
+  border-radius: 21px;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  transition: 0.2s;
+}
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow);
+  border-color: #bda8e9;
+}
+.qaPersonaCard {
+  width: 100%;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.qaPersonaCard:disabled {
+  cursor: wait;
+  opacity: 0.7;
+  transform: none;
+}
+.qaPersonaCard h2 {
+  margin: 0;
+  font-family: Outfit;
+  font-size: 1.25rem;
+}
+.qaPersonaCta {
+  margin-top: auto;
+}
+.card > svg {
+  color: var(--purple);
+  width: 32px;
+  height: 32px;
+}
+.card h3 {
+  font-family: Outfit;
+  font-size: 1.25rem;
+  margin: 17px 0 7px;
+}
+.card p {
+  font-size: 0.88rem;
+  line-height: 1.55;
+  color: var(--muted);
+  flex: 1;
+}
+.card b {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: #654ab7;
+  font-size: 0.82rem;
+}
+.card b svg {
+  width: 16px;
+}
+.dark {
+  background: #101a31;
+  color: #fff;
+}
+.dark .eyebrow {
+  color: #71d7cb;
+}
+.offers {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 17px;
+  margin-top: 35px;
+}
+.offers article {
+  padding: 24px;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: #fff;
+  color: #17213a;
+}
+.offers article.rave {
+  background: linear-gradient(145deg, #27173f, #15223b);
+  color: #fff;
+  border-color: #503d72;
+}
+.offers article > svg {
+  display: block;
+  width: 38px;
+  height: 38px;
+  color: #7551c8;
+  margin: 28px auto;
+}
+.offers em {
+  font-style: normal;
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: #6545b7;
+  background: #eee8ff;
+  border-radius: 20px;
+  padding: 6px 9px;
+}
+.offers small {
+  display: block;
+  color: #716886;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.offers h3 {
+  font-family: Outfit;
+  font-size: 1.35rem;
+}
+.offers p {
+  color: var(--muted);
+  line-height: 1.55;
+}
+.rave p {
+  color: #bfc6d4 !important;
+}
+.connect {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: 60px;
+  align-items: center;
+}
+.connect h2 {
+  font-family: Outfit;
+  font-size: 2.7rem;
+}
+.connect p {
+  color: var(--muted);
+  line-height: 1.65;
+}
+.connect > div:last-child p {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 14px;
+  color: #17213a;
+  font-weight: 700;
+}
+.connect svg {
+  color: var(--teal);
+}
+.raveHero {
+  padding: 95px 0;
+  background:
+    radial-gradient(circle at 80% 20%, #6d3a7d55, transparent 28%), #0b1327;
+  color: #fff;
+}
+.raveHero .shell {
+  max-width: 1000px;
+}
+.raveHero img {
+  display: block;
+  width: 300px;
+  max-width: 100%;
+  max-height: 170px;
+  object-fit: contain;
+  object-position: left;
+  margin-bottom: 22px;
+}
+.raveHero h1 {
+  font-size: clamp(3.4rem, 8vw, 7rem);
+}
+.raveHero h1 i {
+  font-style: normal;
+  background: linear-gradient(90deg, #ef5cbc, #a177ef, #4ac5cc);
+  color: transparent;
+  background-clip: text;
+}
+.raveHero p {
+  color: #c1c9d8;
+  line-height: 1.7;
+  max-width: 720px;
+  font-size: 1.08rem;
+}
+.center {
+  text-align: center;
+  max-width: 760px;
+  margin: 0 auto 38px;
+}
+.center p {
+  color: var(--muted);
+}
+.signup {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border: 1px solid var(--line);
+  border-radius: 28px;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+}
+.signup aside {
+  padding: 45px;
+  background: linear-gradient(145deg, #eef8f7, #f1ebfb);
+}
+.signup aside > svg {
+  width: 45px;
+  height: 45px;
+  color: #7651c9;
+}
+.signup h1 {
+  font-size: 2.8rem;
+}
+.signup aside p {
+  color: var(--muted);
+  line-height: 1.65;
+}
+.signup form {
+  padding: 45px;
+  display: grid;
+  gap: 16px;
+}
+.signup form > a {
+  color: #654ab7;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+.signup h2,
+.panel h2 {
+  font-family: Outfit;
+}
+.signup hr {
+  width: 100%;
+  border: 0;
+  border-top: 1px solid var(--line);
+}
+label {
+  display: grid;
+  gap: 6px;
+  font-size: 0.8rem;
+  font-weight: 800;
+}
+input,
+select {
+  padding: 13px;
+  border: 1px solid #cbd3df;
+  border-radius: 10px;
+  background: #fff;
+}
+input:focus,
+select:focus {
+  outline: 3px solid #7854ce22;
+  border-color: #7854ce;
+}
+.check {
+  display: flex;
+  align-items: start;
+  gap: 9px;
+  line-height: 1.45;
+  font-weight: 500;
+}
+.check input {
+  width: 18px;
+  height: 18px;
+}
+.detail {
+  display: grid;
+  gap: 18px;
+  margin-top: 35px;
+}
+.partnerOnboarding {
+  max-width: 1160px;
+}
+.partnerOnboarding > h1 {
+  font-family: Outfit;
+  font-size: clamp(2.4rem, 5vw, 4.4rem);
+  margin: 10px 0;
+}
+.partnerOnboardingGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(290px, 0.65fr);
+  gap: 22px;
+  align-items: start;
+}
+.partnerOnboardingGrid .detail {
+  margin-top: 0;
+}
+.matchPanel {
+  position: sticky;
+  top: 100px;
+  padding: 25px;
+  border: 1px solid #c9c1e8;
+  border-radius: 20px;
+  background: linear-gradient(150deg, #f8f5ff, #f1fbf9);
+}
+.matchPanel h2,
+.candidate h3 {
+  font-family: Outfit;
+}
+.matchPanel > p,
+.candidate p,
+.candidate small {
+  color: var(--muted);
+  line-height: 1.5;
+}
+.candidate {
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid #d9d5e7;
+}
+.candidate h3,
+.candidate p {
+  margin: 0 0 5px;
+}
+.candidateActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 13px;
+}
+.candidateActions .btn {
+  padding: 9px 11px;
+  font-size: 0.78rem;
+}
+.textButton {
+  border: 0;
+  padding: 8px 2px;
+  color: #5740a6;
+  background: transparent;
+  font-size: 0.8rem;
+  font-weight: 800;
+}
+.relationshipOptions {
+  display: grid;
+  gap: 11px;
+}
+.relationshipOptions label {
+  display: flex;
+  align-items: start;
+  gap: 8px;
+  font-weight: 600;
+}
+.relationshipOptions input {
+  width: 17px;
+  height: 17px;
+  padding: 0;
+}
+.relationshipSelect {
+  margin-top: 18px;
+}
+.panel {
+  padding: 27px;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: #fff;
+}
+.panel > p {
+  color: var(--muted);
+}
+.fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 17px;
+}
+.fields.inset {
+  border-top: 1px solid var(--line);
+  margin-top: 22px;
+  padding-top: 22px;
+}
+.market {
+  padding: 75px 0;
+  background: linear-gradient(135deg, #f2edfa, #e9f8f6);
+}
+.market h1 {
+  font-size: clamp(2.8rem, 5vw, 5rem);
+}
+.search {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: 700px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 0 15px;
+  box-shadow: var(--shadow);
+}
+.search input {
+  flex: 1;
+  border: 0;
+  padding: 16px 3px;
+}
+.filters {
+  display: flex;
+  gap: 8px;
+}
+.filters button {
+  border: 1px solid var(--line);
+  background: #fff;
+  padding: 10px 14px;
+  border-radius: 20px;
+  font-weight: 700;
+}
+.filters .active {
+  background: var(--navy);
+  color: #fff;
+}
+.notice {
+  display: flex;
+  gap: 13px;
+  background: #e9f8f4;
+  border: 1px solid #bce9dd;
+  border-radius: 17px;
+  padding: 18px;
+  margin-top: 25px;
+}
+.notice svg {
+  color: var(--teal);
+  flex: none;
+}
+.notice p {
+  margin: 0;
+  color: var(--muted);
+}
+.formPage {
+  max-width: 600px;
+}
+.formPage form {
+  display: grid;
+  gap: 18px;
+}
+.formPage h1 {
+  font-family: Outfit;
+  font-size: clamp(2.2rem, 5vw, 3.5rem);
+  margin: 5px 0;
+}
+.formPage p {
+  color: var(--muted);
+}
+.dashboardHero {
+  padding: 58px 0;
+  background: linear-gradient(135deg, #eef0ff, #e7faf6);
+}
+.dashboardTitle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 30px;
+}
+.dashboardTitle h1 {
+  font-family: Outfit;
+  font-size: clamp(2.6rem, 5vw, 4.5rem);
+  margin: 10px 0;
+}
+.dashboardTitle p {
+  color: var(--muted);
+  max-width: 650px;
+}
+.dashboardGrid {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 35px;
+  align-items: start;
+}
+.rolePanel {
+  display: grid;
+  gap: 10px;
+  padding: 22px;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: #fff;
+}
+.rolePanel h2,
+.dashboardMain h2 {
+  font-family: Outfit;
+}
+.role,
+.rolePanel summary {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 11px 12px;
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  background: #fff;
+  color: var(--navy);
+  font-weight: 700;
+  text-align: left;
+}
+.role.active {
+  color: #fff;
+  border-color: var(--navy);
+  background: var(--navy);
+}
+.rolePanel details {
+  margin-top: 10px;
+}
+.rolePanel summary {
+  cursor: pointer;
+}
+.rolePanel details .role {
+  margin-top: 8px;
+}
+.dashboardMain h2 {
+  font-size: clamp(2rem, 4vw, 3.2rem);
+  margin: 10px 0 25px;
+}
+.nextCards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+}
+.guardianPets {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 15px;
+  margin-bottom: 18px;
+}
+.petTile {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 14px;
+  align-items: center;
+  padding: 20px;
+  border: 1px solid #b9a5e7;
+  border-radius: 18px;
+  background: linear-gradient(145deg, #f6f2ff, #ecfbf8);
+}
+.petTile > svg {
+  color: var(--purple);
+}
+.petTile b {
+  font-family: Outfit;
+  font-size: 1.2rem;
+}
+.petTile p {
+  margin: 4px 0 0;
+  color: var(--muted);
+  text-transform: capitalize;
+}
+.petDetail h1 {
+  font-family: Outfit;
+  font-size: clamp(2.4rem, 5vw, 4rem);
+  margin: 8px 0 24px;
+}
+.petDetail dl div {
+  padding: 12px 0;
+  border-bottom: 1px solid var(--line);
+}
+.petDetail dt {
+  color: var(--muted);
+  font-size: 0.85rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+.petDetail dd {
+  margin: 4px 0 0;
+}
+.next {
+  min-height: 190px;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: start;
+  gap: 14px;
+  padding: 24px;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: #fff;
+}
+.next.primary {
+  border-color: #b9a5e7;
+  background: linear-gradient(145deg, #f6f2ff, #ecfbf8);
+}
+.next > svg {
+  color: var(--purple);
+}
+.next b {
+  font-family: Outfit;
+  font-size: 1.2rem;
+}
+.next p {
+  color: var(--muted);
+  line-height: 1.55;
+}
+footer {
+  padding: 55px 0;
+  background: #0d172b;
+  color: #fff;
+}
+.foot {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 50px;
+}
+.foot p {
+  color: #a9b2c4;
+}
+.foot a {
+  display: block;
+  color: #c7cedb;
+  margin: 9px 0;
+  font-size: 0.86rem;
+}
+@media (max-width: 900px) {
+  .cards {
+    grid-template-columns: 1fr 1fr;
+  }
+  .heroGrid {
+    gap: 30px;
+  }
+  .signup {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 700px) {
+  .qaBanner {
+    top: 68px;
+    text-align: left;
+  }
+  .shell {
+    width: calc(100% - 28px);
+  }
+  header {
+    height: 68px;
+  }
+  .menu {
+    display: block;
+  }
+  nav {
+    display: none;
+    position: absolute;
+    top: 68px;
+    left: 14px;
+    right: 14px;
+    background: #101d34;
+    padding: 16px;
+    border: 1px solid #2a3b5c;
+    border-radius: 15px;
+    box-shadow: var(--shadow);
+  }
+  nav.open {
+    display: grid;
+  }
+  nav > a:not(.btn) {
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+  }
+  .hero {
+    padding: 58px 0;
+  }
+  .heroGrid,
+  .cards,
+  .offers,
+  .connect,
+  .fields,
+  .partnerOnboardingGrid,
+  .foot,
+  .dashboardGrid,
+  .nextCards {
+    grid-template-columns: 1fr;
+  }
+  .dashboardTitle {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .section {
+    padding: 60px 0;
+  }
+  .matchPanel {
+    position: static;
+  }
+  .signup aside,
+  .signup form {
+    padding: 30px;
+  }
+  .raveHero {
+    padding: 70px 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  * {
+    scroll-behavior: auto !important;
+    transition: none !important;
+  }
+  .raveHero img {
+    content: url("/brand/rave-shelter-logo-static-v2.png");
+  }
+}
