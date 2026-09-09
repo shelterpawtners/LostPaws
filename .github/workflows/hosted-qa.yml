@@ -92,6 +92,7 @@ jobs:
         with:
           node-version: 22
           cache: npm
+      - run: npm ci
       - name: Require handoff continuation authorization
         if: github.event_name != 'workflow_dispatch'
         shell: bash
@@ -116,6 +117,13 @@ jobs:
             qa_url="${INPUT_QA_URL:-${FALLBACK_QA_URL}}"
           else
             frontend_sha=$(bash scripts/latest-frontend-artifact-sha.sh "${BASE_SHA}" "${PR_HEAD_SHA}")
+            acceptance_deployed_sha=$(sed -n 's/^ACCEPTANCE_DEPLOYED_SHA:[[:space:]]*//p' docs/AI-HANDOFF.md | head -n 1)
+
+            if [[ -n "${acceptance_deployed_sha}" && "${acceptance_deployed_sha}" != "NONE" && "${acceptance_deployed_sha}" != "${frontend_sha}" ]]; then
+              echo "Requested reusable deployed frontend SHA: ${acceptance_deployed_sha}"
+              bash scripts/verify-prettier-equivalent-frontend.sh "${acceptance_deployed_sha}" "${PR_HEAD_SHA}"
+              frontend_sha="${acceptance_deployed_sha}"
+            fi
 
             if [[ -n "${frontend_sha}" ]]; then
               echo "Latest deployed-artifact PR SHA: ${frontend_sha}"
@@ -141,7 +149,7 @@ jobs:
               done
 
               comments=$(gh api "repos/${REPO}/issues/${PR_NUMBER}/comments?per_page=100" --paginate)
-              qa_url=$(jq -r '[.[] | select(.user.login == "vercel[bot]")] | last | (.body // "") | try capture("\\[Preview\\]\\((?<url>https://[^)]+\\.vercel\\.app[^)]*)\\)").url catch ""' <<<"${comments}")
+              qa_url=$(jq -r '[.[] | select(.user.login == "vercel[bot]") | (.body // "") | select(contains("[Preview]("))] | last | try capture("\\[Preview\\]\\((?<url>https://[^)]+\\.vercel\\.app[^)]*)\\)").url catch ""' <<<"${comments}")
               if [[ -z "${qa_url}" ]]; then
                 qa_url="${FALLBACK_QA_URL}"
               fi
@@ -164,7 +172,6 @@ jobs:
             [[ -n "${!setting}" ]] || { echo "Missing hosted QA setting: $setting" >&2; exit 1; }
           done
           [[ "$PLAYWRIGHT_SUPABASE_URL" =~ ^https://jukmlmryykcnjtpblbja\.supabase\.co/?$ ]]
-      - run: npm ci
       - name: Install design QA dependencies
         run: bash scripts/install-design-qa-deps.sh
       - name: Install Chromium
