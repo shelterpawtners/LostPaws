@@ -14,15 +14,17 @@ The project is now in **MVP Design Hardening + Human Release Readiness** before 
 
 - `main` is the canonical application branch and Vercel Production Branch.
 - Stream 1 PR #22 merged to `main` at `eaa7b09edc3496eb8e52d57d081fce42d67f5151`.
+- Stream 2 PR #24 merged to `main` at `3e49f4c42fba2081b5bd6221c46ffd4b7fd1152c`.
 - Stream 1 accepted SHA is `0a48f446a103a8495ec2ce8a8c31c62bd9d02c3b`.
-- Stream 2 accepted SHA is `1163e6c3deb07c5d20cd7a88961b213c4bd327f0`; PR #24 is in final merge validation.
+- Stream 2 accepted SHA is `1163e6c3deb07c5d20cd7a88961b213c4bd327f0`.
+- Stream 3 accepted SHA is `95db103b606504155f83ca8f217b4e100e35f5c7`; PR #26 is in final completion/merge validation.
 - `shelterpawtners.com` and `www.shelterpawtners.com` DNS remain unchanged.
 
 ## Current priority
 
-Make ShelterPawtners look and feel polished, professional, distinctive, valuable, accessible, and trustworthy before adding the next major feature phase.
+The **Marketplace Sprint is now the active next product-design work**.
 
-The **Marketplace is the flagship design priority**. It must communicate substantially more value than a minimal grid of generic offer tiles.
+Make ShelterPawtners look and feel polished, professional, distinctive, valuable, accessible, and trustworthy before adding the next major feature phase. The Marketplace remains the flagship design priority and must communicate substantially more value than a minimal grid of generic offer tiles.
 
 Design work must improve both:
 
@@ -37,29 +39,29 @@ Design work must improve both:
 
 ### Stream 2 — ChatGPT product/operator capability
 
-**Status: COMPLETE on accepted SHA `1163e6c3deb07c5d20cd7a88961b213c4bd327f0`; PR #24 is in final merge validation.**
+**Status: COMPLETE and merged in PR #24.**
 
-Delivered:
-
-- `docs/CHATGPT-OPERATING-PROTOCOL.md` with source-of-truth order, role split, connected-tool routing, cost rules, owner gates, and implementation handoff contract;
-- `docs/prompts/CHATGPT-SESSION-BOOTSTRAP.md` for fresh-session project recovery before asking the owner to reconstruct context;
-- explicit routing: ChatGPT for product/controller/operator work, coding agents for substantial implementation, GitHub Actions/scripts for deterministic validation;
-- current private/project state through connected GitHub/Vercel/Supabase tools, with web research reserved for current external facts and evidence.
+ChatGPT has a repository-backed operating protocol and fresh-session bootstrap, with explicit routing among ChatGPT, coding agents, GitHub Actions, connected project tools, and public web research.
 
 ### Stream 3 — Shared design + deterministic quality toolchain
 
-**Current next bounded task: Issue #25.**
+**Status: COMPLETE — accepted SHA `95db103b606504155f83ca8f217b4e100e35f5c7`; PR #26 in final completion/merge validation.**
 
-Minimum setup before the Marketplace implementation sprint:
+Delivered:
 
-- axe accessibility integration using `@axe-core/playwright`;
-- focused Marketplace/public-shell Playwright design QA;
-- representative phone/tablet/desktop screenshots;
+- axe accessibility integration for public/Marketplace surfaces;
+- focused Hosted design-QA Playwright coverage;
+- representative phone/tablet/desktop Marketplace screenshots;
 - browser page/console error checks;
-- meaningful failed-network-request checks;
-- reuse the existing Hosted QA browser pass rather than adding another heavy workflow.
+- meaningful failed-network/HTTP 5xx checks;
+- reuse of the existing Hosted QA browser pass rather than adding another heavy workflow;
+- design evidence uploaded only at the acceptance boundary;
+- exact-pinned QA-only axe install with no production/runtime dependency or root lockfile churn;
+- Hosted QA URL fallback hardening for PRs with no frontend artifact change.
 
-Storybook is added **inside the Marketplace Sprint** once enough reusable Marketplace components/states exist to make isolated component development faster.
+Acceptance on `95db103b606504155f83ca8f217b4e100e35f5c7` passed CI, Dependency Review, Database QA, Persona QA, Merge Gate, existing hosted golden paths, and the new hosted design-QA run. The design evidence artifact is `hosted-design-qa-evidence` / artifact ID `10118806011`.
+
+Storybook is added **inside the Marketplace Sprint** only once enough reusable Marketplace components/states exist to make isolated component development faster.
 
 ## Figma decision
 
@@ -69,17 +71,17 @@ Default to code-first design using the real React/Tailwind application, Vercel p
 
 ## Marketplace Sprint
 
-**The Marketplace Sprint starts immediately after Stream 3 reaches minimum viable acceptance.**
+**The Marketplace Sprint starts immediately after PR #26 merges.**
 
 Sequence:
 
-1. Marketplace research + Guardian value/information architecture;
+1. Marketplace/competitive research + Guardian value/information architecture;
 2. 2–3 materially different code-first visual concepts;
 3. independent critique and direction selection;
 4. reusable Marketplace component system;
 5. Storybook when component/state volume justifies it;
 6. flagship Marketplace implementation;
-7. responsive/accessibility/browser/Playwright QA;
+7. responsive/accessibility/browser/Playwright QA using Stream 3;
 8. propagate the accepted brand system to the highest-value remaining screens;
 9. run Issue #5 broad release-readiness/human-style audit;
 10. only then consider ShelterPawtners domain cutover.
@@ -93,13 +95,13 @@ Sequence:
 - substantial coding defaults to a coding agent when that surface is available and cheaper;
 - specialist AI agents may provide independent product/design/QA perspectives;
 - never let the implementation agent be the only reviewer of its own UX/design;
-- preserve/strengthen tests rather than weakening them to make CI green.
+- preserve/strengthen tests rather than weakening them to make CI green;
+- keep expensive Hosted/Persona/Database work acceptance- or impact-gated rather than running it on ordinary mechanical commits.
 
 ## Owner gates
 
 Authorized now:
 
-- Stream 1/2/3 capability setup;
 - human QA and brand/design hardening;
 - Marketplace design sprint and visual implementation using existing approved product rules/data;
 - reversible tooling additions that are free/low-cost and do not weaken security.

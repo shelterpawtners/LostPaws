@@ -2,20 +2,20 @@
 
 STATUS: COMPLETE
 CURRENT_PHASE: MVP Design Hardening + Human Release Readiness
-CURRENT_CHECKPOINT: Stream 2 — ChatGPT product/operator capability
-NEXT_CHECKPOINT: Merge PR #24, then implement minimum Stream 3 Issue #25 and begin the Marketplace Sprint immediately after Stream 3 acceptance.
+CURRENT_CHECKPOINT: Stream 3 — minimum deterministic design QA
+NEXT_CHECKPOINT: Marketplace Sprint — current research/value architecture, then 2–3 materially different code-first Marketplace concepts.
 OWNER_DECISION_REQUIRED: NO
 SAFE_TO_CONTINUE: YES
-ACCEPTED_CODE_SHA: 1163e6c3deb07c5d20cd7a88961b213c4bd327f0
+ACCEPTED_CODE_SHA: 95db103b606504155f83ca8f217b4e100e35f5c7
 
 ## Completed foundation
 
 - Phase 1 is complete.
 - Phase 2 CP1–CP6 are complete.
 - `main` is canonical and is the Vercel Production Branch.
-- PR #22 — Stream 1 Copilot/repo-native design and build capability — merged to `main` at `eaa7b09edc3496eb8e52d57d081fce42d67f5151`.
-- Stream 1 accepted configuration/code SHA is `0a48f446a103a8495ec2ce8a8c31c62bd9d02c3b`.
-- Stream 1 acceptance included CI, Hosted QA, Persona QA, Database/RLS evidence, dependency review, and final deterministic Merge Gate success.
+- Stream 1 PR #22 merged to `main` at `eaa7b09edc3496eb8e52d57d081fce42d67f5151`; accepted SHA `0a48f446a103a8495ec2ce8a8c31c62bd9d02c3b`.
+- Stream 2 PR #24 merged to `main` at `3e49f4c42fba2081b5bd6221c46ffd4b7fd1152c`; accepted SHA `1163e6c3deb07c5d20cd7a88961b213c4bd327f0`.
+- Stream 3 Issue #25 / PR #26 is accepted on SHA `95db103b606504155f83ca8f217b4e100e35f5c7`.
 - ShelterPawtners DNS remains unchanged.
 - Phase 3 remains owner-gated.
 
@@ -27,97 +27,61 @@ Authorized now:
 
 1. Stream 1 — GitHub Copilot/repo-native build + design capability — COMPLETE;
 2. Stream 2 — ChatGPT product/operator capability — COMPLETE;
-3. Stream 3 — minimum shared deterministic design QA — NEXT;
-4. Marketplace design sprint and visual implementation using already-approved product rules/data immediately after Streams 1–3 reach minimum viable setup.
+3. Stream 3 — minimum shared deterministic design QA — COMPLETE;
+4. Marketplace design sprint and visual implementation using already-approved product rules/data — NEXT.
 
 Visible product progress takes priority over process overhead. Figma is not a prerequisite. Storybook is introduced inside the Marketplace Sprint only when reusable component/state volume makes it faster.
 
-## Stream 1 — complete
+## Stream 3 — complete
 
-PR #22 delivered the post-Phase-2 Copilot/design-agent layer, `main`-target CI/QA control plane, current operating rules, Vercel/Supabase/Chrome DevTools guidance, Hosted QA artifact correction, and resilient Playwright Chromium installation.
+Issue #25 / PR #26 / branch `ops/stream3-design-qa`.
 
-Stream 1 accepted SHA:
+Accepted Stream 3 SHA:
 
-`0a48f446a103a8495ec2ce8a8c31c62bd9d02c3b`
-
-Merged to main:
-
-`eaa7b09edc3496eb8e52d57d081fce42d67f5151`
-
-## Stream 2 — complete
-
-Issue #23 / PR #24 / branch `ops/stream2-chatgpt-operator`.
-
-Accepted Stream 2 SHA:
-
-`1163e6c3deb07c5d20cd7a88961b213c4bd327f0`
+`95db103b606504155f83ca8f217b4e100e35f5c7`
 
 Delivered:
 
-- `docs/CHATGPT-OPERATING-PROTOCOL.md`:
-  - source-of-truth order;
-  - ChatGPT vs coding-agent vs deterministic-automation role split;
-  - GitHub/Vercel/Supabase connected-tool routing;
-  - web-research boundary;
-  - fresh-session startup sequence;
-  - coding-agent implementation handoff contract;
-  - cost/speed rules;
-  - owner/RED decision boundaries;
-  - operator-session done criteria;
-- `docs/prompts/CHATGPT-SESSION-BOOTSTRAP.md`:
-  - reusable fresh-chat bootstrap;
-  - repository/context recovery before asking the owner to restate history;
-  - connected-tool routing for current project state;
-  - anti-duplication and RED-gate rules;
-- `docs/CURRENT-WORK.md` and `docs/AI-TOOLING-AND-DESIGN-ROADMAP.md` integrated with the Stream 2 operating model.
+- hosted axe accessibility scans for the public shell and Marketplace using `@axe-core/playwright`;
+- focused `e2e/hosted-design-qa.spec.ts`;
+- full-page Marketplace screenshots at 390x844, 768x1024, and 1440x1000;
+- unexpected browser page-error and console-error detection;
+- meaningful request-failure and HTTP 5xx detection while ignoring known benign navigation-abort/favicon noise;
+- reuse of the existing Hosted QA Chromium/browser job;
+- acceptance-only `test-results/` artifact upload with seven-day retention;
+- exact pinned QA-only transient `@axe-core/playwright@4.13.0` install without production/runtime dependency or root lockfile churn;
+- Hosted QA URL hardening so QA-only/docs-only PRs use the stable QA deployment rather than a stale or cancelled Vercel branch preview when no frontend artifact changed.
 
-### Stream 2 acceptance
+### Stream 3 acceptance evidence
 
-On accepted SHA `1163e6c3deb07c5d20cd7a88961b213c4bd327f0`:
+On accepted SHA `95db103b606504155f83ca8f217b4e100e35f5c7`:
 
-- CI classification passed;
-- documentation/Copilot configuration formatting passed;
-- CI Gate passed;
-- Database QA gate passed without unnecessary database execution;
-- Persona QA gate passed without unnecessary browser execution;
-- Hosted QA gate passed without unnecessary browser execution;
-- Dependency Review gate passed;
-- Merge Gate passed in the pre-COMPLETE state;
-- PR remained bounded to five Stream 2 files after merging current `main` history into the branch.
+- CI passed;
+- Dependency Review passed;
+- Database QA gate passed;
+- Persona QA gate passed;
+- Merge Gate passed;
+- Hosted QA passed;
+- existing hosted golden paths: 4/4 passed;
+- new hosted design-QA checks: 2/2 passed;
+- stable QA target was `https://lost-paws-one.vercel.app` because Stream 3 did not change the deployed frontend artifact;
+- design evidence artifact `hosted-design-qa-evidence` uploaded as artifact ID `10118806011`;
+- evidence artifact digest: `sha256:de583690f9c0d43eed763176eb27499ee5121945ea054336b44f4e78246a09f1`;
+- evidence artifact contains three review files from the design-QA run and expires after the configured seven-day retention period.
 
-### Stream 2 operating split
+### Acceptance defect found and fixed
 
-- ChatGPT = product/controller/research/operator/release reasoning.
-- Copilot/Codex/another coding surface = substantial source implementation, repetitive engineering, tests, migrations/functions after approved rules, and repo-local debugging.
-- GitHub Actions/scripts = deterministic validation and supervision.
-- Connected GitHub/Vercel/Supabase tools = current private/project state and authorized operations.
-- Web = current external research, standards, pricing, documentation, and competitive evidence.
+The first acceptance attempt failed before the new axe/design checks because Hosted QA selected a cancelled Vercel branch preview for a PR with no frontend artifact change. The product tests were hitting Vercel's “Deployment was cancelled” page rather than LostPaws.
 
-Do not spend multiple AI systems on the same ordinary implementation task.
+The fix was made in Hosted URL selection, not by weakening product tests:
 
-## Stream 3 — next
+- frontend-changing PRs continue to resolve and validate their Vercel preview;
+- PRs with no deployed frontend artifact change use the stable QA alias;
+- the same existing Guardian/Partner golden-path tests then passed unchanged.
 
-Issue #25 defines the minimum remaining QA gap before the Marketplace Sprint:
+## Marketplace Sprint — active next work
 
-- axe accessibility integration using `@axe-core/playwright`;
-- focused Marketplace/public-shell design QA;
-- representative phone/tablet/desktop screenshots;
-- meaningful browser console/page error checks;
-- meaningful failed-network-request checks;
-- reuse the existing Hosted QA browser pass rather than introducing another heavy workflow/platform.
-
-Explicit non-goals:
-
-- no Figma prerequisite;
-- no Storybook prerequisite;
-- no paid visual-regression/device SaaS;
-- no broad browser matrix yet;
-- no Phase 3 feature work;
-- no production DNS/domain changes.
-
-## Marketplace Sprint timing
-
-The Marketplace Sprint begins immediately after Stream 3 minimum QA setup is accepted.
+Start immediately after Stream 3 merges.
 
 Sequence:
 
@@ -125,27 +89,30 @@ Sequence:
 2. 2–3 materially different code-first visual concepts;
 3. independent product/design critique and direction selection;
 4. reusable Marketplace component system;
-5. Storybook when reusable component/state volume justifies it;
+5. Storybook only when reusable component/state volume justifies it;
 6. flagship Marketplace implementation;
-7. responsive/accessibility/browser/Playwright QA;
+7. responsive/accessibility/browser/Playwright QA using the Stream 3 tooling;
 8. brand-system propagation to the highest-value remaining Guardian/PetBiz screens;
 9. Issue #5 broad release-readiness/human-style audit;
 10. owner decision on ShelterPawtners domain cutover.
 
-## Still deferred / owner-gated
+## Explicit non-goals / owner gates
 
-- `shelterpawtners.com` / `www.shelterpawtners.com` DNS changes;
-- Phase 3 feature development;
-- `OD-003` verified-savings customer-facing rules/totals;
-- `OD-004` giving-provider selection/production charitable settlement;
-- paid infrastructure/tooling;
-- destructive operations;
-- material legal/privacy/security/financial/product RED decisions.
+- no Figma prerequisite;
+- no Storybook prerequisite before the Marketplace Sprint earns it;
+- no paid visual-regression/device SaaS;
+- no broad browser matrix yet;
+- no Phase 3 feature work;
+- no `shelterpawtners.com` / `www.shelterpawtners.com` DNS changes;
+- no `OD-003` verified-savings customer-facing rules/totals;
+- no `OD-004` giving-provider selection/production charitable settlement;
+- no paid infrastructure/tooling without approval;
+- no destructive operations;
+- no material legal/privacy/security/financial/product RED decisions without owner approval.
 
 ## Next action
 
-1. Validate this final documentation-only COMPLETE commit with current-head CI and Merge Gate while reusing the accepted Stream 2 SHA.
-2. Merge PR #24 under the owner's continuation authorization.
-3. Close Issue #23.
-4. Create a fresh Stream 3 branch from updated `main` and implement only Issue #25 minimum scope.
-5. Begin the Marketplace Sprint immediately after Stream 3 acceptance.
+1. Validate this documentation-only COMPLETE commit while reusing accepted Stream 3 SHA `95db103b606504155f83ca8f217b4e100e35f5c7` for heavy acceptance evidence.
+2. Mark PR #26 ready and merge it to `main` when the completion gates are green.
+3. Close Issue #25.
+4. Begin the Marketplace Sprint immediately from updated `main`.
