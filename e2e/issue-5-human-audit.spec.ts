@@ -86,7 +86,9 @@ test.describe.serial("Issue #5 human-style browser and persistence audit", () =>
       const response = await page.goto(route);
       expect(response?.status() || 200, route).toBeLessThan(500);
       await expect(page.locator("#main"), route).toBeVisible();
-      await expect(page.locator("h1, h2").filter({ visible: true }).first()).toBeVisible();
+      await expect(
+        page.locator("h1, h2").filter({ visible: true }).first(),
+      ).toBeVisible();
     }
 
     await page.goto("/marketplace");
@@ -97,7 +99,9 @@ test.describe.serial("Issue #5 human-style browser and persistence audit", () =>
       .getAttribute("href");
     expect(detailsHref).toMatch(/^\/offers\//);
     await page.goto(detailsHref!);
-    await expect(page.getByRole("button", { name: "Claim this offer" })).toBeVisible();
+    await expect(
+      page.getByRole("button", { name: "Claim this offer" }),
+    ).toBeVisible();
     await page.goBack();
     await expect(page).toHaveURL(/\/marketplace$/);
     await page.goForward();
@@ -108,7 +112,9 @@ test.describe.serial("Issue #5 human-style browser and persistence audit", () =>
     await page.goto("/sign-up");
     await expect(page).toHaveURL(/\/register$/);
     await page.goto("/register.html");
-    await expect(page).toHaveURL(/\/register\?type=guardian&source=business-card$/);
+    await expect(page).toHaveURL(
+      /\/register\?type=guardian&source=business-card$/,
+    );
     await page.goto("/this-route-does-not-exist");
     await expect(page).toHaveURL(/\/$/);
 
@@ -141,7 +147,7 @@ test.describe.serial("Issue #5 human-style browser and persistence audit", () =>
 
       const { data: guardianships, error: guardianshipError } = await db
         .from("guardianships")
-        .select("id,pet_id,status,ended_at")
+        .select("pet_id,guardian_id,started_at,status,ended_at")
         .eq("pet_id", pets![0].id)
         .eq("status", "active")
         .is("ended_at", null);
@@ -153,18 +159,32 @@ test.describe.serial("Issue #5 human-style browser and persistence audit", () =>
     }
 
     await page.goto("/dashboard");
-    await expect(page.getByRole("link", { name: `Open ${petA}` })).toBeVisible();
-    await expect(page.getByRole("link", { name: `Open ${petB}` })).toBeVisible();
-    await expect(page.getByRole("link", { name: "Set up your pet" })).toHaveCount(0);
-    await expect(page.getByRole("link", { name: "Add another pet" })).toBeVisible();
+    await expect(
+      page.getByRole("link", { name: `Open ${petA}` }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("link", { name: `Open ${petB}` }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("link", { name: "Set up your pet" }),
+    ).toHaveCount(0);
+    await expect(
+      page.getByRole("link", { name: "Add another pet" }),
+    ).toBeVisible();
 
     await page.getByRole("link", { name: `Open ${petA}` }).click();
     await expect(page.getByRole("heading", { name: petA })).toBeVisible();
     await page.getByRole("link", { name: "← Back to your pets" }).click();
-    await expect(page.getByRole("link", { name: `Open ${petB}` })).toBeVisible();
+    await expect(
+      page.getByRole("link", { name: `Open ${petB}` }),
+    ).toBeVisible();
     await page.reload();
-    await expect(page.getByRole("link", { name: `Open ${petA}` })).toBeVisible();
-    await expect(page.getByRole("link", { name: `Open ${petB}` })).toBeVisible();
+    await expect(
+      page.getByRole("link", { name: `Open ${petA}` }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("link", { name: `Open ${petB}` }),
+    ).toBeVisible();
 
     await signOutPage(page);
     await page.goto(`/pets/${persistedIds[0]}`);
@@ -178,7 +198,9 @@ test.describe.serial("Issue #5 human-style browser and persistence audit", () =>
       fresh.page.getByRole("link", { name: `Open ${petB}` }),
     ).toBeVisible();
     await fresh.page.goto(`/pets/${persistedIds[1]}`);
-    await expect(fresh.page.getByRole("heading", { name: petB })).toBeVisible();
+    await expect(
+      fresh.page.getByRole("heading", { name: petB }),
+    ).toBeVisible();
     await fresh.context.close();
     await db.auth.signOut();
   });
@@ -211,13 +233,13 @@ test.describe.serial("Issue #5 human-style browser and persistence audit", () =>
       .fill(`Issue 5 persisted Partner profile ${runSuffix}`);
     await page.getByLabel("How customers are served").selectOption("online");
     await saveDraft.click();
-    await expect(page.getByTestId("partner-profile-save-status")).toContainText(
-      "Saved as a private draft.",
-    );
+    await expect(
+      page.getByTestId("partner-profile-save-status"),
+    ).toContainText("Saved as a private draft.");
     await page.getByRole("button", { name: "Publish profile" }).click();
-    await expect(page.getByTestId("partner-profile-save-status")).toContainText(
-      "Published.",
-    );
+    await expect(
+      page.getByTestId("partner-profile-save-status"),
+    ).toContainText("Published.");
 
     await page.goto("/partner/offers");
     await expect(page.getByTestId("marketplace-profile-state")).toContainText(
@@ -233,7 +255,10 @@ test.describe.serial("Issue #5 human-style browser and persistence audit", () =>
         .eq("organization_id", organizationId)
         .eq("title", title);
       expect(offerError).toBeNull();
-      expect(offers, `${title} must have one canonical offer row`).toHaveLength(1);
+      expect(
+        offers,
+        `${title} must have one canonical offer row`,
+      ).toHaveLength(1);
       expect(offers![0].current_version_id).toBeTruthy();
 
       const { data: versions, error: versionError } = await db
@@ -245,7 +270,9 @@ test.describe.serial("Issue #5 human-style browser and persistence audit", () =>
     }
 
     await page.goto("/dashboard");
-    await expect(page.getByRole("heading", { name: "Manage your organization" })).toBeVisible();
+    await expect(
+      page.getByRole("heading", { name: "Manage your organization" }),
+    ).toBeVisible();
     await page.goto("/partner/offers");
     const offerAButton = page.getByRole("button").filter({ hasText: offerA });
     const offerBButton = page.getByRole("button").filter({ hasText: offerB });
@@ -254,8 +281,12 @@ test.describe.serial("Issue #5 human-style browser and persistence audit", () =>
     await offerAButton.click();
     await expect(page.getByLabel("Title")).toHaveValue(offerA);
     await page.reload();
-    await expect(page.getByRole("button").filter({ hasText: offerA })).toBeVisible();
-    await expect(page.getByRole("button").filter({ hasText: offerB })).toBeVisible();
+    await expect(
+      page.getByRole("button").filter({ hasText: offerA }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("button").filter({ hasText: offerB }),
+    ).toBeVisible();
 
     await db.auth.signOut();
   });
@@ -265,7 +296,9 @@ test.describe.serial("Issue #5 human-style browser and persistence audit", () =>
   }) => {
     await signInPage(page, adminEmail(), adminPassword());
     await page.goto("/admin-qa");
-    await expect(page.getByRole("heading", { name: "Admin QA Mode" })).toBeVisible();
+    await expect(
+      page.getByRole("heading", { name: "Admin QA Mode" }),
+    ).toBeVisible();
 
     await page
       .getByRole("button", {
@@ -290,7 +323,9 @@ test.describe.serial("Issue #5 human-style browser and persistence audit", () =>
         name: /Act as RAVE Vendor, RAVE Vendor, Demo RAVE Vendor/,
       })
       .click();
-    await expect(adminQaBanner(page)).toContainText("RAVE Vendor (RAVE Vendor)");
+    await expect(adminQaBanner(page)).toContainText(
+      "RAVE Vendor (RAVE Vendor)",
+    );
     await expect(
       page.getByRole("heading", { name: "Manage your organization" }),
     ).toBeVisible();
@@ -301,7 +336,9 @@ test.describe.serial("Issue #5 human-style browser and persistence audit", () =>
     await expect(page.getByLabel("Organization")).toHaveValue(organizationId);
     await page.getByRole("button", { name: "Return to Admin" }).click();
     await page.goto("/admin-qa");
-    await expect(page.getByRole("heading", { name: "Admin QA Mode" })).toBeVisible();
+    await expect(
+      page.getByRole("heading", { name: "Admin QA Mode" }),
+    ).toBeVisible();
   });
 
   test("failed Guardian save reports failure, creates no partial row, and succeeds exactly once on retry", async ({
@@ -325,7 +362,9 @@ test.describe.serial("Issue #5 human-style browser and persistence audit", () =>
       }),
     );
     await page.getByRole("button", { name: "Save and continue" }).click();
-    await expect(page.getByRole("status")).toContainText("Unable to save your pet");
+    await expect(page.getByRole("status")).toContainText(
+      "Unable to save your pet",
+    );
     await expect(page).toHaveURL(/\/onboarding\/guardian$/);
 
     let result = await db.from("pets").select("id").eq("name", petName);
@@ -335,7 +374,9 @@ test.describe.serial("Issue #5 human-style browser and persistence audit", () =>
     await page.unroute("**/rest/v1/rpc/save_guardian_onboarding_pet");
     await page.getByRole("button", { name: "Save and continue" }).click();
     await expect(page).toHaveURL(/\/dashboard$/, { timeout: 20_000 });
-    await expect(page.getByRole("link", { name: `Open ${petName}` })).toBeVisible();
+    await expect(
+      page.getByRole("link", { name: `Open ${petName}` }),
+    ).toBeVisible();
 
     result = await db.from("pets").select("id").eq("name", petName);
     expect(result.error).toBeNull();
@@ -343,12 +384,15 @@ test.describe.serial("Issue #5 human-style browser and persistence audit", () =>
 
     const { data: guardianships, error } = await db
       .from("guardianships")
-      .select("id")
+      .select("pet_id,guardian_id,started_at,status,ended_at")
       .eq("pet_id", result.data![0].id)
       .eq("status", "active")
       .is("ended_at", null);
     expect(error).toBeNull();
-    expect(guardianships, "retry must create exactly one active guardianship").toHaveLength(1);
+    expect(
+      guardianships,
+      "retry must create exactly one active guardianship",
+    ).toHaveLength(1);
     await db.auth.signOut();
   });
 });
