@@ -1,118 +1,121 @@
 # AI Handoff
 
-STATUS: COMPLETE
+STATUS: IN_PROGRESS
 CURRENT_PHASE: MVP Design Hardening + Human Release Readiness
-CURRENT_CHECKPOINT: Stream 3 — minimum deterministic design QA
-NEXT_CHECKPOINT: Marketplace Sprint — current research/value architecture, then 2–3 materially different code-first Marketplace concepts.
+CURRENT_CHECKPOINT: Marketplace Sprint 1 — Issue #27 value architecture + three code-first concepts
+NEXT_CHECKPOINT: Validate/deploy the three concept preview, run independent critique, then select the flagship Marketplace direction.
 OWNER_DECISION_REQUIRED: NO
 SAFE_TO_CONTINUE: YES
-ACCEPTED_CODE_SHA: 95db103b606504155f83ca8f217b4e100e35f5c7
+ACCEPTED_CODE_SHA: NONE
 
 ## Completed foundation
 
 - Phase 1 is complete.
 - Phase 2 CP1–CP6 are complete.
 - `main` is canonical and is the Vercel Production Branch.
-- Stream 1 PR #22 merged to `main` at `eaa7b09edc3496eb8e52d57d081fce42d67f5151`; accepted SHA `0a48f446a103a8495ec2ce8a8c31c62bd9d02c3b`.
-- Stream 2 PR #24 merged to `main` at `3e49f4c42fba2081b5bd6221c46ffd4b7fd1152c`; accepted SHA `1163e6c3deb07c5d20cd7a88961b213c4bd327f0`.
-- Stream 3 Issue #25 / PR #26 is accepted on SHA `95db103b606504155f83ca8f217b4e100e35f5c7`.
+- Stream 1 PR #22 merged to `main` at `eaa7b09edc3496eb8e52d57d081fce42d67f5151`.
+- Stream 2 PR #24 merged to `main` at `3e49f4c42fba2081b5bd6221c46ffd4b7fd1152c`.
+- Stream 3 PR #26 merged to `main` at `a0c763b49f79e90fdd2e0c0586091636e39680f8`; accepted Stream 3 SHA `95db103b606504155f83ca8f217b4e100e35f5c7`.
+- Stream 3 deterministic design QA is available: axe, runtime/console/network checks, and responsive screenshot evidence.
 - ShelterPawtners DNS remains unchanged.
 - Phase 3 remains owner-gated.
 
-## Owner direction — design hardening
+## Active task
 
-The owner wants the product to move quickly from functional/minimal to polished, professional, distinctive, valuable, accessible, and trustworthy, with the Marketplace as the highest design priority.
+Issue #27: **Marketplace Sprint 1: Value architecture + three code-first concepts**
 
-Authorized now:
+Branch:
 
-1. Stream 1 — GitHub Copilot/repo-native build + design capability — COMPLETE;
-2. Stream 2 — ChatGPT product/operator capability — COMPLETE;
-3. Stream 3 — minimum shared deterministic design QA — COMPLETE;
-4. Marketplace design sprint and visual implementation using already-approved product rules/data — NEXT.
+`design/marketplace-concepts`
 
-Visible product progress takes priority over process overhead. Figma is not a prerequisite. Storybook is introduced inside the Marketplace Sprint only when reusable component/state volume makes it faster.
+Goal:
 
-## Stream 3 — complete
+Turn the current functional but visually weak Marketplace into the flagship ShelterPawtners experience by improving information/value hierarchy and providing three working code-first directions for comparison.
 
-Issue #25 / PR #26 / branch `ops/stream3-design-qa`.
+## Research/value architecture completed
 
-Accepted Stream 3 SHA:
+`docs/MARKETPLACE-DESIGN-SPRINT.md` records:
 
-`95db103b606504155f83ca8f217b4e100e35f5c7`
+- Stream 3 baseline findings;
+- current Baymard/Nielsen Norman/Groupon pattern research;
+- Guardian jobs-to-be-done;
+- Marketplace information hierarchy;
+- current `PublicOffer` data boundary;
+- explicit no-fabrication rules;
+- three concept families;
+- Storybook trigger after direction selection rather than before prototyping.
 
-Delivered:
+No offer schema migration is authorized or required for these concepts.
 
-- hosted axe accessibility scans for the public shell and Marketplace using `@axe-core/playwright`;
-- focused `e2e/hosted-design-qa.spec.ts`;
-- full-page Marketplace screenshots at 390x844, 768x1024, and 1440x1000;
-- unexpected browser page-error and console-error detection;
-- meaningful request-failure and HTTP 5xx detection while ignoring known benign navigation-abort/favicon noise;
-- reuse of the existing Hosted QA Chromium/browser job;
-- acceptance-only `test-results/` artifact upload with seven-day retention;
-- exact pinned QA-only transient `@axe-core/playwright@4.13.0` install without production/runtime dependency or root lockfile churn;
-- Hosted QA URL hardening so QA-only/docs-only PRs use the stable QA deployment rather than a stale or cancelled Vercel branch preview when no frontend artifact changed.
+## Implementation in progress
 
-### Stream 3 acceptance evidence
+Current branch changes include:
 
-On accepted SHA `95db103b606504155f83ca8f217b4e100e35f5c7`:
+- richer `OfferCard` hierarchy using only existing `PublicOffer` fields;
+- provider identity moved near the top of each card;
+- visible eligibility/classification metadata;
+- applicability and expiration surfaced as compact decision metadata;
+- repeated card-level endorsement disclaimer removed from list cards while global Marketplace disclosure remains and detail-page disclosure stays explicit;
+- keyword search across existing offer fields;
+- dynamically generated classification filters from actual returned data;
+- result count and clear-search/filter action;
+- three preview-selectable concepts:
+  - A — Value-first Deal Feed;
+  - B — Local + Trust Marketplace;
+  - C — Curated Guardian Savings Hub;
+- new `src/marketplace.css` isolates the sprint design system from the rest of the product;
+- existing `.offerCard` class and `View offer details` link text are preserved for the hosted redemption golden path;
+- detail/claim/redemption server behavior is intentionally unchanged.
 
-- CI passed;
-- Dependency Review passed;
-- Database QA gate passed;
-- Persona QA gate passed;
-- Merge Gate passed;
-- Hosted QA passed;
-- existing hosted golden paths: 4/4 passed;
-- new hosted design-QA checks: 2/2 passed;
-- stable QA target was `https://lost-paws-one.vercel.app` because Stream 3 did not change the deployed frontend artifact;
-- design evidence artifact `hosted-design-qa-evidence` uploaded as artifact ID `10118806011`;
-- evidence artifact digest: `sha256:de583690f9c0d43eed763176eb27499ee5121945ea054336b44f4e78246a09f1`;
-- evidence artifact contains three review files from the design-QA run and expires after the configured seven-day retention period.
+## Data/claim guardrails
 
-### Acceptance defect found and fixed
+Do not fabricate or imply unavailable structured data such as:
 
-The first acceptance attempt failed before the new axe/design checks because Hosted QA selected a cancelled Vercel branch preview for a PR with no frontend artifact change. The product tests were hitting Vercel's “Deployment was cancelled” page rather than LostPaws.
+- discount percentages or guaranteed savings;
+- original/current prices;
+- provider logos/photos;
+- ratings/review counts;
+- precise distance;
+- verified savings totals;
+- shelter-impact totals;
+- exclusive partnership status.
 
-The fix was made in Hosted URL selection, not by weakening product tests:
+RAVE query state may change presentation, but must not claim channel filtering unless the public query exposes channel metadata.
 
-- frontend-changing PRs continue to resolve and validate their Vercel preview;
-- PRs with no deployed frontend artifact change use the stable QA alias;
-- the same existing Guardian/Partner golden-path tests then passed unchanged.
+## Validation still required
 
-## Marketplace Sprint — active next work
+Before this sprint can be accepted:
 
-Start immediately after Stream 3 merges.
+1. open a draft PR from `design/marketplace-concepts` to `main`;
+2. allow fast CI/lint/unit/build checks to run;
+3. verify Vercel preview availability;
+4. inspect each concept at phone and desktop widths;
+5. run Stream 3 Hosted design QA at the acceptance boundary;
+6. preserve the existing Partner → Guardian → claim/redemption golden path;
+7. request independent Copilot code review when the PR is ready for review;
+8. run a separate product/design critique against the three concepts;
+9. owner selects a direction before removing the prototype selector and hardening the flagship implementation.
 
-Sequence:
+## Known tooling note
 
-1. current Marketplace/competitive research + Guardian value/information architecture;
-2. 2–3 materially different code-first visual concepts;
-3. independent product/design critique and direction selection;
-4. reusable Marketplace component system;
-5. Storybook only when reusable component/state volume justifies it;
-6. flagship Marketplace implementation;
-7. responsive/accessibility/browser/Playwright QA using the Stream 3 tooling;
-8. brand-system propagation to the highest-value remaining Guardian/PetBiz screens;
-9. Issue #5 broad release-readiness/human-style audit;
-10. owner decision on ShelterPawtners domain cutover.
+The repository currently has a ruleset named `Copilot PR Review` that still targets `refs/heads/build/festival-mvp` and contains deletion/non-fast-forward rules. The connected GitHub API in this session can read but not administer that ruleset. This does not block Issue #27 because Copilot review can be explicitly requested on the PR via the reviewer API when ready.
 
 ## Explicit non-goals / owner gates
 
 - no Figma prerequisite;
-- no Storybook prerequisite before the Marketplace Sprint earns it;
-- no paid visual-regression/device SaaS;
-- no broad browser matrix yet;
+- no Storybook prerequisite before the winning component system earns it;
+- no new offer schema/data-model fields without owner review;
+- no fabricated partnerships/savings/impact claims;
+- no paid design/QA tooling;
 - no Phase 3 feature work;
 - no `shelterpawtners.com` / `www.shelterpawtners.com` DNS changes;
-- no `OD-003` verified-savings customer-facing rules/totals;
-- no `OD-004` giving-provider selection/production charitable settlement;
-- no paid infrastructure/tooling without approval;
-- no destructive operations;
-- no material legal/privacy/security/financial/product RED decisions without owner approval.
+- no destructive operations or weakened tests.
 
 ## Next action
 
-1. Validate this documentation-only COMPLETE commit while reusing accepted Stream 3 SHA `95db103b606504155f83ca8f217b4e100e35f5c7` for heavy acceptance evidence.
-2. Mark PR #26 ready and merge it to `main` when the completion gates are green.
-3. Close Issue #25.
-4. Begin the Marketplace Sprint immediately from updated `main`.
+1. finish the three visual-system implementation;
+2. open draft PR for Issue #27;
+3. fix fast CI/build findings;
+4. validate Vercel preview and compare A/B/C;
+5. request independent Copilot review and run Product Critic review;
+6. move to acceptance only after real preview evidence exists.
