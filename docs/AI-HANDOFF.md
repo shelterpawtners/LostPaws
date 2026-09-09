@@ -1,110 +1,87 @@
 # AI Handoff
 
-STATUS: READY_FOR_ACCEPTANCE
+STATUS: COMPLETE
 CURRENT_PHASE: MVP Design Hardening + Human Release Readiness
-CURRENT_CHECKPOINT: Marketplace Sprint 1 — final exact-code A+B acceptance
-NEXT_CHECKPOINT: Run final Stream 3 Hosted acceptance against the exact PR-head Vite app, visually inspect the new evidence, then record accepted SHA and complete Issue #27.
+CURRENT_CHECKPOINT: Marketplace Sprint 1 — A+B flagship accepted
+NEXT_CHECKPOINT: Owner-authorized merge of PR #28, then propagate the winning Marketplace brand system to the highest-value Guardian/PetBiz/global-shell screens and run Issue #5 human release-readiness audit.
 OWNER_DECISION_REQUIRED: NO
 SAFE_TO_CONTINUE: YES
-ACCEPTED_CODE_SHA: NONE
+ACCEPTED_CODE_SHA: d9b9c32ea7647ff0e9a616e8c8206bfb9ca5742d
 ACCEPTANCE_DEPLOYED_SHA: NONE
 ACCEPTANCE_RUNTIME: LOCAL_HEAD
 
-## Completed foundation
+## Marketplace Sprint 1 outcome
 
-- Phase 1 is complete.
-- Phase 2 CP1–CP6 are complete.
-- `main` is canonical and is the Vercel Production Branch.
-- Stream 1 PR #22 merged to `main` at `eaa7b09edc3496eb8e52d57d081fce42d67f5151`.
-- Stream 2 PR #24 merged to `main` at `3e49f4c42fba2081b5bd6221c46ffd4b7fd1152c`.
-- Stream 3 PR #26 merged to `main` at `a0c763b49f79e90fdd2e0c0586091636e39680f8`; accepted Stream 3 SHA `95db103b606504155f83ca8f217b4e100e35f5c7`.
-- ShelterPawtners DNS remains unchanged.
-- Phase 3 remains owner-gated.
+Issue #27 / PR #28 produced the owner-selected **A+B flagship Marketplace**:
 
-## Active task
+- Concept A supplied fast scanability, search/filter discovery, compact comparison cards, and strong action hierarchy.
+- Concept B supplied the premium dark frame, stronger brand character, provider identity, and trust/context emphasis.
+- Prototype A/B/C controls are removed from the final experience.
+- Concept C first-two editorial prominence was removed because no approved ranking/curation rule exists.
+- The obsolete route-level Marketplace hero/search/filter/notice presentation is hidden so the flagship is the single visible discovery experience.
 
-Issue #27: **Marketplace Sprint 1: Value architecture + flagship design**
+No offer schema migration or fabricated savings, pricing, ratings, provider logos, distance, impact, popularity, ranking, or partnership claims were introduced.
 
-PR #28: **Marketplace Sprint 1: value architecture + three concepts**
+## Review hardening completed
 
-Branch: `design/marketplace-concepts`
+GitHub Copilot review findings were fixed before acceptance:
 
-Owner decision on September 9, 2026: **combine Concept A + Concept B**.
-
-Selected product direction:
-
-- A's fast scanability, search/filter flow, and compact comparison grid;
-- B's premium dark frame, stronger brand character, and trust/context emphasis;
-- no prototype A/B/C selector in the final product;
-- no Concept C first-two editorial prominence without an approved ranking/curation rule.
-
-## Current A+B implementation
-
-The selected Marketplace keeps provider identity, offer title/value, eligibility/listing type, applicability/expiration, CTA, and source/current terms in the scan hierarchy. It uses a compact trust strip inside a premium dark Marketplace frame and retains A's scan-first offer cards.
-
-The obsolete route-level Marketplace hero, search box, filter buttons, and route notice are now hidden so the A+B flagship is the single visible Marketplace discovery experience.
-
-No new offer schema fields or fabricated savings, pricing, ratings, logos, distance, impact, or partnership claims are introduced.
-
-## Copilot review hardening completed
-
-The later GitHub Copilot review identified edge cases that were corrected before merge:
-
-1. separate RPC load failure, true catalog-empty, and filtered-empty states;
-2. humanize enum-backed classification/eligibility/applicability values before search matching;
-3. expose listing-type filters as an accessible control group while preserving `aria-pressed` state;
-4. use classification-neutral trust wording on offer detail pages;
-5. render a compact embedded offer-list variant inside public PetBiz profiles instead of the full flagship Marketplace shell;
-6. require hosted design QA to prove at least one real `.offerCard` loaded before axe checks/screenshots;
-7. retain phone, tablet, and desktop visual evidence.
+1. RPC load failure, true catalog-empty, and filtered-empty states are distinct.
+2. Enum-backed classification/eligibility/applicability values are humanized for search matching.
+3. Listing-type filters expose a real accessible control group and `aria-pressed` states.
+4. Offer-detail trust language is classification-neutral.
+5. Public PetBiz profiles use a compact embedded offer-list variant rather than the full flagship Marketplace shell.
+6. Hosted design QA requires at least one real `.offerCard` before accessibility/screenshot evidence can pass.
+7. Phone, tablet, and desktop evidence is retained.
 
 All six Copilot inline review threads are resolved.
 
-## Exact-code acceptance fallback
+## Final acceptance evidence
 
-Vercel Hobby build-rate limits are currently preventing a fresh preview for the final review-hardening commit. `ACCEPTANCE_RUNTIME: LOCAL_HEAD` tells the acceptance-gated Hosted QA workflow to leave `PLAYWRIGHT_BASE_URL` unset. Playwright then starts the exact PR-head Vite application locally on the GitHub runner and injects the same QA Supabase URL/publishable key used by Hosted QA.
+Accepted code SHA:
 
-This fallback has already proven functional; final acceptance now reruns it after the route-shell cleanup.
+`d9b9c32ea7647ff0e9a616e8c8206bfb9ca5742d`
 
-## Final QA contract
+Hosted QA run:
 
-Before Issue #27 can be accepted:
+`34410972297`
 
-1. Prettier/lint, shell validation, unit tests, TypeScript, and Vite build pass;
-2. exact current frontend is tested using `LOCAL_HEAD` while Vercel is rate-limited;
-3. axe WCAG A/AA checks pass on home and `/marketplace`;
-4. no meaningful page/console/network failures occur;
-5. phone (390x844), tablet (768x1024), and desktop (1440x1000) full-page Marketplace evidence is captured and visually reviewed;
-6. existing Partner → Guardian → claim → redemption golden paths remain green;
-7. Database/Persona/Dependency/Merge gates remain green as applicable;
-8. only the flagship Marketplace hero/discovery/trust presentation remains visible on `/marketplace`.
+Evidence artifact:
 
-After final acceptance passes, record its exact code SHA as `ACCEPTED_CODE_SHA`, make only docs-only completion changes, update PR #28 to the A+B flagship scope, merge, and close Issue #27.
+`hosted-design-qa-evidence` — artifact `10127237935`
 
-## Product/data guardrails
+Final exact-code acceptance used `ACCEPTANCE_RUNTIME: LOCAL_HEAD` because the Vercel Hobby build-rate limit prevented a fresh preview. The acceptance-gated workflow started the exact PR-head Vite application locally and connected it to the existing QA Supabase backend.
 
-- Provider monograms are placeholders, not provider logos.
-- Current RPC order must not be described as editorial ranking, popularity, relevance, or value ranking.
-- `channel=rave` may change presentation but must not claim actual channel filtering until approved public data exposes channel metadata.
-- Client-side search is acceptable for MVP scale but is not the long-term large-catalog search architecture.
+Results on the accepted SHA:
 
-## Figma / Storybook
+- Hosted Marketplace/Guardian/Partner golden paths: **4/4 passed**.
+- Hosted design QA: **2/2 passed**.
+- axe WCAG A/AA checks: passed on home and Marketplace.
+- runtime/page/console/network checks: passed.
+- responsive evidence: phone 390x844, tablet 768x1024, desktop 1440x1000.
+- final visual inspection confirmed the duplicate legacy Marketplace hero/search/filter layer is gone and the A+B flagship is the single visible Marketplace experience.
+- CI: success.
+- Database QA: success.
+- Persona QA: success.
+- Dependency Review: success.
+- Merge Gate on the accepted SHA: success.
 
-- Figma remains deferred and is not a prerequisite.
-- Storybook is eligible for later evaluation but is not an Issue #27 acceptance dependency.
+## Cost/tooling decision
 
-## Explicit non-goals / owner gates
+The local exact-code acceptance fallback avoided paying for a Vercel upgrade solely to bypass a temporary free-tier build-rate cap. Vercel-backed previews remain the normal review path when available; `LOCAL_HEAD` is an explicit acceptance-only fallback.
 
-- no new offer schema/data-model fields without owner review;
-- no fabricated partnerships/savings/impact claims;
-- no paid design/QA tooling;
-- no Phase 3 feature work;
-- no `shelterpawtners.com` / `www.shelterpawtners.com` DNS changes;
-- no destructive operations or weakened tests.
+Figma remains deferred. Storybook remains optional and should be added only when isolated reusable-component work becomes faster than direct page iteration.
 
-## Next action
+## Remaining owner-controlled actions
 
-1. run final exact-code Stream 3 acceptance;
-2. visually inspect the final phone/tablet/desktop evidence;
-3. record accepted SHA and make the docs-only completion commit;
-4. update PR #28 scope, merge, and close Issue #27.
+- PR #28 is ready for its final docs-only completion gates and then owner-authorized merge.
+- Do not change `shelterpawtners.com` / `www.shelterpawtners.com` DNS yet.
+- Phase 3 remains owner-gated.
+- Do not introduce unapproved Marketplace schema/value/ranking rules.
+
+## Next execution after merge
+
+1. use the accepted Marketplace visual language to harden the global header/navigation and highest-value Guardian/PetBiz screens;
+2. keep the propagation bounded rather than redesigning every page at once;
+3. run Issue #5 human release-readiness/browser audit;
+4. present the owner with the release-readiness result before any ShelterPawtners domain cutover.
