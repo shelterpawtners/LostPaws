@@ -31,9 +31,9 @@ Delivered:
 
 ## Stream 3 — Shared design + quality toolchain
 
-**Status: IN PROGRESS — Issue #25 / `ops/stream3-design-qa`.**
+**Status: COMPLETE — accepted SHA `95db103b606504155f83ca8f217b4e100e35f5c7`; PR #26 in final merge validation.**
 
-Minimum implementation before Marketplace design work:
+Delivered:
 
 - axe accessibility scanning for the public shell and Marketplace;
 - focused Hosted Marketplace/public-shell design-QA Playwright coverage;
@@ -41,24 +41,19 @@ Minimum implementation before Marketplace design work:
 - failure on unexpected page errors and meaningful console errors;
 - meaningful failed-network and HTTP 5xx detection;
 - reuse of the existing Hosted QA browser installation/run;
-- design evidence uploaded only at the acceptance boundary.
+- design evidence uploaded only at the acceptance boundary;
+- exact pinned `@axe-core/playwright@4.13.0` as a QA-only transient install, with no production/runtime dependency or root lockfile churn;
+- Hosted QA URL hardening so PRs with no deployed frontend artifact change use the stable QA deployment rather than stale/cancelled preview comments.
 
-Cost/design decisions:
+Acceptance evidence on `95db103b606504155f83ca8f217b4e100e35f5c7`:
 
-- use exact pinned `@axe-core/playwright@4.13.0` as a QA-only transient install in Hosted acceptance;
-- do not add production/runtime dependency or root lockfile churn solely for axe;
-- do not create another browser workflow or paid QA platform;
-- normal implementation commits remain on fast deterministic checks; one Hosted design-QA run is activated at `READY_FOR_ACCEPTANCE`.
+- CI, Dependency Review, Database QA, Persona QA, Merge Gate, and Hosted QA passed;
+- existing hosted Guardian/Partner golden paths passed 4/4;
+- new hosted design-QA tests passed 2/2;
+- responsive design evidence uploaded as `hosted-design-qa-evidence`, artifact ID `10118806011`;
+- evidence digest `sha256:de583690f9c0d43eed763176eb27499ee5121945ea054336b44f4e78246a09f1`.
 
-Explicit Stream 3 non-goals:
-
-- no Figma prerequisite;
-- no Storybook prerequisite;
-- no paid visual-regression/device SaaS;
-- no broad browser matrix yet;
-- no Lighthouse CI yet unless a concrete Marketplace need appears;
-- no Phase 3 feature work;
-- no DNS/domain/production changes.
+The first acceptance attempt correctly exposed a Hosted QA routing defect: a cancelled Vercel branch preview was selected for a PR with no frontend artifact change. The URL-selection logic was fixed while leaving the product tests unchanged.
 
 ## Figma decision
 
@@ -66,11 +61,11 @@ Explicit Stream 3 non-goals:
 
 For the current startup/MVP stage, code-first design is expected to be faster because the real React/Tailwind application and Vercel previews already provide the review surface. Reconsider Figma only when collaboration or design-system complexity makes a dedicated visual workspace materially faster.
 
-## Marketplace Sprint — when it starts
+## Marketplace Sprint — active next work
 
-**The Marketplace Sprint begins immediately after Stream 3 reaches minimum viable acceptance.**
+**The Marketplace Sprint begins immediately after Stream 3 PR #26 merges.**
 
-It is the next product-design sprint; it is not deferred to a later phase.
+It is the next product-design sprint; it is not deferred to Phase 3.
 
 ### Marketplace Sprint sequence
 
