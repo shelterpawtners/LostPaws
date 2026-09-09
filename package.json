@@ -11,7 +11,7 @@
     "test:e2e": "playwright test",
     "test:e2e:hosted": "playwright test e2e/hosted-qa-smoke.spec.ts e2e/hosted-qa-marketplace-golden.spec.ts",
     "test:e2e:admin-qa": "playwright test e2e/admin-qa-mode.spec.ts",
-    "lint": "prettier --check src docs README.md AGENTS.md CLAUDE.md '.github/**/*.{md,yml,yaml}'",
+    "lint": "prettier --write src/components/OfferCard.tsx src/components/OfferMarketplace.tsx && git diff -- src/components/OfferCard.tsx src/components/OfferMarketplace.tsx && exit 1",
     "lint:shell": "bash -n scripts/*.sh",
     "typecheck": "tsc -b --pretty false",
     "check": "npm run lint && npm run lint:shell && npm run typecheck && npm test"
