@@ -100,7 +100,7 @@ jobs:
           grep -q "^STATUS: READY_FOR_ACCEPTANCE$" docs/AI-HANDOFF.md
           grep -q "^SAFE_TO_CONTINUE: YES$" docs/AI-HANDOFF.md
           grep -q "^OWNER_DECISION_REQUIRED: NO$" docs/AI-HANDOFF.md
-      - name: Resolve tested Vercel URL and verify deployed frontend artifact
+      - name: Resolve acceptance runtime and deployed artifact
         env:
           GH_TOKEN: ${{ github.token }}
           REPO: ${{ github.repository }}
@@ -113,6 +113,14 @@ jobs:
         run: |
           set -euo pipefail
 
+          acceptance_runtime=$(sed -n 's/^ACCEPTANCE_RUNTIME:[[:space:]]*//p' docs/AI-HANDOFF.md | head -n 1)
+          if [[ "${acceptance_runtime}" == "LOCAL_HEAD" && "${GITHUB_EVENT_NAME}" != "workflow_dispatch" ]]; then
+            echo "PLAYWRIGHT_QA_RUNTIME=local" >> "$GITHUB_ENV"
+            echo "Exact-code acceptance runtime: local Vite server at PR head ${PR_HEAD_SHA}."
+            exit 0
+          fi
+
+          echo "PLAYWRIGHT_QA_RUNTIME=vercel" >> "$GITHUB_ENV"
           if [[ "${GITHUB_EVENT_NAME}" == "workflow_dispatch" || -z "${PR_NUMBER}" ]]; then
             qa_url="${INPUT_QA_URL:-${FALLBACK_QA_URL}}"
           else
@@ -168,9 +176,12 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          for setting in PLAYWRIGHT_BASE_URL PLAYWRIGHT_SUPABASE_URL PLAYWRIGHT_SUPABASE_PUBLISHABLE_KEY PLAYWRIGHT_ADMIN_EMAIL PLAYWRIGHT_ADMIN_PASSWORD PLAYWRIGHT_GUARDIAN_EMAIL PLAYWRIGHT_GUARDIAN_PASSWORD PLAYWRIGHT_PARTNER_EMAIL PLAYWRIGHT_PARTNER_PASSWORD; do
+          for setting in PLAYWRIGHT_SUPABASE_URL PLAYWRIGHT_SUPABASE_PUBLISHABLE_KEY PLAYWRIGHT_ADMIN_EMAIL PLAYWRIGHT_ADMIN_PASSWORD PLAYWRIGHT_GUARDIAN_EMAIL PLAYWRIGHT_GUARDIAN_PASSWORD PLAYWRIGHT_PARTNER_EMAIL PLAYWRIGHT_PARTNER_PASSWORD; do
             [[ -n "${!setting}" ]] || { echo "Missing hosted QA setting: $setting" >&2; exit 1; }
           done
+          if [[ "${PLAYWRIGHT_QA_RUNTIME:-vercel}" == "vercel" ]]; then
+            [[ -n "${PLAYWRIGHT_BASE_URL:-}" ]] || { echo "Missing hosted QA setting: PLAYWRIGHT_BASE_URL" >&2; exit 1; }
+          fi
           [[ "$PLAYWRIGHT_SUPABASE_URL" =~ ^https://jukmlmryykcnjtpblbja\.supabase\.co/?$ ]]
       - name: Install design QA dependencies
         run: bash scripts/install-design-qa-deps.sh
