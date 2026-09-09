@@ -1,12 +1,13 @@
 # AI Handoff
 
-STATUS: IN_PROGRESS
+STATUS: READY_FOR_ACCEPTANCE
 CURRENT_PHASE: MVP Design Hardening + Human Release Readiness
-CURRENT_CHECKPOINT: Marketplace Sprint 1 — A+B flagship hardening
-NEXT_CHECKPOINT: Pass fast CI, then run one final Stream 3 Hosted acceptance cycle on the selected flagship Marketplace.
+CURRENT_CHECKPOINT: Marketplace Sprint 1 — final A+B flagship acceptance
+NEXT_CHECKPOINT: Run one real Stream 3 Hosted acceptance cycle, inspect evidence, then record the accepted product SHA and complete Issue #27.
 OWNER_DECISION_REQUIRED: NO
 SAFE_TO_CONTINUE: YES
 ACCEPTED_CODE_SHA: NONE
+ACCEPTANCE_DEPLOYED_SHA: 69164a9a040122039202454a35c027da3cbb6a5a
 
 ## Completed foundation
 
@@ -54,6 +55,20 @@ The selected A+B implementation:
 
 `src/marketplace-flagship.css` contains the selected-direction overrides while the earlier sprint concept CSS remains non-active implementation history during this PR.
 
+## Acceptance deployment reuse
+
+Vercel's free-tier daily deployment cap was reached after the selected A+B runtime had already deployed successfully.
+
+READY deployment source SHA:
+
+`69164a9a040122039202454a35c027da3cbb6a5a`
+
+The only `src/` change after that READY SHA is Prettier formatting in `OfferMarketplace.tsx`; later changes are QA/docs/workflow hardening.
+
+Hosted QA now supports `ACCEPTANCE_DEPLOYED_SHA` only when `scripts/verify-prettier-equivalent-frontend.sh` proves every changed `src/` file is canonically identical after the repo's pinned Prettier formatter. New/deleted/renamed or materially different frontend files fail the reuse check. This preserves the exact deployed runtime contract without paying for or waiting on a duplicate build.
+
+The Vercel preview comment resolver was also hardened to select the most recent comment that actually contains a Preview URL rather than accidentally selecting a later rate-limit error comment.
+
 ## Final QA contract
 
 `e2e/hosted-design-qa.spec.ts` now targets the single flagship Marketplace rather than all three prototypes.
@@ -61,14 +76,14 @@ The selected A+B implementation:
 Final acceptance must prove:
 
 1. Prettier/lint, shell validation, unit tests, TypeScript, and Vite build pass;
-2. Vercel has a READY preview for the final product SHA;
+2. the selected READY Vercel artifact is canonically frontend-equivalent to current code;
 3. axe WCAG A/AA checks pass on home and `/marketplace`;
 4. no meaningful page/console/network failures occur;
 5. phone (390x844), tablet (768x1024), and desktop (1440x1000) full-page Marketplace evidence is captured;
 6. existing Partner → Guardian → claim → redemption golden paths remain green;
 7. Database/Persona/Dependency/Merge gates remain green as applicable.
 
-After a real Hosted acceptance run passes, record its exact product SHA as `ACCEPTED_CODE_SHA`, make only docs-only completion changes, and merge PR #28 according to the existing merge contract.
+After a real Hosted acceptance run passes, record its exact product/code SHA as `ACCEPTED_CODE_SHA`, make only docs-only completion changes, and merge PR #28 according to the existing merge contract.
 
 ## Product/data guardrails
 
@@ -103,10 +118,9 @@ RAVE query state may change presentation, but must not claim actual channel filt
 
 ## Next action
 
-1. pass fast CI on the A+B flagship implementation;
-2. verify a current-head Vercel preview;
-3. move the handoff to `READY_FOR_ACCEPTANCE`;
-4. run one real Hosted Stream 3 acceptance cycle;
-5. inspect phone/tablet/desktop evidence and review feedback;
-6. record accepted product SHA and complete Issue #27;
-7. merge PR #28 only after the final acceptance contract passes.
+1. run the acceptance-gated Hosted Stream 3 browser cycle;
+2. verify safe deployed-artifact reuse and exact target URL in the job log;
+3. inspect axe/runtime results plus phone/tablet/desktop evidence;
+4. verify existing Marketplace golden paths remain green;
+5. record accepted product/code SHA and complete Issue #27;
+6. merge PR #28 only after the final acceptance contract passes.
