@@ -15,117 +15,68 @@ Use the lightest tool that proves the next decision.
 
 ## Stream 1 — GitHub Copilot + repo-native capability
 
-**Status:** in setup.
+**Status: COMPLETE — merged in PR #22.**
 
-### Repository-native agents
-
-- Marketplace Product Designer — user value, information architecture, marketplace discovery, merchandising, trust, hierarchy.
-- Frontend Design-System Engineer — reusable React/Tailwind components, tokens, responsive implementation.
-- UX + Accessibility QA — independent runtime/interaction/accessibility review.
-- Product Critic — independent quality/value critique; does not approve its own implementation.
-
-### Repository-native skills
-
-- `shelterpawtners-brand-system`
-- `marketplace-ux-design`
-- `marketplace-value-merchandising`
-- `responsive-visual-qa`
-- `release-readiness-review`
-
-### Existing deterministic foundation
-
-Keep and use:
-
-- Playwright
-- Vitest
-- TypeScript
-- Prettier
-- GitHub Actions
-- CodeQL / dependency security review
-- Supabase database/RLS QA
-- Vercel previews/production
-
-### External Copilot capabilities to evaluate/install locally
-
-These are helpful but are not blockers for the Marketplace Sprint:
-
-1. Official Vercel Copilot plugin — recommended now for local Copilot/VS Code use.
-2. Official Supabase agent skills — recommended now for local Copilot/CLI use.
-3. Chrome DevTools MCP — recommended for deliberate performance/runtime diagnosis.
-4. GitHub/Playwright MCP — retain where already available.
-
-Do not give cloud agents broad database write access merely for convenience.
+Repository-native agents/skills, Vercel/Supabase/Chrome DevTools setup guidance, and the `main`-target deterministic CI/QA control plane are in place.
 
 ## Stream 2 — ChatGPT operator/product capability
 
-**Status:** next.
+**Status: COMPLETE — accepted SHA `1163e6c3deb07c5d20cd7a88961b213c4bd327f0`, PR #24 in final merge validation.**
 
-Goal: keep ChatGPT complementary to Copilot rather than duplicative.
+Delivered:
 
-Primary jobs:
+- `docs/CHATGPT-OPERATING-PROTOCOL.md` — source-of-truth order, role split, connected-tool routing, owner gates, cost controls, and coding-agent handoff contract.
+- `docs/prompts/CHATGPT-SESSION-BOOTSTRAP.md` — reusable fresh-session startup that makes ChatGPT recover project state from GitHub before asking the owner to restate it.
+- current-work/handoff integration so future sessions know when to use ChatGPT versus a coding agent versus deterministic automation.
 
-- product/marketplace research and competitive pattern analysis;
-- independent visual/product critique;
-- GitHub/Vercel/Supabase operations;
-- architecture and release-readiness reasoning;
-- image/brand ideation when useful;
-- analytics/observability strategy;
-- tool/plugin discovery and cost control.
+Operating split:
+
+- ChatGPT = product/controller/research/operator/release reasoning.
+- Copilot/Codex = substantial code implementation and repetitive repository-local engineering.
+- GitHub Actions/scripts = deterministic validation and supervision.
+- Connected GitHub/Vercel/Supabase tools = current private/project state and authorized operations.
+- Web = current external research, standards, pricing, documentation, and competitive evidence.
 
 ## Stream 3 — Shared design + quality toolchain
 
-**Status:** minimum viable setup follows Stream 2.
+**Status: NEXT — Issue #25.**
 
-### Use now / during Marketplace Sprint
+Minimum setup before Marketplace implementation:
 
-- Playwright screenshots and interaction tests
-- automated accessibility checks (axe + Playwright)
-- responsive screenshots at representative phone/tablet/desktop sizes
-- browser console/network inspection
-- Storybook once a reusable marketplace component system emerges
+- add `@axe-core/playwright` accessibility scanning;
+- add a focused Marketplace/public-shell design-quality Playwright spec;
+- capture representative phone/tablet/desktop screenshots as acceptance evidence;
+- fail on unexpected page errors and meaningful console errors;
+- surface meaningful failed network requests while allowing known benign behavior;
+- reuse the existing Hosted QA browser installation/run where practical;
+- upload design evidence only at the acceptance boundary.
 
-### Add after the first Marketplace redesign
+Explicit Stream 3 non-goals:
 
-- Lighthouse CI performance/accessibility budgets
-- broader visual-regression baselines
-- observability/behavior analytics after product flows stabilize
-
-### Later / scale-triggered
-
-- Chromatic/Percy/BrowserStack if team size and UI surface justify paid tooling
-- richer design collaboration if multiple designers/developers need shared visual handoff
+- no Figma prerequisite;
+- no Storybook prerequisite;
+- no paid visual-regression/device SaaS;
+- no broad browser matrix yet;
+- no Lighthouse CI yet unless a concrete Marketplace need appears;
+- no Phase 3 feature work;
+- no DNS/domain/production changes.
 
 ## Figma decision
 
 **Decision: deferred; not a prerequisite.**
 
-For the current startup/MVP stage, code-first design is expected to be faster because:
-
-- the owner wants to review the real application rather than static mockups;
-- the existing React/Tailwind application already provides the canvas;
-- Vercel previews make real-device/browser feedback cheap;
-- one primary builder does not yet need a formal designer-to-developer handoff;
-- creating and maintaining duplicate Figma + code artifacts can add avoidable cycles.
-
-Reconsider Figma when one or more of these become true:
-
-- multiple people are designing/implementing in parallel;
-- visual exploration in code becomes materially slower than mockups;
-- the component/token system becomes difficult to reason about without a shared design workspace;
-- external stakeholders need structured design review before implementation.
-
-Until then, use screenshots, hosted previews, code components, and documented tokens as the source of visual truth.
+For the current startup/MVP stage, code-first design is expected to be faster because the real React/Tailwind application and Vercel previews already provide the review surface. Reconsider Figma only when collaboration or design-system complexity makes a dedicated visual workspace materially faster.
 
 ## Marketplace Sprint — when it starts
 
-**The Marketplace Sprint begins immediately after Streams 1–3 reach minimum viable setup.**
+**The Marketplace Sprint begins immediately after Stream 3 reaches minimum viable acceptance.**
 
 It is the next product-design sprint; it is not deferred to a later phase.
 
 ### Marketplace Sprint sequence
 
 1. **Research + value architecture**
-   - review leading marketplace/e-commerce/service discovery patterns;
+   - review leading marketplace/e-commerce/service-discovery patterns;
    - define Guardian jobs-to-be-done;
    - define Marketplace information architecture and offer hierarchy;
    - define how savings, PetBiz credibility, location/relevance, eligibility, urgency, and shelter impact are communicated without fabricated claims.
@@ -161,9 +112,14 @@ It is the next product-design sprint; it is not deferred to a later phase.
    - fix real blockers;
    - only then consider ShelterPawtners domain cutover.
 
-## MVP vs full-site roadmap
+## After the first Marketplace redesign
 
-### MVP release-readiness target
+- add Lighthouse CI performance/accessibility budgets if useful;
+- expand visual-regression baselines only when the surface justifies them;
+- add observability/behavior analytics after product flows stabilize;
+- consider Chromatic/Percy/BrowserStack or a collaborative design workspace only when team/UI scale creates clear ROI.
+
+## MVP release-readiness target
 
 - professional branded shell;
 - flagship Marketplace experience;
@@ -172,18 +128,6 @@ It is the next product-design sprint; it is not deferred to a later phase.
 - accessibility and deterministic browser QA on golden paths;
 - production remains main-backed on Vercel;
 - domain cutover only after release-readiness acceptance.
-
-### Full-site evolution
-
-After the MVP proves the visual/product system:
-
-- expand Storybook coverage;
-- formalize design tokens/components;
-- add Lighthouse performance budgets;
-- add behavior analytics/observability;
-- expand visual regression/device coverage as usage/team size grows;
-- reconsider Figma or a comparable collaborative design workspace if scale justifies it;
-- authorize Phase 3 features separately from visual hardening.
 
 ## Cost rule
 
