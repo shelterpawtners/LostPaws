@@ -2,9 +2,9 @@
 
 STATUS: IN_PROGRESS
 CURRENT_PHASE: MVP Design Hardening + Human Release Readiness
-CURRENT_CHECKPOINT: Marketplace Sprint 1 — Issue #27 value architecture + three code-first concepts
-NEXT_CHECKPOINT: Validate/deploy the three concept preview, run independent critique, then select the flagship Marketplace direction.
-OWNER_DECISION_REQUIRED: NO
+CURRENT_CHECKPOINT: Marketplace Sprint 1 — owner visual selection + winner hardening
+NEXT_CHECKPOINT: Owner selects A, B, C, or an A+B hybrid; then remove prototype chrome and harden the winning flagship Marketplace direction.
+OWNER_DECISION_REQUIRED: YES
 SAFE_TO_CONTINUE: YES
 ACCEPTED_CODE_SHA: NONE
 
@@ -24,20 +24,34 @@ ACCEPTED_CODE_SHA: NONE
 
 Issue #27: **Marketplace Sprint 1: Value architecture + three code-first concepts**
 
+PR #28: **Marketplace Sprint 1: value architecture + three concepts**
+
 Branch:
 
 `design/marketplace-concepts`
 
-Goal:
+Current head:
 
-Turn the current functional but visually weak Marketplace into the flagship ShelterPawtners experience by improving information/value hierarchy and providing three working code-first directions for comparison.
+`860f0cb319827491209946b5ce83de8081c2bdca`
+
+Vercel branch preview:
+
+`https://lost-paws-git-design-marketplace-11cbb5-jims-projects-acec6bcb.vercel.app`
+
+Current concept URLs:
+
+- A — Value-first Deal Feed: `/marketplace?concept=value`
+- B — Local + Trust Marketplace: `/marketplace?concept=trust`
+- C — Curated Guardian Savings Hub: `/marketplace?concept=curated`
+
+The Vercel deployment `dpl_3yejHvzj7Qq7po3xVGFk9z6NLVti` is READY and is built from current head `860f0cb319827491209946b5ce83de8081c2bdca`.
 
 ## Research/value architecture completed
 
 `docs/MARKETPLACE-DESIGN-SPRINT.md` records:
 
 - Stream 3 baseline findings;
-- current Baymard/Nielsen Norman/Groupon pattern research;
+- current marketplace/ecommerce design research;
 - Guardian jobs-to-be-done;
 - Marketplace information hierarchy;
 - current `PublicOffer` data boundary;
@@ -47,25 +61,73 @@ Turn the current functional but visually weak Marketplace into the flagship Shel
 
 No offer schema migration is authorized or required for these concepts.
 
-## Implementation in progress
+## Three concepts now implemented
 
-Current branch changes include:
+### A — Value-first Deal Feed
+
+Best current strength: fast scanability and comparison. Uses a commerce-forward card grid with provider identity, eligibility/classification, applicability/expiration, and a strong details CTA.
+
+### B — Local + Trust Marketplace
+
+Best current strength: premium brand/trust character. Uses a darker frame, provider/trust rail, and wider offer rows. It risks repeating trust/legal explanation and should be compressed if selected.
+
+### C — Curated Guardian Savings Hub
+
+Best current strength: membership/editorial destination feel. Uses larger lead cards plus secondary browsing. The first-two prominence is **prototype layout only**; there is no approved curation/ranking rule and this behavior must not become production merchandising by accident.
+
+## Common implementation improvements completed
+
+Current branch includes:
 
 - richer `OfferCard` hierarchy using only existing `PublicOffer` fields;
-- provider identity moved near the top of each card;
+- provider identity near the top of each card;
 - visible eligibility/classification metadata;
 - applicability and expiration surfaced as compact decision metadata;
 - repeated card-level endorsement disclaimer removed from list cards while global Marketplace disclosure remains and detail-page disclosure stays explicit;
 - keyword search across existing offer fields;
 - dynamically generated classification filters from actual returned data;
 - result count and clear-search/filter action;
-- three preview-selectable concepts:
-  - A — Value-first Deal Feed;
-  - B — Local + Trust Marketplace;
-  - C — Curated Guardian Savings Hub;
-- new `src/marketplace.css` isolates the sprint design system from the rest of the product;
-- existing `.offerCard` class and `View offer details` link text are preserved for the hosted redemption golden path;
-- detail/claim/redemption server behavior is intentionally unchanged.
+- `aria-pressed` state for filter buttons;
+- live result-count announcement for assistive technology;
+- new `src/marketplace.css` isolating sprint design work from the broader app;
+- existing `.offerCard` class and `View offer details` link text preserved for the hosted redemption golden path;
+- detail/claim/redemption server behavior intentionally unchanged.
+
+## Validation status
+
+On current head `860f0cb319827491209946b5ce83de8081c2bdca`:
+
+- Vercel preview: READY;
+- CI web job: success;
+- Prettier: success;
+- shell validation: success;
+- unit tests: success;
+- TypeScript/build: success;
+- CI Gate: success;
+- Merge Gate: success;
+- Database QA: success;
+- Persona QA: success;
+- Dependency Review: success;
+- Hosted QA gate: success, with heavy hosted-smoke intentionally skipped because the final owner-selected design has not reached the acceptance boundary yet.
+
+PR #28 has been marked ready for review but **must not be merged as the final design before owner selection**.
+
+Copilot code review has been explicitly requested through the reviewer API. Independent Product Critic review is already recorded on PR #28.
+
+## Product Critic findings to preserve
+
+1. Remove A/B/C prototype chrome after direction selection.
+2. Do not invent savings percentages, dollar values, ratings, logos, distance, verified impact, or partnership claims that are not in approved data.
+3. Concept C first-two prominence is layout-only until a real ranking/curation rule is approved.
+4. Compress duplicate trust/legal copy, especially in Concept B.
+5. Provider monograms are placeholders, not provider logos.
+6. Define deterministic ordering before release; do not let RPC order become an accidental merchandising policy.
+7. Client-side search is acceptable for MVP scale but is not the long-term catalog search architecture.
+8. `channel=rave` changes presentation only; current `PublicOffer` data does not expose channel metadata for truthful client-side filtering.
+9. Preserve the strongest common card hierarchy: provider identity → offer title/value → eligibility/listing type → applicability/expiration → CTA → source/current terms.
+10. Final acceptance must include phone + desktop visual evidence, axe/runtime checks, and the existing Partner → Guardian → claim → redemption golden path.
+
+Initial critic direction before owner feedback: **combine A's scanability with B's premium/trust character** unless owner testing strongly favors one concept as-is.
 
 ## Data/claim guardrails
 
@@ -80,25 +142,9 @@ Do not fabricate or imply unavailable structured data such as:
 - shelter-impact totals;
 - exclusive partnership status.
 
-RAVE query state may change presentation, but must not claim channel filtering unless the public query exposes channel metadata.
-
-## Validation still required
-
-Before this sprint can be accepted:
-
-1. open a draft PR from `design/marketplace-concepts` to `main`;
-2. allow fast CI/lint/unit/build checks to run;
-3. verify Vercel preview availability;
-4. inspect each concept at phone and desktop widths;
-5. run Stream 3 Hosted design QA at the acceptance boundary;
-6. preserve the existing Partner → Guardian → claim/redemption golden path;
-7. request independent Copilot code review when the PR is ready for review;
-8. run a separate product/design critique against the three concepts;
-9. owner selects a direction before removing the prototype selector and hardening the flagship implementation.
-
 ## Known tooling note
 
-The repository currently has a ruleset named `Copilot PR Review` that still targets `refs/heads/build/festival-mvp` and contains deletion/non-fast-forward rules. The connected GitHub API in this session can read but not administer that ruleset. This does not block Issue #27 because Copilot review can be explicitly requested on the PR via the reviewer API when ready.
+The repository ruleset named `Copilot PR Review` still targets `refs/heads/build/festival-mvp`; it does not automatically govern the current `main`-based workflow. Explicit Copilot review requests are being used on PR #28. This ruleset cleanup is not required to choose the Marketplace direction.
 
 ## Explicit non-goals / owner gates
 
@@ -113,9 +159,9 @@ The repository currently has a ruleset named `Copilot PR Review` that still targ
 
 ## Next action
 
-1. finish the three visual-system implementation;
-2. open draft PR for Issue #27;
-3. fix fast CI/build findings;
-4. validate Vercel preview and compare A/B/C;
-5. request independent Copilot review and run Product Critic review;
-6. move to acceptance only after real preview evidence exists.
+1. Owner tests A, B, and C on the current READY Vercel preview.
+2. Owner selects A, B, C, or explicitly approves a hybrid direction.
+3. Remove prototype-only selector/explanatory chrome.
+4. Implement the selected flagship direction and common critic fixes.
+5. Run final Stream 3 phone/desktop visual evidence, axe/runtime checks, and existing Marketplace golden path.
+6. Accept and merge Issue #27 only after the winning design passes that boundary.
