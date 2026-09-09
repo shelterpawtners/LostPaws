@@ -2,9 +2,9 @@
 
 STATUS: IN_PROGRESS
 CURRENT_PHASE: MVP Design Hardening + Human Release Readiness
-CURRENT_CHECKPOINT: Marketplace Sprint 1 — owner visual selection + winner hardening
-NEXT_CHECKPOINT: Owner selects A, B, C, or an A+B hybrid; then remove prototype chrome and harden the winning flagship Marketplace direction.
-OWNER_DECISION_REQUIRED: YES
+CURRENT_CHECKPOINT: Marketplace Sprint 1 — A+B flagship hardening
+NEXT_CHECKPOINT: Pass fast CI, then run one final Stream 3 Hosted acceptance cycle on the selected flagship Marketplace.
+OWNER_DECISION_REQUIRED: NO
 SAFE_TO_CONTINUE: YES
 ACCEPTED_CODE_SHA: NONE
 
@@ -22,103 +22,78 @@ ACCEPTED_CODE_SHA: NONE
 
 ## Active task
 
-Issue #27: **Marketplace Sprint 1: Value architecture + three code-first concepts**
+Issue #27: **Marketplace Sprint 1: Value architecture + flagship design**
 
 PR #28: **Marketplace Sprint 1: value architecture + three concepts**
 
 Branch: `design/marketplace-concepts`
 
-Current tested product SHA: `860f0cb319827491209946b5ce83de8081c2bdca`
+Owner decision on September 9, 2026: **combine Concept A + Concept B**.
 
-Vercel branch preview: `https://lost-paws-git-design-marketplace-11cbb5-jims-projects-acec6bcb.vercel.app`
+Selected product direction:
 
-Current concept URLs:
+- keep A's fast scanability, search/filter flow, and three-column desktop offer grid;
+- keep B's premium dark frame, stronger brand character, and trust/context emphasis;
+- remove the A/B/C prototype selector and all concept-selection UI;
+- do not carry Concept C's first-two prominence into production without an approved curation/ranking rule;
+- keep trust guidance compact instead of repeating a large rail plus footer disclosure.
 
-- A — Value-first Deal Feed: `/marketplace?concept=value`
-- B — Local + Trust Marketplace: `/marketplace?concept=trust`
-- C — Curated Guardian Savings Hub: `/marketplace?concept=curated`
+## Flagship implementation now in branch
 
-Vercel deployment `dpl_3yejHvzj7Qq7po3xVGFk9z6NLVti` is READY and was built from tested product SHA `860f0cb319827491209946b5ce83de8081c2bdca`.
+The selected A+B implementation:
 
-## Research/value architecture completed
+- uses one fixed `marketplaceFlagship` presentation rather than query-selectable concepts;
+- keeps provider identity, offer title/value, eligibility/listing type, applicability/expiration, CTA, and source/current terms in the scan hierarchy;
+- keeps keyword search and dynamic listing-type filters;
+- keeps accessible pressed-state filters and live result-count announcements;
+- adds a compact provider/eligibility trust strip;
+- uses A's scan-first offer-card grid inside B's premium dark Marketplace frame;
+- preserves current offer-detail, claim, and redemption behavior;
+- preserves `.offerCard` and `View offer details` hooks used by hosted golden-path QA;
+- does not introduce new offer data-model fields or fabricated value/impact claims.
 
-`docs/MARKETPLACE-DESIGN-SPRINT.md` records the baseline findings, Guardian jobs-to-be-done, Marketplace information hierarchy, current `PublicOffer` data boundary, no-fabrication rules, three concept families, and the Storybook trigger after direction selection.
+`src/marketplace-flagship.css` contains the selected-direction overrides while the earlier sprint concept CSS remains non-active implementation history during this PR.
 
-No offer schema migration is authorized or required for these concepts.
+## Final QA contract
 
-## Three concepts now implemented
+`e2e/hosted-design-qa.spec.ts` now targets the single flagship Marketplace rather than all three prototypes.
 
-### A — Value-first Deal Feed
+Final acceptance must prove:
 
-Best current strength: fast scanability and comparison. Commerce-forward card grid with provider identity, eligibility/classification, applicability/expiration, and a strong details CTA.
+1. Prettier/lint, shell validation, unit tests, TypeScript, and Vite build pass;
+2. Vercel has a READY preview for the final product SHA;
+3. axe WCAG A/AA checks pass on home and `/marketplace`;
+4. no meaningful page/console/network failures occur;
+5. phone (390x844), tablet (768x1024), and desktop (1440x1000) full-page Marketplace evidence is captured;
+6. existing Partner → Guardian → claim → redemption golden paths remain green;
+7. Database/Persona/Dependency/Merge gates remain green as applicable.
 
-### B — Local + Trust Marketplace
+After a real Hosted acceptance run passes, record its exact product SHA as `ACCEPTED_CODE_SHA`, make only docs-only completion changes, and merge PR #28 according to the existing merge contract.
 
-Best current strength: premium brand/trust character. Darker frame, provider/trust rail, and wider offer rows. It should reduce repeated trust/legal explanation if selected.
+## Product/data guardrails
 
-### C — Curated Guardian Savings Hub
+Do not fabricate or imply unavailable structured data such as:
 
-Best current strength: membership/editorial destination feel. Larger lead cards plus secondary browsing. The first-two prominence is **prototype layout only**; there is no approved curation/ranking rule and this behavior must not become production merchandising by accident.
+- discount percentages or guaranteed savings;
+- original/current prices;
+- provider logos/photos;
+- ratings/review counts;
+- precise distance;
+- verified savings totals;
+- shelter-impact totals;
+- exclusive partnership status.
 
-## Common implementation improvements completed
+Provider monograms remain placeholders, not provider logos. Current RPC order must not be described as editorial ranking, popularity, relevance, or value ranking.
 
-- richer `OfferCard` hierarchy using only existing `PublicOffer` fields;
-- provider identity near the top of each card;
-- visible eligibility/classification metadata;
-- applicability and expiration surfaced as decision metadata;
-- keyword search across existing offer fields;
-- dynamically generated classification filters from actual returned data;
-- result count and clear-search/filter action;
-- `aria-pressed` state for filter buttons;
-- live result-count announcement for assistive technology;
-- list-card disclosure repetition reduced while global/detail disclosures remain;
-- `src/marketplace.css` isolates sprint design work from the broader app;
-- existing `.offerCard` and `View offer details` hooks preserved for hosted golden-path tests;
-- detail/claim/redemption server behavior unchanged.
+RAVE query state may change presentation, but must not claim actual channel filtering until approved public data exposes channel metadata.
 
-## Validation status
+## Figma / Storybook
 
-On tested product SHA `860f0cb319827491209946b5ce83de8081c2bdca`:
-
-- Vercel preview: READY;
-- Prettier: success;
-- shell validation: success;
-- unit tests: success;
-- TypeScript/build: success;
-- CI Gate: success;
-- Merge Gate: success;
-- Database QA: success;
-- Persona QA: success;
-- Dependency Review: success;
-- Hosted QA gate: success; heavy hosted-smoke intentionally remains acceptance-gated until the owner-selected design is final.
-
-PR #28 is ready for review but **must not be merged before owner design selection and winner hardening**.
-
-Copilot code review has been explicitly requested; no Copilot review submission has been returned yet. Independent Product Critic review is recorded on PR #28.
-
-## Product Critic findings to preserve
-
-1. Remove A/B/C prototype chrome after direction selection.
-2. Do not invent savings percentages, dollar values, ratings, logos, distance, verified impact, or partnership claims that are not in approved data.
-3. Concept C first-two prominence is layout-only until a real ranking/curation rule is approved.
-4. Compress duplicate trust/legal copy, especially in Concept B.
-5. Provider monograms are placeholders, not provider logos.
-6. Define deterministic ordering before release; do not let RPC order become an accidental merchandising policy.
-7. Client-side search is acceptable for MVP scale but is not the long-term catalog-search architecture.
-8. `channel=rave` changes presentation only; current `PublicOffer` data does not expose channel metadata for truthful client-side filtering.
-9. Preserve the strongest common hierarchy: provider identity → offer title/value → eligibility/listing type → applicability/expiration → CTA → source/current terms.
-10. Final acceptance must include phone + desktop visual evidence, axe/runtime checks, and the existing Partner → Guardian → claim → redemption golden path.
-
-Initial critic direction before owner feedback: **combine A's scanability with B's premium/trust character** unless owner testing strongly favors one concept as-is.
-
-## Known tooling note
-
-The repository ruleset named `Copilot PR Review` still targets `refs/heads/build/festival-mvp`; explicit Copilot review requests are used on PR #28. This cleanup does not block design selection.
+- Figma remains deferred and is not a prerequisite.
+- Storybook is still optional. Add it only if the selected Marketplace component/state system now becomes faster to evolve through isolated stories than through direct page previews. It is not an acceptance blocker for Issue #27.
 
 ## Explicit non-goals / owner gates
 
-- no Figma prerequisite;
-- no Storybook prerequisite before the winning component system earns it;
 - no new offer schema/data-model fields without owner review;
 - no fabricated partnerships/savings/impact claims;
 - no paid design/QA tooling;
@@ -128,9 +103,10 @@ The repository ruleset named `Copilot PR Review` still targets `refs/heads/build
 
 ## Next action
 
-1. Owner tests A, B, and C on the current READY Vercel preview.
-2. Owner selects A, B, C, or explicitly approves a hybrid direction.
-3. Remove prototype-only selector/explanatory chrome.
-4. Implement the selected flagship direction and common critic fixes.
-5. Run final Stream 3 phone/desktop visual evidence, axe/runtime checks, and existing Marketplace golden path.
-6. Accept and merge Issue #27 only after the winning design passes that boundary.
+1. pass fast CI on the A+B flagship implementation;
+2. verify a current-head Vercel preview;
+3. move the handoff to `READY_FOR_ACCEPTANCE`;
+4. run one real Hosted Stream 3 acceptance cycle;
+5. inspect phone/tablet/desktop evidence and review feedback;
+6. record accepted product SHA and complete Issue #27;
+7. merge PR #28 only after the final acceptance contract passes.
