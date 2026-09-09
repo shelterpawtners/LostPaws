@@ -94,7 +94,9 @@ test.describe.serial("Hosted shared-dev smoke", () => {
   }) => {
     await page.goto("/marketplace");
     await expect(
-      page.getByRole("heading", { name: "Find value that fits your world." }),
+      page.getByRole("heading", {
+        name: "Useful pet-parent value, without the fine-print hunt.",
+      }),
     ).toBeVisible();
 
     await signIn(
