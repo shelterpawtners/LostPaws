@@ -1,9 +1,9 @@
 # AI Handoff
 
-STATUS: IN_PROGRESS
+STATUS: READY_FOR_ACCEPTANCE
 CURRENT_PHASE: MVP Design Hardening + Human Release Readiness
-CURRENT_CHECKPOINT: Marketplace Sprint 1 — final shell cleanup after visual evidence review
-NEXT_CHECKPOINT: Remove the obsolete outer Marketplace hero/search/filter shell, update the golden-path assertion to the flagship headline, then rerun exact-code acceptance.
+CURRENT_CHECKPOINT: Marketplace Sprint 1 — final exact-code A+B acceptance
+NEXT_CHECKPOINT: Run final Stream 3 Hosted acceptance against the exact PR-head Vite app, visually inspect the new evidence, then record accepted SHA and complete Issue #27.
 OWNER_DECISION_REQUIRED: NO
 SAFE_TO_CONTINUE: YES
 ACCEPTED_CODE_SHA: NONE
@@ -42,6 +42,8 @@ Selected product direction:
 
 The selected Marketplace keeps provider identity, offer title/value, eligibility/listing type, applicability/expiration, CTA, and source/current terms in the scan hierarchy. It uses a compact trust strip inside a premium dark Marketplace frame and retains A's scan-first offer cards.
 
+The obsolete route-level Marketplace hero, search box, filter buttons, and route notice are now hidden so the A+B flagship is the single visible Marketplace discovery experience.
+
 No new offer schema fields or fabricated savings, pricing, ratings, logos, distance, impact, or partnership claims are introduced.
 
 ## Copilot review hardening completed
@@ -62,13 +64,7 @@ All six Copilot inline review threads are resolved.
 
 Vercel Hobby build-rate limits are currently preventing a fresh preview for the final review-hardening commit. `ACCEPTANCE_RUNTIME: LOCAL_HEAD` tells the acceptance-gated Hosted QA workflow to leave `PLAYWRIGHT_BASE_URL` unset. Playwright then starts the exact PR-head Vite application locally on the GitHub runner and injects the same QA Supabase URL/publishable key used by Hosted QA.
 
-The exact-code acceptance run at PR head `1f895a4d65f4ff1e36deab53dc7c7e13002dba65` proved the fallback works and passed 4/4 hosted golden-path tests plus 2/2 design-QA tests. That evidence is now historical because visual artifact inspection found one final shell issue described below.
-
-## Final artifact review finding
-
-Phone/tablet/desktop screenshots show the old route-level Marketplace hero (`Find value that fits your world.`), old search box/filter buttons, and old route-level notice still surrounding the new A+B flagship Marketplace. This creates two competing product heroes and duplicate discovery/trust UI.
-
-Final cleanup must remove that obsolete outer UI from presentation while preserving the flagship Marketplace component as the single Marketplace discovery experience. The hosted smoke assertion should follow the flagship heading rather than the retired route-level heading.
+This fallback has already proven functional; final acceptance now reruns it after the route-shell cleanup.
 
 ## Final QA contract
 
@@ -108,8 +104,7 @@ After final acceptance passes, record its exact code SHA as `ACCEPTED_CODE_SHA`,
 
 ## Next action
 
-1. hide the retired route-level Marketplace hero/search/filter/notice presentation;
-2. update hosted smoke to assert the flagship Marketplace heading;
-3. pass fast CI;
-4. move back to `READY_FOR_ACCEPTANCE` and rerun exact-code Stream 3 acceptance;
-5. record accepted SHA, complete Issue #27, and merge PR #28.
+1. run final exact-code Stream 3 acceptance;
+2. visually inspect the final phone/tablet/desktop evidence;
+3. record accepted SHA and make the docs-only completion commit;
+4. update PR #28 scope, merge, and close Issue #27.
