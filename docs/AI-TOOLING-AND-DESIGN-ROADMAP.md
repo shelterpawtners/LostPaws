@@ -15,7 +15,7 @@ Use the lightest tool that proves the next decision.
 
 ## Stream 1 — GitHub Copilot + repo-native capability
 
-**Status:** in setup.
+**Status:** implemented on PR #22; final acceptance proof resolving before merge.
 
 ### Repository-native agents
 
@@ -45,20 +45,20 @@ Keep and use:
 - Supabase database/RLS QA
 - Vercel previews/production
 
-### External Copilot capabilities to evaluate/install locally
+### External Copilot capabilities
 
-These are helpful but are not blockers for the Marketplace Sprint:
+Helpful but not blockers for the Marketplace Sprint:
 
-1. Official Vercel Copilot plugin — recommended now for local Copilot/VS Code use.
-2. Official Supabase agent skills — recommended now for local Copilot/CLI use.
-3. Chrome DevTools MCP — recommended for deliberate performance/runtime diagnosis.
+1. Official Vercel Copilot plugin — repository-enabled for supported contexts and documented for local use.
+2. Official Supabase agent skills — documented for local Copilot/CLI use.
+3. Chrome DevTools MCP — documented for deliberate performance/runtime diagnosis.
 4. GitHub/Playwright MCP — retain where already available.
 
 Do not give cloud agents broad database write access merely for convenience.
 
 ## Stream 2 — ChatGPT operator/product capability
 
-**Status:** next.
+**Status:** in progress on Issue #23 / `ops/stream2-chatgpt-operator`.
 
 Goal: keep ChatGPT complementary to Copilot rather than duplicative.
 
@@ -71,6 +71,22 @@ Primary jobs:
 - image/brand ideation when useful;
 - analytics/observability strategy;
 - tool/plugin discovery and cost control.
+
+### Minimum viable Stream 2 deliverables
+
+- `docs/CHATGPT-OPERATING-PROTOCOL.md` — source-of-truth order, role split, connected-tool routing, owner gates, cost controls, and coding-agent handoff contract.
+- `docs/prompts/CHATGPT-SESSION-BOOTSTRAP.md` — reusable fresh-session startup that makes ChatGPT recover project state from GitHub before asking the owner to restate it.
+- current-work/handoff integration so future sessions know Stream 2 exists and when to use it.
+
+### Operating split
+
+- ChatGPT = product/controller/research/operator/release reasoning.
+- Copilot/Codex = substantial code implementation and repetitive repository-local engineering.
+- GitHub Actions/scripts = deterministic validation and supervision.
+- Connected GitHub/Vercel/Supabase tools = current private/project state and authorized operations.
+- Web = current external research, standards, pricing, documentation, and competitive evidence.
+
+Stream 2 is complete when a new ChatGPT session can orient itself and choose the correct execution surface without requiring the owner to reconstruct project history manually.
 
 ## Stream 3 — Shared design + quality toolchain
 
