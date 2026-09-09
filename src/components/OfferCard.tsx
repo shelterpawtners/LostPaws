@@ -1,4 +1,12 @@
 import { Link } from "react-router-dom";
+import {
+  ArrowUpRight,
+  CalendarDays,
+  MapPin,
+  ShieldCheck,
+  Store,
+  Tag,
+} from "lucide-react";
 import { eligibilityLabel } from "../lib/offers";
 
 export type PublicOffer = {
@@ -20,55 +28,125 @@ export type PublicOffer = {
   applicability: string[];
 };
 
+export type MarketplaceConcept = "value" | "trust" | "curated";
+
+function humanize(value: string) {
+  return value
+    .replaceAll("_", " ")
+    .replace(/\b\w/g, (letter) => letter.toUpperCase());
+}
+
+function providerInitials(name: string) {
+  return name
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase())
+    .join("");
+}
+
+function applicabilityLabel(values: string[]) {
+  if (!values?.length) return null;
+  const readable = values.map(humanize);
+  if (readable.length <= 2) return readable.join(" · ");
+  return `${readable.slice(0, 2).join(" · ")} +${readable.length - 2}`;
+}
+
 export function OfferCard({
   offer,
   detailed = false,
+  concept = "value",
+  featured = false,
 }: {
   offer: PublicOffer;
   detailed?: boolean;
+  concept?: MarketplaceConcept;
+  featured?: boolean;
 }) {
+  const where = applicabilityLabel(offer.applicability);
+  const classification = humanize(offer.classification || "current offer");
+  const initials = providerInitials(offer.business_name) || "SP";
+
   return (
-    <article className="card offerCard">
-      <span className="eyebrow">
-        {eligibilityLabel(offer.eligibility_kind)}
-      </span>
-      <h2>{offer.title}</h2>
-      <p>{offer.summary}</p>
-      {detailed && offer.details && <p>{offer.details}</p>}
-      <p>
-        <b>Provided by:</b> {offer.business_name}
-      </p>
-      {offer.ends_at && (
-        <p>
-          <b>Ends:</b> {new Date(offer.ends_at).toLocaleDateString()}
-        </p>
-      )}
-      {offer.applicability?.length > 0 && (
-        <p>
-          <b>Where:</b> {offer.applicability.join(", ").replaceAll("_", " ")}
-        </p>
-      )}
-      {detailed && (
-        <>
-          <h3>Terms</h3>
-          <p>{offer.terms}</p>
-          <h3>How to use it</h3>
-          <p>{offer.redemption_instructions}</p>
-        </>
-      )}
-      {offer.disclosure && <p className="notice">{offer.disclosure}</p>}
-      {offer.source_url && (
-        <a href={offer.source_url}>Review source or current terms</a>
-      )}
-      {!detailed && (
-        <Link to={`/offers/${offer.offer_id}`}>View offer details</Link>
-      )}
-      <p>
-        <small>
-          Partner-published. Listing does not imply endorsement or independently
-          verified savings.
-        </small>
-      </p>
+    <article
+      className={`offerCard marketOfferCard marketOfferCard-${concept}${featured ? " marketOfferCard-featured" : ""}`}
+    >
+      <div className="marketOfferVisual" aria-hidden="true">
+        <span className="marketOfferMonogram">{initials}</span>
+        <span className="marketOfferVisualIcon">
+          <Tag />
+        </span>
+      </div>
+
+      <div className="marketOfferBody">
+        <div className="marketOfferBadges" aria-label="Offer context">
+          <span>{eligibilityLabel(offer.eligibility_kind)}</span>
+          <span>{classification}</span>
+        </div>
+
+        <div className="marketOfferProvider">
+          <Store />
+          <span>{offer.business_name}</span>
+        </div>
+
+        <h2>{offer.title}</h2>
+        <p className="marketOfferSummary">{offer.summary}</p>
+
+        <div className="marketOfferMeta">
+          {where && (
+            <span>
+              <MapPin /> {where}
+            </span>
+          )}
+          {offer.ends_at && (
+            <span>
+              <CalendarDays /> Ends{" "}
+              {new Date(offer.ends_at).toLocaleDateString()}
+            </span>
+          )}
+        </div>
+
+        {detailed && offer.details && <p>{offer.details}</p>}
+
+        {detailed && (
+          <div className="marketOfferDetailSections">
+            <section>
+              <h3>Terms</h3>
+              <p>{offer.terms}</p>
+            </section>
+            <section>
+              <h3>How to use it</h3>
+              <p>{offer.redemption_instructions}</p>
+            </section>
+          </div>
+        )}
+
+        {offer.disclosure && detailed && (
+          <p className="notice">{offer.disclosure}</p>
+        )}
+
+        <div className="marketOfferFooter">
+          {!detailed && (
+            <Link className="marketOfferCta" to={`/offers/${offer.offer_id}`}>
+              View offer details <ArrowUpRight />
+            </Link>
+          )}
+
+          {offer.source_url && (
+            <a className="marketOfferSource" href={offer.source_url}>
+              Review source or current terms
+            </a>
+          )}
+        </div>
+
+        {detailed && (
+          <p className="marketOfferTrustNote">
+            <ShieldCheck /> Review the listing type and provider terms above.
+            ShelterPawtners does not independently verify savings or imply
+            endorsement.
+          </p>
+        )}
+      </div>
     </article>
   );
 }

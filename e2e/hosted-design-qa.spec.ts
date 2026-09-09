@@ -68,8 +68,14 @@ function expectNoRuntimeFailures(failures: RuntimeFailures, context: string) {
 
 async function waitForStableMarketplace(page: Page) {
   await expect(
-    page.getByRole("heading", { name: "Find value that fits your world." }),
+    page.getByRole("heading", {
+      name: "Useful pet-parent value, without the fine-print hunt.",
+    }),
   ).toBeVisible();
+  await expect(
+    page.locator('[data-marketplace-concept="flagship"]'),
+  ).toBeVisible();
+  await expect(page.locator(".offerCard").first()).toBeVisible();
   await page.evaluate(async () => {
     await document.fonts.ready;
   });
@@ -79,37 +85,41 @@ test.describe("Hosted public and Marketplace design QA", () => {
   test.skip(!hosted, "Set PLAYWRIGHT_HOSTED_QA=true for hosted design QA.");
   test.describe.configure({ timeout: 90_000 });
 
-  test("public shell and Marketplace pass axe and runtime health checks", async ({
+  test("public shell and flagship Marketplace pass axe and runtime health checks", async ({
     page,
   }, testInfo) => {
     const failures = watchRuntimeFailures(page);
 
-    for (const [routeName, route] of [
-      ["home", "/"],
-      ["marketplace", "/marketplace"],
-    ] as const) {
-      await page.goto(route);
-      if (route === "/marketplace") {
-        await waitForStableMarketplace(page);
-      } else {
-        await expect(page.locator("#main")).toBeVisible();
-      }
+    await page.goto("/");
+    await expect(page.locator("#main")).toBeVisible();
+    const homeResults = await new AxeBuilder({ page })
+      .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"])
+      .analyze();
+    await testInfo.attach("axe-home", {
+      body: JSON.stringify(homeResults, null, 2),
+      contentType: "application/json",
+    });
+    expect(homeResults.violations, "axe violations on /").toEqual([]);
 
-      const results = await new AxeBuilder({ page })
-        .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"])
-        .analyze();
+    await page.goto("/marketplace");
+    await waitForStableMarketplace(page);
 
-      await testInfo.attach(`axe-${routeName}`, {
-        body: JSON.stringify(results, null, 2),
-        contentType: "application/json",
-      });
-      expect(results.violations, `axe violations on ${route}`).toEqual([]);
-    }
+    const marketplaceResults = await new AxeBuilder({ page })
+      .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"])
+      .analyze();
+    await testInfo.attach("axe-marketplace-flagship", {
+      body: JSON.stringify(marketplaceResults, null, 2),
+      contentType: "application/json",
+    });
+    expect(
+      marketplaceResults.violations,
+      "axe violations on /marketplace",
+    ).toEqual([]);
 
-    expectNoRuntimeFailures(failures, "public shell / Marketplace");
+    expectNoRuntimeFailures(failures, "public shell / flagship Marketplace");
   });
 
-  test("captures Marketplace review evidence at phone, tablet, and desktop sizes", async ({
+  test("captures flagship Marketplace at phone, tablet, and desktop sizes", async ({
     page,
   }, testInfo) => {
     const failures = watchRuntimeFailures(page);
@@ -130,12 +140,12 @@ test.describe("Hosted public and Marketplace design QA", () => {
       await waitForStableMarketplace(page);
 
       await page.screenshot({
-        path: testInfo.outputPath(`marketplace-${viewport.name}.png`),
+        path: testInfo.outputPath(`marketplace-flagship-${viewport.name}.png`),
         fullPage: true,
         animations: "disabled",
       });
     }
 
-    expectNoRuntimeFailures(failures, "Marketplace responsive evidence");
+    expectNoRuntimeFailures(failures, "flagship Marketplace review evidence");
   });
 });

@@ -92,6 +92,7 @@ jobs:
         with:
           node-version: 22
           cache: npm
+      - run: npm ci
       - name: Require handoff continuation authorization
         if: github.event_name != 'workflow_dispatch'
         shell: bash
@@ -99,7 +100,7 @@ jobs:
           grep -q "^STATUS: READY_FOR_ACCEPTANCE$" docs/AI-HANDOFF.md
           grep -q "^SAFE_TO_CONTINUE: YES$" docs/AI-HANDOFF.md
           grep -q "^OWNER_DECISION_REQUIRED: NO$" docs/AI-HANDOFF.md
-      - name: Resolve tested Vercel URL and verify deployed frontend artifact
+      - name: Resolve acceptance runtime and deployed artifact
         env:
           GH_TOKEN: ${{ github.token }}
           REPO: ${{ github.repository }}
@@ -112,10 +113,25 @@ jobs:
         run: |
           set -euo pipefail
 
+          acceptance_runtime=$(sed -n 's/^ACCEPTANCE_RUNTIME:[[:space:]]*//p' docs/AI-HANDOFF.md | head -n 1)
+          if [[ "${acceptance_runtime}" == "LOCAL_HEAD" && "${GITHUB_EVENT_NAME}" != "workflow_dispatch" ]]; then
+            echo "PLAYWRIGHT_QA_RUNTIME=local" >> "$GITHUB_ENV"
+            echo "Exact-code acceptance runtime: local Vite server at PR head ${PR_HEAD_SHA}."
+            exit 0
+          fi
+
+          echo "PLAYWRIGHT_QA_RUNTIME=vercel" >> "$GITHUB_ENV"
           if [[ "${GITHUB_EVENT_NAME}" == "workflow_dispatch" || -z "${PR_NUMBER}" ]]; then
             qa_url="${INPUT_QA_URL:-${FALLBACK_QA_URL}}"
           else
             frontend_sha=$(bash scripts/latest-frontend-artifact-sha.sh "${BASE_SHA}" "${PR_HEAD_SHA}")
+            acceptance_deployed_sha=$(sed -n 's/^ACCEPTANCE_DEPLOYED_SHA:[[:space:]]*//p' docs/AI-HANDOFF.md | head -n 1)
+
+            if [[ -n "${acceptance_deployed_sha}" && "${acceptance_deployed_sha}" != "NONE" && "${acceptance_deployed_sha}" != "${frontend_sha}" ]]; then
+              echo "Requested reusable deployed frontend SHA: ${acceptance_deployed_sha}"
+              bash scripts/verify-prettier-equivalent-frontend.sh "${acceptance_deployed_sha}" "${PR_HEAD_SHA}"
+              frontend_sha="${acceptance_deployed_sha}"
+            fi
 
             if [[ -n "${frontend_sha}" ]]; then
               echo "Latest deployed-artifact PR SHA: ${frontend_sha}"
@@ -141,7 +157,7 @@ jobs:
               done
 
               comments=$(gh api "repos/${REPO}/issues/${PR_NUMBER}/comments?per_page=100" --paginate)
-              qa_url=$(jq -r '[.[] | select(.user.login == "vercel[bot]")] | last | (.body // "") | try capture("\\[Preview\\]\\((?<url>https://[^)]+\\.vercel\\.app[^)]*)\\)").url catch ""' <<<"${comments}")
+              qa_url=$(jq -r '[.[] | select(.user.login == "vercel[bot]") | (.body // "") | select(contains("[Preview]("))] | last | try capture("\\[Preview\\]\\((?<url>https://[^)]+\\.vercel\\.app[^)]*)\\)").url catch ""' <<<"${comments}")
               if [[ -z "${qa_url}" ]]; then
                 qa_url="${FALLBACK_QA_URL}"
               fi
@@ -160,11 +176,13 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          for setting in PLAYWRIGHT_BASE_URL PLAYWRIGHT_SUPABASE_URL PLAYWRIGHT_SUPABASE_PUBLISHABLE_KEY PLAYWRIGHT_ADMIN_EMAIL PLAYWRIGHT_ADMIN_PASSWORD PLAYWRIGHT_GUARDIAN_EMAIL PLAYWRIGHT_GUARDIAN_PASSWORD PLAYWRIGHT_PARTNER_EMAIL PLAYWRIGHT_PARTNER_PASSWORD; do
+          for setting in PLAYWRIGHT_SUPABASE_URL PLAYWRIGHT_SUPABASE_PUBLISHABLE_KEY PLAYWRIGHT_ADMIN_EMAIL PLAYWRIGHT_ADMIN_PASSWORD PLAYWRIGHT_GUARDIAN_EMAIL PLAYWRIGHT_GUARDIAN_PASSWORD PLAYWRIGHT_PARTNER_EMAIL PLAYWRIGHT_PARTNER_PASSWORD; do
             [[ -n "${!setting}" ]] || { echo "Missing hosted QA setting: $setting" >&2; exit 1; }
           done
+          if [[ "${PLAYWRIGHT_QA_RUNTIME:-vercel}" == "vercel" ]]; then
+            [[ -n "${PLAYWRIGHT_BASE_URL:-}" ]] || { echo "Missing hosted QA setting: PLAYWRIGHT_BASE_URL" >&2; exit 1; }
+          fi
           [[ "$PLAYWRIGHT_SUPABASE_URL" =~ ^https://jukmlmryykcnjtpblbja\.supabase\.co/?$ ]]
-      - run: npm ci
       - name: Install design QA dependencies
         run: bash scripts/install-design-qa-deps.sh
       - name: Install Chromium

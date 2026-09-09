@@ -6,7 +6,7 @@ Phase 1 — Platform + Data Foundation is **complete**.
 
 Phase 2 — Partner Marketplace MVP is **complete**.
 
-The project is now in **MVP Design Hardening + Human Release Readiness** before ShelterPawtners domain cutover and before Phase 3 feature work.
+The project is in **MVP Design Hardening + Human Release Readiness** before ShelterPawtners domain cutover and before Phase 3 feature work.
 
 **Phase 3 remains explicitly owner-gated.**
 
@@ -15,76 +15,109 @@ The project is now in **MVP Design Hardening + Human Release Readiness** before 
 - `main` is the canonical application branch and Vercel Production Branch.
 - Stream 1 PR #22 merged to `main` at `eaa7b09edc3496eb8e52d57d081fce42d67f5151`.
 - Stream 2 PR #24 merged to `main` at `3e49f4c42fba2081b5bd6221c46ffd4b7fd1152c`.
-- Stream 1 accepted SHA is `0a48f446a103a8495ec2ce8a8c31c62bd9d02c3b`.
-- Stream 2 accepted SHA is `1163e6c3deb07c5d20cd7a88961b213c4bd327f0`.
-- Stream 3 accepted SHA is `95db103b606504155f83ca8f217b4e100e35f5c7`; PR #26 is in final completion/merge validation.
+- Stream 3 PR #26 merged to `main` at `a0c763b49f79e90fdd2e0c0586091636e39680f8`; accepted Stream 3 SHA is `95db103b606504155f83ca8f217b4e100e35f5c7`.
 - `shelterpawtners.com` and `www.shelterpawtners.com` DNS remain unchanged.
 
-## Current priority
+## Marketplace Sprint 1
 
-The **Marketplace Sprint is now the active next product-design work**.
+Issue #27 / PR #28 has completed product/design acceptance and is **ready for owner-authorized merge**.
 
-Make ShelterPawtners look and feel polished, professional, distinctive, valuable, accessible, and trustworthy before adding the next major feature phase. The Marketplace remains the flagship design priority and must communicate substantially more value than a minimal grid of generic offer tiles.
+Branch: `design/marketplace-concepts`
 
-Design work must improve both:
+Accepted code SHA: `d9b9c32ea7647ff0e9a616e8c8206bfb9ca5742d`
 
-1. visual/product quality; and
-2. Marketplace value architecture — offer value, PetBiz identity/credibility, relevance/location, supported savings/benefit, supported shelter impact, state/eligibility, and clear actions.
+Owner-selected direction: **A+B hybrid**.
 
-## Three-stream capability setup
+The accepted flagship combines:
+
+- Concept A's fast scanability, search/filter discovery, strong CTA hierarchy, and compact offer grid;
+- Concept B's premium dark frame, stronger brand character, and clearer provider/trust context;
+- a compact trust strip rather than B's larger explanatory side rail;
+- no Concept C editorial ranking or first-two prominence without an approved curation rule.
+
+The prototype A/B/C selector and duplicate legacy route-level Marketplace discovery shell are no longer part of the visible final experience.
+
+## Marketplace information hierarchy
+
+A Guardian should quickly understand:
+
+1. the offer/benefit;
+2. the provider;
+3. eligibility/listing type;
+4. applicability/location context;
+5. expiration/current status when available;
+6. source/terms context;
+7. the next action.
+
+The accepted flagship preserves that hierarchy without inventing new savings/value fields.
+
+## Marketplace Sprint 1 acceptance
+
+Final exact-code Hosted QA run: `34410972297`
+
+Final responsive/design evidence artifact: `10127237935`
+
+Results:
+
+- 4/4 existing hosted Marketplace/Guardian/Partner golden-path tests passed;
+- 2/2 flagship design-QA tests passed;
+- axe WCAG A/AA checks passed;
+- page/console/network runtime checks passed;
+- phone 390x844, tablet 768x1024, and desktop 1440x1000 evidence captured;
+- final visual inspection confirmed a single flagship Marketplace hero/discovery experience with the obsolete duplicate shell removed;
+- CI, Database QA, Persona QA, Dependency Review, and Merge Gate passed on the accepted SHA.
+
+Vercel's temporary Hobby build-rate cap prevented a fresh final preview, so final acceptance used the explicit `LOCAL_HEAD` fallback: exact PR-head Vite code on GitHub Actions connected to the existing QA Supabase backend. No paid upgrade was required.
+
+## Copilot / independent review
+
+All six GitHub Copilot inline review threads were resolved before acceptance. Fixes include:
+
+- distinct load-error/catalog-empty/filter-empty states;
+- human-readable enum search matching;
+- accessible listing-type control grouping and pressed states;
+- classification-neutral trust wording;
+- compact embedded PetBiz-profile offer presentation;
+- deterministic design-QA proof that real offer cards load before axe/screenshots.
+
+The independent Product Critic recommendation to combine A's scanability with B's premium/trust treatment is now the owner-selected production direction.
+
+## Capability setup
 
 ### Stream 1 — GitHub Copilot + repo-native design/build capability
 
-**Status: COMPLETE and merged in PR #22.**
+**COMPLETE — PR #22.**
 
 ### Stream 2 — ChatGPT product/operator capability
 
-**Status: COMPLETE and merged in PR #24.**
+**COMPLETE — PR #24.**
 
-ChatGPT has a repository-backed operating protocol and fresh-session bootstrap, with explicit routing among ChatGPT, coding agents, GitHub Actions, connected project tools, and public web research.
+### Stream 3 — Shared deterministic design QA
 
-### Stream 3 — Shared design + deterministic quality toolchain
+**COMPLETE — PR #26.**
 
-**Status: COMPLETE — accepted SHA `95db103b606504155f83ca8f217b4e100e35f5c7`; PR #26 in final completion/merge validation.**
+Reusable capabilities now include:
 
-Delivered:
+- axe accessibility checks;
+- phone/tablet/desktop screenshot evidence;
+- browser page/console/network failure detection;
+- existing Guardian/Partner/Marketplace golden paths;
+- acceptance-gated heavy browser execution;
+- explicit exact-code local acceptance fallback when a fresh Vercel artifact is temporarily unavailable.
 
-- axe accessibility integration for public/Marketplace surfaces;
-- focused Hosted design-QA Playwright coverage;
-- representative phone/tablet/desktop Marketplace screenshots;
-- browser page/console error checks;
-- meaningful failed-network/HTTP 5xx checks;
-- reuse of the existing Hosted QA browser pass rather than adding another heavy workflow;
-- design evidence uploaded only at the acceptance boundary;
-- exact-pinned QA-only axe install with no production/runtime dependency or root lockfile churn;
-- Hosted QA URL fallback hardening for PRs with no frontend artifact change.
+## Immediate execution sequence
 
-Acceptance on `95db103b606504155f83ca8f217b4e100e35f5c7` passed CI, Dependency Review, Database QA, Persona QA, Merge Gate, existing hosted golden paths, and the new hosted design-QA run. The design evidence artifact is `hosted-design-qa-evidence` / artifact ID `10118806011`.
+1. finish the docs-only completion gates on PR #28;
+2. merge PR #28 only after explicit owner merge authorization;
+3. propagate the accepted Marketplace brand system to the global shell and highest-value Guardian/PetBiz screens in bounded slices;
+4. run Issue #5 human release-readiness/browser audit;
+5. present the owner with the release-readiness result before any domain/DNS cutover.
 
-Storybook is added **inside the Marketplace Sprint** only once enough reusable Marketplace components/states exist to make isolated component development faster.
+## Figma / Storybook decisions
 
-## Figma decision
+Figma remains **deferred and is not a prerequisite**.
 
-Figma is **deferred and is not a prerequisite**.
-
-Default to code-first design using the real React/Tailwind application, Vercel previews, screenshots, and reusable components. Reconsider Figma only when team/design-system complexity makes it materially faster than code-first iteration.
-
-## Marketplace Sprint
-
-**The Marketplace Sprint starts immediately after PR #26 merges.**
-
-Sequence:
-
-1. Marketplace/competitive research + Guardian value/information architecture;
-2. 2–3 materially different code-first visual concepts;
-3. independent critique and direction selection;
-4. reusable Marketplace component system;
-5. Storybook when component/state volume justifies it;
-6. flagship Marketplace implementation;
-7. responsive/accessibility/browser/Playwright QA using Stream 3;
-8. propagate the accepted brand system to the highest-value remaining screens;
-9. run Issue #5 broad release-readiness/human-style audit;
-10. only then consider ShelterPawtners domain cutover.
+Storybook is eligible for later evaluation because a stable Marketplace component direction now exists, but add it only if isolated reusable component/state work is faster than direct page iteration.
 
 ## Operating model
 
@@ -92,22 +125,23 @@ Sequence:
 - `main` is the integration/production branch;
 - GitHub Actions/scripts own deterministic validation;
 - ChatGPT owns controller/product/operator decisions and connected-system coordination;
-- substantial coding defaults to a coding agent when that surface is available and cheaper;
-- specialist AI agents may provide independent product/design/QA perspectives;
+- coding agents/Copilot should be used for bounded implementation/review where useful;
 - never let the implementation agent be the only reviewer of its own UX/design;
 - preserve/strengthen tests rather than weakening them to make CI green;
-- keep expensive Hosted/Persona/Database work acceptance- or impact-gated rather than running it on ordinary mechanical commits.
+- keep expensive Hosted/Persona/Database work acceptance- or impact-gated.
 
-## Owner gates
+## Guardrails
 
 Authorized now:
 
+- bounded brand propagation using the accepted Marketplace visual system and existing approved product rules/data;
 - human QA and brand/design hardening;
-- Marketplace design sprint and visual implementation using existing approved product rules/data;
-- reversible tooling additions that are free/low-cost and do not weaken security.
+- reversible free/low-cost tooling that does not weaken security.
 
 Still owner-gated/deferred:
 
+- new Marketplace/offer data-model fields not already approved;
+- fabricated savings, ratings, provider assets, partnerships, ranking/popularity, or impact claims;
 - attaching/changing `shelterpawtners.com` or `www.shelterpawtners.com` DNS;
 - `OD-003` verified-savings customer-facing rules/totals;
 - `OD-004` giving-provider selection and production charitable settlement/integration;
