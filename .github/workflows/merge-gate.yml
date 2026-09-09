@@ -52,6 +52,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           REPO: ${{ github.repository }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
           CURRENT_HEAD: ${{ github.event.pull_request.head.sha }}
           DB_REQUIRED: ${{ steps.impact.outputs.requires_db_qa }}
           PERSONA_REQUIRED: ${{ steps.impact.outputs.requires_persona_qa }}
@@ -104,8 +105,31 @@ jobs:
             return 1
           }
 
+          require_database_evidence() {
+            local candidate run run_id jobs job_conclusion remaining_db
+            while read -r candidate; do
+              [[ -n "$candidate" ]] || continue
+              runs=$(gh api "repos/${REPO}/actions/runs?head_sha=${candidate}&event=pull_request&per_page=100")
+              run=$(jq -c '[.workflow_runs[] | select(.name == "Database QA" and .status == "completed" and .conclusion == "success")] | sort_by(.created_at) | last // empty' <<<"$runs")
+              [[ -n "$run" ]] || continue
+              run_id=$(jq -r '.id' <<<"$run")
+              jobs=$(gh api "repos/${REPO}/actions/runs/${run_id}/jobs?filter=latest&per_page=100")
+              job_conclusion=$(jq -r '[.jobs[] | select(.name == "database")] | last | .conclusion // ""' <<<"$jobs")
+              [[ "$job_conclusion" == "success" ]] || continue
+
+              remaining_db=$(bash scripts/classify-change-impact.sh "$candidate" "$accepted_sha" | sed -n 's/^requires_db_qa=//p' | tail -n 1)
+              if [[ "$remaining_db" == "false" ]]; then
+                echo "Database QA evidence accepted from ${candidate}; no database-sensitive changes follow it through ${accepted_sha}."
+                return 0
+              fi
+            done < <(git rev-list "$accepted_sha" "^$BASE_SHA")
+
+            echo "No successful Database QA database job covers the final database-sensitive state through $accepted_sha." >&2
+            return 1
+          }
+
           wait_for_run "CI" "$CURRENT_HEAD"
-          if [[ "$DB_REQUIRED" == "true" ]]; then wait_for_run "Database QA" "$accepted_sha" "database"; fi
+          if [[ "$DB_REQUIRED" == "true" ]]; then require_database_evidence; fi
           if [[ "$PERSONA_REQUIRED" == "true" ]]; then wait_for_run "Persona QA" "$accepted_sha" "persona"; fi
           if [[ "$HOSTED_REQUIRED" == "true" ]]; then wait_for_run "Hosted QA" "$accepted_sha" "hosted-smoke"; fi
           if [[ "$DEP_REQUIRED" == "true" ]]; then wait_for_run "Dependency Review" "$accepted_sha" "dependency-review"; fi
