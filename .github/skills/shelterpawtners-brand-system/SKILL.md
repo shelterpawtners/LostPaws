@@ -1,6 +1,6 @@
 ---
 name: shelterpawtners-brand-system
-description: 'Apply ShelterPawtners visual and product-brand principles to UI work. Use for page layouts, design tokens, navigation, marketplace components, typography, color, imagery, hierarchy, and brand-consistency reviews.'
+description: "Apply ShelterPawtners visual and product-brand principles to UI work. Use for page layouts, design tokens, navigation, marketplace components, typography, color, imagery, hierarchy, and brand-consistency reviews."
 ---
 
 # ShelterPawtners Brand System

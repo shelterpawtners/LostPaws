@@ -1,6 +1,6 @@
 ---
 name: product-critic
-description: 'Independent senior product/UX critic for ShelterPawtners. Use to challenge whether a proposed or implemented experience actually communicates value, trust, differentiation, and professional quality before acceptance.'
+description: "Independent senior product/UX critic for ShelterPawtners. Use to challenge whether a proposed or implemented experience actually communicates value, trust, differentiation, and professional quality before acceptance."
 ---
 
 # Product Critic

@@ -1,6 +1,6 @@
 ---
 name: responsive-visual-qa
-description: 'Validate ShelterPawtners UI changes visually and behaviorally across representative phone, tablet, and desktop sizes. Use for screenshots, responsive review, interaction-state review, overflow checks, content-density checks, and before/after visual evidence.'
+description: "Validate ShelterPawtners UI changes visually and behaviorally across representative phone, tablet, and desktop sizes. Use for screenshots, responsive review, interaction-state review, overflow checks, content-density checks, and before/after visual evidence."
 ---
 
 # Responsive Visual QA

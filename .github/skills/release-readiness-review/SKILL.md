@@ -1,6 +1,6 @@
 ---
 name: release-readiness-review
-description: 'Run a broad ShelterPawtners pre-release review across product value, critical routes, responsive UX, accessibility, auth/persona flows, browser errors, security evidence, and production-hosting readiness. Use before domain cutover or major public release.'
+description: "Run a broad ShelterPawtners pre-release review across product value, critical routes, responsive UX, accessibility, auth/persona flows, browser errors, security evidence, and production-hosting readiness. Use before domain cutover or major public release."
 ---
 
 # Release Readiness Review

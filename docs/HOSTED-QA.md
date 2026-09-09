@@ -12,12 +12,10 @@ The Git-connected Vercel project builds with `npm run build`, publishes `dist`, 
 
 Set these values in **Project settings -> Environment Variables**, selecting **Preview only** for each one:
 
-| Variable                        | Preview value                                               |
-| ------------------------------- | ----------------------------------------------------------- |
-| `VITE_SUPABASE_URL`             | The `shelterpawtners-dev` project URL                       |
-| `VITE_SUPABASE_PUBLISHABLE_KEY` | An enabled publishable client key for `shelterpawtners-dev` |
-| `VITE_GOOGLE_AUTH_ENABLED`      | `false` until Google configuration is separately approved   |
-| `VITE_ADMIN_QA_MODE_ENABLED`    | `true` for this QA preview only; unset or `false` elsewhere |
+- `VITE_SUPABASE_URL`: the `shelterpawtners-dev` project URL.
+- `VITE_SUPABASE_PUBLISHABLE_KEY`: an enabled publishable client key for `shelterpawtners-dev`.
+- `VITE_GOOGLE_AUTH_ENABLED`: `false` until Google configuration is separately approved.
+- `VITE_ADMIN_QA_MODE_ENABLED`: `true` for this QA preview only; unset or `false` elsewhere.
 
 Do not add `service_role`, secret, database-password, or personal-access-token values to Vercel browser configuration.
 
@@ -71,12 +69,10 @@ Routine docs/tooling changes therefore do not start the full hosted browser suit
 
 The workflow resolves the relevant Vercel PR preview when frontend artifacts changed and falls back to `https://lost-paws-one.vercel.app` only when an existing deployment is intentionally valid. Configure repository variables `QA_BASE_URL`, `QA_SUPABASE_URL`, and `QA_SUPABASE_PUBLISHABLE_KEY`, plus these GitHub Actions **secrets** (never repository variables or source code):
 
-| Secret                                                   | Purpose                                                                                                                        |
-| -------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
-| `QA_PLATFORM_ADMIN_EMAIL` / `QA_PLATFORM_ADMIN_PASSWORD` | Authorized platform-admin login used to exercise the server-side QA functions.                                                 |
-| `QA_NON_ADMIN_EMAIL` / `QA_NON_ADMIN_PASSWORD`           | Ordinary account used to prove `/admin-qa` rejects non-admins.                                                                 |
-| `QA_GUARDIAN_EMAIL` / `QA_GUARDIAN_PASSWORD`             | Hosted deterministic Guardian login if the configured suite requires explicit credentials.                                    |
-| `QA_PARTNER_EMAIL` / `QA_PARTNER_PASSWORD`               | Hosted deterministic Partner login if the configured suite requires explicit credentials.                                     |
+- `QA_PLATFORM_ADMIN_EMAIL` / `QA_PLATFORM_ADMIN_PASSWORD`: authorized platform-admin login used to exercise server-side QA functions.
+- `QA_NON_ADMIN_EMAIL` / `QA_NON_ADMIN_PASSWORD`: ordinary account used to prove `/admin-qa` rejects non-admins.
+- `QA_GUARDIAN_EMAIL` / `QA_GUARDIAN_PASSWORD`: hosted deterministic Guardian login if the configured suite requires explicit credentials.
+- `QA_PARTNER_EMAIL` / `QA_PARTNER_PASSWORD`: hosted deterministic Partner login if the configured suite requires explicit credentials.
 
 The workflow fails before browser execution if a required acceptance authorization, target URL, or required credential is missing. Select `full_browser_audit` on a manual run to execute the broader practical Issue #5 browser suite. Persona QA remains the targeted deterministic lower-level gate for local disposable Supabase reset, pgTAP, and direct database setup.
 

@@ -1,6 +1,6 @@
 ---
 name: ux-accessibility-qa
-description: 'Independent ShelterPawtners runtime UX and accessibility reviewer. Use after meaningful UI changes to test responsive behavior, keyboard/focus flows, interaction states, readability, accessibility, and visual defects.'
+description: "Independent ShelterPawtners runtime UX and accessibility reviewer. Use after meaningful UI changes to test responsive behavior, keyboard/focus flows, interaction states, readability, accessibility, and visual defects."
 ---
 
 # UX + Accessibility QA

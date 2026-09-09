@@ -1,6 +1,6 @@
 ---
 name: frontend-design-system-engineer
-description: 'Senior React/Tailwind design-system engineer for ShelterPawtners. Use to turn approved UX directions into reusable, accessible, responsive production components without unnecessary framework churn.'
+description: "Senior React/Tailwind design-system engineer for ShelterPawtners. Use to turn approved UX directions into reusable, accessible, responsive production components without unnecessary framework churn."
 ---
 
 # Frontend Design-System Engineer

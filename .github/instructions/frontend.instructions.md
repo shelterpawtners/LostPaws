@@ -1,5 +1,5 @@
 ---
-description: 'Frontend implementation and design-hardening rules for ShelterPawtners React UI.'
+description: "Frontend implementation and design-hardening rules for ShelterPawtners React UI."
 applyTo: "src/**"
 ---
 

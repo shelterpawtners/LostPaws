@@ -1,6 +1,6 @@
 ---
 name: marketplace-ux-design
-description: 'Design or review ShelterPawtners Marketplace discovery, information architecture, offer presentation, filters, partner trust, interaction states, and responsive behavior. Use for marketplace pages and marketplace-adjacent user flows.'
+description: "Design or review ShelterPawtners Marketplace discovery, information architecture, offer presentation, filters, partner trust, interaction states, and responsive behavior. Use for marketplace pages and marketplace-adjacent user flows."
 ---
 
 # Marketplace UX Design

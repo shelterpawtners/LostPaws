@@ -1,6 +1,6 @@
 ---
 name: marketplace-value-merchandising
-description: 'Improve how ShelterPawtners presents offer value without fabricating claims. Use for offer-card copy hierarchy, savings presentation, partner credibility cues, urgency/state communication, category merchandising, and marketplace content density.'
+description: "Improve how ShelterPawtners presents offer value without fabricating claims. Use for offer-card copy hierarchy, savings presentation, partner credibility cues, urgency/state communication, category merchandising, and marketplace content density."
 ---
 
 # Marketplace Value Merchandising

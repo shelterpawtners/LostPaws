@@ -1,6 +1,6 @@
 ---
 name: marketplace-product-designer
-description: 'Marketplace UX and merchandising specialist for ShelterPawtners. Use for information architecture, offer discovery, value communication, trust, hierarchy, and marketplace concept reviews before implementation.'
+description: "Marketplace UX and merchandising specialist for ShelterPawtners. Use for information architecture, offer discovery, value communication, trust, hierarchy, and marketplace concept reviews before implementation."
 ---
 
 # Marketplace Product Designer
