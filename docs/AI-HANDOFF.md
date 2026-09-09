@@ -26,21 +26,11 @@ Issue #27: **Marketplace Sprint 1: Value architecture + three code-first concept
 
 PR #28: **Marketplace Sprint 1: value architecture + three concepts**
 
-Branch:
+Branch: `design/marketplace-concepts`
 
-`design/marketplace-concepts`
+Current tested product SHA: `860f0cb319827491209946b5ce83de8081c2bdca`
 
-Current product head:
-
-`860f0cb319827491209946b5ce83de8081c2bdca`
-
-Current documentation head:
-
-`ebe042f53ae5a8c1814180c5405d36355dcf79f5`
-
-Vercel branch preview:
-
-`https://lost-paws-git-design-marketplace-11cbb5-jims-projects-acec6bcb.vercel.app`
+Vercel branch preview: `https://lost-paws-git-design-marketplace-11cbb5-jims-projects-acec6bcb.vercel.app`
 
 Current concept URLs:
 
@@ -48,20 +38,11 @@ Current concept URLs:
 - B — Local + Trust Marketplace: `/marketplace?concept=trust`
 - C — Curated Guardian Savings Hub: `/marketplace?concept=curated`
 
-The Vercel deployment `dpl_3yejHvzj7Qq7po3xVGFk9z6NLVti` is READY and is built from product head `860f0cb319827491209946b5ce83de8081c2bdca`.
+Vercel deployment `dpl_3yejHvzj7Qq7po3xVGFk9z6NLVti` is READY and was built from tested product SHA `860f0cb319827491209946b5ce83de8081c2bdca`.
 
 ## Research/value architecture completed
 
-`docs/MARKETPLACE-DESIGN-SPRINT.md` records:
-
-- Stream 3 baseline findings;
-- current marketplace/ecommerce design research;
-- Guardian jobs-to-be-done;
-- Marketplace information hierarchy;
-- current `PublicOffer` data boundary;
-- explicit no-fabrication rules;
-- three concept families;
-- Storybook trigger after direction selection rather than before prototyping.
+`docs/MARKETPLACE-DESIGN-SPRINT.md` records the baseline findings, Guardian jobs-to-be-done, Marketplace information hierarchy, current `PublicOffer` data boundary, no-fabrication rules, three concept families, and the Storybook trigger after direction selection.
 
 No offer schema migration is authorized or required for these concepts.
 
@@ -69,40 +50,37 @@ No offer schema migration is authorized or required for these concepts.
 
 ### A — Value-first Deal Feed
 
-Best current strength: fast scanability and comparison. Uses a commerce-forward card grid with provider identity, eligibility/classification, applicability/expiration, and a strong details CTA.
+Best current strength: fast scanability and comparison. Commerce-forward card grid with provider identity, eligibility/classification, applicability/expiration, and a strong details CTA.
 
 ### B — Local + Trust Marketplace
 
-Best current strength: premium brand/trust character. Uses a darker frame, provider/trust rail, and wider offer rows. It risks repeating trust/legal explanation and should be compressed if selected.
+Best current strength: premium brand/trust character. Darker frame, provider/trust rail, and wider offer rows. It should reduce repeated trust/legal explanation if selected.
 
 ### C — Curated Guardian Savings Hub
 
-Best current strength: membership/editorial destination feel. Uses larger lead cards plus secondary browsing. The first-two prominence is **prototype layout only**; there is no approved curation/ranking rule and this behavior must not become production merchandising by accident.
+Best current strength: membership/editorial destination feel. Larger lead cards plus secondary browsing. The first-two prominence is **prototype layout only**; there is no approved curation/ranking rule and this behavior must not become production merchandising by accident.
 
 ## Common implementation improvements completed
-
-Current branch includes:
 
 - richer `OfferCard` hierarchy using only existing `PublicOffer` fields;
 - provider identity near the top of each card;
 - visible eligibility/classification metadata;
-- applicability and expiration surfaced as compact decision metadata;
-- repeated card-level endorsement disclaimer removed from list cards while global Marketplace disclosure remains and detail-page disclosure stays explicit;
+- applicability and expiration surfaced as decision metadata;
 - keyword search across existing offer fields;
 - dynamically generated classification filters from actual returned data;
 - result count and clear-search/filter action;
 - `aria-pressed` state for filter buttons;
 - live result-count announcement for assistive technology;
-- new `src/marketplace.css` isolating sprint design work from the broader app;
-- existing `.offerCard` class and `View offer details` link text preserved for the hosted redemption golden path;
-- detail/claim/redemption server behavior intentionally unchanged.
+- list-card disclosure repetition reduced while global/detail disclosures remain;
+- `src/marketplace.css` isolates sprint design work from the broader app;
+- existing `.offerCard` and `View offer details` hooks preserved for hosted golden-path tests;
+- detail/claim/redemption server behavior unchanged.
 
 ## Validation status
 
-On product head `860f0cb319827491209946b5ce83de8081c2bdca`:
+On tested product SHA `860f0cb319827491209946b5ce83de8081c2bdca`:
 
 - Vercel preview: READY;
-- CI web job: success;
 - Prettier: success;
 - shell validation: success;
 - unit tests: success;
@@ -112,11 +90,11 @@ On product head `860f0cb319827491209946b5ce83de8081c2bdca`:
 - Database QA: success;
 - Persona QA: success;
 - Dependency Review: success;
-- Hosted QA gate: success, with heavy hosted-smoke intentionally skipped because the final owner-selected design has not reached the acceptance boundary yet.
+- Hosted QA gate: success; heavy hosted-smoke intentionally remains acceptance-gated until the owner-selected design is final.
 
-PR #28 has been marked ready for review but **must not be merged as the final design before owner selection**.
+PR #28 is ready for review but **must not be merged before owner design selection and winner hardening**.
 
-Copilot code review has been explicitly requested through the reviewer API. Independent Product Critic review is already recorded on PR #28.
+Copilot code review has been explicitly requested. Independent Product Critic review is recorded on PR #28.
 
 ## Product Critic findings to preserve
 
@@ -126,29 +104,16 @@ Copilot code review has been explicitly requested through the reviewer API. Inde
 4. Compress duplicate trust/legal copy, especially in Concept B.
 5. Provider monograms are placeholders, not provider logos.
 6. Define deterministic ordering before release; do not let RPC order become an accidental merchandising policy.
-7. Client-side search is acceptable for MVP scale but is not the long-term catalog search architecture.
+7. Client-side search is acceptable for MVP scale but is not the long-term catalog-search architecture.
 8. `channel=rave` changes presentation only; current `PublicOffer` data does not expose channel metadata for truthful client-side filtering.
-9. Preserve the strongest common card hierarchy: provider identity → offer title/value → eligibility/listing type → applicability/expiration → CTA → source/current terms.
+9. Preserve the strongest common hierarchy: provider identity → offer title/value → eligibility/listing type → applicability/expiration → CTA → source/current terms.
 10. Final acceptance must include phone + desktop visual evidence, axe/runtime checks, and the existing Partner → Guardian → claim → redemption golden path.
 
 Initial critic direction before owner feedback: **combine A's scanability with B's premium/trust character** unless owner testing strongly favors one concept as-is.
 
-## Data/claim guardrails
-
-Do not fabricate or imply unavailable structured data such as:
-
-- discount percentages or guaranteed savings;
-- original/current prices;
-- provider logos/photos;
-- ratings/review counts;
-- precise distance;
-- verified savings totals;
-- shelter-impact totals;
-- exclusive partnership status.
-
 ## Known tooling note
 
-The repository ruleset named `Copilot PR Review` still targets `refs/heads/build/festival-mvp`; it does not automatically govern the current `main`-based workflow. Explicit Copilot review requests are being used on PR #28. This ruleset cleanup is not required to choose the Marketplace direction.
+The repository ruleset named `Copilot PR Review` still targets `refs/heads/build/festival-mvp`; explicit Copilot review requests are used on PR #28. This cleanup does not block design selection.
 
 ## Explicit non-goals / owner gates
 
