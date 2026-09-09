@@ -119,5 +119,14 @@ test.describe.serial("Hosted partner-to-guardian marketplace golden path", () =>
     await expect(page.getByText("Valid claim")).toBeVisible();
     await page.getByRole("button", { name: "Confirm utilization" }).click();
     await expect(page.getByRole("status")).toContainText("Utilization confirmed");
+
+    await signOut(page);
+    await page.goto(`/partners/${selectedOrganizationId}`);
+    const impact = page.getByTestId("partner-impact-summary");
+    await expect(impact).toBeVisible();
+    await expect(impact).toContainText("Confirmed ShelterPawtners redemptions:");
+    await expect(impact).toContainText(
+      "Commitments and accrued amounts are not counted as settled support.",
+    );
   });
 });
