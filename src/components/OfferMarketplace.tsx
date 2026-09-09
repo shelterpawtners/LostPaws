@@ -23,6 +23,7 @@ export function OfferMarketplace({
   const rave = new URLSearchParams(location.search).get("channel") === "rave";
   const [offers, setOffers] = useState<PublicOffer[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState("");
   const [status, setStatus] = useState("");
   const [query, setQuery] = useState("");
   const [classification, setClassification] = useState("all");
@@ -34,6 +35,7 @@ export function OfferMarketplace({
   useEffect(() => {
     if (!db) return;
     setLoading(true);
+    setLoadError("");
     setStatus("");
     void (async () => {
       try {
@@ -41,7 +43,7 @@ export function OfferMarketplace({
           p_organization_id: organizationId || null,
         });
         if (error) {
-          setStatus("Unable to load current offers. Please try again.");
+          setLoadError("Unable to load current offers. Please try again.");
           setOffers([]);
           return;
         }
@@ -79,9 +81,9 @@ export function OfferMarketplace({
         offer.summary,
         offer.business_name,
         offer.terms,
-        offer.classification,
-        offer.eligibility_kind,
-        ...(offer.applicability || []),
+        humanize(offer.classification || ""),
+        humanize(offer.eligibility_kind || ""),
+        ...(offer.applicability || []).map(humanize),
       ]
         .filter(Boolean)
         .join(" ")
@@ -114,8 +116,16 @@ export function OfferMarketplace({
       </div>
     );
 
+  if (loadError)
+    return (
+      <div className="marketplaceEmpty marketplaceLoadError" role="alert">
+        <h2>We could not load current offers.</h2>
+        <p>{loadError}</p>
+      </div>
+    );
+
   if (offerId) {
-    if (!offers.length && !status)
+    if (!offers.length)
       return (
         <section className="marketplaceDetailState">
           <h1>Offer not available</h1>
@@ -157,6 +167,29 @@ export function OfferMarketplace({
     );
   }
 
+  if (organizationId) {
+    return (
+      <section className="marketplaceEmbedded" aria-labelledby="provider-offers-heading">
+        <div className="marketplaceEmbeddedHeading">
+          <span className="eyebrow">Current offers</span>
+          <h2 id="provider-offers-heading">Offers from this provider</h2>
+        </div>
+        {!offers.length ? (
+          <div className="marketplaceEmpty">
+            <h3>No current offers are available from this provider.</h3>
+            <p>Check back as listings are published or updated.</p>
+          </div>
+        ) : (
+          <div className="marketplaceCardGrid marketplaceEmbeddedGrid">
+            {offers.map((offer) => (
+              <OfferCard key={offer.offer_id} offer={offer} concept="value" />
+            ))}
+          </div>
+        )}
+      </section>
+    );
+  }
+
   return (
     <section
       className={`marketplaceExperience marketplaceFlagship${rave ? " marketplaceRave" : ""}`}
@@ -194,6 +227,7 @@ export function OfferMarketplace({
           </div>
           <div
             className="marketplaceFilterButtons"
+            role="group"
             aria-label="Filter offers by listing type"
           >
             <button
@@ -251,7 +285,12 @@ export function OfferMarketplace({
         )}
       </div>
 
-      {!visibleOffers.length ? (
+      {!offers.length ? (
+        <div className="marketplaceEmpty">
+          <h2>No current offers are available right now.</h2>
+          <p>Check back as providers and public programs publish new listings.</p>
+        </div>
+      ) : !visibleOffers.length ? (
         <div className="marketplaceEmpty">
           <Search />
           <h2>No current offers match that search.</h2>

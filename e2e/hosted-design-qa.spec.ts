@@ -73,6 +73,7 @@ async function waitForStableMarketplace(page: Page) {
   await expect(
     page.locator('[data-marketplace-concept="flagship"]'),
   ).toBeVisible();
+  await expect(page.locator(".offerCard").first()).toBeVisible();
   await page.evaluate(async () => {
     await document.fonts.ready;
   });

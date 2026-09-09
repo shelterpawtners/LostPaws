@@ -147,6 +147,50 @@
   color: #c5d0df;
 }
 
+.marketplaceEmbedded {
+  margin-top: 28px;
+}
+
+.marketplaceEmbeddedHeading {
+  margin-bottom: 16px;
+}
+
+.marketplaceEmbeddedHeading h2 {
+  margin: 5px 0 0;
+  font-family: Outfit;
+  font-size: 1.55rem;
+  letter-spacing: -0.02em;
+}
+
+.marketplaceEmbeddedGrid {
+  grid-template-columns: 1fr;
+}
+
+.marketplaceEmbedded .marketOfferCard {
+  display: grid;
+  grid-template-columns: 120px minmax(0, 1fr);
+  border-radius: 18px;
+}
+
+.marketplaceEmbedded .marketOfferVisual {
+  min-height: 100%;
+  padding: 15px;
+}
+
+.marketplaceEmbedded .marketOfferMonogram {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+}
+
+.marketplaceEmbedded .marketOfferVisualIcon {
+  display: none;
+}
+
+.marketplaceEmbedded .marketOfferSummary {
+  min-height: 0;
+}
+
 @media (max-width: 1050px) {
   .marketplaceFlagship .marketplaceCardGrid-value {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -177,5 +221,13 @@
 
   .marketplaceFlagship .marketplaceCardGrid-value {
     grid-template-columns: 1fr;
+  }
+
+  .marketplaceEmbedded .marketOfferCard {
+    grid-template-columns: 1fr;
+  }
+
+  .marketplaceEmbedded .marketOfferVisual {
+    min-height: 135px;
   }
 }

@@ -141,8 +141,9 @@ export function OfferCard({
 
         {detailed && (
           <p className="marketOfferTrustNote">
-            <ShieldCheck /> Partner-published. Listing does not imply
-            endorsement or independently verified savings.
+            <ShieldCheck /> Review the listing type and provider terms above.
+            ShelterPawtners does not independently verify savings or imply
+            endorsement.
           </p>
         )}
       </div>
