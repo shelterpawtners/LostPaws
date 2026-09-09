@@ -1,9 +1,9 @@
 # AI Handoff
 
-STATUS: IN_PROGRESS
+STATUS: READY_FOR_ACCEPTANCE
 CURRENT_PHASE: MVP Design Hardening + Human Release Readiness
-CURRENT_CHECKPOINT: Marketplace Sprint 1 — exact-code A+B acceptance fallback
-NEXT_CHECKPOINT: Validate the local exact-code Hosted QA fallback, then move to READY_FOR_ACCEPTANCE and rerun final Stream 3 acceptance on the current PR head.
+CURRENT_CHECKPOINT: Marketplace Sprint 1 — final exact-code A+B acceptance
+NEXT_CHECKPOINT: Run final Stream 3 Hosted acceptance against the exact PR-head Vite app, resolve review threads with evidence, then record accepted SHA and complete Issue #27.
 OWNER_DECISION_REQUIRED: NO
 SAFE_TO_CONTINUE: YES
 ACCEPTED_CODE_SHA: NONE
@@ -58,7 +58,7 @@ Current hardening addresses:
 6. require hosted design QA to prove at least one real `.offerCard` loaded before axe checks/screenshots;
 7. retain phone, tablet, and desktop visual evidence.
 
-Fast CI on the review-hardening runtime code has passed Prettier, shell validation, unit tests, TypeScript, and Vite build.
+Fast CI on the review-hardening runtime code and exact-code fallback is green: Prettier, shell validation, unit tests, TypeScript, Vite build, and CI Gate all passed.
 
 ## Exact-code acceptance fallback
 
@@ -66,7 +66,7 @@ Vercel Hobby build-rate limits are currently preventing a fresh preview for the 
 
 `ACCEPTANCE_RUNTIME: LOCAL_HEAD` tells the acceptance-gated Hosted QA workflow to leave `PLAYWRIGHT_BASE_URL` unset. The existing Playwright config then starts the exact PR-head Vite application locally on the GitHub runner and injects the same QA Supabase URL/publishable key used by Hosted QA.
 
-This fallback must remain explicit and acceptance-gated. Ordinary PR runs stay cheap, and normal Vercel-backed acceptance remains the default when `ACCEPTANCE_RUNTIME` is not `LOCAL_HEAD`.
+This fallback remains explicit and acceptance-gated. Ordinary PR runs stay cheap, and normal Vercel-backed acceptance remains the default when `ACCEPTANCE_RUNTIME` is not `LOCAL_HEAD`.
 
 ## Final QA contract
 
@@ -106,8 +106,7 @@ After final acceptance passes, record its exact code SHA as `ACCEPTED_CODE_SHA`,
 
 ## Next action
 
-1. validate the `LOCAL_HEAD` workflow change under normal fast CI while `STATUS: IN_PROGRESS` keeps heavy Hosted QA skipped;
-2. resolve review threads already fixed by code where evidence is sufficient;
-3. move handoff to `READY_FOR_ACCEPTANCE`;
-4. run one final Stream 3 Hosted acceptance cycle against exact PR-head code;
-5. record the accepted code SHA and complete Issue #27.
+1. run one final Stream 3 Hosted acceptance cycle against exact PR-head code using `LOCAL_HEAD`;
+2. resolve Copilot review threads with acceptance evidence;
+3. record the accepted code SHA and make the docs-only completion commit;
+4. merge PR #28 and close Issue #27.
