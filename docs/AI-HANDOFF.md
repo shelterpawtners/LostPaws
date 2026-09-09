@@ -1,87 +1,65 @@
 # AI Handoff
 
-STATUS: COMPLETE
+STATUS: IN_PROGRESS
 CURRENT_PHASE: MVP Design Hardening + Human Release Readiness
-CURRENT_CHECKPOINT: Marketplace Sprint 1 — A+B flagship accepted
-NEXT_CHECKPOINT: Owner-authorized merge of PR #28, then propagate the winning Marketplace brand system to the highest-value Guardian/PetBiz/global-shell screens and run Issue #5 human release-readiness audit.
+CURRENT_CHECKPOINT: Issue #29 — flagship brand propagation
+NEXT_CHECKPOINT: Complete bounded shell + Guardian + PetBiz design hardening, run acceptance, then execute Issue #5 full-site human-style browser/persistence audit.
 OWNER_DECISION_REQUIRED: NO
 SAFE_TO_CONTINUE: YES
-ACCEPTED_CODE_SHA: d9b9c32ea7647ff0e9a616e8c8206bfb9ca5742d
+ACCEPTED_CODE_SHA: NONE
 ACCEPTANCE_DEPLOYED_SHA: NONE
-ACCEPTANCE_RUNTIME: LOCAL_HEAD
+ACCEPTANCE_RUNTIME: VERCEL
 
-## Marketplace Sprint 1 outcome
+## Canonical baseline
 
-Issue #27 / PR #28 produced the owner-selected **A+B flagship Marketplace**:
+Marketplace Sprint 1 / PR #28 merged to `main` on September 9, 2026 at:
 
-- Concept A supplied fast scanability, search/filter discovery, compact comparison cards, and strong action hierarchy.
-- Concept B supplied the premium dark frame, stronger brand character, provider identity, and trust/context emphasis.
-- Prototype A/B/C controls are removed from the final experience.
-- Concept C first-two editorial prominence was removed because no approved ranking/curation rule exists.
-- The obsolete route-level Marketplace hero/search/filter/notice presentation is hidden so the flagship is the single visible discovery experience.
+`0550625f296c3ef87ffa34dadf810d0f07e318e6`
 
-No offer schema migration or fabricated savings, pricing, ratings, provider logos, distance, impact, popularity, ranking, or partnership claims were introduced.
-
-## Review hardening completed
-
-GitHub Copilot review findings were fixed before acceptance:
-
-1. RPC load failure, true catalog-empty, and filtered-empty states are distinct.
-2. Enum-backed classification/eligibility/applicability values are humanized for search matching.
-3. Listing-type filters expose a real accessible control group and `aria-pressed` states.
-4. Offer-detail trust language is classification-neutral.
-5. Public PetBiz profiles use a compact embedded offer-list variant rather than the full flagship Marketplace shell.
-6. Hosted design QA requires at least one real `.offerCard` before accessibility/screenshot evidence can pass.
-7. Phone, tablet, and desktop evidence is retained.
-
-All six Copilot inline review threads are resolved.
-
-## Final acceptance evidence
-
-Accepted code SHA:
+Accepted Marketplace product SHA:
 
 `d9b9c32ea7647ff0e9a616e8c8206bfb9ca5742d`
 
-Hosted QA run:
+The accepted Marketplace A+B direction combines fast value-first discovery with a premium dark navy/trust treatment. Prototype concept controls and duplicate legacy Marketplace discovery chrome were removed before acceptance.
 
-`34410972297`
+## Active checkpoint — Issue #29
 
-Evidence artifact:
+Branch:
 
-`hosted-design-qa-evidence` — artifact `10127237935`
+`design/brand-propagation`
 
-Final exact-code acceptance used `ACCEPTANCE_RUNTIME: LOCAL_HEAD` because the Vercel Hobby build-rate limit prevented a fresh preview. The acceptance-gated workflow started the exact PR-head Vite application locally and connected it to the existing QA Supabase backend.
+Goal: propagate the accepted visual system into the highest-value non-Marketplace surfaces without broadening product scope.
 
-Results on the accepted SHA:
+Authorized surfaces:
 
-- Hosted Marketplace/Guardian/Partner golden paths: **4/4 passed**.
-- Hosted design QA: **2/2 passed**.
-- axe WCAG A/AA checks: passed on home and Marketplace.
-- runtime/page/console/network checks: passed.
-- responsive evidence: phone 390x844, tablet 768x1024, desktop 1440x1000.
-- final visual inspection confirmed the duplicate legacy Marketplace hero/search/filter layer is gone and the A+B flagship is the single visible Marketplace experience.
-- CI: success.
-- Database QA: success.
-- Persona QA: success.
-- Dependency Review: success.
-- Merge Gate on the accepted SHA: success.
+1. global header/navigation/shell;
+2. Guardian dashboard and its highest-value pet/passport/Marketplace actions;
+3. PetBiz dashboard/profile/offer-management entry surfaces.
 
-## Cost/tooling decision
+Design intent:
 
-The local exact-code acceptance fallback avoided paying for a Vercel upgrade solely to bypass a temporary free-tier build-rate cap. Vercel-backed previews remain the normal review path when available; `LOCAL_HEAD` is an explicit acceptance-only fallback.
+- use dark/navy structure and restrained purple/teal accents where they improve hierarchy;
+- strengthen typography, spacing, primary actions, identity/context, and loaded/empty-state clarity;
+- reuse Marketplace principles without turning every page into the same dark container;
+- keep mobile/tablet/desktop behavior accessible and coherent.
 
-Figma remains deferred. Storybook remains optional and should be added only when isolated reusable-component work becomes faster than direct page iteration.
+## Guardrails
 
-## Remaining owner-controlled actions
+- no new schema or product/business-rule fields;
+- no fabricated savings, pricing, ratings, provider imagery/logos, popularity/ranking, verification, scarcity, partnerships, or impact claims;
+- preserve auth, onboarding, persistence, RLS, offer, claim, redemption, and economic behavior;
+- no DNS/domain changes;
+- no Phase 3 feature development;
+- no paid tooling required;
+- Figma remains deferred; Storybook remains optional only if it becomes a net speed gain.
 
-- PR #28 is ready for its final docs-only completion gates and then owner-authorized merge.
-- Do not change `shelterpawtners.com` / `www.shelterpawtners.com` DNS yet.
-- Phase 3 remains owner-gated.
-- Do not introduce unapproved Marketplace schema/value/ranking rules.
+## Acceptance plan
 
-## Next execution after merge
-
-1. use the accepted Marketplace visual language to harden the global header/navigation and highest-value Guardian/PetBiz screens;
-2. keep the propagation bounded rather than redesigning every page at once;
-3. run Issue #5 human release-readiness/browser audit;
-4. present the owner with the release-readiness result before any ShelterPawtners domain cutover.
+1. fast CI during implementation;
+2. Product Critic / Copilot review at the PR boundary;
+3. representative phone/tablet/desktop visual evidence for the hardened screens;
+4. axe + page/console/network runtime checks;
+5. preserve Guardian/Partner golden paths;
+6. record one accepted code SHA;
+7. merge only after explicit owner authorization;
+8. then move into Issue #5 full-site human-style browser/persistence audit before any ShelterPawtners domain cutover.
