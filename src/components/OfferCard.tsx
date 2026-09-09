@@ -141,8 +141,8 @@ export function OfferCard({
 
         {detailed && (
           <p className="marketOfferTrustNote">
-            <ShieldCheck /> Partner-published. Listing does not imply endorsement
-            or independently verified savings.
+            <ShieldCheck /> Partner-published. Listing does not imply
+            endorsement or independently verified savings.
           </p>
         )}
       </div>

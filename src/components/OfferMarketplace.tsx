@@ -108,10 +108,7 @@ export function OfferMarketplace({
   const visibleOffers = useMemo(() => {
     const normalized = query.trim().toLowerCase();
     return offers.filter((offer) => {
-      if (
-        classification !== "all" &&
-        offer.classification !== classification
-      )
+      if (classification !== "all" && offer.classification !== classification)
         return false;
       if (!normalized) return true;
       const searchable = [
@@ -160,7 +157,8 @@ export function OfferMarketplace({
         <section className="marketplaceDetailState">
           <h1>Offer not available</h1>
           <p>
-            This offer is not currently published, has not started, or has ended.
+            This offer is not currently published, has not started, or has
+            ended.
           </p>
         </section>
       );
@@ -309,7 +307,8 @@ export function OfferMarketplace({
           <Search />
           <h2>No current offers match that search.</h2>
           <p>
-            Try a provider name, a broader term, or clear the listing-type filter.
+            Try a provider name, a broader term, or clear the listing-type
+            filter.
           </p>
         </div>
       ) : concept === "trust" ? (
