@@ -124,7 +124,7 @@ jobs:
           if [[ "${GITHUB_EVENT_NAME}" == "workflow_dispatch" || -z "${PR_NUMBER}" ]]; then
             qa_url="${INPUT_QA_URL:-${FALLBACK_QA_URL}}"
           else
-            frontend_sha=$(bash scripts/latest-frontend-artifact-sha.sh "${BASE_SHA}" "${PR_HEAD_SHA")
+            frontend_sha=$(bash scripts/latest-frontend-artifact-sha.sh "${BASE_SHA}" "${PR_HEAD_SHA}")
             acceptance_deployed_sha=$(sed -n 's/^ACCEPTANCE_DEPLOYED_SHA:[[:space:]]*//p' docs/AI-HANDOFF.md | head -n 1)
 
             if [[ -n "${acceptance_deployed_sha}" && "${acceptance_deployed_sha}" != "NONE" && "${acceptance_deployed_sha}" != "${frontend_sha}" ]]; then
