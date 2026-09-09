@@ -71,7 +71,7 @@ Do not add browser/debug MCPs merely to increase tool count; use Chrome DevTools
 In Copilot CLI:
 
 ```text
-/plugins
+/plugin
 /skills list
 /agent
 ```

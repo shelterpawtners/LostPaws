@@ -3,7 +3,7 @@
 STATUS: IN_PROGRESS
 CURRENT_PHASE: MVP Design Hardening + Human Release Readiness
 CURRENT_CHECKPOINT: Stream 2 — ChatGPT product/operator capability
-NEXT_CHECKPOINT: Finish Stream 2 documentation/validation, merge only after Stream 1 PR #22 is accepted/merged, then complete Stream 3 minimum deterministic design QA and begin the Marketplace Sprint immediately.
+NEXT_CHECKPOINT: Validate and merge Stream 2 PR #24 to main, then implement minimum Stream 3 Issue #25 and begin the Marketplace Sprint immediately.
 OWNER_DECISION_REQUIRED: NO
 SAFE_TO_CONTINUE: YES
 ACCEPTED_CODE_SHA: NONE
@@ -12,104 +12,118 @@ ACCEPTED_CODE_SHA: NONE
 
 - Phase 1 is complete.
 - Phase 2 CP1–CP6 are complete.
-- PR #1 merged the completed Phase 2 baseline to `main` at `fdc3b1e76063af86970f31a996740d29fa2024d1`.
-- `main` is canonical.
-- Vercel Production Branch is `main`.
-- Vercel production deployment `dpl_7n3zhia8RF3DrJ4RjFi6SQWkQGdG` is READY and serves the accepted Phase 2 application build from `main` SHA `fdc3b1e76063af86970f31a996740d29fa2024d1`.
-- `lost-paws-one.vercel.app` returns HTTP 200 from the main-backed production deployment.
+- `main` is canonical and is the Vercel Production Branch.
+- PR #22 — Stream 1 Copilot/repo-native design and build capability — merged to `main` at `eaa7b09edc3496eb8e52d57d081fce42d67f5151`.
+- Stream 1 accepted configuration/code SHA is `0a48f446a103a8495ec2ce8a8c31c62bd9d02c3b`.
+- Stream 1 acceptance included CI, Hosted QA, Persona QA, Database/RLS evidence, dependency review, and final deterministic Merge Gate success.
 - ShelterPawtners DNS remains unchanged.
 - Phase 3 remains owner-gated.
 
-## Stream 1 status
+## Owner direction — design hardening
 
-PR #22 (`ops/stream1-copilot-design-tooling` -> `main`) implements the Copilot/repo-native capability layer and the migration of live PR automation from the retired `build/festival-mvp` target to `main`.
+The owner wants the product to move quickly from functional/minimal to polished, professional, distinctive, valuable, accessible, and trustworthy, with the Marketplace as the highest design priority.
 
-Accepted/green evidence already observed on the Stream 1 acceptance head includes:
+Authorized now:
 
-- CI/lint/shell/unit/build success;
-- Merge Gate success;
-- Database QA gate success with the actual database job skipped because no database change exists;
-- Dependency Review gate success;
-- Persona and Hosted acceptance lanes correctly activated for one deliberate proof cycle.
+1. Stream 1 — GitHub Copilot/repo-native build + design capability — COMPLETE;
+2. Stream 2 — ChatGPT product/operator capability — IN PROGRESS;
+3. Stream 3 — minimum shared deterministic design QA — NEXT;
+4. Marketplace design sprint and visual implementation using already-approved product rules/data immediately after Streams 1–3 reach minimum viable setup.
 
-Stream 2 is intentionally developed as a temporary stacked branch from the Stream 1 acceptance head so the project does not sit idle. Do not merge Stream 2 ahead of Stream 1.
+Visible product progress takes priority over process overhead. Figma is not a prerequisite. Storybook is introduced inside the Marketplace Sprint only when reusable component/state volume makes it faster.
 
-## Stream 2 implementation
+## Stream 1 — complete
 
-Issue #23 on `ops/stream2-chatgpt-operator`.
+PR #22 delivered:
+
+- post-Phase-2 `AGENTS.md` and Copilot instructions;
+- Marketplace Product Designer, Frontend Design-System Engineer, UX + Accessibility QA, and Product Critic agents;
+- ShelterPawtners brand, Marketplace UX/value, responsive QA, and release-readiness skills;
+- repository-level Vercel plugin configuration and local Copilot setup guidance;
+- `main`-target CI/QA/AI-Ops control-plane migration;
+- Hosted QA PR-head/Vercel artifact correction;
+- resilient shared Playwright Chromium installation;
+- current operating docs aligned to the post-Phase-2 branch model.
+
+Stream 1 accepted SHA:
+
+`0a48f446a103a8495ec2ce8a8c31c62bd9d02c3b`
+
+Merged to main:
+
+`eaa7b09edc3496eb8e52d57d081fce42d67f5151`
+
+## Stream 2 — current
+
+Issue #23 / PR #24 / branch `ops/stream2-chatgpt-operator`.
+
+Purpose: make ChatGPT the ShelterPawtners product/operator/controller layer without duplicating Copilot/Codex coding work or adding paid tooling.
 
 Implemented:
 
 - `docs/CHATGPT-OPERATING-PROTOCOL.md`:
   - source-of-truth order;
   - ChatGPT vs coding-agent vs deterministic-automation role split;
-  - connected GitHub/Vercel/Supabase routing;
+  - GitHub/Vercel/Supabase connected-tool routing;
   - web-research boundary;
   - fresh-session startup sequence;
-  - implementation handoff contract;
+  - coding-agent implementation handoff contract;
   - cost/speed rules;
   - owner/RED decision boundaries;
   - operator-session done criteria;
 - `docs/prompts/CHATGPT-SESSION-BOOTSTRAP.md`:
-  - reusable new-chat bootstrap;
-  - forces repository/context recovery before asking the owner to restate project history;
-  - routes current private/project state through connected tools;
-  - prevents duplicate AI implementation work and preserves RED gates;
-- `docs/CURRENT-WORK.md` updated with current Stream 1/2 state and stacked-branch operating rule;
-- `docs/AI-TOOLING-AND-DESIGN-ROADMAP.md` updated with Stream 2 minimum viable deliverables and operating split.
+  - reusable fresh-chat bootstrap;
+  - repository/context recovery before asking the owner to restate history;
+  - connected-tool routing for current project state;
+  - anti-duplication and RED-gate rules;
+- `docs/CURRENT-WORK.md` and `docs/AI-TOOLING-AND-DESIGN-ROADMAP.md` integrated with the Stream 2 operating model.
 
-## Stream 2 operating decision
+### Stream 2 operating split
 
-ChatGPT is the product/controller/operator layer, not the default code builder.
+- ChatGPT = product/controller/research/operator/release reasoning.
+- Copilot/Codex/another coding surface = substantial source implementation, repetitive engineering, tests, migrations/functions after approved rules, and repo-local debugging.
+- GitHub Actions/scripts = deterministic validation and supervision.
+- Connected GitHub/Vercel/Supabase tools = current private/project state and authorized operations.
+- Web = current external research, standards, pricing, documentation, and competitive evidence.
 
-Use ChatGPT for:
+Do not spend multiple AI systems on the same ordinary implementation task.
 
-- product strategy/prioritization;
-- current marketplace/competitive research;
-- value and information architecture;
-- independent critique;
-- GitHub/Vercel/Supabase connected operations;
-- architecture/release-readiness/cost decisions;
-- concise implementation briefs.
+## Stream 3 — next
 
-Use Copilot/Codex/another coding surface for substantial source implementation, repetitive component construction, tests, migrations/functions after approval, and repository-local code debugging.
+Issue #25 defines the minimum remaining QA gap before the Marketplace Sprint:
 
-Use GitHub Actions/scripts for deterministic validation and supervision.
+- axe accessibility integration using `@axe-core/playwright`;
+- focused Marketplace/public-shell design QA;
+- representative phone/tablet/desktop screenshots;
+- meaningful browser console/page error checks;
+- meaningful failed-network-request checks;
+- reuse the existing Hosted QA browser pass rather than introducing another heavy workflow/platform.
 
-## Tooling decisions
+Explicit non-goals:
 
-### Figma
-
-**Deferred; not a prerequisite.**
-
-Use code-first design, the real React/Tailwind application, Vercel previews, screenshots, and reusable components. Reconsider Figma only when collaboration/design-system complexity makes it faster than maintaining code-first design alone.
-
-### Storybook
-
-**Planned for the Marketplace Sprint, not before it.**
-
-Introduce Storybook after reusable Marketplace components/states emerge and isolated component iteration becomes faster than route-only work.
-
-### Cost
-
-Default to free/native/open-source tooling. Do not add paid visual-regression/device/design SaaS until native tools are demonstrably insufficient.
+- no Figma prerequisite;
+- no Storybook prerequisite;
+- no paid visual-regression/device SaaS;
+- no broad browser matrix yet;
+- no Phase 3 feature work;
+- no production DNS/domain changes.
 
 ## Marketplace Sprint timing
 
-The Marketplace Sprint is the **next product-design sprint** and starts immediately after Streams 1–3 have minimum viable setup.
+The Marketplace Sprint begins immediately after Stream 3 minimum QA setup is accepted.
 
-Sprint sequence is documented in `docs/AI-TOOLING-AND-DESIGN-ROADMAP.md`:
+Sequence:
 
-1. research + value/information architecture;
-2. 2–3 code-first visual concepts;
-3. independent critique and direction selection;
-4. reusable component system;
-5. Storybook when justified by component/state volume;
-6. flagship implementation;
+1. current Marketplace/competitive research + Guardian value/information architecture;
+2. 2–3 materially different code-first visual concepts;
+3. independent product/design critique and direction selection;
+4. reusable Marketplace component system;
+5. Storybook when reusable component/state volume justifies it;
+6. flagship Marketplace implementation;
 7. responsive/accessibility/browser/Playwright QA;
-8. brand propagation to the highest-value remaining screens;
-9. Issue #5 broad release-readiness audit;
-10. owner decision on domain cutover.
+8. brand-system propagation to the highest-value remaining Guardian/PetBiz screens;
+9. Issue #5 broad release-readiness/human-style audit;
+10. owner decision on ShelterPawtners domain cutover.
 
 ## Still deferred / owner-gated
 
@@ -123,10 +137,8 @@ Sprint sequence is documented in `docs/AI-TOOLING-AND-DESIGN-ROADMAP.md`:
 
 ## Next action
 
-1. Let the final Stream 1 Persona/Hosted proof cycle resolve.
-2. Fix real Stream 1 acceptance failures if any; do not weaken checks.
-3. When Stream 1 is accepted, record its exact accepted SHA and merge PR #22 under the owner's continuation authorization.
-4. Validate Stream 2 formatting/CI through a small stacked PR.
-5. After Stream 1 merge, retarget Stream 2 to `main`, merge when green, and close Issue #23.
-6. Complete only the minimum Stream 3 QA setup required for the Marketplace Sprint.
-7. Begin the Marketplace Sprint immediately; do not postpone it for Figma or Storybook.
+1. Reconcile Stream 2 branch with merged Stream 1/main history without losing the five-file bounded Stream 2 diff.
+2. Validate PR #24 against `main` using normal deterministic CI; Stream 2 is docs/operator configuration and must not trigger unnecessary heavy browser work.
+3. Mark Stream 2 complete and merge PR #24 when green under the owner's continuation authorization.
+4. Create/implement only the minimum Stream 3 Issue #25 scope.
+5. Begin the Marketplace Sprint immediately after Stream 3 acceptance.

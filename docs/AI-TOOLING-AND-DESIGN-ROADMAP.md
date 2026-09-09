@@ -15,7 +15,7 @@ Use the lightest tool that proves the next decision.
 
 ## Stream 1 — GitHub Copilot + repo-native capability
 
-**Status:** implemented on PR #22; final acceptance proof resolving before merge.
+**Status: COMPLETE — merged in PR #22.**
 
 ### Repository-native agents
 
@@ -58,7 +58,7 @@ Do not give cloud agents broad database write access merely for convenience.
 
 ## Stream 2 — ChatGPT operator/product capability
 
-**Status:** in progress on Issue #23 / `ops/stream2-chatgpt-operator`.
+**Status: IN PROGRESS — Issue #23 / PR #24.**
 
 Goal: keep ChatGPT complementary to Copilot rather than duplicative.
 
@@ -66,7 +66,7 @@ Primary jobs:
 
 - product/marketplace research and competitive pattern analysis;
 - independent visual/product critique;
-- GitHub/Vercel/Supabase operations;
+- GitHub/Vercel/Supabase connected operations;
 - architecture and release-readiness reasoning;
 - image/brand ideation when useful;
 - analytics/observability strategy;
@@ -90,26 +90,38 @@ Stream 2 is complete when a new ChatGPT session can orient itself and choose the
 
 ## Stream 3 — Shared design + quality toolchain
 
-**Status:** minimum viable setup follows Stream 2.
+**Status: NEXT — Issue #25.**
 
-### Use now / during Marketplace Sprint
+### Minimum setup before Marketplace implementation
 
-- Playwright screenshots and interaction tests
-- automated accessibility checks (axe + Playwright)
-- responsive screenshots at representative phone/tablet/desktop sizes
-- browser console/network inspection
-- Storybook once a reusable marketplace component system emerges
+- add `@axe-core/playwright` accessibility scanning;
+- add a focused Marketplace/public-shell design-quality Playwright spec;
+- capture representative phone/tablet/desktop screenshots as acceptance evidence;
+- fail on unexpected page errors and meaningful console errors;
+- surface meaningful failed network requests while allowing known benign behavior;
+- reuse the existing Hosted QA browser installation/run where practical;
+- upload design evidence only at the acceptance boundary.
+
+### Explicit Stream 3 non-goals
+
+- no Figma prerequisite;
+- no Storybook prerequisite;
+- no paid visual-regression/device SaaS;
+- no broad browser matrix yet;
+- no Lighthouse CI yet unless a concrete Marketplace need appears;
+- no Phase 3 feature work;
+- no DNS/domain/production changes.
 
 ### Add after the first Marketplace redesign
 
-- Lighthouse CI performance/accessibility budgets
-- broader visual-regression baselines
-- observability/behavior analytics after product flows stabilize
+- Lighthouse CI performance/accessibility budgets;
+- broader visual-regression baselines;
+- observability/behavior analytics after product flows stabilize.
 
 ### Later / scale-triggered
 
-- Chromatic/Percy/BrowserStack if team size and UI surface justify paid tooling
-- richer design collaboration if multiple designers/developers need shared visual handoff
+- Chromatic/Percy/BrowserStack if team size and UI surface justify paid tooling;
+- richer design collaboration if multiple designers/developers need shared visual handoff.
 
 ## Figma decision
 
@@ -141,7 +153,7 @@ It is the next product-design sprint; it is not deferred to a later phase.
 ### Marketplace Sprint sequence
 
 1. **Research + value architecture**
-   - review leading marketplace/e-commerce/service discovery patterns;
+   - review leading marketplace/e-commerce/service-discovery patterns;
    - define Guardian jobs-to-be-done;
    - define Marketplace information architecture and offer hierarchy;
    - define how savings, PetBiz credibility, location/relevance, eligibility, urgency, and shelter impact are communicated without fabricated claims.

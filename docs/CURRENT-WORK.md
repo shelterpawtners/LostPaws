@@ -12,35 +12,31 @@ The project is now in **MVP Design Hardening + Human Release Readiness** before 
 
 ## Canonical application state
 
-- `main` is the canonical application branch.
-- Vercel Production Branch is `main`.
-- The accepted Phase 2 application build at `fdc3b1e76063af86970f31a996740d29fa2024d1` was promoted to Vercel production.
-- Production deployment `dpl_7n3zhia8RF3DrJ4RjFi6SQWkQGdG` is READY.
-- `lost-paws-one.vercel.app` resolves to the main-backed production deployment and returns HTTP 200.
+- `main` is the canonical application branch and Vercel Production Branch.
+- Stream 1 PR #22 merged to `main` at `eaa7b09edc3496eb8e52d57d081fce42d67f5151`.
+- The accepted Stream 1 configuration/code SHA is `0a48f446a103a8495ec2ce8a8c31c62bd9d02c3b`.
 - `shelterpawtners.com` and `www.shelterpawtners.com` DNS remain unchanged.
 
 ## Current priority
 
 Make ShelterPawtners look and feel polished, professional, distinctive, valuable, accessible, and trustworthy before adding the next major feature phase.
 
-The **Marketplace is the flagship design priority**. It is a primary reason Guardians should return to the platform and must communicate substantially more value than a minimal grid of generic offer tiles.
+The **Marketplace is the flagship design priority**. It must communicate substantially more value than a minimal grid of generic offer tiles.
 
 Design work must improve both:
 
 1. visual/product quality; and
-2. the Marketplace value architecture — offer value, PetBiz identity/credibility, relevance/location, supported savings/benefit, supported shelter impact, state/eligibility, and clear actions.
+2. Marketplace value architecture — offer value, PetBiz identity/credibility, relevance/location, supported savings/benefit, supported shelter impact, state/eligibility, and clear actions.
 
 ## Three-stream capability setup
 
-Before the large Marketplace redesign, establish the minimum capability stack documented in `docs/AI-TOOLING-AND-DESIGN-ROADMAP.md`.
-
 ### Stream 1 — GitHub Copilot + repo-native design/build capability
 
-**Status:** implemented on PR #22; final Persona/Hosted acceptance proof is resolving before merge.
+**Status: COMPLETE and merged in PR #22.**
 
 Includes:
 
-- updated post-Phase-2 Copilot operating rules;
+- post-Phase-2 Copilot operating rules;
 - Marketplace Product Designer agent;
 - Frontend Design-System Engineer agent;
 - UX + Accessibility QA agent;
@@ -51,33 +47,40 @@ Includes:
 - Responsive Visual QA skill;
 - Release Readiness Review skill;
 - repository-level Vercel plugin enablement;
-- local Copilot setup instructions for Vercel, official Supabase Agent Skills, and Chrome DevTools;
-- `main`-target CI/QA/AI-Ops control-plane migration;
-- explicit Figma/Storybook timing decisions.
+- local setup guidance for Vercel, Supabase Agent Skills, and Chrome DevTools;
+- `main`-target CI/QA/AI-Ops migration;
+- cost-controlled Hosted/Persona/Database acceptance behavior;
+- resilient Chromium installation for Playwright.
 
 ### Stream 2 — ChatGPT product/operator capability
 
-**Current bounded task:** Issue #23 on `ops/stream2-chatgpt-operator`.
+**Current bounded task: Issue #23 / PR #24 / `ops/stream2-chatgpt-operator`.**
 
 Keep ChatGPT complementary to Copilot rather than a duplicate coding agent.
 
-Implemented/current scope:
+Minimum deliverables:
 
-- `docs/CHATGPT-OPERATING-PROTOCOL.md` defines source-of-truth order, role split, tool routing, cost rules, owner gates, and implementation handoff contract;
-- `docs/prompts/CHATGPT-SESSION-BOOTSTRAP.md` gives a reusable fresh-session startup prompt that makes ChatGPT read the repository and connected execution state before acting;
+- `docs/CHATGPT-OPERATING-PROTOCOL.md` defines source-of-truth order, role split, connected-tool routing, cost rules, owner gates, and implementation handoff contract;
+- `docs/prompts/CHATGPT-SESSION-BOOTSTRAP.md` gives a reusable fresh-session bootstrap that reads the repository/current connected state before asking the owner to restate project history;
 - GitHub/Vercel/Supabase connected tools are the default for current private/project state;
 - web research is reserved for current external facts, competitive research, standards, pricing, and documentation;
 - ChatGPT handles product/research/operator/release reasoning while substantial coding is routed to the lowest-cost capable coding surface;
 - deterministic checks remain owned by GitHub Actions/scripts.
 
+Stream 2 is complete when a fresh ChatGPT session can recover current LostPaws state and choose the correct execution surface without reconstructing the project manually.
+
 ### Stream 3 — Shared design + deterministic quality toolchain
+
+**Next bounded task: Issue #25.**
 
 Minimum setup before the Marketplace implementation sprint:
 
-- Playwright screenshot/interaction loop;
 - axe accessibility integration;
-- representative phone/tablet/desktop visual QA;
-- browser console/network checks.
+- focused Marketplace/public-shell Playwright design QA;
+- representative phone/tablet/desktop screenshots;
+- browser page/console error checks;
+- meaningful failed-network-request checks;
+- reuse the existing Hosted QA browser pass rather than adding another heavy workflow.
 
 Storybook is added **inside the Marketplace Sprint** once enough reusable marketplace components/states exist to make isolated component development faster.
 
@@ -85,22 +88,22 @@ Storybook is added **inside the Marketplace Sprint** once enough reusable market
 
 Figma is **deferred and is not a prerequisite**.
 
-Default to code-first design using the real React/Tailwind application, Vercel previews, screenshots, and reusable components. Reconsider Figma when multiple contributors, stakeholder handoff, or design-system complexity makes a dedicated collaborative design workspace faster than code-first iteration.
+Default to code-first design using the real React/Tailwind application, Vercel previews, screenshots, and reusable components. Reconsider Figma only when team/design-system complexity makes it materially faster than code-first iteration.
 
 ## Marketplace Sprint
 
-**The Marketplace Sprint starts immediately after Streams 1–3 reach minimum viable setup. It is the next product-design sprint.**
+**The Marketplace Sprint starts immediately after Streams 1–3 reach minimum viable setup.**
 
 Sequence:
 
-1. marketplace research + Guardian value/information architecture;
+1. Marketplace research + Guardian value/information architecture;
 2. 2–3 materially different code-first visual concepts;
-3. select direction through independent product/design critique;
-4. build reusable Marketplace component system;
-5. add Storybook when reusable component/state volume justifies it;
-6. implement flagship Marketplace experience;
+3. independent critique and direction selection;
+4. reusable Marketplace component system;
+5. Storybook when component/state volume justifies it;
+6. flagship Marketplace implementation;
 7. responsive/accessibility/browser/Playwright QA;
-8. propagate the accepted brand system to global shell and highest-value Guardian/PetBiz screens;
+8. propagate the accepted brand system to the highest-value remaining screens;
 9. run Issue #5 broad release-readiness/human-style audit;
 10. only then consider ShelterPawtners domain cutover.
 
@@ -110,12 +113,11 @@ For new design-hardening work:
 
 - one bounded Issue -> one short-lived branch -> one PR -> acceptance -> `main`;
 - `main` is the integration/production branch;
-- stacked branches/PRs may be used briefly when a prior bounded stream is already in final acceptance and waiting would create avoidable idle time;
-- do not target new product work at `build/festival-mvp`;
+- stacked branches may be used briefly when a prior bounded stream is already in final acceptance and waiting would create avoidable idle time;
 - GitHub Actions/scripts own deterministic validation;
-- specialist AI agents provide independent product/design/QA perspectives;
 - ChatGPT owns controller/product/operator decisions and connected-system coordination;
 - substantial coding defaults to a coding agent rather than duplicating implementation in ChatGPT;
+- specialist AI agents may provide independent product/design/QA perspectives;
 - never let the implementation agent be the only reviewer of its own UX/design;
 - preserve/strengthen tests rather than weakening them to make CI green.
 

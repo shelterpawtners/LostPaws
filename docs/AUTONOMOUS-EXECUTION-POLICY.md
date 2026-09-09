@@ -81,18 +81,29 @@ Agents must stop before implementing a material decision involving any of the fo
 
 When blocked by a RED decision, complete all safely separable work first, add the decision to `docs/OWNER-DECISION-BACKLOG.md` as `BLOCKING`, update `docs/AI-HANDOFF.md`, and stop at the narrowest possible boundary.
 
-## Current phase authorization gate
+## Current authorization gate
 
-Jim explicitly authorized autonomous completion of the remainder of Phase 2 on 2026-09-08.
+Phase 2 is complete and merged to `main`.
 
-Therefore:
+The product owner has explicitly authorized the current **MVP Design Hardening + Human Release Readiness** work, including:
 
-- Phase 2 Checkpoint 5 and subsequent remaining Phase 2 checkpoints are authorized to proceed checkpoint-to-checkpoint after required acceptance evidence passes.
-- Agents do not need a separate routine owner approval to enter Checkpoint 5.
-- Material RED decisions encountered inside Phase 2 remain blocking and must be escalated.
-- Do **not** begin Phase 3 without a new explicit product-owner authorization.
+- Stream 1 — Copilot/repo-native design and build capability;
+- Stream 2 — ChatGPT product/operator capability;
+- Stream 3 — minimum deterministic design QA tooling;
+- the Marketplace design-hardening sprint using already-approved product rules and data;
+- reversible brand, UX, accessibility, QA, and tooling work that stays inside the current roadmap and existing security model.
 
-Within the authorized Phase 2 range, agents should continue autonomously through implementation, bug fixing, validation, and acceptance preparation.
+Therefore agents may continue autonomously through those authorized streams, ordinary in-scope blockers, and their acceptance preparation after required evidence passes.
+
+The following remain explicitly gated and are **not** authorized by this policy:
+
+- Phase 3 feature development;
+- production DNS/domain cutover;
+- paid infrastructure or new paid vendor commitments;
+- destructive production operations;
+- material RED legal/privacy/security/financial/product decisions;
+- `OD-003` verified-savings customer-facing rules/totals;
+- `OD-004` production giving-provider/settlement decisions.
 
 ## Placeholder and demo-data policy
 
@@ -145,6 +156,7 @@ CURRENT_CHECKPOINT: <checkpoint or issue>
 NEXT_CHECKPOINT: <next authorized checkpoint or NONE>
 OWNER_DECISION_REQUIRED: YES | NO
 SAFE_TO_CONTINUE: YES | NO
+ACCEPTED_CODE_SHA: <accepted SHA or NONE>
 ```
 
 Definitions:
