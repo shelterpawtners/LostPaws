@@ -1,65 +1,71 @@
 # AI Handoff
 
-STATUS: COMPLETE
+STATUS: IN_PROGRESS
 CURRENT_PHASE: Phase 2 — Partner Marketplace MVP
-CURRENT_CHECKPOINT: Dev Loop v2 bootstrap — Issue #15
-NEXT_CHECKPOINT: Merge accepted PR #16, then launch CP6 Issue #14 from fresh `phase2/cp6-impact-giving`
+CURRENT_CHECKPOINT: CP6 — provider-agnostic impact, reputation + giving foundation — Issue #14
+NEXT_CHECKPOINT: Complete CP6 provider-agnostic acceptance; stop before OD-004 provider-dependent money movement
 OWNER_DECISION_REQUIRED: NO
 SAFE_TO_CONTINUE: YES
-ACCEPTED_CODE_SHA: 6a63827a1111d00ea930a1e07e8aa3ffd9e911ed
+ACCEPTED_CODE_SHA: NONE
 
 ## Current state
 
-- PR #2 is merged into `build/festival-mvp` at `e248f8b3ae754da7faccf41ebe2c0a4bb3857f27`.
-- Dev Loop v2 branch: `ops/dev-loop-v2`; active PR #16.
-- Dev Loop v2 implementation is accepted at `6a63827a1111d00ea930a1e07e8aa3ffd9e911ed`.
-- Acceptance evidence on that exact implementation SHA:
-  - CI #257 PASS;
-  - Database QA #22 PASS;
-  - Persona QA #87 PASS, including the local Admin QA security regression with the local-only Edge Function QA flag;
-  - Hosted QA #153 PASS with actual hosted golden paths against the resolved Vercel Preview artifact;
-  - Merge Gate #23 PASS at the acceptance boundary;
-  - Dependency Review #22 PASS;
-  - AI Ops Status #23 PASS.
-- Generic Hosted QA no longer depends on the hidden Admin QA Vercel feature flag. Admin QA security behavior is validated in the deterministic local Persona lane.
-- Tooling/docs-only commits may reuse the last successful frontend-impacting Vercel Preview artifact instead of waiting for an ignored deployment.
-- CP6 Issue #14 is the next authorized Phase 2 checkpoint after PR #16 integration.
+- Phase 1 is complete.
+- Phase 2 CP1–CP5 are integrated into `build/festival-mvp`.
+- Dev Loop v2 is integrated at merge commit `f88a9ccc1cfaa71fc0b5018ab735134d0447075f`.
+- Database QA pushed-delta routing follow-up is integrated at `0da330e798c5e6316fb755d127a0b160f359c937`.
+- Active branch: `phase2/cp6-impact-giving`.
+- Active Issue: #14.
+- CP6 must reuse the existing economic/giving foundation instead of introducing a parallel ledger.
 - Phase 3 remains unauthorized.
 
-## Dev Loop v2 accepted scope
+## CP6 contract
 
-- one canonical change-impact classifier;
-- change-aware CI;
-- Database QA separated from Persona browser acceptance;
-- acceptance-only Persona and Hosted QA;
-- deterministic Merge Gate using `ACCEPTED_CODE_SHA`;
-- centralized exact Supabase CLI pin wrapper;
-- short root agent instructions plus path-specific GitHub instructions;
-- event-driven native AI Ops status with one Issue #12 status record;
-- hourly stale watchdog;
-- grouped Dependabot updates and native Dependency Review;
-- Vercel ignored-build logic delegated to the classifier;
-- branch-specific PR Preview browser acceptance;
-- hidden Admin QA security acceptance independent of Vercel Preview feature-flag scope;
-- full Dev Loop v2 operating-model documentation.
+Implement provider-agnostic foundations for:
+
+- truthful Partner progression: Partner → Participating Partner → Redemption Verified → Shelter Impact Partner;
+- Redemption Verified derived only from legitimate non-demo confirmed redemption evidence;
+- Partner contribution commitments/terms without claiming money is already donated or settled;
+- commitment/accrual kept distinct from verified settled contribution;
+- privileged audited platform-admin verification of external settled-contribution evidence;
+- Shelter Impact Partner requiring real redemption + verified settled contribution + good standing/admin review;
+- substantiated permission-safe impact metrics excluding demo activity;
+- append-only/auditable reasoned transitions and server-side authorization.
+
+Reuse where appropriate:
+
+- `economic_events` / `economic_event_lines`;
+- `donation_intents` for accrued partner contribution obligations;
+- existing redemptions and CP5 attribution evidence;
+- existing organization membership/admin helpers and private audit events.
+
+Do not create a fake giving provider or provider transaction while OD-004 is unresolved.
+
+## Validation minimum
+
+- ordinary Partner cannot self-assign privileged reputation states;
+- non-demo confirmed redemption can qualify Redemption Verified; demo redemption cannot;
+- commitments/accruals never present as settled contributions;
+- external settled evidence approval is platform-admin-only and audited;
+- Shelter Impact Partner cannot be awarded from pledge/accrual alone;
+- cross-organization reads/writes remain RLS-safe;
+- append-only economic/audit history remains intact;
+- migration replay + targeted pgTAP/RLS + relevant browser acceptance pass.
 
 ## Cost policy
 
+- GitHub Actions/scripts own deterministic validation.
+- Database QA runs on database-sensitive pushed deltas; Merge Gate assesses the whole PR.
+- Persona and Hosted browser suites run only at acceptance when required.
 - No automatic coding-agent invocation or automatic AI review.
-- GitHub Actions/scripts own deterministic validation, status, and merge evidence.
-- AI is reserved for implementation, architecture, diagnosis, and material semantic review.
-- One active writer per code path.
+- One active writer on this branch during the live sprint.
 
 ## RED boundaries
 
-- `OD-003` remains blocking only for customer-facing verified-savings rules/totals.
-- `OD-004` remains blocking only for provider-dependent charitable-money movement/settlement/integration.
-- No production/DNS, paid infrastructure, destructive migration, or Phase 3.
+- `OD-003`: customer-facing verified-savings rules/totals remain blocked.
+- `OD-004`: giving-provider selection, production charitable settlement/money movement, receipts/tax-provider integration remain blocked.
+- No production/DNS, paid infrastructure, destructive migration, material legal/privacy/security/financial RED decision, or Phase 3.
 
 ## Next action
 
-1. Let the final documentation-only head pass CI/Merge Gate using the accepted implementation evidence above.
-2. Close Issue #15 and merge PR #16 under the owner's standing authorization.
-3. Verify the updated `build/festival-mvp` baseline.
-4. Create `phase2/cp6-impact-giving`, open one bounded CP6 PR for Issue #14, move the active-build marker, and set the handoff to `IN_PROGRESS` / `OWNER_DECISION_REQUIRED: NO` / `SAFE_TO_CONTINUE: YES` / `ACCEPTED_CODE_SHA: NONE`.
-5. Implement only the provider-agnostic CP6 foundation allowed before `OD-004`.
+Implement the smallest truthful CP6 vertical slice using the existing ledger and RLS foundations, add targeted database tests, and continue through GREEN/YELLOW defects until the checkpoint reaches `READY_FOR_ACCEPTANCE` or a genuine RED boundary appears.
