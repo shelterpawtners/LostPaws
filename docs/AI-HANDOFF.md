@@ -1,9 +1,9 @@
 # AI Handoff
 
-STATUS: IN_PROGRESS
+STATUS: READY_FOR_ACCEPTANCE
 CURRENT_PHASE: MVP Design Hardening + Human Release Readiness
 CURRENT_CHECKPOINT: Stream 3 — minimum deterministic design QA
-NEXT_CHECKPOINT: Implement Issue #25, validate fast checks, move to READY_FOR_ACCEPTANCE for one Hosted design-QA run, then begin the Marketplace Sprint immediately after acceptance.
+NEXT_CHECKPOINT: Run one Hosted design-QA acceptance cycle for Issue #25, fix real evidence-backed defects without weakening checks, then record acceptance and begin the Marketplace Sprint immediately.
 OWNER_DECISION_REQUIRED: NO
 SAFE_TO_CONTINUE: YES
 ACCEPTED_CODE_SHA: NONE
@@ -27,7 +27,7 @@ Authorized now:
 
 1. Stream 1 — GitHub Copilot/repo-native build + design capability — COMPLETE;
 2. Stream 2 — ChatGPT product/operator capability — COMPLETE;
-3. Stream 3 — minimum shared deterministic design QA — IN PROGRESS;
+3. Stream 3 — minimum shared deterministic design QA — READY FOR ACCEPTANCE;
 4. Marketplace design sprint and visual implementation using already-approved product rules/data immediately after Stream 3 acceptance.
 
 Visible product progress takes priority over process overhead. Figma is not a prerequisite. Storybook is introduced inside the Marketplace Sprint only when reusable component/state volume makes it faster.
@@ -48,32 +48,45 @@ PR #24 delivered:
 
 Stream 2 accepted SHA: `1163e6c3deb07c5d20cd7a88961b213c4bd327f0`.
 
-## Stream 3 — active
+## Stream 3 — implementation ready for acceptance
 
-Issue #25 / branch `ops/stream3-design-qa`.
+Issue #25 / PR #26 / branch `ops/stream3-design-qa`.
 
-Minimum implementation scope:
+Implemented:
 
-- add hosted axe accessibility scans for the public shell and Marketplace using `@axe-core/playwright`;
-- add a focused Hosted design-QA Playwright spec;
-- capture full-page Marketplace screenshots at representative phone, tablet, and desktop viewports;
-- fail on unexpected page errors and console errors;
-- fail on meaningful network failures and HTTP 5xx responses while ignoring known navigation-abort noise;
-- reuse the existing Hosted QA job and Chromium install;
-- upload design evidence from the acceptance run only;
-- keep axe as an exact pinned QA-only transient install rather than adding production/runtime dependency or root lockfile churn.
+- hosted axe accessibility scans for the public shell and Marketplace using `@axe-core/playwright`;
+- focused `e2e/hosted-design-qa.spec.ts`;
+- full-page Marketplace screenshots at 390x844, 768x1024, and 1440x1000;
+- unexpected browser page-error and console-error detection;
+- meaningful request-failure and HTTP 5xx detection while ignoring known navigation-abort/favicon noise;
+- reuse of the existing Hosted QA Chromium/browser job;
+- acceptance-only `test-results/` artifact upload with seven-day retention;
+- exact pinned QA-only transient `@axe-core/playwright@4.13.0` install without production/runtime dependency or root lockfile churn.
 
-Exact QA-only axe package pin: `@axe-core/playwright@4.13.0`.
+### Fast validation on implementation SHA `5c60c11a7d8b9cca142120787fe2cf989175364f`
 
-### Stream 3 acceptance strategy
+- CI classification passed;
+- shell validation passed;
+- lint passed;
+- unit tests passed;
+- TypeScript/Vite production build passed;
+- CI Gate passed;
+- Database QA gate passed without unnecessary database execution;
+- Persona QA gate passed with the heavy persona job skipped;
+- Hosted QA gate passed with the heavy hosted job skipped while `STATUS: IN_PROGRESS`;
+- Dependency Review gate passed;
+- Merge Gate remained informational during implementation.
 
-1. Keep this implementation checkpoint `IN_PROGRESS` while normal deterministic CI validates the repository/workflow changes.
-2. Heavy Hosted browser QA must remain skipped during ordinary implementation commits.
-3. Once fast validation is green, set `STATUS: READY_FOR_ACCEPTANCE` in one batched handoff commit.
-4. Run one Hosted acceptance cycle on the active PR.
-5. Fix real accessibility/runtime/network defects exposed by that run; do not weaken tests just to make CI green.
-6. When Hosted design QA passes and evidence artifacts exist, record the exact accepted SHA and set `STATUS: COMPLETE`.
-7. Merge Stream 3 and start the Marketplace Sprint immediately.
+This proves the minimum design-QA additions do not add heavy browser cost to ordinary implementation commits.
+
+## Stream 3 acceptance strategy
+
+1. This `READY_FOR_ACCEPTANCE` commit activates one Hosted acceptance cycle on the active PR.
+2. Hosted QA must install the exact QA-only axe package, install Chromium, run existing hosted golden paths, then run the new design-QA spec.
+3. The design-QA spec must produce axe JSON evidence and phone/tablet/desktop Marketplace screenshots.
+4. Fix real accessibility/runtime/network defects exposed by the run; do not weaken tests merely to make CI green.
+5. When Hosted design QA passes and evidence artifacts exist, record the exact accepted SHA and set `STATUS: COMPLETE`.
+6. Merge Stream 3 and start the Marketplace Sprint immediately.
 
 ## Marketplace Sprint timing
 
@@ -113,9 +126,8 @@ Sequence:
 
 ## Next action
 
-1. Commit the bounded Stream 3 implementation as one batch.
-2. Open a draft PR to `main` carrying the active-build marker while handoff remains `IN_PROGRESS`.
-3. Confirm normal CI passes and Hosted QA correctly stays lightweight/skipped.
-4. Move to `READY_FOR_ACCEPTANCE` and run one real Hosted design-QA cycle.
-5. Fix evidence-backed defects only, then complete/merge Issue #25.
-6. Begin the Marketplace Sprint immediately.
+1. Let the single Hosted design-QA acceptance cycle resolve.
+2. Inspect its actual browser/axe/runtime evidence and uploaded artifact.
+3. Fix real defects only and rerun as needed.
+4. Record accepted SHA, set COMPLETE, merge PR #26, close Issue #25.
+5. Begin Marketplace research/value architecture and code-first visual concepts immediately.
