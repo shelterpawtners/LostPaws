@@ -1,9 +1,9 @@
 # AI Handoff
 
-STATUS: IN_PROGRESS
+STATUS: READY_FOR_ACCEPTANCE
 CURRENT_PHASE: MVP Design Hardening + Human Release Readiness
 CURRENT_CHECKPOINT: Issue #5 — full-site human-style browser and persistence audit
-NEXT_CHECKPOINT: Build and run the broad Issue #5 audit, fix routine blockers, then record release-readiness evidence before any domain cutover.
+NEXT_CHECKPOINT: Run the first complete exact-code Issue #5 audit, classify/fix routine blockers, then repeat until release-readiness evidence is green.
 OWNER_DECISION_REQUIRED: NO
 SAFE_TO_CONTINUE: YES
 ACCEPTED_CODE_SHA: NONE
@@ -63,6 +63,20 @@ Follow `docs/QA-AUTOMATION-POLICY.md`:
 - no DNS/custom-domain change;
 - no paid infrastructure required;
 - do not weaken tests to make the audit green.
+
+## Acceptance boundary
+
+The coverage matrix, reusable helpers, dedicated human-audit suite, Admin QA exact-code enablement, and acceptance-gated workflow integration are now present. Fast validation passed lint, shell checks, unit tests, TypeScript, and the production build before entering this boundary.
+
+The first full acceptance run must execute:
+
+1. existing Hosted Guardian/Partner/Marketplace golden paths;
+2. existing hosted design/axe/runtime QA;
+3. `e2e/issue-5-human-audit.spec.ts`;
+4. `e2e/admin-qa-mode.spec.ts`;
+5. the existing phase/persona browser and RLS suites listed in Hosted QA.
+
+Any routine blocker found by this run is fixed with regression coverage before acceptance can complete.
 
 ## Completion boundary
 
