@@ -169,7 +169,10 @@ export function OfferMarketplace({
 
   if (organizationId) {
     return (
-      <section className="marketplaceEmbedded" aria-labelledby="provider-offers-heading">
+      <section
+        className="marketplaceEmbedded"
+        aria-labelledby="provider-offers-heading"
+      >
         <div className="marketplaceEmbeddedHeading">
           <span className="eyebrow">Current offers</span>
           <h2 id="provider-offers-heading">Offers from this provider</h2>
@@ -288,7 +291,9 @@ export function OfferMarketplace({
       {!offers.length ? (
         <div className="marketplaceEmpty">
           <h2>No current offers are available right now.</h2>
-          <p>Check back as providers and public programs publish new listings.</p>
+          <p>
+            Check back as providers and public programs publish new listings.
+          </p>
         </div>
       ) : !visibleOffers.length ? (
         <div className="marketplaceEmpty">
