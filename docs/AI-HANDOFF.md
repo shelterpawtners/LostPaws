@@ -30,9 +30,13 @@ Branch:
 
 `design/marketplace-concepts`
 
-Current head:
+Current product head:
 
 `860f0cb319827491209946b5ce83de8081c2bdca`
+
+Current documentation head:
+
+`ebe042f53ae5a8c1814180c5405d36355dcf79f5`
 
 Vercel branch preview:
 
@@ -44,7 +48,7 @@ Current concept URLs:
 - B — Local + Trust Marketplace: `/marketplace?concept=trust`
 - C — Curated Guardian Savings Hub: `/marketplace?concept=curated`
 
-The Vercel deployment `dpl_3yejHvzj7Qq7po3xVGFk9z6NLVti` is READY and is built from current head `860f0cb319827491209946b5ce83de8081c2bdca`.
+The Vercel deployment `dpl_3yejHvzj7Qq7po3xVGFk9z6NLVti` is READY and is built from product head `860f0cb319827491209946b5ce83de8081c2bdca`.
 
 ## Research/value architecture completed
 
@@ -95,7 +99,7 @@ Current branch includes:
 
 ## Validation status
 
-On current head `860f0cb319827491209946b5ce83de8081c2bdca`:
+On product head `860f0cb319827491209946b5ce83de8081c2bdca`:
 
 - Vercel preview: READY;
 - CI web job: success;
