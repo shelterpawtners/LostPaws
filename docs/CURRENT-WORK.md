@@ -12,14 +12,14 @@ Phase 3 remains explicitly unauthorized.
 
 Accepted Phase 2 status:
 
-| Checkpoint | Status |
-| --- | --- |
-| CP1 — Partner Organization Foundation | ACCEPTED |
-| CP2 — Partner Profile + Public Directory | ACCEPTED |
-| CP3 — Offer Engine | COMPLETE |
-| CP4 — Claim + QR/Code Redemption | ACCEPTED |
+| Checkpoint                                                             | Status   |
+| ---------------------------------------------------------------------- | -------- |
+| CP1 — Partner Organization Foundation                                  | ACCEPTED |
+| CP2 — Partner Profile + Public Directory                               | ACCEPTED |
+| CP3 — Offer Engine                                                     | COMPLETE |
+| CP4 — Claim + QR/Code Redemption                                       | ACCEPTED |
 | CP5 — Verified Savings + Customer Attribution pre-decision engineering | COMPLETE |
-| CP6 — Provider-agnostic Impact, Reputation + Giving Foundation | COMPLETE |
+| CP6 — Provider-agnostic Impact, Reputation + Giving Foundation         | COMPLETE |
 
 Integration history:
 
