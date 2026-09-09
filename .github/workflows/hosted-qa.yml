@@ -124,7 +124,7 @@ jobs:
           if [[ "${GITHUB_EVENT_NAME}" == "workflow_dispatch" || -z "${PR_NUMBER}" ]]; then
             qa_url="${INPUT_QA_URL:-${FALLBACK_QA_URL}}"
           else
-            frontend_sha=$(bash scripts/latest-frontend-artifact-sha.sh "${BASE_SHA}" "${PR_HEAD_SHA}")
+            frontend_sha=$(bash scripts/latest-frontend-artifact-sha.sh "${BASE_SHA}" "${PR_HEAD_SHA")
             acceptance_deployed_sha=$(sed -n 's/^ACCEPTANCE_DEPLOYED_SHA:[[:space:]]*//p' docs/AI-HANDOFF.md | head -n 1)
 
             if [[ -n "${acceptance_deployed_sha}" && "${acceptance_deployed_sha}" != "NONE" && "${acceptance_deployed_sha}" != "${frontend_sha}" ]]; then
@@ -200,8 +200,18 @@ jobs:
           if-no-files-found: warn
           retention-days: 7
       - name: Run Issue 5 browser audit
-        if: ${{ inputs.full_browser_audit }}
-        run: npx playwright test e2e/phase-1-accessibility.spec.ts e2e/phase-1-auth.spec.ts e2e/guardian-dashboard.spec.ts e2e/persona-access-isolation.spec.ts e2e/persona-registration.spec.ts e2e/phase-2-partner-onboarding.spec.ts e2e/phase-2-offer-redemption.spec.ts
+        env:
+          FULL_BROWSER_AUDIT: ${{ inputs.full_browser_audit }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "${FULL_BROWSER_AUDIT:-false}" != "true" ]] && ! grep -q "^CURRENT_CHECKPOINT: Issue #5" docs/AI-HANDOFF.md; then
+            echo "Issue #5 full browser audit is not active for this acceptance run."
+            exit 0
+          fi
+          npx playwright test e2e/issue-5-human-audit.spec.ts
+          npx playwright test e2e/admin-qa-mode.spec.ts
+          npx playwright test e2e/phase-1-accessibility.spec.ts e2e/phase-1-auth.spec.ts e2e/guardian-dashboard.spec.ts e2e/persona-access-isolation.spec.ts e2e/persona-registration.spec.ts e2e/phase-2-partner-onboarding.spec.ts e2e/phase-2-offer-redemption.spec.ts
       - name: Upload Playwright failure evidence
         if: failure()
         uses: actions/upload-artifact@v6
