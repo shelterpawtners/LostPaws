@@ -1,0 +1,181 @@
+.marketplaceFlagship {
+  margin-inline: -18px;
+  padding: 36px;
+  border: 1px solid #31435f;
+  border-radius: 30px;
+  background:
+    radial-gradient(circle at 92% 0%, #714f9e55, transparent 28%),
+    radial-gradient(circle at 10% 100%, #0d94884d, transparent 28%),
+    linear-gradient(145deg, #101a31 0%, #15243e 100%);
+  color: #fff;
+  box-shadow: 0 28px 70px #0d162629;
+}
+
+.marketplaceFlagship .marketplaceFlagshipIntro {
+  max-width: 860px;
+  margin-bottom: 24px;
+}
+
+.marketplaceFlagship .marketplaceFlagshipIntro .eyebrow {
+  color: #8ce3d8;
+}
+
+.marketplaceFlagship .marketplaceFlagshipIntro h2,
+.marketplaceFlagship .marketplaceResultsHeader strong {
+  color: #fff;
+}
+
+.marketplaceFlagship .marketplaceFlagshipIntro p,
+.marketplaceFlagship .marketplaceResultsHeader {
+  color: #bdc7d8;
+}
+
+.marketplaceFlagship .marketplaceDiscovery {
+  margin-top: 24px;
+  border-color: #34445f;
+  background: #17253e;
+  box-shadow: none;
+}
+
+.marketplaceFlagship .marketplaceSearch {
+  border-color: #42526c;
+  background: #0f1a2e;
+  color: #b8c4d5;
+}
+
+.marketplaceFlagship .marketplaceSearch:focus-within {
+  border-color: #85ded3;
+  box-shadow: 0 0 0 3px #85ded31f;
+}
+
+.marketplaceFlagship .marketplaceSearch input {
+  color: #fff;
+}
+
+.marketplaceFlagship .marketplaceSearch input::placeholder {
+  color: #8f9bb0;
+}
+
+.marketplaceFlagship .marketplaceFilterLabel {
+  color: #aab6c9;
+}
+
+.marketplaceFlagship .marketplaceFilterButtons button {
+  border-color: #40506a;
+  background: #1d2c47;
+  color: #d5ddea;
+}
+
+.marketplaceFlagship .marketplaceFilterButtons button.active,
+.marketplaceFlagship .marketplaceFilterButtons button:hover {
+  border-color: #75e3d4;
+  background: #e9faf6;
+  color: #13213b;
+}
+
+.marketplaceFlagship .marketplaceClearFilters {
+  color: #9ae9df;
+}
+
+.marketplaceTrustStrip {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 12px;
+  align-items: start;
+  margin: 18px 0 22px;
+  padding: 15px 17px;
+  border: 1px solid #365f63;
+  border-radius: 16px;
+  background: #132f38b8;
+}
+
+.marketplaceTrustStrip > svg {
+  width: 20px;
+  height: 20px;
+  margin-top: 2px;
+  color: #7fe1d5;
+}
+
+.marketplaceTrustStrip div {
+  display: grid;
+  gap: 3px;
+}
+
+.marketplaceTrustStrip strong {
+  color: #f7fbff;
+  font-family: Outfit;
+  font-size: 0.88rem;
+}
+
+.marketplaceTrustStrip span {
+  color: #bfd3d1;
+  font-size: 0.76rem;
+  line-height: 1.5;
+}
+
+.marketplaceFlagship .marketplaceCardGrid-value {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.marketplaceFlagship .marketOfferCard {
+  border-color: #d7dfe9;
+  box-shadow: 0 14px 32px #07101e2e;
+}
+
+.marketplaceFlagship .marketOfferCard:hover {
+  border-color: #9fded6;
+  box-shadow: 0 24px 48px #07101e42;
+}
+
+.marketplaceFlagship .marketOfferVisual {
+  background:
+    radial-gradient(circle at 82% 16%, #ffffff8c, transparent 28%),
+    linear-gradient(135deg, #d8c2f2 0%, #adcff2 48%, #91ddd0 100%);
+}
+
+.marketplaceFlagship .marketplaceTrustFooter {
+  margin-top: 32px;
+  border-color: #385d61;
+  background: #152f37;
+}
+
+.marketplaceFlagship .marketplaceTrustFooter p {
+  color: #c4d7d5;
+}
+
+.marketplaceFlagship .marketplaceStatus {
+  color: #c5d0df;
+}
+
+@media (max-width: 1050px) {
+  .marketplaceFlagship .marketplaceCardGrid-value {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 800px) {
+  .marketplaceFlagship {
+    margin-inline: 0;
+    padding: 24px;
+    border-radius: 24px;
+  }
+}
+
+@media (max-width: 620px) {
+  .marketplaceFlagship {
+    padding: 18px;
+    border-radius: 22px;
+  }
+
+  .marketplaceFlagship .marketplaceFlagshipIntro h2 {
+    font-size: 2rem;
+  }
+
+  .marketplaceTrustStrip {
+    grid-template-columns: 1fr;
+  }
+
+  .marketplaceFlagship .marketplaceCardGrid-value {
+    grid-template-columns: 1fr;
+  }
+}
