@@ -10,17 +10,6 @@ on:
       - Merge Gate
       - Dependency Review
     types: [completed]
-  pull_request:
-    branches: [build/festival-mvp]
-    types:
-      [
-        opened,
-        synchronize,
-        reopened,
-        ready_for_review,
-        converted_to_draft,
-        closed,
-      ]
   schedule:
     - cron: "0 * * * *"
   workflow_dispatch:
@@ -39,9 +28,10 @@ jobs:
   update-status:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7
+      - name: Check out trusted default-branch automation only
+        uses: actions/checkout@v7
         with:
-          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || 'main' }}
+          ref: main
       - name: Update the single Issue #12 live status record
         env:
           GH_TOKEN: ${{ github.token }}
