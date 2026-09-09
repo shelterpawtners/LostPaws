@@ -263,6 +263,7 @@ export function OfferMarketplace({
             <button
               type="button"
               className={classification === "all" ? "active" : ""}
+              aria-pressed={classification === "all"}
               onClick={() => setClassification("all")}
             >
               All current
@@ -272,6 +273,7 @@ export function OfferMarketplace({
                 type="button"
                 key={item}
                 className={classification === item ? "active" : ""}
+                aria-pressed={classification === item}
                 onClick={() => setClassification(item)}
               >
                 {humanize(item)}
@@ -282,7 +284,7 @@ export function OfferMarketplace({
       </div>
 
       <div className="marketplaceResultsHeader">
-        <div>
+        <div role="status" aria-live="polite" aria-atomic="true">
           <strong>{visibleOffers.length}</strong>
           <span>
             {visibleOffers.length === 1 ? " current offer" : " current offers"}
