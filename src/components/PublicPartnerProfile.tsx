@@ -4,6 +4,11 @@ import { supabase as db } from "../lib/supabase";
 import { partnerDayNames } from "../lib/partner-profile";
 import { OfferMarketplace } from "./OfferMarketplace";
 
+type Impact = {
+  confirmed_redemptions: number;
+  verified_settlement_count: number;
+  verified_settlement_amounts: Record<string, number | string>;
+};
 type Profile = {
   business_name: string;
   description: string;
@@ -16,6 +21,7 @@ type Profile = {
   service_area: string | null;
   business_model: string;
   participation_state: string;
+  impact: Impact | null;
   social_links: { platform: string; url: string; label: string | null }[];
   locations: {
     city: string | null;
@@ -29,6 +35,20 @@ type Profile = {
     closed: boolean;
   }[];
 };
+
+function formatMinor(value: number | string, currency: string) {
+  const minor = Number(value);
+  if (!Number.isFinite(minor)) return null;
+  try {
+    return new Intl.NumberFormat(undefined, {
+      style: "currency",
+      currency,
+    }).format(minor / 100);
+  } catch {
+    return `${currency} ${(minor / 100).toFixed(2)}`;
+  }
+}
+
 export function PublicPartnerProfile() {
   const { id } = useParams();
   const [profile, setProfile] = useState<Profile | null>(null);
@@ -48,6 +68,16 @@ export function PublicPartnerProfile() {
         </Link>
       </section>
     );
+
+  const verifiedSupport = Object.entries(
+    profile.impact?.verified_settlement_amounts || {},
+  )
+    .map(([currency, amount]) => ({
+      currency,
+      formatted: formatMinor(amount, currency),
+    }))
+    .filter((item) => item.formatted);
+
   return (
     <section className="section shell formPage">
       <span className="eyebrow">{profile.participation_state}</span>
@@ -124,6 +154,24 @@ export function PublicPartnerProfile() {
               .join(" · ")}
           </p>
         )}
+      </div>
+      <div className="panel" data-testid="partner-impact-summary">
+        <h2>Verified impact</h2>
+        <p>
+          <b>Confirmed ShelterPawtners redemptions:</b>{" "}
+          {profile.impact?.confirmed_redemptions ?? 0}
+        </p>
+        {verifiedSupport.length > 0 && (
+          <p>
+            <b>Verified external shelter support:</b>{" "}
+            {verifiedSupport.map((item) => item.formatted).join(" · ")}
+          </p>
+        )}
+        <p>
+          Public impact includes non-demo confirmed activity and
+          administrator-verified external settlement evidence. Commitments and
+          accrued amounts are not counted as settled support.
+        </p>
       </div>
       <OfferMarketplace organizationId={id} />
       <p>
