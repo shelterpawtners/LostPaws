@@ -209,7 +209,8 @@ export function OfferMarketplace({
           <span className="marketplacePrototypeLabel">Sprint preview</span>
           <strong>Compare three directions</strong>
         </div>
-        <nav
+        <div
+          role="navigation"
           aria-label="Marketplace concepts"
           className="marketplaceConceptNav"
         >
@@ -227,7 +228,7 @@ export function OfferMarketplace({
               </Link>
             );
           })}
-        </nav>
+        </div>
       </div>
 
       <div className="marketplaceConceptIntro">
