@@ -236,7 +236,9 @@ test.describe.serial("Issue #5 human-style browser and persistence audit", () =>
     await expect(
       page.getByTestId("partner-profile-save-status"),
     ).toContainText("Saved as a private draft.");
-    await page.getByRole("button", { name: "Publish profile" }).click();
+    await page
+      .getByRole("button", { name: "Publish profile", exact: true })
+      .click();
     await expect(
       page.getByTestId("partner-profile-save-status"),
     ).toContainText("Published.");
