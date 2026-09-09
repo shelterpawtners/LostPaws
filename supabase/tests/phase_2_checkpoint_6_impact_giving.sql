@@ -1,6 +1,6 @@
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(31);
+select plan(32);
 
 set local role postgres;
 insert into public.organizations(id,created_by,organization_type,organization_type_code,public_name,status,is_demo) values
