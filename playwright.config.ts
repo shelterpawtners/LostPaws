@@ -29,6 +29,10 @@ export default defineConfig({
               process.env.PLAYWRIGHT_SUPABASE_PUBLISHABLE_KEY ??
               process.env.VITE_SUPABASE_PUBLISHABLE_KEY ??
               "",
+            VITE_ADMIN_QA_MODE_ENABLED:
+              process.env.PLAYWRIGHT_HOSTED_QA === "true"
+                ? "true"
+                : process.env.VITE_ADMIN_QA_MODE_ENABLED ?? "false",
           },
         },
 });
