@@ -254,7 +254,7 @@ test.describe("Hosted public and branded-surface design QA", () => {
     }
 
     await page.setViewportSize({ width: 1440, height: 1000 });
-    await page.goto("/partner/profile");
+    await page.goto("/business");
     await expect(
       page.getByRole("heading", { name: "Make your business easy to understand." }),
     ).toBeVisible();
@@ -263,7 +263,7 @@ test.describe("Hosted public and branded-surface design QA", () => {
       page.getByText("Loading saved profile details…"),
     ).toBeHidden();
     await waitForFonts(page);
-    await attachAxe(page, testInfo, "axe-partner-profile", "/partner/profile");
+    await attachAxe(page, testInfo, "axe-partner-profile", "/business");
     await page.screenshot({
       path: testInfo.outputPath("petbiz-profile-desktop.png"),
       fullPage: true,
