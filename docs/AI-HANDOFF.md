@@ -3,7 +3,7 @@
 STATUS: IN_PROGRESS
 CURRENT_PHASE: Phase 2 — Partner Marketplace MVP
 CURRENT_CHECKPOINT: CP6 — provider-agnostic impact, reputation + giving foundation — Issue #14
-NEXT_CHECKPOINT: Complete CP6 provider-agnostic acceptance; stop before OD-004 provider-dependent money movement
+NEXT_CHECKPOINT: Validate CP6 database/RLS slice, then add the smallest public UI/golden-path acceptance slice
 OWNER_DECISION_REQUIRED: NO
 SAFE_TO_CONTINUE: YES
 ACCEPTED_CODE_SHA: NONE
@@ -15,42 +15,35 @@ ACCEPTED_CODE_SHA: NONE
 - Dev Loop v2 is integrated at merge commit `f88a9ccc1cfaa71fc0b5018ab735134d0447075f`.
 - Database QA pushed-delta routing follow-up is integrated at `0da330e798c5e6316fb755d127a0b160f359c937`.
 - Active branch: `phase2/cp6-impact-giving`.
+- Active PR: #19.
 - Active Issue: #14.
-- CP6 must reuse the existing economic/giving foundation instead of introducing a parallel ledger.
+- CP6 database implementation commit staged at `21ae98fa87bf55077a5206131ba73d0bab21f3a0`; branch ref update/validation follows this handoff refresh.
 - Phase 3 remains unauthorized.
 
-## CP6 contract
+## CP6 implemented slice
 
-Implement provider-agnostic foundations for:
-
-- truthful Partner progression: Partner → Participating Partner → Redemption Verified → Shelter Impact Partner;
-- Redemption Verified derived only from legitimate non-demo confirmed redemption evidence;
-- Partner contribution commitments/terms without claiming money is already donated or settled;
-- commitment/accrual kept distinct from verified settled contribution;
-- privileged audited platform-admin verification of external settled-contribution evidence;
-- Shelter Impact Partner requiring real redemption + verified settled contribution + good standing/admin review;
-- substantiated permission-safe impact metrics excluding demo activity;
-- append-only/auditable reasoned transitions and server-side authorization.
-
-Reuse where appropriate:
-
-- `economic_events` / `economic_event_lines`;
-- `donation_intents` for accrued partner contribution obligations;
-- existing redemptions and CP5 attribution evidence;
-- existing organization membership/admin helpers and private audit events.
-
-Do not create a fake giving provider or provider transaction while OD-004 is unresolved.
-
-## Validation minimum
-
-- ordinary Partner cannot self-assign privileged reputation states;
-- non-demo confirmed redemption can qualify Redemption Verified; demo redemption cannot;
-- commitments/accruals never present as settled contributions;
-- external settled evidence approval is platform-admin-only and audited;
-- Shelter Impact Partner cannot be awarded from pledge/accrual alone;
-- cross-organization reads/writes remain RLS-safe;
-- append-only economic/audit history remains intact;
-- migration replay + targeted pgTAP/RLS + relevant browser acceptance pass.
+- Provider-agnostic Partner contribution commitments:
+  - fixed amount per redemption;
+  - percentage of paid amount;
+  - recurring commitment terms;
+  - one-time campaign terms;
+  - optional designated active shelter/rescue recipient.
+- External settled-contribution evidence stored separately from commitments/accruals/provider transactions.
+- Evidence review is append-only, platform-admin-only, and audited.
+- Good-standing review is append-only, platform-admin-only, and audited.
+- Partner reputation is server-derived:
+  - Basic Partner;
+  - Participating Partner;
+  - Redemption Verified from real, non-demo confirmed redemption evidence;
+  - Shelter Impact Partner only from real redemption + verified external settlement evidence + current good-standing review.
+- Direct Partner escalation of `participation_state` is blocked.
+- Public impact summary exposes only substantiated non-demo redemption counts and verified settlement totals by currency.
+- Private Partner/admin impact summary keeps active commitments and accrued intents separate from settled values.
+- Existing `donation_intents`, `economic_events`, and `economic_event_lines` are reused rather than creating a parallel ledger.
+- Active fixed/percentage commitments accrue automatically from trusted confirmed redemption inserts.
+- Redemption reversal cancels the linked accrual and appends a negative economic reversal event instead of deleting history.
+- Demo organizations cannot earn real reputation or create real contribution accruals.
+- Targeted pgTAP covers authorization, truthful status derivation, accrual vs settlement separation, reversal history, admin verification, RLS isolation, and demo exclusion.
 
 ## Cost policy
 
@@ -68,4 +61,8 @@ Do not create a fake giving provider or provider transaction while OD-004 is unr
 
 ## Next action
 
-Implement the smallest truthful CP6 vertical slice using the existing ledger and RLS foundations, add targeted database tests, and continue through GREEN/YELLOW defects until the checkpoint reaches `READY_FOR_ACCEPTANCE` or a genuine RED boundary appears.
+1. Move branch to the CP6 database implementation commit.
+2. Run pushed-delta Database QA + normal CI.
+3. Fix any GREEN/YELLOW migration/RLS/test defects without weakening the regression.
+4. Add only the minimum public Partner impact presentation/browser regression needed for Issue #14.
+5. Move to checkpoint acceptance and full required Persona/Hosted gates.
