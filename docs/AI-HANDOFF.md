@@ -94,7 +94,7 @@ On tested product SHA `860f0cb319827491209946b5ce83de8081c2bdca`:
 
 PR #28 is ready for review but **must not be merged before owner design selection and winner hardening**.
 
-Copilot code review has been explicitly requested. Independent Product Critic review is recorded on PR #28.
+Copilot code review has been explicitly requested; no Copilot review submission has been returned yet. Independent Product Critic review is recorded on PR #28.
 
 ## Product Critic findings to preserve
 
