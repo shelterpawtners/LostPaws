@@ -15,76 +15,117 @@ The project is now in **MVP Design Hardening + Human Release Readiness** before 
 - `main` is the canonical application branch and Vercel Production Branch.
 - Stream 1 PR #22 merged to `main` at `eaa7b09edc3496eb8e52d57d081fce42d67f5151`.
 - Stream 2 PR #24 merged to `main` at `3e49f4c42fba2081b5bd6221c46ffd4b7fd1152c`.
-- Stream 1 accepted SHA is `0a48f446a103a8495ec2ce8a8c31c62bd9d02c3b`.
-- Stream 2 accepted SHA is `1163e6c3deb07c5d20cd7a88961b213c4bd327f0`.
-- Stream 3 accepted SHA is `95db103b606504155f83ca8f217b4e100e35f5c7`; PR #26 is in final completion/merge validation.
+- Stream 3 PR #26 merged to `main` at `a0c763b49f79e90fdd2e0c0586091636e39680f8`; accepted Stream 3 SHA is `95db103b606504155f83ca8f217b4e100e35f5c7`.
 - `shelterpawtners.com` and `www.shelterpawtners.com` DNS remain unchanged.
 
 ## Current priority
 
-The **Marketplace Sprint is now the active next product-design work**.
+**Marketplace Sprint 1 — Issue #27 — is active now.**
 
-Make ShelterPawtners look and feel polished, professional, distinctive, valuable, accessible, and trustworthy before adding the next major feature phase. The Marketplace remains the flagship design priority and must communicate substantially more value than a minimal grid of generic offer tiles.
+Branch:
 
-Design work must improve both:
+`design/marketplace-concepts`
 
-1. visual/product quality; and
-2. Marketplace value architecture — offer value, PetBiz identity/credibility, relevance/location, supported savings/benefit, supported shelter impact, state/eligibility, and clear actions.
+Goal:
 
-## Three-stream capability setup
+Make the Marketplace the flagship ShelterPawtners experience by improving both the visual system and the value/information architecture before broad brand propagation to the rest of the site.
+
+The Marketplace must communicate more than a minimal grid of offer records. A Guardian should quickly understand:
+
+1. the offer/benefit;
+2. the provider;
+3. eligibility/listing type;
+4. applicability/location context;
+5. expiration/current status when available;
+6. source/terms context;
+7. the next action.
+
+## Capability setup
 
 ### Stream 1 — GitHub Copilot + repo-native design/build capability
 
-**Status: COMPLETE and merged in PR #22.**
+**COMPLETE — PR #22.**
 
 ### Stream 2 — ChatGPT product/operator capability
 
-**Status: COMPLETE and merged in PR #24.**
+**COMPLETE — PR #24.**
 
-ChatGPT has a repository-backed operating protocol and fresh-session bootstrap, with explicit routing among ChatGPT, coding agents, GitHub Actions, connected project tools, and public web research.
+### Stream 3 — Shared deterministic design QA
 
-### Stream 3 — Shared design + deterministic quality toolchain
+**COMPLETE — PR #26.**
 
-**Status: COMPLETE — accepted SHA `95db103b606504155f83ca8f217b4e100e35f5c7`; PR #26 in final completion/merge validation.**
+Available for Marketplace work:
 
-Delivered:
+- axe accessibility checks;
+- phone/tablet/desktop screenshot evidence;
+- browser page/console error detection;
+- meaningful failed-network/HTTP 5xx detection;
+- existing Hosted Guardian/Partner golden paths;
+- acceptance-gated browser execution so ordinary iteration remains cheaper.
 
-- axe accessibility integration for public/Marketplace surfaces;
-- focused Hosted design-QA Playwright coverage;
-- representative phone/tablet/desktop Marketplace screenshots;
-- browser page/console error checks;
-- meaningful failed-network/HTTP 5xx checks;
-- reuse of the existing Hosted QA browser pass rather than adding another heavy workflow;
-- design evidence uploaded only at the acceptance boundary;
-- exact-pinned QA-only axe install with no production/runtime dependency or root lockfile churn;
-- Hosted QA URL fallback hardening for PRs with no frontend artifact change.
+## Marketplace Sprint 1
 
-Acceptance on `95db103b606504155f83ca8f217b4e100e35f5c7` passed CI, Dependency Review, Database QA, Persona QA, Merge Gate, existing hosted golden paths, and the new hosted design-QA run. The design evidence artifact is `hosted-design-qa-evidence` / artifact ID `10118806011`.
+Issue #27 covers the first design decision loop.
 
-Storybook is added **inside the Marketplace Sprint** only once enough reusable Marketplace components/states exist to make isolated component development faster.
+### Research/value architecture
 
-## Figma decision
+`docs/MARKETPLACE-DESIGN-SPRINT.md` is the sprint design brief and records current research, Guardian jobs-to-be-done, the information hierarchy, existing `PublicOffer` field boundary, no-fabrication rules, and the three concept directions.
 
-Figma is **deferred and is not a prerequisite**.
+### Three code-first concepts
 
-Default to code-first design using the real React/Tailwind application, Vercel previews, screenshots, and reusable components. Reconsider Figma only when team/design-system complexity makes it materially faster than code-first iteration.
+A — **Value-first Deal Feed**
 
-## Marketplace Sprint
+- fastest scanning;
+- commerce-forward visual hierarchy;
+- strong title/provider/eligibility/action priority;
+- 3-column desktop / 1-column phone target.
 
-**The Marketplace Sprint starts immediately after PR #26 merges.**
+B — **Local + Trust Marketplace**
 
-Sequence:
+- provider/context first;
+- premium darker presentation;
+- trust/context rail;
+- wider offer rows and fewer competing items per viewport.
 
-1. Marketplace/competitive research + Guardian value/information architecture;
-2. 2–3 materially different code-first visual concepts;
-3. independent critique and direction selection;
-4. reusable Marketplace component system;
-5. Storybook when component/state volume justifies it;
-6. flagship Marketplace implementation;
-7. responsive/accessibility/browser/Playwright QA using Stream 3;
-8. propagate the accepted brand system to the highest-value remaining screens;
-9. run Issue #5 broad release-readiness/human-style audit;
-10. only then consider ShelterPawtners domain cutover.
+C — **Curated Guardian Savings Hub**
+
+- editorial/value-destination feel;
+- larger opening offers and calmer follow-on browsing;
+- strongest membership/value-hub framing.
+
+The prototype selector is a sprint-review device only. It should be removed after the winning direction is selected.
+
+### Functional improvements included in the prototypes
+
+Use only existing public offer data:
+
+- keyword search across current offer text/provider/context;
+- dynamically generated classification filters;
+- visible result count;
+- clear applied-search/filter reset;
+- stronger provider, eligibility, applicability, expiration, and CTA hierarchy.
+
+Do not invent or migrate offer fields during this concept sprint.
+
+## Figma / Storybook decisions
+
+Figma remains **deferred and is not a prerequisite**. Code-first Vercel previews are the review surface.
+
+Storybook is introduced **after the winning Marketplace direction is selected**, and only when the reusable component/state volume makes isolated component work faster.
+
+## Immediate execution sequence
+
+1. finish Issue #27 concept implementation;
+2. open draft PR to `main`;
+3. pass fast CI/lint/unit/build checks;
+4. obtain Vercel preview;
+5. compare all three concepts at phone and desktop widths;
+6. run Product Critic / independent review;
+7. request GitHub Copilot code review explicitly on the PR when ready;
+8. run Stream 3 Hosted QA at acceptance;
+9. owner selects the flagship direction;
+10. remove prototype-only controls and harden the selected design;
+11. then propagate the winning brand system to the highest-value remaining screens.
 
 ## Operating model
 
@@ -92,22 +133,23 @@ Sequence:
 - `main` is the integration/production branch;
 - GitHub Actions/scripts own deterministic validation;
 - ChatGPT owns controller/product/operator decisions and connected-system coordination;
-- substantial coding defaults to a coding agent when that surface is available and cheaper;
-- specialist AI agents may provide independent product/design/QA perspectives;
+- coding agents/Copilot should be used for bounded implementation/review where the connected surface supports it;
 - never let the implementation agent be the only reviewer of its own UX/design;
 - preserve/strengthen tests rather than weakening them to make CI green;
-- keep expensive Hosted/Persona/Database work acceptance- or impact-gated rather than running it on ordinary mechanical commits.
+- keep expensive Hosted/Persona/Database work acceptance- or impact-gated.
 
-## Owner gates
+## Guardrails
 
 Authorized now:
 
+- Marketplace design research, concepts, and visual implementation using existing approved product rules/data;
 - human QA and brand/design hardening;
-- Marketplace design sprint and visual implementation using existing approved product rules/data;
-- reversible tooling additions that are free/low-cost and do not weaken security.
+- reversible free/low-cost tooling that does not weaken security.
 
 Still owner-gated/deferred:
 
+- new Marketplace/offer data-model fields not already approved;
+- fabricated savings, ratings, provider assets, partnerships, or impact claims;
 - attaching/changing `shelterpawtners.com` or `www.shelterpawtners.com` DNS;
 - `OD-003` verified-savings customer-facing rules/totals;
 - `OD-004` giving-provider selection and production charitable settlement/integration;
