@@ -1,12 +1,12 @@
 # AI Handoff
 
-STATUS: IN_PROGRESS
+STATUS: COMPLETE
 CURRENT_PHASE: MVP Design Hardening + Human Release Readiness
 CURRENT_CHECKPOINT: Stream 2 — ChatGPT product/operator capability
-NEXT_CHECKPOINT: Validate and merge Stream 2 PR #24 to main, then implement minimum Stream 3 Issue #25 and begin the Marketplace Sprint immediately.
+NEXT_CHECKPOINT: Merge PR #24, then implement minimum Stream 3 Issue #25 and begin the Marketplace Sprint immediately after Stream 3 acceptance.
 OWNER_DECISION_REQUIRED: NO
 SAFE_TO_CONTINUE: YES
-ACCEPTED_CODE_SHA: NONE
+ACCEPTED_CODE_SHA: 1163e6c3deb07c5d20cd7a88961b213c4bd327f0
 
 ## Completed foundation
 
@@ -26,7 +26,7 @@ The owner wants the product to move quickly from functional/minimal to polished,
 Authorized now:
 
 1. Stream 1 — GitHub Copilot/repo-native build + design capability — COMPLETE;
-2. Stream 2 — ChatGPT product/operator capability — IN PROGRESS;
+2. Stream 2 — ChatGPT product/operator capability — COMPLETE;
 3. Stream 3 — minimum shared deterministic design QA — NEXT;
 4. Marketplace design sprint and visual implementation using already-approved product rules/data immediately after Streams 1–3 reach minimum viable setup.
 
@@ -34,16 +34,7 @@ Visible product progress takes priority over process overhead. Figma is not a pr
 
 ## Stream 1 — complete
 
-PR #22 delivered:
-
-- post-Phase-2 `AGENTS.md` and Copilot instructions;
-- Marketplace Product Designer, Frontend Design-System Engineer, UX + Accessibility QA, and Product Critic agents;
-- ShelterPawtners brand, Marketplace UX/value, responsive QA, and release-readiness skills;
-- repository-level Vercel plugin configuration and local Copilot setup guidance;
-- `main`-target CI/QA/AI-Ops control-plane migration;
-- Hosted QA PR-head/Vercel artifact correction;
-- resilient shared Playwright Chromium installation;
-- current operating docs aligned to the post-Phase-2 branch model.
+PR #22 delivered the post-Phase-2 Copilot/design-agent layer, `main`-target CI/QA control plane, current operating rules, Vercel/Supabase/Chrome DevTools guidance, Hosted QA artifact correction, and resilient Playwright Chromium installation.
 
 Stream 1 accepted SHA:
 
@@ -53,13 +44,15 @@ Merged to main:
 
 `eaa7b09edc3496eb8e52d57d081fce42d67f5151`
 
-## Stream 2 — current
+## Stream 2 — complete
 
 Issue #23 / PR #24 / branch `ops/stream2-chatgpt-operator`.
 
-Purpose: make ChatGPT the ShelterPawtners product/operator/controller layer without duplicating Copilot/Codex coding work or adding paid tooling.
+Accepted Stream 2 SHA:
 
-Implemented:
+`1163e6c3deb07c5d20cd7a88961b213c4bd327f0`
+
+Delivered:
 
 - `docs/CHATGPT-OPERATING-PROTOCOL.md`:
   - source-of-truth order;
@@ -77,6 +70,20 @@ Implemented:
   - connected-tool routing for current project state;
   - anti-duplication and RED-gate rules;
 - `docs/CURRENT-WORK.md` and `docs/AI-TOOLING-AND-DESIGN-ROADMAP.md` integrated with the Stream 2 operating model.
+
+### Stream 2 acceptance
+
+On accepted SHA `1163e6c3deb07c5d20cd7a88961b213c4bd327f0`:
+
+- CI classification passed;
+- documentation/Copilot configuration formatting passed;
+- CI Gate passed;
+- Database QA gate passed without unnecessary database execution;
+- Persona QA gate passed without unnecessary browser execution;
+- Hosted QA gate passed without unnecessary browser execution;
+- Dependency Review gate passed;
+- Merge Gate passed in the pre-COMPLETE state;
+- PR remained bounded to five Stream 2 files after merging current `main` history into the branch.
 
 ### Stream 2 operating split
 
@@ -137,8 +144,8 @@ Sequence:
 
 ## Next action
 
-1. Reconcile Stream 2 branch with merged Stream 1/main history without losing the five-file bounded Stream 2 diff.
-2. Validate PR #24 against `main` using normal deterministic CI; Stream 2 is docs/operator configuration and must not trigger unnecessary heavy browser work.
-3. Mark Stream 2 complete and merge PR #24 when green under the owner's continuation authorization.
-4. Create/implement only the minimum Stream 3 Issue #25 scope.
+1. Validate this final documentation-only COMPLETE commit with current-head CI and Merge Gate while reusing the accepted Stream 2 SHA.
+2. Merge PR #24 under the owner's continuation authorization.
+3. Close Issue #23.
+4. Create a fresh Stream 3 branch from updated `main` and implement only Issue #25 minimum scope.
 5. Begin the Marketplace Sprint immediately after Stream 3 acceptance.

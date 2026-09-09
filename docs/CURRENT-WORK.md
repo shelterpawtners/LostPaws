@@ -14,7 +14,8 @@ The project is now in **MVP Design Hardening + Human Release Readiness** before 
 
 - `main` is the canonical application branch and Vercel Production Branch.
 - Stream 1 PR #22 merged to `main` at `eaa7b09edc3496eb8e52d57d081fce42d67f5151`.
-- The accepted Stream 1 configuration/code SHA is `0a48f446a103a8495ec2ce8a8c31c62bd9d02c3b`.
+- Stream 1 accepted SHA is `0a48f446a103a8495ec2ce8a8c31c62bd9d02c3b`.
+- Stream 2 accepted SHA is `1163e6c3deb07c5d20cd7a88961b213c4bd327f0`; PR #24 is in final merge validation.
 - `shelterpawtners.com` and `www.shelterpawtners.com` DNS remain unchanged.
 
 ## Current priority
@@ -34,55 +35,31 @@ Design work must improve both:
 
 **Status: COMPLETE and merged in PR #22.**
 
-Includes:
-
-- post-Phase-2 Copilot operating rules;
-- Marketplace Product Designer agent;
-- Frontend Design-System Engineer agent;
-- UX + Accessibility QA agent;
-- Product Critic agent;
-- ShelterPawtners Brand System skill;
-- Marketplace UX Design skill;
-- Marketplace Value Merchandising skill;
-- Responsive Visual QA skill;
-- Release Readiness Review skill;
-- repository-level Vercel plugin enablement;
-- local setup guidance for Vercel, Supabase Agent Skills, and Chrome DevTools;
-- `main`-target CI/QA/AI-Ops migration;
-- cost-controlled Hosted/Persona/Database acceptance behavior;
-- resilient Chromium installation for Playwright.
-
 ### Stream 2 — ChatGPT product/operator capability
 
-**Current bounded task: Issue #23 / PR #24 / `ops/stream2-chatgpt-operator`.**
+**Status: COMPLETE on accepted SHA `1163e6c3deb07c5d20cd7a88961b213c4bd327f0`; PR #24 is in final merge validation.**
 
-Keep ChatGPT complementary to Copilot rather than a duplicate coding agent.
+Delivered:
 
-Minimum deliverables:
-
-- `docs/CHATGPT-OPERATING-PROTOCOL.md` defines source-of-truth order, role split, connected-tool routing, cost rules, owner gates, and implementation handoff contract;
-- `docs/prompts/CHATGPT-SESSION-BOOTSTRAP.md` gives a reusable fresh-session bootstrap that reads the repository/current connected state before asking the owner to restate project history;
-- GitHub/Vercel/Supabase connected tools are the default for current private/project state;
-- web research is reserved for current external facts, competitive research, standards, pricing, and documentation;
-- ChatGPT handles product/research/operator/release reasoning while substantial coding is routed to the lowest-cost capable coding surface;
-- deterministic checks remain owned by GitHub Actions/scripts.
-
-Stream 2 is complete when a fresh ChatGPT session can recover current LostPaws state and choose the correct execution surface without reconstructing the project manually.
+- `docs/CHATGPT-OPERATING-PROTOCOL.md` with source-of-truth order, role split, connected-tool routing, cost rules, owner gates, and implementation handoff contract;
+- `docs/prompts/CHATGPT-SESSION-BOOTSTRAP.md` for fresh-session project recovery before asking the owner to reconstruct context;
+- explicit routing: ChatGPT for product/controller/operator work, coding agents for substantial implementation, GitHub Actions/scripts for deterministic validation;
+- current private/project state through connected GitHub/Vercel/Supabase tools, with web research reserved for current external facts and evidence.
 
 ### Stream 3 — Shared design + deterministic quality toolchain
 
-**Next bounded task: Issue #25.**
+**Current next bounded task: Issue #25.**
 
 Minimum setup before the Marketplace implementation sprint:
 
-- axe accessibility integration;
+- axe accessibility integration using `@axe-core/playwright`;
 - focused Marketplace/public-shell Playwright design QA;
 - representative phone/tablet/desktop screenshots;
 - browser page/console error checks;
 - meaningful failed-network-request checks;
 - reuse the existing Hosted QA browser pass rather than adding another heavy workflow.
 
-Storybook is added **inside the Marketplace Sprint** once enough reusable marketplace components/states exist to make isolated component development faster.
+Storybook is added **inside the Marketplace Sprint** once enough reusable Marketplace components/states exist to make isolated component development faster.
 
 ## Figma decision
 
@@ -92,7 +69,7 @@ Default to code-first design using the real React/Tailwind application, Vercel p
 
 ## Marketplace Sprint
 
-**The Marketplace Sprint starts immediately after Streams 1–3 reach minimum viable setup.**
+**The Marketplace Sprint starts immediately after Stream 3 reaches minimum viable acceptance.**
 
 Sequence:
 
@@ -109,14 +86,11 @@ Sequence:
 
 ## Operating model
 
-For new design-hardening work:
-
 - one bounded Issue -> one short-lived branch -> one PR -> acceptance -> `main`;
 - `main` is the integration/production branch;
-- stacked branches may be used briefly when a prior bounded stream is already in final acceptance and waiting would create avoidable idle time;
 - GitHub Actions/scripts own deterministic validation;
 - ChatGPT owns controller/product/operator decisions and connected-system coordination;
-- substantial coding defaults to a coding agent rather than duplicating implementation in ChatGPT;
+- substantial coding defaults to a coding agent when that surface is available and cheaper;
 - specialist AI agents may provide independent product/design/QA perspectives;
 - never let the implementation agent be the only reviewer of its own UX/design;
 - preserve/strengthen tests rather than weakening them to make CI green.
