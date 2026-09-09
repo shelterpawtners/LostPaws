@@ -105,6 +105,7 @@ jobs:
           REPO: ${{ github.repository }}
           PR_NUMBER: ${{ needs.acceptance-gate.outputs.pr_number }}
           BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before || github.sha }}
+          PR_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
           INPUT_QA_URL: ${{ inputs.qa_url }}
           FALLBACK_QA_URL: ${{ vars.QA_BASE_URL || 'https://lost-paws-one.vercel.app' }}
         shell: bash
@@ -114,7 +115,7 @@ jobs:
           if [[ "${GITHUB_EVENT_NAME}" == "workflow_dispatch" || -z "${PR_NUMBER}" ]]; then
             qa_url="${INPUT_QA_URL:-${FALLBACK_QA_URL}}"
           else
-            frontend_sha=$(bash scripts/latest-frontend-artifact-sha.sh "${BASE_SHA}" HEAD)
+            frontend_sha=$(bash scripts/latest-frontend-artifact-sha.sh "${BASE_SHA}" "${PR_HEAD_SHA}")
 
             if [[ -n "${frontend_sha}" ]]; then
               echo "Latest deployed-artifact PR SHA: ${frontend_sha}"
