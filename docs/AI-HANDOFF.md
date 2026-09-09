@@ -2,8 +2,8 @@
 
 STATUS: COMPLETE
 CURRENT_PHASE: Phase 2 — Partner Marketplace MVP — COMPLETE
-CURRENT_CHECKPOINT: Phase 2 closeout — CP1–CP6 integrated
-NEXT_CHECKPOINT: Promote the reconciled Phase 2 baseline to `main`, verify the resulting Vercel `main` deployment, then begin human QA + branding hardening. Phase 3 remains owner-gated.
+CURRENT_CHECKPOINT: Main baseline promoted; Vercel production alignment + human QA/branding next
+NEXT_CHECKPOINT: Change the Vercel production branch to `main`, promote/verify the validated `main` deployment, then begin human QA + branding hardening. Keep ShelterPawtners DNS unchanged. Phase 3 remains owner-gated.
 OWNER_DECISION_REQUIRED: NO
 SAFE_TO_CONTINUE: YES
 ACCEPTED_CODE_SHA: b727e26df064acdc11972e98be7a92958bc5fc6d
@@ -11,12 +11,16 @@ ACCEPTED_CODE_SHA: b727e26df064acdc11972e98be7a92958bc5fc6d
 ## Current state
 
 - Phase 1 is complete.
-- Phase 2 CP1–CP6 are complete and integrated into `build/festival-mvp`.
+- Phase 2 CP1–CP6 are complete.
 - CP1–CP5 were integrated through PR #2.
 - CP6 Issue #14 was accepted at implementation SHA `b727e26df064acdc11972e98be7a92958bc5fc6d` and integrated through PR #19 at merge commit `4ed0495b8f9b573c3a22d8705343e8ee382f872c`.
 - The default-branch-only `.github/workflows/ai-build-orchestrator.yml` was preserved in the integration baseline.
-- `main` control-plane history was reconciled into `build/festival-mvp` without a force push at merge commit `34c08567bff0bc44ff01753d5f4551504a70a4a4`.
-- PR #1 (`build/festival-mvp` -> `main`) is the Phase 2 baseline promotion PR.
+- `main` control-plane history was reconciled into `build/festival-mvp` without a force push at `34c08567bff0bc44ff01753d5f4551504a70a4a4`.
+- Final PR #1 security/CI hardening fixed the CodeQL privileged untrusted-checkout alert in `.github/workflows/ai-ops-status.yml`; CodeQL then reported no new alerts and CI Gate passed on `dc488eca63f4524222d6fa73602e7f4e2f9bba67`.
+- PR #1 merged the completed Phase 2 baseline to `main` at `fdc3b1e76063af86970f31a996740d29fa2024d1`.
+- `build/festival-mvp` was fast-forwarded to the same `fdc3b1e76063af86970f31a996740d29fa2024d1` baseline, leaving the two branches identical.
+- Vercel built `main` SHA `fdc3b1e76063af86970f31a996740d29fa2024d1` successfully as deployment `dpl_9zRWFXQ4HfWxqUt5Q49Vrw5MmCmg`; the persistent `main` branch URL returns HTTP 200.
+- Vercel still treats `qa/guardian-registration-personas` deployment `dpl_4E8PQwx7MchTkjpyjk59MnU3WdhD` as production. The connected Vercel toolset exposes read/deploy inspection but not the project production-branch setting or deployment-promotion write action.
 - Phase 3 remains unauthorized.
 
 ## Phase 2 acceptance summary
@@ -34,13 +38,19 @@ The accepted baseline includes Guardian persistence/dashboard protections, secur
 
 Jim explicitly instructed the operator to finish/wrap Phase 2, synchronize the branches, establish `main` as the canonical baseline, and proceed toward using the Vercel-hosted application for human testing and branding.
 
-Authorized in this closeout:
+Completed under that authorization:
 
-- integrate accepted Phase 2 work;
-- reconcile/synchronize `build/festival-mvp` and `main` without destructive history rewriting;
-- promote the accepted Phase 2 baseline to `main` after checks pass;
-- align Vercel production deployment behavior to `main` when the available Vercel tooling permits it;
-- verify the resulting hosted application.
+- accepted Phase 2 work integrated;
+- `build/festival-mvp` and `main` reconciled without destructive history rewriting;
+- accepted Phase 2 baseline promoted to `main`;
+- `build/festival-mvp` synchronized to the same baseline;
+- final main-backed Vercel build verified successfully.
+
+Still authorized but pending because the current Vercel connector does not expose the necessary write control:
+
+- set Vercel Production Branch to `main`;
+- promote the validated main deployment to production;
+- verify the resulting production alias.
 
 Still deferred:
 
@@ -57,9 +67,9 @@ Open QA/ops issues may remain for broader human-style regression, observability,
 
 ## Next action
 
-1. Let the final closeout commit checks complete.
-2. Update PR #1 to reflect the Phase 2 closeout and mark it ready for review.
-3. Merge PR #1 to `main` only if the head remains mergeable and required checks are green.
-4. Verify the new `main` Vercel deployment and application response.
-5. If Vercel still treats another branch as production, change the Vercel production branch to `main` using an authorized supported Vercel control; do not modify DNS.
-6. Begin human QA and branding hardening on the main-backed hosted app.
+1. In Vercel project `lost-paws`, change the Production Branch from `qa/guardian-registration-personas` to `main`.
+2. Promote validated deployment `dpl_9zRWFXQ4HfWxqUt5Q49Vrw5MmCmg` (`main`, SHA `fdc3b1e76063af86970f31a996740d29fa2024d1`) to production, or trigger a fresh production deployment from `main`.
+3. Verify `lost-paws-one.vercel.app` resolves to the main-backed production deployment and returns HTTP 200.
+4. Keep `shelterpawtners.com` and `www.shelterpawtners.com` DNS unchanged.
+5. Begin human QA and branding hardening on the main-backed hosted app.
+6. Use Issue #5 as the broad release-readiness audit before any domain cutover.
