@@ -68,7 +68,9 @@ function expectNoRuntimeFailures(failures: RuntimeFailures, context: string) {
 
 async function waitForStableMarketplace(page: Page) {
   await expect(
-    page.getByRole("heading", { name: "Find value that fits your world." }),
+    page.getByRole("heading", {
+      name: "Useful pet-parent value, without the fine-print hunt.",
+    }),
   ).toBeVisible();
   await expect(
     page.locator('[data-marketplace-concept="flagship"]'),
