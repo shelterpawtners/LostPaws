@@ -31,7 +31,9 @@ export type PublicOffer = {
 export type MarketplaceConcept = "value" | "trust" | "curated";
 
 function humanize(value: string) {
-  return value.replaceAll("_", " ").replace(/\b\w/g, (letter) => letter.toUpperCase());
+  return value
+    .replaceAll("_", " ")
+    .replace(/\b\w/g, (letter) => letter.toUpperCase());
 }
 
 function providerInitials(name: string) {
@@ -98,7 +100,8 @@ export function OfferCard({
           )}
           {offer.ends_at && (
             <span>
-              <CalendarDays /> Ends {new Date(offer.ends_at).toLocaleDateString()}
+              <CalendarDays /> Ends{" "}
+              {new Date(offer.ends_at).toLocaleDateString()}
             </span>
           )}
         </div>
