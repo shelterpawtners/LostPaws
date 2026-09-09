@@ -1,9 +1,9 @@
 # AI Handoff
 
-STATUS: READY_FOR_ACCEPTANCE
+STATUS: IN_PROGRESS
 CURRENT_PHASE: MVP Design Hardening + Human Release Readiness
-CURRENT_CHECKPOINT: Marketplace Sprint 1 — final exact-code A+B acceptance
-NEXT_CHECKPOINT: Run final Stream 3 Hosted acceptance against the exact PR-head Vite app, resolve review threads with evidence, then record accepted SHA and complete Issue #27.
+CURRENT_CHECKPOINT: Marketplace Sprint 1 — final shell cleanup after visual evidence review
+NEXT_CHECKPOINT: Remove the obsolete outer Marketplace hero/search/filter shell, update the golden-path assertion to the flagship headline, then rerun exact-code acceptance.
 OWNER_DECISION_REQUIRED: NO
 SAFE_TO_CONTINUE: YES
 ACCEPTED_CODE_SHA: NONE
@@ -44,11 +44,9 @@ The selected Marketplace keeps provider identity, offer title/value, eligibility
 
 No new offer schema fields or fabricated savings, pricing, ratings, logos, distance, impact, or partnership claims are introduced.
 
-## Copilot review hardening completed in code
+## Copilot review hardening completed
 
-The first final-acceptance run passed, but the later GitHub Copilot review identified edge cases that required correction before merge. That earlier acceptance evidence is historical only and is **not** the final accepted code.
-
-Current hardening addresses:
+The later GitHub Copilot review identified edge cases that were corrected before merge:
 
 1. separate RPC load failure, true catalog-empty, and filtered-empty states;
 2. humanize enum-backed classification/eligibility/applicability values before search matching;
@@ -58,28 +56,32 @@ Current hardening addresses:
 6. require hosted design QA to prove at least one real `.offerCard` loaded before axe checks/screenshots;
 7. retain phone, tablet, and desktop visual evidence.
 
-Fast CI on the review-hardening runtime code and exact-code fallback is green: Prettier, shell validation, unit tests, TypeScript, Vite build, and CI Gate all passed.
+All six Copilot inline review threads are resolved.
 
 ## Exact-code acceptance fallback
 
-Vercel Hobby build-rate limits are currently preventing a fresh preview for the final review-hardening commit. Do not pay for an upgrade solely to obtain this acceptance artifact.
+Vercel Hobby build-rate limits are currently preventing a fresh preview for the final review-hardening commit. `ACCEPTANCE_RUNTIME: LOCAL_HEAD` tells the acceptance-gated Hosted QA workflow to leave `PLAYWRIGHT_BASE_URL` unset. Playwright then starts the exact PR-head Vite application locally on the GitHub runner and injects the same QA Supabase URL/publishable key used by Hosted QA.
 
-`ACCEPTANCE_RUNTIME: LOCAL_HEAD` tells the acceptance-gated Hosted QA workflow to leave `PLAYWRIGHT_BASE_URL` unset. The existing Playwright config then starts the exact PR-head Vite application locally on the GitHub runner and injects the same QA Supabase URL/publishable key used by Hosted QA.
+The exact-code acceptance run at PR head `1f895a4d65f4ff1e36deab53dc7c7e13002dba65` proved the fallback works and passed 4/4 hosted golden-path tests plus 2/2 design-QA tests. That evidence is now historical because visual artifact inspection found one final shell issue described below.
 
-This fallback remains explicit and acceptance-gated. Ordinary PR runs stay cheap, and normal Vercel-backed acceptance remains the default when `ACCEPTANCE_RUNTIME` is not `LOCAL_HEAD`.
+## Final artifact review finding
+
+Phone/tablet/desktop screenshots show the old route-level Marketplace hero (`Find value that fits your world.`), old search box/filter buttons, and old route-level notice still surrounding the new A+B flagship Marketplace. This creates two competing product heroes and duplicate discovery/trust UI.
+
+Final cleanup must remove that obsolete outer UI from presentation while preserving the flagship Marketplace component as the single Marketplace discovery experience. The hosted smoke assertion should follow the flagship heading rather than the retired route-level heading.
 
 ## Final QA contract
 
 Before Issue #27 can be accepted:
 
-1. Prettier/lint, shell validation, unit tests, TypeScript, and Vite build pass on the review-fix code;
-2. the exact current frontend is tested, using a fresh Vercel preview when available or the explicit `LOCAL_HEAD` exact-code fallback when the Vercel free-tier cap blocks deployment;
+1. Prettier/lint, shell validation, unit tests, TypeScript, and Vite build pass;
+2. exact current frontend is tested using `LOCAL_HEAD` while Vercel is rate-limited;
 3. axe WCAG A/AA checks pass on home and `/marketplace`;
 4. no meaningful page/console/network failures occur;
-5. phone (390x844), tablet (768x1024), and desktop (1440x1000) full-page Marketplace evidence is captured;
+5. phone (390x844), tablet (768x1024), and desktop (1440x1000) full-page Marketplace evidence is captured and visually reviewed;
 6. existing Partner → Guardian → claim → redemption golden paths remain green;
-7. active Copilot review threads are resolved with evidence;
-8. Database/Persona/Dependency/Merge gates remain green as applicable.
+7. Database/Persona/Dependency/Merge gates remain green as applicable;
+8. only the flagship Marketplace hero/discovery/trust presentation remains visible on `/marketplace`.
 
 After final acceptance passes, record its exact code SHA as `ACCEPTED_CODE_SHA`, make only docs-only completion changes, update PR #28 to the A+B flagship scope, merge, and close Issue #27.
 
@@ -106,7 +108,8 @@ After final acceptance passes, record its exact code SHA as `ACCEPTED_CODE_SHA`,
 
 ## Next action
 
-1. run one final Stream 3 Hosted acceptance cycle against exact PR-head code using `LOCAL_HEAD`;
-2. resolve Copilot review threads with acceptance evidence;
-3. record the accepted code SHA and make the docs-only completion commit;
-4. merge PR #28 and close Issue #27.
+1. hide the retired route-level Marketplace hero/search/filter/notice presentation;
+2. update hosted smoke to assert the flagship Marketplace heading;
+3. pass fast CI;
+4. move back to `READY_FOR_ACCEPTANCE` and rerun exact-code Stream 3 acceptance;
+5. record accepted SHA, complete Issue #27, and merge PR #28.
