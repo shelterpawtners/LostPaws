@@ -135,7 +135,7 @@ jobs:
         run: |
           set -euo pipefail
 
-          prs=$(gh api "repos/${REPO}/pulls?state=open&base=build/festival-mvp&per_page=100")
+          prs=$(gh api "repos/${REPO}/pulls?state=open&base=main&per_page=100")
           active_numbers=$(jq -r --arg marker "${ACTIVE_MARKER}" '.[] | select((.body // "") | contains($marker)) | .number' <<<"${prs}")
           active_count=$(grep -c . <<<"${active_numbers}" || true)
 

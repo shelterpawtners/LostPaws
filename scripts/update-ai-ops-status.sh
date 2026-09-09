@@ -10,7 +10,7 @@ QA_URL="${QA_URL:-}"
 STALE_MINUTES="${STALE_MINUTES:-60}"
 STATUS_MARKER="<!-- ai-ops-live-status -->"
 
-prs=$(gh api "repos/${REPO}/pulls?state=open&base=build/festival-mvp&per_page=100")
+prs=$(gh api "repos/${REPO}/pulls?state=open&base=main&per_page=100")
 active_prs=$(jq -c --arg marker "${ACTIVE_MARKER}" '[.[] | select((.body // "") | contains($marker))]' <<<"${prs}")
 active_count=$(jq 'length' <<<"${active_prs}")
 
@@ -19,7 +19,7 @@ if [[ "${active_count}" == "0" ]]; then
 ${STATUS_MARKER}
 ## LostPaws AI Ops — IDLE
 
-No open PR targeting \`build/festival-mvp\` is currently marked as the active build lane.
+No open PR targeting \`main\` is currently marked as the active build lane.
 
 - No AI agent was invoked by this status update.
 - Native watchdog cadence: hourly.

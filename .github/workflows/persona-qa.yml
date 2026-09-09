@@ -2,7 +2,7 @@ name: Persona QA
 
 on:
   pull_request:
-    branches: [build/festival-mvp]
+    branches: [main]
   workflow_dispatch:
 
 concurrency:
@@ -82,7 +82,7 @@ jobs:
             exit 1
           fi
       - name: Install Chromium
-        run: npx playwright install --with-deps chromium
+        run: bash scripts/install-playwright-chromium.sh
       - name: Run persona registration, access, and redemption tests
         run: npx playwright test e2e/guardian-dashboard.spec.ts e2e/persona-registration.spec.ts e2e/persona-access-isolation.spec.ts e2e/phase-2-offer-redemption.spec.ts
       - name: Run local Admin QA security regression
