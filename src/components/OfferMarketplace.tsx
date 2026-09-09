@@ -36,7 +36,9 @@ const concepts: {
 ];
 
 function humanize(value: string) {
-  return value.replaceAll("_", " ").replace(/\b\w/g, (letter) => letter.toUpperCase());
+  return value
+    .replaceAll("_", " ")
+    .replace(/\b\w/g, (letter) => letter.toUpperCase());
 }
 
 function selectedConcept(search: string): MarketplaceConcept {
@@ -53,7 +55,8 @@ export function OfferMarketplace({
   const location = useLocation();
   const offerId = route.offerId;
   const concept = selectedConcept(location.search);
-  const conceptInfo = concepts.find((item) => item.id === concept) || concepts[0];
+  const conceptInfo =
+    concepts.find((item) => item.id === concept) || concepts[0];
   const rave = new URLSearchParams(location.search).get("channel") === "rave";
   const [offers, setOffers] = useState<PublicOffer[]>([]);
   const [loading, setLoading] = useState(true);
@@ -94,7 +97,9 @@ export function OfferMarketplace({
     () =>
       Array.from(
         new Set(
-          offers.map((offer) => offer.classification).filter((value) => Boolean(value)),
+          offers
+            .map((offer) => offer.classification)
+            .filter((value) => Boolean(value)),
         ),
       ).sort(),
     [offers],
@@ -103,7 +108,10 @@ export function OfferMarketplace({
   const visibleOffers = useMemo(() => {
     const normalized = query.trim().toLowerCase();
     return offers.filter((offer) => {
-      if (classification !== "all" && offer.classification !== classification)
+      if (
+        classification !== "all" &&
+        offer.classification !== classification
+      )
         return false;
       if (!normalized) return true;
       const searchable = [
@@ -193,12 +201,18 @@ export function OfferMarketplace({
       className={`marketplaceExperience marketplaceConcept-${concept}${rave ? " marketplaceRave" : ""}`}
       data-marketplace-concept={concept}
     >
-      <div className="marketplacePrototypeBar" aria-label="Marketplace concept previews">
+      <div
+        className="marketplacePrototypeBar"
+        aria-label="Marketplace concept previews"
+      >
         <div>
           <span className="marketplacePrototypeLabel">Sprint preview</span>
           <strong>Compare three directions</strong>
         </div>
-        <nav aria-label="Marketplace concepts" className="marketplaceConceptNav">
+        <nav
+          aria-label="Marketplace concepts"
+          className="marketplaceConceptNav"
+        >
           {concepts.map((item) => {
             const params = new URLSearchParams(location.search);
             params.set("concept", item.id);
@@ -218,7 +232,9 @@ export function OfferMarketplace({
 
       <div className="marketplaceConceptIntro">
         <span className="eyebrow">
-          {rave ? "RAVE Shelter channel preview" : "Marketplace design direction"}
+          {rave
+            ? "RAVE Shelter channel preview"
+            : "Marketplace design direction"}
         </span>
         <h2>{conceptInfo.title}</h2>
         <p>{conceptInfo.copy}</p>
@@ -241,7 +257,10 @@ export function OfferMarketplace({
             <SlidersHorizontal />
             <span>Listing type</span>
           </div>
-          <div className="marketplaceFilterButtons" aria-label="Filter offers by listing type">
+          <div
+            className="marketplaceFilterButtons"
+            aria-label="Filter offers by listing type"
+          >
             <button
               type="button"
               className={classification === "all" ? "active" : ""}
@@ -266,7 +285,9 @@ export function OfferMarketplace({
       <div className="marketplaceResultsHeader">
         <div>
           <strong>{visibleOffers.length}</strong>
-          <span>{visibleOffers.length === 1 ? " current offer" : " current offers"}</span>
+          <span>
+            {visibleOffers.length === 1 ? " current offer" : " current offers"}
+          </span>
         </div>
         {(query || classification !== "all") && (
           <button
@@ -286,7 +307,9 @@ export function OfferMarketplace({
         <div className="marketplaceEmpty">
           <Search />
           <h2>No current offers match that search.</h2>
-          <p>Try a provider name, a broader term, or clear the listing-type filter.</p>
+          <p>
+            Try a provider name, a broader term, or clear the listing-type filter.
+          </p>
         </div>
       ) : concept === "trust" ? (
         <div className="marketplaceTrustLayout">
@@ -295,8 +318,9 @@ export function OfferMarketplace({
             <span className="eyebrow">Know what you are looking at</span>
             <h2>Trust comes from clear context.</h2>
             <p>
-              Every listing keeps the provider, eligibility, listing type, and current
-              terms context close to the offer instead of burying it in fine print.
+              Every listing keeps the provider, eligibility, listing type, and
+              current terms context close to the offer instead of burying it in
+              fine print.
             </p>
             <ul>
               <li>Provider identity stays visible.</li>
@@ -330,7 +354,11 @@ export function OfferMarketplace({
               </div>
               <div className="marketplaceCardGrid marketplaceCardGrid-curated">
                 {visibleOffers.slice(2).map((offer) => (
-                  <OfferCard key={offer.offer_id} offer={offer} concept="curated" />
+                  <OfferCard
+                    key={offer.offer_id}
+                    offer={offer}
+                    concept="curated"
+                  />
                 ))}
               </div>
             </>
@@ -348,12 +376,18 @@ export function OfferMarketplace({
         <ShieldCheck />
         <p>
           Public programs are not presented as ShelterPawtners partnerships.
-          Partner-published offers identify the responsible organization and can be
-          reported or suspended. Review provider terms for current requirements.
+          Partner-published offers identify the responsible organization and can
+          be reported or suspended. Review provider terms for current
+          requirements.
         </p>
       </div>
 
-      <p role="status" aria-live="polite" aria-atomic="true" className="marketplaceStatus">
+      <p
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+        className="marketplaceStatus"
+      >
         {status}
       </p>
     </section>
