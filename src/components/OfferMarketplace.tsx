@@ -1,49 +1,15 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link, useLocation, useParams } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import { Search, ShieldCheck, SlidersHorizontal } from "lucide-react";
 import { supabase as db } from "../lib/supabase";
-import {
-  OfferCard,
-  type MarketplaceConcept,
-  type PublicOffer,
-} from "./OfferCard";
+import { OfferCard, type PublicOffer } from "./OfferCard";
 import "../marketplace.css";
-
-const concepts: {
-  id: MarketplaceConcept;
-  label: string;
-  title: string;
-  copy: string;
-}[] = [
-  {
-    id: "value",
-    label: "A · Value feed",
-    title: "Scan the value. Check the terms. Choose what fits.",
-    copy: "A commerce-forward direction built for quick offer comparison and decisive browsing.",
-  },
-  {
-    id: "trust",
-    label: "B · Local + trust",
-    title: "Useful offers, with the provider and context up front.",
-    copy: "A more premium direction that emphasizes PetBiz identity, applicability, and listing trust.",
-  },
-  {
-    id: "curated",
-    label: "C · Curated hub",
-    title: "A calmer home for practical pet-parent value.",
-    copy: "An editorial direction that feels more like a Guardian benefit destination than a dense deals grid.",
-  },
-];
+import "../marketplace-flagship.css";
 
 function humanize(value: string) {
   return value
     .replaceAll("_", " ")
     .replace(/\b\w/g, (letter) => letter.toUpperCase());
-}
-
-function selectedConcept(search: string): MarketplaceConcept {
-  const value = new URLSearchParams(search).get("concept");
-  return value === "trust" || value === "curated" ? value : "value";
 }
 
 export function OfferMarketplace({
@@ -54,9 +20,6 @@ export function OfferMarketplace({
   const route = useParams();
   const location = useLocation();
   const offerId = route.offerId;
-  const concept = selectedConcept(location.search);
-  const conceptInfo =
-    concepts.find((item) => item.id === concept) || concepts[0];
   const rave = new URLSearchParams(location.search).get("channel") === "rave";
   const [offers, setOffers] = useState<PublicOffer[]>([]);
   const [loading, setLoading] = useState(true);
@@ -196,47 +159,18 @@ export function OfferMarketplace({
 
   return (
     <section
-      className={`marketplaceExperience marketplaceConcept-${concept}${rave ? " marketplaceRave" : ""}`}
-      data-marketplace-concept={concept}
+      className={`marketplaceExperience marketplaceFlagship${rave ? " marketplaceRave" : ""}`}
+      data-marketplace-concept="flagship"
     >
-      <div
-        className="marketplacePrototypeBar"
-        aria-label="Marketplace concept previews"
-      >
-        <div>
-          <span className="marketplacePrototypeLabel">Sprint preview</span>
-          <strong>Compare three directions</strong>
-        </div>
-        <div
-          role="navigation"
-          aria-label="Marketplace concepts"
-          className="marketplaceConceptNav"
-        >
-          {concepts.map((item) => {
-            const params = new URLSearchParams(location.search);
-            params.set("concept", item.id);
-            return (
-              <Link
-                key={item.id}
-                to={`${location.pathname}?${params.toString()}`}
-                className={item.id === concept ? "active" : ""}
-                aria-current={item.id === concept ? "page" : undefined}
-              >
-                {item.label}
-              </Link>
-            );
-          })}
-        </div>
-      </div>
-
-      <div className="marketplaceConceptIntro">
+      <div className="marketplaceConceptIntro marketplaceFlagshipIntro">
         <span className="eyebrow">
-          {rave
-            ? "RAVE Shelter channel preview"
-            : "Marketplace design direction"}
+          {rave ? "RAVE Shelter marketplace view" : "ShelterPawtners marketplace"}
         </span>
-        <h2>{conceptInfo.title}</h2>
-        <p>{conceptInfo.copy}</p>
+        <h2>Useful pet-parent value, without the fine-print hunt.</h2>
+        <p>
+          Scan current offers, see who provides them, and check eligibility,
+          where they apply, and current terms before you claim.
+        </p>
       </div>
 
       <div className="marketplaceDiscovery">
@@ -283,6 +217,17 @@ export function OfferMarketplace({
         </div>
       </div>
 
+      <div className="marketplaceTrustStrip">
+        <ShieldCheck />
+        <div>
+          <strong>Provider and eligibility context stays visible.</strong>
+          <span>
+            Review who provides the offer, where it applies, and current terms
+            before taking the next step.
+          </span>
+        </div>
+      </div>
+
       <div className="marketplaceResultsHeader">
         <div role="status" aria-live="polite" aria-atomic="true">
           <strong>{visibleOffers.length}</strong>
@@ -313,59 +258,6 @@ export function OfferMarketplace({
             filter.
           </p>
         </div>
-      ) : concept === "trust" ? (
-        <div className="marketplaceTrustLayout">
-          <aside className="marketplaceTrustRail">
-            <ShieldCheck />
-            <span className="eyebrow">Know what you are looking at</span>
-            <h2>Trust comes from clear context.</h2>
-            <p>
-              Every listing keeps the provider, eligibility, listing type, and
-              current terms context close to the offer instead of burying it in
-              fine print.
-            </p>
-            <ul>
-              <li>Provider identity stays visible.</li>
-              <li>Eligibility is shown before the detail page.</li>
-              <li>Source and full terms remain available when provided.</li>
-            </ul>
-          </aside>
-          <div className="marketplaceTrustResults">
-            {visibleOffers.map((offer) => (
-              <OfferCard key={offer.offer_id} offer={offer} concept="trust" />
-            ))}
-          </div>
-        </div>
-      ) : concept === "curated" ? (
-        <div className="marketplaceCuratedLayout">
-          <div className="marketplaceCuratedLead">
-            {visibleOffers.slice(0, 2).map((offer) => (
-              <OfferCard
-                key={offer.offer_id}
-                offer={offer}
-                concept="curated"
-                featured
-              />
-            ))}
-          </div>
-          {visibleOffers.length > 2 && (
-            <>
-              <div className="marketplaceSectionHeading">
-                <span className="eyebrow">More to explore</span>
-                <h2>Keep browsing current offers.</h2>
-              </div>
-              <div className="marketplaceCardGrid marketplaceCardGrid-curated">
-                {visibleOffers.slice(2).map((offer) => (
-                  <OfferCard
-                    key={offer.offer_id}
-                    offer={offer}
-                    concept="curated"
-                  />
-                ))}
-              </div>
-            </>
-          )}
-        </div>
       ) : (
         <div className="marketplaceCardGrid marketplaceCardGrid-value">
           {visibleOffers.map((offer) => (
@@ -377,10 +269,9 @@ export function OfferMarketplace({
       <div className="marketplaceTrustFooter">
         <ShieldCheck />
         <p>
-          Public programs are not presented as ShelterPawtners partnerships.
-          Partner-published offers identify the responsible organization and can
-          be reported or suspended. Review provider terms for current
-          requirements.
+          Listings identify the responsible provider or public source. Public
+          programs are not presented as ShelterPawtners partnerships. Review
+          current provider terms before claiming.
         </p>
       </div>
 
