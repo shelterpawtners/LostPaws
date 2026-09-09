@@ -2,7 +2,7 @@ name: Merge Gate
 
 on:
   pull_request:
-    branches: [build/festival-mvp]
+    branches: [main]
     types: [opened, synchronize, reopened, ready_for_review]
 
 concurrency:
