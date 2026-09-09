@@ -21,35 +21,34 @@ Repository-native agents/skills, Vercel/Supabase/Chrome DevTools setup guidance,
 
 ## Stream 2 — ChatGPT operator/product capability
 
-**Status: COMPLETE — accepted SHA `1163e6c3deb07c5d20cd7a88961b213c4bd327f0`, PR #24 in final merge validation.**
+**Status: COMPLETE — merged in PR #24.**
 
 Delivered:
 
 - `docs/CHATGPT-OPERATING-PROTOCOL.md` — source-of-truth order, role split, connected-tool routing, owner gates, cost controls, and coding-agent handoff contract.
-- `docs/prompts/CHATGPT-SESSION-BOOTSTRAP.md` — reusable fresh-session startup that makes ChatGPT recover project state from GitHub before asking the owner to restate it.
-- current-work/handoff integration so future sessions know when to use ChatGPT versus a coding agent versus deterministic automation.
-
-Operating split:
-
-- ChatGPT = product/controller/research/operator/release reasoning.
-- Copilot/Codex = substantial code implementation and repetitive repository-local engineering.
-- GitHub Actions/scripts = deterministic validation and supervision.
-- Connected GitHub/Vercel/Supabase tools = current private/project state and authorized operations.
-- Web = current external research, standards, pricing, documentation, and competitive evidence.
+- `docs/prompts/CHATGPT-SESSION-BOOTSTRAP.md` — reusable fresh-session startup that makes ChatGPT recover project state before asking the owner to reconstruct it.
+- current-work/handoff integration defining ChatGPT vs coding-agent vs deterministic-automation responsibilities.
 
 ## Stream 3 — Shared design + quality toolchain
 
-**Status: NEXT — Issue #25.**
+**Status: IN PROGRESS — Issue #25 / `ops/stream3-design-qa`.**
 
-Minimum setup before Marketplace implementation:
+Minimum implementation before Marketplace design work:
 
-- add `@axe-core/playwright` accessibility scanning;
-- add a focused Marketplace/public-shell design-quality Playwright spec;
-- capture representative phone/tablet/desktop screenshots as acceptance evidence;
-- fail on unexpected page errors and meaningful console errors;
-- surface meaningful failed network requests while allowing known benign behavior;
-- reuse the existing Hosted QA browser installation/run where practical;
-- upload design evidence only at the acceptance boundary.
+- axe accessibility scanning for the public shell and Marketplace;
+- focused Hosted Marketplace/public-shell design-QA Playwright coverage;
+- representative phone/tablet/desktop screenshots as review evidence;
+- failure on unexpected page errors and meaningful console errors;
+- meaningful failed-network and HTTP 5xx detection;
+- reuse of the existing Hosted QA browser installation/run;
+- design evidence uploaded only at the acceptance boundary.
+
+Cost/design decisions:
+
+- use exact pinned `@axe-core/playwright@4.13.0` as a QA-only transient install in Hosted acceptance;
+- do not add production/runtime dependency or root lockfile churn solely for axe;
+- do not create another browser workflow or paid QA platform;
+- normal implementation commits remain on fast deterministic checks; one Hosted design-QA run is activated at `READY_FOR_ACCEPTANCE`.
 
 Explicit Stream 3 non-goals:
 

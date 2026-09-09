@@ -164,10 +164,22 @@ jobs:
           done
           [[ "$PLAYWRIGHT_SUPABASE_URL" =~ ^https://jukmlmryykcnjtpblbja\.supabase\.co/?$ ]]
       - run: npm ci
+      - name: Install design QA dependencies
+        run: bash scripts/install-design-qa-deps.sh
       - name: Install Chromium
         run: bash scripts/install-playwright-chromium.sh
       - name: Run hosted golden paths
         run: npm run test:e2e:hosted
+      - name: Run hosted design QA
+        run: npx playwright test e2e/hosted-design-qa.spec.ts
+      - name: Upload hosted design QA evidence
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: hosted-design-qa-evidence
+          path: test-results/
+          if-no-files-found: warn
+          retention-days: 7
       - name: Run Issue 5 browser audit
         if: ${{ inputs.full_browser_audit }}
         run: npx playwright test e2e/phase-1-accessibility.spec.ts e2e/phase-1-auth.spec.ts e2e/guardian-dashboard.spec.ts e2e/persona-access-isolation.spec.ts e2e/persona-registration.spec.ts e2e/phase-2-partner-onboarding.spec.ts e2e/phase-2-offer-redemption.spec.ts
