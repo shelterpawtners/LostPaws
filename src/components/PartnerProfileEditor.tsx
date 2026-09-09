@@ -310,7 +310,7 @@ export function PartnerProfileEditor({ session }: { session: Session | null }) {
     set: (v: string) => void,
     type = "text",
   ) => (
-    <label>
+    <label key={label}>
       {label}
       <input type={type} value={value} onChange={(e) => set(e.target.value)} />
     </label>

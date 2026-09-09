@@ -2,86 +2,112 @@
 
 STATUS: COMPLETE
 CURRENT_PHASE: MVP Design Hardening + Human Release Readiness
-CURRENT_CHECKPOINT: Marketplace Sprint 1 — A+B flagship accepted
-NEXT_CHECKPOINT: Owner-authorized merge of PR #28, then propagate the winning Marketplace brand system to the highest-value Guardian/PetBiz/global-shell screens and run Issue #5 human release-readiness audit.
+CURRENT_CHECKPOINT: Issue #29 — flagship brand propagation accepted; PR #30 awaiting owner-authorized merge
+NEXT_CHECKPOINT: Owner-authorized merge of PR #30, then execute Issue #5 full-site human-style browser/persistence audit before any ShelterPawtners domain cutover.
 OWNER_DECISION_REQUIRED: NO
 SAFE_TO_CONTINUE: YES
-ACCEPTED_CODE_SHA: d9b9c32ea7647ff0e9a616e8c8206bfb9ca5742d
+ACCEPTED_CODE_SHA: 38449c1796b5e30542a3c2e88f898119b1d315ee
 ACCEPTANCE_DEPLOYED_SHA: NONE
 ACCEPTANCE_RUNTIME: LOCAL_HEAD
 
-## Marketplace Sprint 1 outcome
+## Canonical baseline
 
-Issue #27 / PR #28 produced the owner-selected **A+B flagship Marketplace**:
+Marketplace Sprint 1 / PR #28 merged to `main` on September 9, 2026 at:
 
-- Concept A supplied fast scanability, search/filter discovery, compact comparison cards, and strong action hierarchy.
-- Concept B supplied the premium dark frame, stronger brand character, provider identity, and trust/context emphasis.
-- Prototype A/B/C controls are removed from the final experience.
-- Concept C first-two editorial prominence was removed because no approved ranking/curation rule exists.
-- The obsolete route-level Marketplace hero/search/filter/notice presentation is hidden so the flagship is the single visible discovery experience.
+`0550625f296c3ef87ffa34dadf810d0f07e318e6`
 
-No offer schema migration or fabricated savings, pricing, ratings, provider logos, distance, impact, popularity, ranking, or partnership claims were introduced.
-
-## Review hardening completed
-
-GitHub Copilot review findings were fixed before acceptance:
-
-1. RPC load failure, true catalog-empty, and filtered-empty states are distinct.
-2. Enum-backed classification/eligibility/applicability values are humanized for search matching.
-3. Listing-type filters expose a real accessible control group and `aria-pressed` states.
-4. Offer-detail trust language is classification-neutral.
-5. Public PetBiz profiles use a compact embedded offer-list variant rather than the full flagship Marketplace shell.
-6. Hosted design QA requires at least one real `.offerCard` before accessibility/screenshot evidence can pass.
-7. Phone, tablet, and desktop evidence is retained.
-
-All six Copilot inline review threads are resolved.
-
-## Final acceptance evidence
-
-Accepted code SHA:
+Accepted Marketplace product SHA:
 
 `d9b9c32ea7647ff0e9a616e8c8206bfb9ca5742d`
 
+## Issue #29 / PR #30 outcome
+
+Branch: `design/brand-propagation`
+
+Accepted code SHA:
+
+`38449c1796b5e30542a3c2e88f898119b1d315ee`
+
+The accepted implementation propagates the Marketplace A+B visual system into the approved high-value surfaces without changing product rules or persisted data:
+
+1. global shell/header/navigation/footer — deeper navy structure, restrained purple/teal brand accents, clearer navigation states, improved mobile menu treatment;
+2. Guardian dashboard — branded dashboard hero, stronger role rail, clearer pet tiles, tighter high-value action cards and Marketplace entry;
+3. PetBiz dashboard — coherent dashboard hierarchy without making the page a copy of Marketplace;
+4. PetBiz profile and offer-management workspaces — restored useful desktop width, stronger panel hierarchy, and responsive working layouts;
+5. account-section navigation remains usable on mobile rather than inheriting the primary-header mobile hide rule.
+
+No new product claims or data fields were introduced.
+
+## Review and defects fixed
+
+- Independent Product Critic review is recorded on PR #30 and found the scope appropriately bounded.
+- GitHub Copilot review was requested but did not post a review or inline findings before acceptance; there are no unresolved review threads.
+- The first expanded design-QA attempt exposed a QA route mistake: PetBiz profile is implemented at `/business`, not `/partner/profile`. The QA now follows the real route.
+- The next attempt exposed a real React runtime warning in `PartnerProfileEditor`: helper-generated social-link fields lacked stable React keys. The component was fixed at the source rather than suppressing the console check.
+- Existing Guardian/Partner functional golden paths remained green throughout those corrections.
+
+## Final exact-code acceptance
+
+Acceptance runtime: `LOCAL_HEAD`.
+
 Hosted QA run:
 
-`34410972297`
+`34415505122`
 
 Evidence artifact:
 
-`hosted-design-qa-evidence` — artifact `10127237935`
+`hosted-design-qa-evidence` — artifact `10128931350`
 
-Final exact-code acceptance used `ACCEPTANCE_RUNTIME: LOCAL_HEAD` because the Vercel Hobby build-rate limit prevented a fresh preview. The acceptance-gated workflow started the exact PR-head Vite application locally and connected it to the existing QA Supabase backend.
+Results on accepted SHA `38449c1796b5e30542a3c2e88f898119b1d315ee`:
 
-Results on the accepted SHA:
+- Hosted Guardian/Partner/Marketplace functional golden paths: **4/4 passed**.
+- Expanded hosted design QA: **3/3 passed**.
+- public shell and flagship Marketplace: axe WCAG A/AA + runtime checks passed;
+- Guardian dashboard: axe passed and phone 390x844, tablet 768x1024, desktop 1440x1000 evidence captured;
+- PetBiz dashboard: axe passed and phone/tablet/desktop evidence captured;
+- PetBiz profile and offer manager: axe passed and desktop evidence captured;
+- mobile primary navigation open/close behavior passed;
+- mobile role panel behavior passed and is not sticky;
+- unrelated generic form pages remain constrained and were not broadened by PetBiz workspace styling;
+- page errors, console errors, meaningful network failures: none;
+- fast CI, lint, shell checks, unit tests, TypeScript/build: passed.
 
-- Hosted Marketplace/Guardian/Partner golden paths: **4/4 passed**.
-- Hosted design QA: **2/2 passed**.
-- axe WCAG A/AA checks: passed on home and Marketplace.
-- runtime/page/console/network checks: passed.
-- responsive evidence: phone 390x844, tablet 768x1024, desktop 1440x1000.
-- final visual inspection confirmed the duplicate legacy Marketplace hero/search/filter layer is gone and the A+B flagship is the single visible Marketplace experience.
-- CI: success.
-- Database QA: success.
-- Persona QA: success.
-- Dependency Review: success.
-- Merge Gate on the accepted SHA: success.
+## Human visual inspection
+
+The final responsive artifact was inspected after automated acceptance.
+
+- The shell, Guardian dashboard, and PetBiz surfaces read as one product family while retaining distinct jobs.
+- The navy structure and restrained teal/purple accents are consistent with the accepted Marketplace direction without turning every page into a dark Marketplace container.
+- Mobile PetBiz dashboard hierarchy is clear: hero -> role selection -> organization actions.
+- PetBiz profile and offer-management pages use the additional desktop width effectively and remain form/workspace-oriented rather than becoming oversized marketing layouts.
+- The Guardian QA account contains a deliberately large seeded pet list; the long phone/desktop captures reflect QA data volume, not a layout regression.
+- No visual blocker was found in the acceptance screenshots.
 
 ## Cost/tooling decision
 
-The local exact-code acceptance fallback avoided paying for a Vercel upgrade solely to bypass a temporary free-tier build-rate cap. Vercel-backed previews remain the normal review path when available; `LOCAL_HEAD` is an explicit acceptance-only fallback.
+Vercel did not produce a current-head preview for the newest propagation commits. Exact-code acceptance therefore used the existing `LOCAL_HEAD` GitHub Actions path against the QA Supabase backend rather than testing stale deployed code or paying for a Vercel upgrade.
 
-Figma remains deferred. Storybook remains optional and should be added only when isolated reusable-component work becomes faster than direct page iteration.
+Figma remains deferred. Storybook remains optional and should be added only if isolated reusable-component iteration becomes faster than direct route work.
 
-## Remaining owner-controlled actions
+## Guardrails
 
-- PR #28 is ready for its final docs-only completion gates and then owner-authorized merge.
-- Do not change `shelterpawtners.com` / `www.shelterpawtners.com` DNS yet.
-- Phase 3 remains owner-gated.
-- Do not introduce unapproved Marketplace schema/value/ranking rules.
+- no new schema or product/business-rule fields;
+- no fabricated savings, pricing, ratings, provider imagery/logos, popularity/ranking, verification, scarcity, partnerships, or impact claims;
+- preserve auth, onboarding, persistence, RLS, offer, claim, redemption, and economic behavior;
+- no DNS/domain changes;
+- no Phase 3 feature development;
+- no paid tooling required;
+- Figma remains deferred; Storybook remains optional only if it becomes a net speed gain.
 
-## Next execution after merge
+## Owner-controlled boundary
 
-1. use the accepted Marketplace visual language to harden the global header/navigation and highest-value Guardian/PetBiz screens;
-2. keep the propagation bounded rather than redesigning every page at once;
-3. run Issue #5 human release-readiness/browser audit;
-4. present the owner with the release-readiness result before any ShelterPawtners domain cutover.
+`OWNER_DECISION_REQUIRED: NO` means there is no unresolved product/technical decision blocking deterministic completion. It is not merge permission.
+
+PR #30 is product/design accepted and ready for final docs-only gates. **Do not merge it until the owner explicitly authorizes that merge.**
+
+After the merge:
+
+1. Issue #29 can close through PR #30;
+2. execute Issue #5 full-site human-style browser/persistence audit across implemented routes/personas and return/reload journeys;
+3. present the release-readiness result before any `shelterpawtners.com` / `www.shelterpawtners.com` DNS or custom-domain cutover;
+4. Phase 3 remains separately owner-gated.
