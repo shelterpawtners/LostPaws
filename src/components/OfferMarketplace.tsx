@@ -164,7 +164,9 @@ export function OfferMarketplace({
     >
       <div className="marketplaceConceptIntro marketplaceFlagshipIntro">
         <span className="eyebrow">
-          {rave ? "RAVE Shelter marketplace view" : "ShelterPawtners marketplace"}
+          {rave
+            ? "RAVE Shelter marketplace view"
+            : "ShelterPawtners marketplace"}
         </span>
         <h2>Useful pet-parent value, without the fine-print hunt.</h2>
         <p>
