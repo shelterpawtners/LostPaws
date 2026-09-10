@@ -9,6 +9,7 @@ import {
   TriangleAlert,
 } from "lucide-react";
 import { supabase as db } from "../lib/supabase";
+import { DealMomentEditor } from "./DealMomentEditor";
 import "../guardian-social.css";
 
 type GuardianActivity = {
@@ -137,6 +138,13 @@ export function GuardianActivityTimeline({
                     : `Claimed ${formatActivityDate(item.claimed_at)}`}
                 </small>
                 <Link to={`/offers/${item.offer_id}`}>View offer details</Link>
+                {item.pet_id && (
+                  <DealMomentEditor
+                    session={session}
+                    claimId={item.claim_id}
+                    petName={item.pet_name}
+                  />
+                )}
               </div>
             </li>
           ))}

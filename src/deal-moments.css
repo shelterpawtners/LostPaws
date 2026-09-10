@@ -1,0 +1,138 @@
+.dealMoment {
+  margin-top: 16px;
+  border-top: 1px solid var(--border);
+  padding-top: 15px;
+}
+
+.dealMomentIntro {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.dealMomentIntro > svg {
+  flex: 0 0 auto;
+  width: 20px;
+  height: 20px;
+  margin-top: 2px;
+  color: var(--primary);
+}
+
+.dealMomentIntro b {
+  display: block;
+}
+
+.dealMomentIntro p {
+  margin: 3px 0 0;
+  max-width: 620px;
+  color: var(--muted-text);
+  font-size: 0.9rem;
+}
+
+.dealMomentImage {
+  display: block;
+  width: min(100%, 520px);
+  max-height: 390px;
+  margin-top: 12px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  object-fit: cover;
+  background: #eef2f7;
+}
+
+.dealMomentCaption {
+  display: block;
+  max-width: 620px;
+  margin-top: 12px;
+}
+
+.dealMomentCaption > span {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 6px;
+  font-size: 0.84rem;
+  font-weight: 800;
+}
+
+.dealMomentCaption small {
+  margin: 0;
+  font-weight: 600;
+  color: var(--muted-text);
+}
+
+.dealMomentCaption textarea {
+  width: 100%;
+  min-height: 70px;
+  resize: vertical;
+  box-sizing: border-box;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 10px 12px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+}
+
+.dealMomentCaption textarea:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--primary) 25%, transparent);
+  outline-offset: 1px;
+  border-color: var(--primary);
+}
+
+.dealMomentActions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.dealMomentUpload {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.dealMomentUpload svg,
+.dealMomentRemove svg {
+  width: 16px;
+  height: 16px;
+}
+
+.dealMomentUpload input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  clip-path: inset(50%);
+}
+
+.dealMomentRemove {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.dealMomentStatus {
+  min-height: 1.25em;
+  margin: 8px 0 0;
+  color: var(--muted-text);
+  font-size: 0.84rem;
+}
+
+@media (max-width: 520px) {
+  .dealMomentCaption > span,
+  .dealMomentActions {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .dealMomentUpload {
+    width: 100%;
+    justify-content: center;
+  }
+}
