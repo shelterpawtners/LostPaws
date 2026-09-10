@@ -1,6 +1,12 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import type { Session } from "@supabase/supabase-js";
-import { ChevronLeft, ChevronRight, ImagePlus, Star } from "lucide-react";
+import {
+  ChevronLeft,
+  ChevronRight,
+  ImagePlus,
+  Star,
+  Trash2,
+} from "lucide-react";
 import { supabase as db } from "../lib/supabase";
 import "../guardian-social.css";
 
@@ -21,7 +27,12 @@ type PetMedia = {
 };
 
 type DisplayMedia = PetMedia & { displayUrl: string };
+type ArchivedMedia = {
+  storage_bucket: string | null;
+  storage_path: string | null;
+};
 
+const MAX_PASSPORT_PHOTOS = 5;
 const imageExtensions: Record<string, string> = {
   "image/jpeg": "jpg",
   "image/png": "png",
@@ -54,6 +65,7 @@ export function PetMediaGallery({
         "id,media_type,storage_bucket,storage_path,external_url,external_permalink,caption,alt_text,sort_order,is_primary,provenance_code,captured_at,created_at",
       )
       .eq("pet_id", petId)
+      .eq("media_type", "image")
       .eq("status", "active")
       .order("sort_order")
       .order("created_at");
@@ -89,10 +101,23 @@ export function PetMediaGallery({
       media.length ? Math.max(...media.map((item) => item.sort_order)) + 10 : 0,
     [media],
   );
+  const remainingPhotoSlots = Math.max(MAX_PASSPORT_PHOTOS - media.length, 0);
 
   async function upload(files: FileList | null) {
     if (!db || !session || !canEdit || !files?.length || uploading) return;
     const selected = Array.from(files);
+    if (remainingPhotoSlots === 0) {
+      setStatus(
+        "This Passport already has 5 photos. Remove one before adding another.",
+      );
+      return;
+    }
+    if (selected.length > remainingPhotoSlots) {
+      setStatus(
+        `You can add ${remainingPhotoSlots} more photo${remainingPhotoSlots === 1 ? "" : "s"}. A Pet Passport can keep up to 5 active photos. No files were uploaded.`,
+      );
+      return;
+    }
     const invalid = selected.find(
       (file) => !imageExtensions[file.type] || file.size > 5 * 1024 * 1024,
     );
@@ -137,6 +162,7 @@ export function PetMediaGallery({
         .select("id")
         .single();
       if (insertError || !inserted) {
+        await db.storage.from("pet-photos").remove([path]);
         setUploading(false);
         setStatus(insertError?.message || "Unable to save photo metadata.");
         await loadMedia();
@@ -184,6 +210,34 @@ export function PetMediaGallery({
     if (!error) await loadMedia();
   }
 
+  async function removePhoto(item: DisplayMedia) {
+    if (!db || !canEdit) return;
+    setStatus("Removing photo…");
+    const { data, error } = await db.rpc("archive_pet_media", {
+      p_media_id: item.id,
+    });
+    if (error) {
+      setStatus(error.message);
+      return;
+    }
+
+    const archived = (Array.isArray(data) ? data[0] : null) as
+      | ArchivedMedia
+      | undefined;
+    let storageWarning = "";
+    if (archived?.storage_bucket && archived.storage_path) {
+      const { error: storageError } = await db.storage
+        .from(archived.storage_bucket)
+        .remove([archived.storage_path]);
+      if (storageError) {
+        storageWarning =
+          " The photo is off the Passport, but its stored file could not be cleaned up yet.";
+      }
+    }
+    setStatus(`Photo removed.${storageWarning}`);
+    await loadMedia();
+  }
+
   return (
     <section
       className="panel petMediaPanel"
@@ -194,20 +248,24 @@ export function PetMediaGallery({
           <span className="eyebrow">Pet photos</span>
           <h2 id="pet-photos-heading">Passport gallery</h2>
           <p>
-            Keep more than one photo with this Passport. Photos are private by
-            default and can later carry source information from approved
-            imports.
+            Keep up to 5 recognizable photos with this Passport. Photos are
+            private by default and can later carry source information from
+            approved imports.
           </p>
         </div>
         {canEdit && (
           <label className="btn quiet petMediaUpload">
             <ImagePlus />
-            {uploading ? "Uploading…" : "Add photos"}
+            {media.length >= MAX_PASSPORT_PHOTOS
+              ? "5 photo limit reached"
+              : uploading
+                ? "Uploading…"
+                : `Add photos (${remainingPhotoSlots} left)`}
             <input
               type="file"
               accept="image/jpeg,image/png,image/webp"
               multiple
-              disabled={uploading}
+              disabled={uploading || media.length >= MAX_PASSPORT_PHOTOS}
               onChange={(event) => {
                 void upload(event.target.files);
                 event.currentTarget.value = "";
@@ -273,6 +331,14 @@ export function PetMediaGallery({
                   >
                     <ChevronRight />
                   </button>
+                  <button
+                    type="button"
+                    className="iconButton"
+                    onClick={() => void removePhoto(item)}
+                    aria-label={`Remove photo ${index + 1}`}
+                  >
+                    <Trash2 />
+                  </button>
                 </div>
               )}
             </article>
@@ -284,7 +350,7 @@ export function PetMediaGallery({
           <div>
             <b>Add the photos people recognize fastest.</b>
             <p>
-              Start with a clear face or full-body photo. You can add several
+              Start with a clear face or full-body photo. You can keep up to 5
               and choose the primary Passport image.
             </p>
           </div>
