@@ -20,6 +20,7 @@ export type PublicOffer = {
   terms: string;
   classification: string;
   destination_url: string | null;
+  eligibility: string | null;
   last_verified_at: string | null;
   eligibility_kind: string;
   starts_at: string | null;
@@ -131,6 +132,12 @@ export function OfferCard({
 
         {detailed && (
           <div className="marketOfferDetailSections">
+            {offer.eligibility && (
+              <section>
+                <h3>Eligibility</h3>
+                <p>{offer.eligibility}</p>
+              </section>
+            )}
             <section>
               <h3>Terms</h3>
               <p>{offer.terms}</p>
