@@ -18,7 +18,7 @@ Agent: ChatGPT / GitHub operator
 
 Branch: `launch/pre-cutover-readiness`
 
-PR: #33
+PR: #33 (acceptance)
 
 Formatted acceptance control-plane head before this direct retrigger: `8e896f7a29d0283961e79aa1bbff7a8ef8258fc2`
 
