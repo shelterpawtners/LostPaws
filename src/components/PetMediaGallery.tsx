@@ -222,8 +222,7 @@ export function PetMediaGallery({
     }
 
     const archived = (Array.isArray(data) ? data[0] : null) as
-      | ArchivedMedia
-      | undefined;
+      ArchivedMedia | undefined;
     let storageWarning = "";
     if (archived?.storage_bucket && archived.storage_path) {
       const { error: storageError } = await db.storage
