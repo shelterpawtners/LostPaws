@@ -1,6 +1,6 @@
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(13);
+select plan(15);
 
 set local role authenticated;
 select set_config('request.jwt.claim.sub','10000000-0000-0000-0000-000000000001',true);
@@ -57,6 +57,37 @@ select is(
   (select sort_order from public.pet_media where id=(select second_id from media_test)),
   0,
   'Requested media order is persisted'
+);
+
+insert into public.pet_media(
+  pet_id,created_by,storage_bucket,storage_path,caption,sort_order,provenance_code
+) values
+  (
+    '30000000-0000-0000-0000-000000000001','10000000-0000-0000-0000-000000000001',
+    'pet-photos','10000000-0000-0000-0000-000000000001/30000000-0000-0000-0000-000000000001/third.jpg',
+    'Third pet photo',20,'guardian_entered'
+  ),
+  (
+    '30000000-0000-0000-0000-000000000001','10000000-0000-0000-0000-000000000001',
+    'pet-photos','10000000-0000-0000-0000-000000000001/30000000-0000-0000-0000-000000000001/fourth.jpg',
+    'Fourth pet photo',30,'guardian_entered'
+  ),
+  (
+    '30000000-0000-0000-0000-000000000001','10000000-0000-0000-0000-000000000001',
+    'pet-photos','10000000-0000-0000-0000-000000000001/30000000-0000-0000-0000-000000000001/fifth.jpg',
+    'Fifth pet photo',40,'guardian_entered'
+  );
+
+select is(
+  (select count(*) from public.pet_media where pet_id='30000000-0000-0000-0000-000000000001' and media_type='image' and status='active')::bigint,
+  5::bigint,
+  'Pet Passport allows up to five active photos'
+);
+select throws_ok(
+  $$insert into public.pet_media(pet_id,created_by,storage_bucket,storage_path,caption,sort_order,provenance_code) values('30000000-0000-0000-0000-000000000001','10000000-0000-0000-0000-000000000001','pet-photos','10000000-0000-0000-0000-000000000001/30000000-0000-0000-0000-000000000001/sixth.jpg','Sixth pet photo',50,'guardian_entered')$$,
+  '23514',
+  'A Pet Passport can have up to 5 active photos.',
+  'Database rejects a sixth active Passport photo'
 );
 
 select set_config('request.jwt.claim.sub','10000000-0000-0000-0000-000000000002',true);
