@@ -178,7 +178,9 @@ export function OfferCard({
         <div className="marketOfferFooter">
           {!detailed && (
             <Link className="marketOfferCta" to={`/offers/${offer.offer_id}`}>
-              {external ? "See benefit and eligibility" : "See offer and eligibility"}{" "}
+              {external
+                ? "See benefit and eligibility"
+                : "See offer and eligibility"}{" "}
               <ArrowUpRight />
             </Link>
           )}

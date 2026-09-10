@@ -206,8 +206,14 @@
   font-size: 0.67rem;
 }
 
-.marketplacePremium .marketplaceFilterButtons button.active .marketplaceFilterCount,
-.marketplacePremium .marketplaceFilterButtons button:hover .marketplaceFilterCount {
+.marketplacePremium
+  .marketplaceFilterButtons
+  button.active
+  .marketplaceFilterCount,
+.marketplacePremium
+  .marketplaceFilterButtons
+  button:hover
+  .marketplaceFilterCount {
   background: #13213b14;
 }
 

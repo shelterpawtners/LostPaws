@@ -261,8 +261,9 @@ export function OfferMarketplace({
           <h2>Useful pet-parent value, without the fine-print hunt.</h2>
           <p>
             Discover current public adoption benefits alongside offers published
-            by ShelterPawtners participants. Every listing shows who provides it,
-            eligibility context, and current terms before you take the next step.
+            by ShelterPawtners participants. Every listing shows who provides
+            it, eligibility context, and current terms before you take the next
+            step.
           </p>
           <div className="marketplaceHeroActions">
             <a className="marketplaceHeroJump" href="#marketplace-results">
@@ -280,7 +281,9 @@ export function OfferMarketplace({
             <span className="marketplaceValueEyebrow">Current marketplace</span>
             <div className="marketplaceValueTotal">
               <strong>{offers.length}</strong>
-              <span>{offers.length === 1 ? "active listing" : "active listings"}</span>
+              <span>
+                {offers.length === 1 ? "active listing" : "active listings"}
+              </span>
             </div>
           </div>
           <div className="marketplaceValueBreakdown">

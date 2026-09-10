@@ -3,7 +3,10 @@ import { expect, test } from "@playwright/test";
 const hosted = process.env.PLAYWRIGHT_HOSTED_QA === "true";
 
 test.describe("Premium Marketplace experience", () => {
-  test.skip(!hosted, "Set PLAYWRIGHT_HOSTED_QA=true for hosted Marketplace QA.");
+  test.skip(
+    !hosted,
+    "Set PLAYWRIGHT_HOSTED_QA=true for hosted Marketplace QA.",
+  );
   test.describe.configure({ timeout: 120_000 });
 
   test("value hierarchy, discovery, empty state, and public-benefit detail remain usable", async ({
@@ -18,9 +21,14 @@ test.describe("Premium Marketplace experience", () => {
     await expect(marketplace.locator(".offerCard").first()).toBeVisible();
 
     const hasPhoneOverflow = await page.evaluate(
-      () => document.documentElement.scrollWidth > document.documentElement.clientWidth + 1,
+      () =>
+        document.documentElement.scrollWidth >
+        document.documentElement.clientWidth + 1,
     );
-    expect(hasPhoneOverflow, "Marketplace must not overflow the phone viewport").toBe(false);
+    expect(
+      hasPhoneOverflow,
+      "Marketplace must not overflow the phone viewport",
+    ).toBe(false);
 
     const search = marketplace.getByLabel("Search current offers");
     await search.fill("no-listing-should-match-this-value");
@@ -76,9 +84,14 @@ test.describe("Premium Marketplace experience", () => {
       await page.goto("/marketplace");
       await expect(page.locator(".offerCard").first()).toBeVisible();
       const hasOverflow = await page.evaluate(
-        () => document.documentElement.scrollWidth > document.documentElement.clientWidth + 1,
+        () =>
+          document.documentElement.scrollWidth >
+          document.documentElement.clientWidth + 1,
       );
-      expect(hasOverflow, `Marketplace must not overflow at ${viewport.width}px`).toBe(false);
+      expect(
+        hasOverflow,
+        `Marketplace must not overflow at ${viewport.width}px`,
+      ).toBe(false);
     }
   });
 });
