@@ -1,0 +1,147 @@
+name: Auth Recovery Patch
+
+on:
+  push:
+    branches:
+      - launch/pre-cutover-readiness
+    paths:
+      - .github/workflows/auth-recovery-patch.yml
+
+permissions:
+  contents: write
+
+jobs:
+  patch-recovery-state:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: launch/pre-cutover-readiness
+          fetch-depth: 0
+      - name: Gate password form on a valid auth session
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          path = Path('src/main.tsx')
+          text = path.read_text()
+          old = '''function ResetPassword() {
+            const [status, setStatus] = useState("");
+            const navigate = useNavigate();
+            async function submit(e: React.FormEvent<HTMLFormElement>) {
+              e.preventDefault();
+              if (!db) return setStatus("Development connection is unavailable.");
+              const password = String(new FormData(e.currentTarget).get("password"));
+              const { error } = await db.auth.updateUser({ password });
+              if (error) return setStatus(error.message);
+              setStatus("Password updated.");
+              window.setTimeout(() => navigate("/dashboard", { replace: true }), 700);
+            }
+            return (
+              <Page>
+                <section className="section shell formPage">
+                  <form className="panel" onSubmit={submit}>
+                    <span className="eyebrow">Account recovery</span>
+                    <h1>Choose a new password</h1>
+                    <label>
+                      New password
+                      <input
+                        name="password"
+                        type="password"
+                        minLength={8}
+                        required
+                        autoComplete="new-password"
+                      />
+                    </label>
+                    <button className="btn">Update password</button>
+                    <p role="status" aria-live="polite" aria-atomic="true">
+                      {status}
+                    </p>
+                  </form>
+                </section>
+              </Page>
+            );
+          }
+          '''
+          # Source is not indented inside a template; normalize the literal above.
+          import textwrap
+          old = textwrap.dedent(old)
+          new = '''function ResetPassword() {
+            const [status, setStatus] = useState("");
+            const navigate = useNavigate();
+            const { session, loading } = useAuth();
+            async function submit(e: React.FormEvent<HTMLFormElement>) {
+              e.preventDefault();
+              if (!db) return setStatus("Development connection is unavailable.");
+              const password = String(new FormData(e.currentTarget).get("password"));
+              const { error } = await db.auth.updateUser({ password });
+              if (error) return setStatus(error.message);
+              setStatus("Password updated.");
+              window.setTimeout(() => navigate("/dashboard", { replace: true }), 700);
+            }
+            if (loading)
+              return (
+                <Page>
+                  <section className="section shell formPage">
+                    <div className="panel">
+                      <p role="status">Checking recovery link…</p>
+                    </div>
+                  </section>
+                </Page>
+              );
+            if (!session)
+              return (
+                <Page>
+                  <section className="section shell formPage">
+                    <div className="panel">
+                      <span className="eyebrow">Account recovery</span>
+                      <h1>Recovery link unavailable</h1>
+                      <p>
+                        This recovery link is invalid, expired, or has already been used.
+                        Request a new email to continue securely.
+                      </p>
+                      <Link to="/forgot-password">Request a new recovery email</Link>
+                    </div>
+                  </section>
+                </Page>
+              );
+            return (
+              <Page>
+                <section className="section shell formPage">
+                  <form className="panel" onSubmit={submit}>
+                    <span className="eyebrow">Account recovery</span>
+                    <h1>Choose a new password</h1>
+                    <label>
+                      New password
+                      <input
+                        name="password"
+                        type="password"
+                        minLength={8}
+                        required
+                        autoComplete="new-password"
+                      />
+                    </label>
+                    <button className="btn">Update password</button>
+                    <p role="status" aria-live="polite" aria-atomic="true">
+                      {status}
+                    </p>
+                  </form>
+                </section>
+              </Page>
+            );
+          }
+          '''
+          new = textwrap.dedent(new)
+          if text.count(old) != 1:
+              raise SystemExit(f'Expected ResetPassword block exactly once, found {text.count(old)}')
+          path.write_text(text.replace(old, new))
+          PY
+      - name: Remove temporary patch workflow
+        run: git rm .github/workflows/auth-recovery-patch.yml
+      - name: Format and commit patch
+        run: |
+          npx prettier --write src/main.tsx
+          git config user.name "ShelterPawtners automation"
+          git config user.email "shelterpawtners@gmail.com"
+          git add src/main.tsx
+          git commit -m "Handle invalid password recovery links"
+          git push origin HEAD:launch/pre-cutover-readiness
