@@ -1,6 +1,6 @@
 # LL-4 Production Auth + Email Readiness
 
-Status: implementation/pre-cutover preparation in progress
+Status: hosted email confirmation acceptance partially complete; recovery/OAuth acceptance remains
 
 Issue: #40
 
@@ -24,11 +24,7 @@ The React client already:
 - exposes `/reset-password` and changes the password through `auth.updateUser`;
 - gates the Google button behind `VITE_GOOGLE_AUTH_ENABLED`.
 
-These fixed same-origin paths are compatible with a narrow Supabase redirect allowlist. The hosted Auth configuration must still be changed before live acceptance.
-
 ## Approved production URL configuration
-
-Before the final `shelterpawtners.com` web-domain cutover, configure only origins that are actually live and under owner control.
 
 Target final Site URL after the separately gated web cutover:
 
@@ -42,15 +38,15 @@ Required final redirect paths:
 - `https://shelterpawtners.com/onboarding/rave_vendor`
 - `https://shelterpawtners.com/reset-password`
 
-For pre-cutover hosted QA, use the exact active Vercel production/QA origin with the same paths. Remove obsolete preview origins after acceptance. Do not add an unrestricted `https://*.vercel.app/**` or broad production-origin wildcard.
+For pre-cutover hosted QA, use the exact active Vercel production/QA origin with the same paths. Do not add an unrestricted `https://*.vercel.app/**` or broad production-origin wildcard.
 
 ### Hosted owner checkpoint — 2026-09-10
 
-The owner changed the hosted Supabase Site URL from `http://localhost:3000` to:
+The hosted Supabase Site URL is now:
 
 - `https://lost-paws-one.vercel.app`
 
-The owner also added broad `/**` redirect entries for the Vercel origin and localhost during the interactive setup. Before real external acceptance, tighten the production Vercel allowlist to the exact application paths below, matching the existing client behavior:
+The broad Vercel production wildcard was replaced with the exact pre-cutover application paths:
 
 - `https://lost-paws-one.vercel.app/onboarding/guardian`
 - `https://lost-paws-one.vercel.app/onboarding/shelter`
@@ -58,7 +54,7 @@ The owner also added broad `/**` redirect entries for the Vercel origin and loca
 - `https://lost-paws-one.vercel.app/onboarding/rave_vendor`
 - `https://lost-paws-one.vercel.app/reset-password`
 
-Local development may retain `http://localhost:3000/**` while development remains active. The broad Vercel production `/**` entry should be removed after the exact paths are present.
+Local development may retain `http://localhost:3000/**` while development remains active.
 
 ## Resend DNS boundary
 
@@ -69,19 +65,37 @@ Completed on the free tier for MVP acceptance preparation:
 - Resend Receiving remains disabled;
 - Microsoft 365 apex mail DNS was not intentionally changed.
 
-Keep tracking disabled for Auth email links because Supabase warns that link rewriting can break confirmation/recovery URLs.
+Keep tracking disabled for Auth email links because link rewriting can break confirmation/recovery URLs.
 
-## Supabase custom SMTP target
+## Supabase custom SMTP and hosted Auth settings
 
-Hosted Supabase Auth custom SMTP is now enabled and saved using Resend SMTP with:
+Hosted Supabase Auth custom SMTP is enabled and saved using Resend SMTP with:
 
 - From address: `noreply@auth.shelterpawtners.com`
 - Sender name: `ShelterPawtners`
 - SMTP credentials: stored only in provider configuration; never commit them.
 
-Email confirmation and secure email-change settings still require hosted-console verification during the next Auth configuration checkpoint.
+Hosted Auth settings were visually verified on 2026-09-10:
 
-Supabase documents a default 30-auth-email-per-hour limit after custom SMTP is enabled. That is sufficient for MVP validation; do not buy capacity preemptively.
+- new user signup enabled;
+- confirm email enabled;
+- email provider enabled;
+- anonymous sign-in disabled;
+- manual linking disabled;
+- leaked-password protection unavailable on the free plan and intentionally not purchased.
+
+Minimum password length should remain at least 8 characters for the launch contract.
+
+## Live acceptance evidence — 2026-09-10
+
+Owner completed a real Guardian registration against the hosted app using an external inbox. Evidence reported in the controller conversation:
+
+- signup succeeded;
+- confirmation email was delivered through the configured Supabase/Resend path;
+- confirmation link worked;
+- confirmation returned the Guardian to the expected Pet Basics/onboarding flow.
+
+This is sufficient to close the first Guardian confirmation-path acceptance items. Do not reopen Resend/domain/SMTP setup unless a later delivery regression appears.
 
 ## Email templates
 
@@ -104,37 +118,36 @@ For production Google login:
 
 ## Leaked-password protection
 
-Supabase currently documents leaked-password protection as **Pro Plan and above**. The project guardrail forbids paid upgrades, so this is intentionally **not enabled during the MVP free-tier sprint**. Keep the application minimum password length at least 8 characters and record leaked-password protection as a post-MVP security upgrade candidate rather than silently purchasing a plan.
+Supabase currently exposes leaked-password protection only on a paid plan. The project guardrail forbids paid upgrades, so this is intentionally not enabled during the MVP free-tier sprint. Keep the minimum password length at least 8 characters and record leaked-password protection as a post-MVP security upgrade candidate.
 
 ## Live acceptance checklist
 
-Do not mark LL-4 complete until all available items are evidenced:
+Do not mark LL-4 fully complete until all available items are evidenced:
 
 - [x] Resend free-tier account/domain available.
 - [x] `auth.shelterpawtners.com` verified using only Resend subdomain DNS records.
 - [x] Supabase custom SMTP enabled with Resend credentials.
-- [ ] Production email confirmations enabled/verified in hosted Auth settings.
-- [ ] Site URL and redirect allowlist narrowed to the exact approved hosted origins/paths. Site URL is now correct for pre-cutover Vercel acceptance; exact-path redirect tightening remains.
-- [ ] Safe test signup receives an external confirmation email.
-- [ ] Confirmation link returns to the correct persona onboarding path.
+- [x] Production email confirmations enabled/verified in hosted Auth settings.
+- [x] Site URL and redirect allowlist narrowed to the exact approved pre-cutover hosted origin/paths.
+- [x] Safe Guardian test signup receives an external confirmation email.
+- [x] Guardian confirmation link returns to the correct onboarding/Pet Basics path.
 - [ ] Safe test password recovery receives an external recovery email.
 - [ ] Recovery link reaches `/reset-password`, password update succeeds, and the new password signs in.
 - [ ] Invalid/expired recovery link fails safely.
 - [ ] Google OAuth provider configured and live flow tested if Google console credentials are accessible.
-- [ ] Guardian, Shelter, PetBiz, and RAVE persona continuity verified.
-- [ ] Existing Passport, Marketplace, shelter verification, RLS, Persona QA, Hosted QA, CI, and Merge Gate regressions remain green.
+- [ ] Guardian, Shelter, PetBiz, and RAVE persona continuity verified under final hosted Auth settings.
+- [ ] Existing Passport, Marketplace, shelter verification, RLS, Persona QA, Hosted QA, CI, and Merge Gate regressions remain green after post-MVP UX changes.
 
 ## External capability boundary
 
-The connected tooling can inspect GitHub, Vercel, and Supabase project/database state, but the currently exposed Supabase actions do not provide hosted Auth URL/provider-setting writes. Resend free-tier domain verification and SMTP setup are complete and must not be reopened unless delivery testing shows a regression.
+The connected tooling can inspect GitHub and repository state, but currently exposed provider tooling does not provide direct writes to hosted Supabase Auth provider settings, Google Developer Console, or Meta Developer Console.
 
-The remaining external-console actions are:
+Remaining external-console actions:
 
-1. tighten hosted Supabase redirect allowlist to the exact Vercel onboarding/recovery paths listed above;
-2. verify email confirmation and secure email-change settings;
-3. install/verify the confirmation and recovery templates in hosted Supabase Auth;
-4. perform safe live signup/confirmation/recovery inbox click-through tests;
-5. configure Google provider credentials and callback in Google Cloud/Supabase when owner console access is available;
-6. configure Facebook provider credentials/callback in Meta/Supabase when owner console access is available.
+1. verify/install the hosted confirmation and recovery templates if they differ from repository references;
+2. perform safe live password-recovery acceptance including invalid/expired-link behavior;
+3. configure Google provider credentials/callback in Google Cloud/Supabase when console access is available;
+4. configure Facebook provider credentials/callback in Meta/Supabase when console access is available;
+5. run remaining persona/OAuth acceptance without creating duplicate profile/organization records.
 
-These external actions do not block independent LL-6 launch-health verification, documentation, or evidence-backed regression fixes.
+These actions do not block independent launch UX engineering, regression verification, legal-draft preparation, or cutover planning.
