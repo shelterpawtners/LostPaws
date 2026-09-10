@@ -1,10 +1,13 @@
 import { createClient } from "@supabase/supabase-js";
 import { expect, test, type Page } from "@playwright/test";
 
-const offerTitle = `Playwright welcome offer ${Date.now()}-${Math.random().toString(16).slice(2)}`;
+const runSuffix = `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+const offerTitle = `Playwright welcome offer ${runSuffix}`;
+const partnerOrganizationName = `Playwright real Partner ${runSuffix}`;
 
 test.describe.serial("Phase 2 offer and redemption journey", () => {
   let redeemCode = "";
+  let partnerOrganizationId = "";
 
   async function signIn(page: Page, email: string, password: string) {
     await page.goto("/login");
@@ -14,11 +17,80 @@ test.describe.serial("Phase 2 offer and redemption journey", () => {
     await expect(page).toHaveURL(/\/dashboard$/);
   }
 
+  test.beforeAll(async () => {
+    const supabaseUrl = process.env.PLAYWRIGHT_SUPABASE_URL;
+    const supabaseKey = process.env.PLAYWRIGHT_SUPABASE_PUBLISHABLE_KEY;
+    expect(supabaseUrl).toBeTruthy();
+    expect(supabaseKey).toBeTruthy();
+
+    const partnerDb = createClient(supabaseUrl!, supabaseKey!);
+    const signInResult = await partnerDb.auth.signInWithPassword({
+      email: "partner-admin@example.invalid",
+      password: "Demo-only-Partner!",
+    });
+    expect(signInResult.error).toBeNull();
+    const userId = signInResult.data.user?.id;
+    expect(userId).toBeTruthy();
+
+    const { data: draft, error: draftError } = await partnerDb
+      .from("organization_onboarding_drafts")
+      .upsert(
+        {
+          created_by: userId!,
+          partner_kind: "petbiz",
+          form_data: {
+            name: partnerOrganizationName,
+            relationship: "independent",
+            additionalLocations: [],
+          },
+          status: "editing",
+          resolved_organization_id: null,
+          resolution_note: null,
+        },
+        { onConflict: "created_by" },
+      )
+      .select("id")
+      .single();
+    expect(draftError).toBeNull();
+    expect(draft?.id).toBeTruthy();
+
+    const { data: organizationId, error: organizationError } =
+      await partnerDb.rpc("create_partner_organization", {
+        p_partner_kind: "petbiz",
+        p_form: {
+          name: partnerOrganizationName,
+          relationship: "independent",
+          additionalLocations: [],
+        },
+        p_draft_id: draft!.id,
+      });
+    expect(organizationError).toBeNull();
+    expect(organizationId).toBeTruthy();
+    partnerOrganizationId = organizationId as string;
+
+    const { data: createdOrganization, error: createdOrganizationError } =
+      await partnerDb
+        .from("organizations")
+        .select("id,is_demo")
+        .eq("id", partnerOrganizationId)
+        .single();
+    expect(createdOrganizationError).toBeNull();
+    expect(createdOrganization).toMatchObject({
+      id: partnerOrganizationId,
+      is_demo: false,
+    });
+  });
+
   test("Partner creates, previews, and publishes an offer", async ({
     page,
   }) => {
     await signIn(page, "partner-admin@example.invalid", "Demo-only-Partner!");
     await page.goto("/business");
+    const organization = page.getByLabel("Organization");
+    await expect(organization).toContainText(partnerOrganizationName, {
+      timeout: 15_000,
+    });
+    await organization.selectOption(partnerOrganizationId);
     await expect(page.getByTestId("partner-profile-save-status")).toHaveText(
       /^(draft|published|unpublished)$/i,
       { timeout: 15_000 },
@@ -34,10 +106,8 @@ test.describe.serial("Phase 2 offer and redemption journey", () => {
     await expect(page.getByRole("status")).toContainText(
       "Saved as a private draft",
     );
-    const organization = page.getByLabel("Organization");
-    const selectedOrganizationId = await organization.inputValue();
     await page.reload();
-    await expect(organization).toHaveValue(selectedOrganizationId);
+    await expect(organization).toHaveValue(partnerOrganizationId);
     await expect(page.getByLabel("Public description")).toHaveValue(
       "A focused Playwright Partner profile for the marketplace golden path.",
     );
@@ -50,6 +120,11 @@ test.describe.serial("Phase 2 offer and redemption journey", () => {
     await expect(page.getByRole("status")).toContainText("Published.");
 
     await page.goto("/partner/offers");
+    const offerOrganization = page.getByLabel("Organization");
+    await expect(offerOrganization).toContainText(partnerOrganizationName, {
+      timeout: 15_000,
+    });
+    await offerOrganization.selectOption(partnerOrganizationId);
     await expect(page.getByTestId("marketplace-profile-state")).toContainText(
       "Marketplace profile: published",
     );
