@@ -5,6 +5,8 @@ import {
   ArrowUpRight,
   BadgeCheck,
   HeartHandshake,
+  LayoutGrid,
+  List,
   Search,
   ShieldCheck,
   SlidersHorizontal,
@@ -15,6 +17,7 @@ import { OfferCard, type PublicOffer } from "./OfferCard";
 import "../marketplace.css";
 import "../marketplace-flagship.css";
 import "../marketplace-premium.css";
+import "../marketplace-launch-density.css";
 
 function humanize(value: string) {
   return value
@@ -33,6 +36,8 @@ function isExternalResource(offer: PublicOffer) {
   return ["public_program", "community"].includes(offer.classification);
 }
 
+type MarketplaceViewMode = "grid" | "list";
+
 export function OfferMarketplace({
   organizationId,
 }: {
@@ -48,6 +53,7 @@ export function OfferMarketplace({
   const [status, setStatus] = useState("");
   const [query, setQuery] = useState("");
   const [classification, setClassification] = useState("all");
+  const [viewMode, setViewMode] = useState<MarketplaceViewMode>("grid");
   const [claim, setClaim] = useState<{
     redeem_code: string;
     expires_at: string;
@@ -382,18 +388,42 @@ export function OfferMarketplace({
               : " current listings"}
           </span>
         </div>
-        {(query || classification !== "all") && (
-          <button
-            type="button"
-            className="marketplaceClearFilters"
-            onClick={() => {
-              setQuery("");
-              setClassification("all");
-            }}
+        <div className="marketplaceResultsActions">
+          <div
+            className="marketplaceViewControls"
+            role="group"
+            aria-label="Marketplace view"
           >
-            Clear search and filters
-          </button>
-        )}
+            <button
+              type="button"
+              className={viewMode === "grid" ? "active" : ""}
+              aria-pressed={viewMode === "grid"}
+              onClick={() => setViewMode("grid")}
+            >
+              <LayoutGrid /> Grid
+            </button>
+            <button
+              type="button"
+              className={viewMode === "list" ? "active" : ""}
+              aria-pressed={viewMode === "list"}
+              onClick={() => setViewMode("list")}
+            >
+              <List /> List
+            </button>
+          </div>
+          {(query || classification !== "all") && (
+            <button
+              type="button"
+              className="marketplaceClearFilters"
+              onClick={() => {
+                setQuery("");
+                setClassification("all");
+              }}
+            >
+              Clear search and filters
+            </button>
+          )}
+        </div>
       </div>
 
       {!offers.length ? (
@@ -413,7 +443,9 @@ export function OfferMarketplace({
           </p>
         </div>
       ) : (
-        <div className="marketplaceCardGrid marketplaceCardGrid-value">
+        <div
+          className={`marketplaceCardGrid marketplaceCardGrid-value marketplaceCardGrid-${viewMode}`}
+        >
           {visibleOffers.map((offer) => (
             <OfferCard key={offer.offer_id} offer={offer} concept="value" />
           ))}
