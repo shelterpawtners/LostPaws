@@ -1,59 +1,59 @@
 # AI Handoff
 
-STATUS: READY_FOR_ACCEPTANCE
+STATUS: IN_PROGRESS
 CURRENT_PHASE: Phase 3 — Lost Lands MVP
-CURRENT_CHECKPOINT: LL-3 / Issue #39 — Shelter adoption verification golden path
-NEXT_CHECKPOINT: LL-4 — production auth/email, Google OAuth, and transactional email
+CURRENT_CHECKPOINT: LL-4 / Issue #40 — production auth/email + Google OAuth readiness
+NEXT_CHECKPOINT: LL-5 / Issue #41 — Meta social login
 OWNER_DECISION_REQUIRED: NO
 SAFE_TO_CONTINUE: YES
-ACCEPTED_CODE_SHA: NONE
+ACCEPTED_CODE_SHA: 33447725649cc91cfeb1e388b06092e086558321
 ACCEPTANCE_DEPLOYED_SHA: NONE
-ACCEPTANCE_RUNTIME: LOCAL_HEAD
+ACCEPTANCE_RUNTIME: MAIN
 
 ## Active task
 
-Issue #39 — **LL-3: Shelter adoption verification golden path**
+Issue #40 — **LL-4: Production auth email + Google OAuth readiness**
 
 Agent: ChatGPT / GitHub operator
 
-Branch: `phase3/shelter-verification`
-
-PR: #43
+Branch: `phase3/auth-email-readiness`
 
 ## Owner authorization
 
-The owner has authorized autonomous continuation through the Lost Lands MVP and standing merge authorization for green engineering PRs until revoked. Do not wait for the next hourly controller when safe work can continue; after a completed or externally blocked slice, immediately advance to the next authorized independent slice.
+The owner has authorized autonomous continuation through the Lost Lands MVP and standing merge authorization for green engineering PRs until revoked. Do not wait for a later controller when safe work can continue; after a completed or externally blocked slice, immediately advance to the next authorized independent slice.
 
 Protected gates remain: no paid upgrades, no destructive production-data changes, no Microsoft 365 mail DNS changes, no OD-003 customer-facing verified-savings rule invention, no OD-004 money movement/settlement decisions, no publication of final unreviewed Terms/Privacy, and no final `shelterpawtners.com` production web-domain DNS/custom-domain cutover.
 
 ## Completed launch slices
 
 - LL-1 Guardian Digital Pet Passport merged via PR #37 at `0ae4b4d86f8f1083343d8e23357d64268ccce06c` after full required acceptance.
-- LL-2 Premium Marketplace merged via PR #42 at `08bd137ea79b951e540b3f0c2909a4ea5adc82fc` after CI, Hosted QA/design/axe, full Persona claim/redemption regression, Admin QA, Dependency Review, and Merge Gate passed.
+- LL-2 Premium Marketplace merged via PR #42 at `08bd137ea79b951e540b3f0c2909a4ea5adc82fc` after full required acceptance.
+- LL-3 Shelter adoption verification merged via PR #43 at `33447725649cc91cfeb1e388b06092e086558321` after CI, Hosted QA, Database QA, Persona QA, Dependency Review, and Merge Gate all passed on exact head `7d36b54a6e36b0e31bbe5d84b283542278a5fd4b`.
 
-## LL-3 implementation contract
+## LL-4 verified platform facts
 
-Reuse the existing `public.adoption_verification_requests` record and `private.secure_tokens` infrastructure. Do not create a parallel verification model.
+Current Supabase documentation was checked before implementation.
 
-Required boundaries:
+- Production Auth email should use custom SMTP; Resend is explicitly supported.
+- A dedicated auth sending subdomain is recommended, matching the approved `auth.shelterpawtners.com` / `no-reply@auth.shelterpawtners.com` design.
+- Confirmation/recovery/OAuth redirects are constrained by the hosted Auth Site URL and Redirect URL allowlist.
+- Email tracking/link rewriting should remain disabled for Auth mail because it can break Supabase confirmation URLs.
+- Supabase currently documents leaked-password protection as Pro-only. The owner forbids paid-plan upgrades, so that feature is intentionally deferred rather than purchased.
 
-- Guardian submission from an active-primary guardianship, with shelter/rescue contact information and no fabricated verified state.
-- High-entropy 30-day responder token issued only through a service-only function; raw token is never exposed to the Guardian client.
-- Anonymous responder lookup is token-scoped and returns only the minimum pet/adoption context needed to answer.
-- Anonymous confirmation/decline consumes the token and cannot be replayed; invalid, expired, revoked, or consumed tokens cannot act.
-- Confirmed response persists the approved adoption date/responder fields and sets the pet's shelter-confirmed marker.
-- Guardian sees current verification state from their existing private request record.
-- Reminder contract: first reminder no sooner than 10 days after successful delivery, maximum three reminders before the 30-day token expiry. Later reminder timing remains caller-supplied/service-controlled so this slice does not invent an unapproved cadence.
-- Actual transactional delivery remains LL-4; LL-3 exposes/tests the service boundary needed by LL-4.
+## LL-4 work completed on active branch
 
-## Acceptance state
+- Added `docs/LL4-AUTH-EMAIL-READINESS.md` with the production URL, Resend SMTP, Google OAuth, security, acceptance, and external-console contract.
+- Added minimal authentication-only reference templates:
+  - `supabase/templates/confirmation.html`
+  - `supabase/templates/recovery.html`
+- Confirmed the existing application already has fixed same-origin redirect paths for signup, Google OAuth, and password recovery, plus `/forgot-password` and `/reset-password` surfaces.
 
-PR #43 is the active LL-3 acceptance PR. The first acceptance pass showed Hosted QA, Persona QA, and Merge Gate green but CI failed only at the repository Prettier check. A temporary self-deleting formatter workflow ran Prettier against the changed source/docs files and removed itself. The automation-authored formatter commit caused GitHub to mark the immediate pull-request workflow reruns `action_required`; this handoff commit intentionally retriggers the real required checks from the repository owner identity without weakening any gate.
+## Current external capability boundary
 
-## Acceptance required
+The connected Supabase tool exposes project/database/functions operations but not hosted Auth URL/SMTP/provider configuration writes. No Resend plugin is currently available. Therefore Resend account/domain creation, DNS values, SMTP credential entry, hosted Auth URL/provider configuration, and real inbox click-through validation require an external provider/browser surface unless a compatible connected capability becomes available.
 
-Database migration/reset/pgTAP/RLS and RPC-execute boundaries; targeted Guardian → anonymous shelter responder → Guardian verified golden path; invalid/consumed token behavior; existing Passport, Marketplace, claim/redemption, Persona, Admin, Hosted design/runtime, CI, Dependency Review, and Merge Gate regressions.
+This external boundary must **not** stall independent LL-5/LL-6 engineering preparation.
 
 ## Next safe action
 
-Observe the current PR #43 acceptance runs. Fix only reproducible in-scope defects without weakening tests/RLS. When all required gates are green, record the accepted SHA, merge #43 under standing owner authorization, close Issue #39 if appropriate, and immediately begin LL-4 production auth/email + Google OAuth readiness. For LL-4, current Supabase guidance requires custom SMTP for production auth email and permits Resend; Site URL and redirect URLs must constrain email/OAuth destinations. If provider/dashboard credentials are unavailable through connected tools, complete code/config/test preparation and document only the minimal external console action still required.
+Open the LL-4 preparation PR, run normal CI/Hosted/Persona/Database/Merge Gate acceptance, and merge when green. Continue any independent auth regression/test/documentation improvements that can be made without provider secrets. If provider console access remains unavailable, record the exact external actions from `docs/LL4-AUTH-EMAIL-READINESS.md` and immediately start LL-5 Meta social-login implementation/preparation instead of waiting.
