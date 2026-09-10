@@ -56,7 +56,7 @@ test("Guardian Deal Moment survives claim to redemption, supports replace, and r
     "create_partner_offer",
     {
       p_organization_id: partnerOrganizationId,
-      p_payload: {
+      p_terms: {
         title: offerTitle,
         summary: "Deal Moment browser acceptance offer",
         details: "Local browser QA only.",
@@ -126,7 +126,11 @@ test("Guardian Deal Moment survives claim to redemption, supports replace, and r
 
   const { data: redemptionId, error: redeemError } = await partnerDb.rpc(
     "confirm_redemption",
-    { p_code: claim.redeem_code, p_context: null },
+    {
+      p_code: claim.redeem_code,
+      p_location_id: null,
+      p_attribution: {},
+    },
   );
   expect(redeemError).toBeNull();
   expect(redemptionId).toBeTruthy();
