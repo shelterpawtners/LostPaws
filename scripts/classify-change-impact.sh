@@ -37,6 +37,12 @@ for file in "${changed_files[@]}"; do
           shared_app=true
           persona=true
           ;;
+        src/components/OfferMarketplace.tsx|src/components/OfferCard.tsx)
+          # Marketplace offer presentation owns the Guardian-facing path into
+          # offer detail/claim behavior. Changes here require the full Persona
+          # claim/redemption regression even when no shared auth code changes.
+          persona=true
+          ;;
       esac
       ;;
     public/*|index.html|vite.config.*|tsconfig*.json)
