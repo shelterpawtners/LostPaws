@@ -152,16 +152,14 @@ test.describe.serial("Phase 2 offer and redemption journey", () => {
     await expect(page.getByRole("status")).toContainText("publish complete");
   });
 
-  test("Guardian sees current terms and claims the exact offer", async ({
+  test("Guardian sees current terms, claims the exact offer, and sees Pending activity", async ({
     page,
   }) => {
     await signIn(page, "guardian-a@example.invalid", "Demo-only-Guardian-A!");
     await page.goto("/marketplace");
     const card = page.locator(".offerCard", { hasText: offerTitle });
     await expect(card).toBeVisible();
-    await card
-      .getByRole("link", { name: "See offer and eligibility" })
-      .click();
+    await card.getByRole("link", { name: "See offer and eligibility" }).click();
     await page.reload();
     await expect(
       page.getByText("Demo only. One claim per guardian."),
@@ -174,22 +172,27 @@ test.describe.serial("Phase 2 offer and redemption journey", () => {
     await expect(page.locator(".redemptionCode")).toContainText(
       "contains no name, email, or pet information",
     );
+
+    await page.goto("/dashboard");
+    const timelineItem = page.locator(".guardianTimelineItem", {
+      hasText: offerTitle,
+    });
+    await expect(timelineItem).toBeVisible();
+    await expect(
+      timelineItem.getByText("Pending", { exact: true }),
+    ).toBeVisible();
   });
 
-  test("Partner captures candidate savings context, confirms once, and replay fails safely", async ({
+  test("Partner captures candidate savings context, confirms once, replay fails safely, and Guardian sees Redeemed", async ({
     page,
   }) => {
     await signIn(page, "partner-admin@example.invalid", "Demo-only-Partner!");
     await page.goto(`/redeem/${redeemCode}`);
-    await expect(
-      page.getByRole("heading", { name: offerTitle }),
-    ).toBeVisible();
+    await expect(page.getByRole("heading", { name: offerTitle })).toBeVisible();
     await expect(page.getByText("Valid claim")).toBeVisible();
 
     await page.getByLabel("Reference/list value in minor units").fill("2500");
-    await page
-      .getByLabel("Amount actually paid in minor units")
-      .fill("1800");
+    await page.getByLabel("Amount actually paid in minor units").fill("1800");
     await page.getByLabel("Currency code").fill("usd");
     await page.getByLabel("Reference value type").selectOption("retail_price");
     await page.getByLabel("Reference source").selectOption("receipt");
@@ -242,6 +245,15 @@ test.describe.serial("Phase 2 offer and redemption journey", () => {
     await expect(page.getByRole("status")).toContainText(
       "invalid, expired, used, or belongs to another Partner",
     );
+
+    await signIn(page, "guardian-a@example.invalid", "Demo-only-Guardian-A!");
+    const timelineItem = page.locator(".guardianTimelineItem", {
+      hasText: offerTitle,
+    });
+    await expect(timelineItem).toBeVisible();
+    await expect(
+      timelineItem.getByText("Redeemed", { exact: true }),
+    ).toBeVisible();
   });
 
   test("camera-unavailable path keeps manual entry available", async ({

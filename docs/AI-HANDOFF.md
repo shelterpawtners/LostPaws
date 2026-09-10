@@ -1,67 +1,76 @@
 # AI Handoff
 
-STATUS: BLOCKED
-CURRENT_PHASE: Phase 3 — Lost Lands MVP engineering complete
-CURRENT_CHECKPOINT: Post-LL-6 external provider acceptance / owner-gated production cutover
-NEXT_CHECKPOINT: Re-check authorized provider/tool prerequisites; complete any newly actionable prerequisite; final production cutover still requires separate owner authorization
-OWNER_DECISION_REQUIRED: YES
+STATUS: READY_FOR_ACCEPTANCE
+CURRENT_PHASE: Post-Lost-Lands-MVP data architecture expansion
+CURRENT_CHECKPOINT: Data Architecture Slice 1 / Issue #49 — multi-photo Pet Passport + Guardian activity timeline
+NEXT_CHECKPOINT: Issue #51 — Guardian Deal Moments tied to claim/redemption activity
+OWNER_DECISION_REQUIRED: NO
 SAFE_TO_CONTINUE: YES
-ACCEPTED_CODE_SHA: 0bee999152e4bc84b910dfeccf7a11074a14445b
+ACCEPTED_CODE_SHA: NONE
 ACCEPTANCE_DEPLOYED_SHA: NONE
-ACCEPTANCE_RUNTIME: MAIN
+ACCEPTANCE_RUNTIME: HOSTED_PREVIEW_AND_LOCAL_HEAD
 
-## Completed Lost Lands MVP slices
+## Active task
 
-- LL-1 Guardian Digital Pet Passport merged via PR #37.
-- LL-2 Premium Marketplace merged via PR #42.
-- LL-3 Shelter adoption verification merged via PR #43 after full required acceptance.
-- LL-4 provider-independent production Auth/email readiness merged via PR #44 after CI, Hosted QA, Database QA, Persona QA, Dependency Review, and Merge Gate passed.
-- LL-5 Meta social-auth capability prep merged via PR #45 after the same required acceptance stack passed. Facebook is the truthful general Meta sign-in path; universal consumer Instagram login is not advertised.
-- LL-6 final regression/launch-readiness preparation merged via PR #47 at `0bee999152e4bc84b910dfeccf7a11074a14445b` after CI, Hosted QA, Database QA, Persona QA, Dependency Review, and Merge Gate were all green on the exact PR head.
+Issue #49 — **Data Architecture Slice 1: multi-photo Pet Passport + Guardian activity timeline**
 
-Completed LL slices must not be reopened without concrete regression evidence.
+Branch: `data-architecture/pet-media-guardian-feed`
+PR: #50
+Stable preview: `https://lost-paws-git-data-architecture-p-046c08-jims-projects-acec6bcb.vercel.app/`
 
-## Launch-readiness artifacts
+Owner approved this direction on 2026-09-10 and subsequently set a firm product-storage constraint: a Pet Passport may keep **up to five active photos per pet**. Guardians should later be encouraged to post separate Deal Moment photos of a pet receiving/redeeming/using an offer; those activity photos must not consume Passport-gallery slots.
 
-- `docs/LL4-AUTH-EMAIL-READINESS.md` — production Auth/email/provider setup and live acceptance contract.
-- `docs/LL6-LAUNCH-READINESS.md` — integrated regression, browser/mobile/accessibility, security, provider prerequisites, main-domain pre-cutover, and rollback checklist.
-- `docs/legal/DRAFT-TERMS-OF-SERVICE.md` — owner/legal-review draft only; not approved for publication.
-- `docs/legal/DRAFT-PRIVACY-NOTICE.md` — owner/legal-review draft only; not approved for publication.
+Current implementation includes the post-DBQA security correction that prevents the five-photo trigger from disclosing another pet's media-count state before RLS denies an unauthorized write. Persona QA explicitly includes `e2e/guardian-pet-media.spec.ts` so a gate-only success cannot be mistaken for five-photo browser acceptance.
 
-## External launch-gate recheck — 2026-09-10
+## Approved scope
 
-- Supabase project `shelterpawtners-dev` remains `ACTIVE_HEALTHY`.
-- Current Supabase connected tooling exposes database/project/Edge Function operations and Auth documentation search, but no hosted Auth configuration writes for SMTP, Site URL/redirect allowlists, confirmation/recovery configuration, or social-provider credentials.
-- No installed Resend or SiteGround DNS connector is currently available. Plugin discovery still exposes Cloudflare as installable, but the current DNS authority is not established as Cloudflare and it must not be introduced merely to bypass the actual DNS provider.
-- Connected Vercel tooling remains available. Project `lost-paws` is on the Hobby plan and the latest runtime-error recheck reports no production runtime errors in the preceding 24 hours.
-- Browser automation capability is installed and can navigate/test web applications. It does not by itself supply authenticated Resend, SiteGround, Google Developer, Meta Developer, or Supabase Dashboard provider-console sessions/credentials; non-interactive provider OAuth/login prompts remain an external boundary unless a reusable authorized session becomes available.
-- The controller is explicitly authorized to remain active at this gate. `SAFE_TO_CONTINUE: YES` means future runs should re-check connected tooling and perform useful non-destructive launch-readiness verification. It does **not** authorize the protected production-domain cutover or any other prohibited action.
+- Add normalized one-to-many pet media rather than expanding the legacy single-photo columns.
+- Keep pet media private by default, preserve active-guardianship read authority, and require active-primary Guardian authority to manage media.
+- Enforce a **database-level maximum of five active Passport images per pet**, so UI and future imports cannot bypass the storage constraint.
+- Support JPEG/PNG/WebP upload, deterministic primary image, explicit ordering, and safe remove/replace behavior that archives metadata and removes Guardian-owned storage bytes.
+- Retain source-system, external-media, permalink, provenance, capture/import timestamp, and visibility fields so future approved Meta/Facebook/Instagram and shelter/provider imports do not require another photo model.
+- Add a private Guardian activity timeline to the Guardian profile/dashboard.
+- Derive offer claim status directly from canonical `offer_claims` + `redemptions`; do not duplicate financial/economic truth into a social-feed ledger.
+- Show truthful Pending/Redeemed/Reversed/Disputed/Cancelled/Expired states but no customer-facing savings amount while OD-003 remains unresolved.
+- Protect the new behavior with pgTAP/RLS plus Playwright five-photo/replace and claim→redeem timeline assertions.
 
-## Exact external blocker
+## Shared-dev state
 
-The remaining launch work requires provider-console credentials/session access not currently exposed by connected tools:
+- `20260910162500_data_architecture_pet_media_guardian_feed.sql` passed full local Database QA and is applied to shared dev.
+- `20260910163500_limit_active_pet_photos.sql` also passed complete local Supabase reset/seed + pgTAP/RLS and is now applied successfully to shared dev.
+- The five-photo trigger, archive/remove RPC, and Guardian-owned storage delete policy are therefore available to the hosted preview.
 
-1. Create/sign into the Resend free-tier account and verify `auth.shelterpawtners.com` using only Resend-provided subdomain DNS records; do not alter Microsoft 365 apex mail DNS.
-2. Generate Resend SMTP credentials and configure Supabase Auth custom SMTP for `no-reply@auth.shelterpawtners.com`.
-3. Configure the hosted Supabase Auth Site URL and exact redirect allowlist; enable/test confirmation and recovery templates.
-4. Configure Google OAuth credentials/provider and run live persona/duplicate-prevention acceptance if credentials are available.
-5. Configure Meta/Facebook app credentials/provider and run live Facebook sign-in acceptance. Do not add a misleading universal Instagram-login path.
-6. Perform safe external inbox signup/confirmation/recovery click-through tests.
-7. Review/approve the draft Terms and Privacy Notice before any final publication.
-8. Separately authorize the final `shelterpawtners.com` production web-domain DNS/custom-domain cutover after the above acceptance is complete.
+## Pre-acceptance proof
 
-Leaked-password protection remains a post-MVP candidate if enabling it would require a paid Supabase tier; do not purchase or upgrade solely for it.
+The reconciled branch ancestry passed substantive CI and database proof before promotion to acceptance:
 
-## Controller behavior at this gate
+- CI lint, shell lint, unit tests, and production build: green.
+- Database QA: complete local Supabase startup, reset, seed, migration replay, and pgTAP/RLS: green.
+- Dependency Review: green.
+- Merge Gate: green.
+- The earlier database failure was fixed at the root by preserving RLS denial before photo-cap feedback; no assertion or authorization rule was weakened.
 
-On each authorized continuation run:
+## Next slice already captured
 
-1. Treat GitHub/main and this handoff as source of truth.
-2. Re-check currently connected/installed tooling for Resend, actual DNS authority, Supabase hosted Auth configuration, Google OAuth, Meta/Facebook, Vercel, and browser automation.
-3. If a newly available tool/session makes an authorized launch prerequisite actionable, complete it and record evidence here.
-4. Otherwise perform only useful non-destructive verification/documentation; avoid churn and do not reopen LL-1 through LL-6 without regression evidence.
-5. Keep the controller enabled until the owner explicitly disables it.
+Issue #51 — **Guardian Deal Moments: redemption photo posts in activity timeline**.
 
-## Protected stop
+First bounded release: one optional, replaceable image plus short caption per claim; private by default; optimized before upload; linked to the claim/redemption timeline; independent of the five Passport-photo slots; no effect on whether redemption succeeds. Meta sharing/import and broad public-feed behavior remain later work.
 
-Do not perform the final production `shelterpawtners.com` web-domain DNS/custom-domain cutover, publish the legal drafts as final, make OD-003/OD-004 decisions, purchase or upgrade paid services, make destructive production-data changes, or alter Microsoft 365 mail DNS without the separately required owner action/authorization.
+## Existing launch gate preserved
+
+The previously completed LL-1 through LL-6 engineering remains accepted. External provider work is still separately pending: Resend/auth subdomain + SMTP, hosted Supabase Auth settings, Google OAuth, Meta/Facebook live credentials/testing, external inbox acceptance, owner review of draft Terms/Privacy, and separately authorized final `shelterpawtners.com` web-domain cutover.
+
+This data-architecture work does not authorize any paid upgrade, production web-domain cutover, Microsoft 365 mail DNS change, OD-003/OD-004 decision, destructive production-data operation, or final legal publication.
+
+## Acceptance policy
+
+1. Execute current-head Persona QA including `e2e/guardian-pet-media.spec.ts` and claim→redeem timeline assertions.
+2. Execute Hosted QA against the stable PR #50 preview and confirm the current feature build is reachable.
+3. Require CI, Database QA, Persona QA, Hosted QA, Dependency Review, and Merge Gate green on the final head.
+4. Remove the temporary no-op preview-build marker before merge.
+5. Merge PR #50 under standing owner authorization only after all required final-head gates are green.
+6. Close Issue #49 and continue directly into Issue #51.
+
+## Next safe action
+
+Run full current-head browser acceptance, remove the temporary preview marker, reverify the final head, merge #50 if green, then start Issue #51 without waiting for another routine approval.
