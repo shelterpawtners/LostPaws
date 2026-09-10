@@ -14,6 +14,22 @@ begin
     return new;
   end if;
 
+  -- Do not disclose another pet's media count to an authenticated caller who
+  -- lacks primary-Guardian authority. RLS will reject that write after this
+  -- BEFORE trigger. A trusted backend/import context with no auth.uid() still
+  -- receives the same five-photo enforcement.
+  if auth.uid() is not null and not exists (
+    select 1
+    from public.guardianships g
+    where g.pet_id=new.pet_id
+      and g.guardian_id=auth.uid()
+      and g.relationship='primary'
+      and g.status='active'
+      and g.ended_at is null
+  ) then
+    return new;
+  end if;
+
   -- Serialize media additions/activations for the same pet so concurrent uploads
   -- cannot race past the five-photo limit.
   perform 1
