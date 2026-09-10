@@ -1,97 +1,96 @@
 # AI Handoff
 
-STATUS: COMPLETE
-CURRENT_PHASE: MVP Design Hardening + Human Release Readiness
-CURRENT_CHECKPOINT: Issue #5 — full-site human-style browser and persistence audit accepted
-NEXT_CHECKPOINT: Present the release-readiness result and await separate owner authorization before production-domain cutover or Phase 3 work.
+STATUS: IN_PROGRESS
+CURRENT_PHASE: Pre-cutover Launch Readiness
+CURRENT_CHECKPOINT: Issue #32 / PR #33 — Workstream A demo/QA isolation
+NEXT_CHECKPOINT: Pass Database QA, then validate/apply the accepted schema chain to shared dev before continuing launch merchandising/resource publication.
 OWNER_DECISION_REQUIRED: NO
 SAFE_TO_CONTINUE: YES
-ACCEPTED_CODE_SHA: 62cba023a4946993ad44fcbd0ab4f7fdab856a52
+ACCEPTED_CODE_SHA: NONE
 ACCEPTANCE_DEPLOYED_SHA: NONE
-ACCEPTANCE_RUNTIME: LOCAL_HEAD
+ACCEPTANCE_RUNTIME: PR_PREVIEW
 
-## Canonical baseline
+## Active task
 
-PR #30 / Issue #29 merged to `main` on September 9, 2026 at:
+Issue #32 — **Pre-cutover launch candidate: demo isolation, real adoption resources, signup/email readiness**
 
-`eeea59cf25435871145118eb244c16753aa3a91b`
+Agent: ChatGPT / GitHub operator
 
-Issue #5 accepted code SHA:
+Branch: `launch/pre-cutover-readiness`
 
-`62cba023a4946993ad44fcbd0ab4f7fdab856a52`
+PR: #33
 
-Branch: `qa/issue5-full-site-audit`
+Current implementation code SHA: `bfc60b1e935a80aa2ad2dc2eef37b869997e790a`
 
-PR: #31
+## Current objective
 
-## Issue #5 result
+Complete the pre-cutover launch-readiness work without changing production DNS, beginning Phase 3, adding paid infrastructure, or making unresolved savings/giving product decisions.
 
-The full-site human-style browser and persistence audit is complete. It exercised the currently implemented MVP as a human would use it and verified persisted truth through the application's authenticated/RLS paths instead of relying only on isolated responses.
+The first implementation checkpoint is Workstream A: preserve QA/demo data for authenticated testing while preventing it from appearing on anonymous/public Marketplace and partner-directory surfaces.
 
-Accepted coverage includes:
+## Work completed in this checkpoint
 
-1. implemented public and authenticated route traversal, aliases, back/forward, reload, and unknown-route behavior;
-2. Guardian multi-pet create -> leave -> return -> reopen -> reload/sign-in reconstruction;
-3. Guardian empty/non-empty CTA behavior and direct canonical pet/guardianship truth checks;
-4. PetBiz profile persistence, multiple-offer creation/publication/revisit, claim, redemption, replay, and cross-partner protections already implemented;
-5. Shelter and RAVE Vendor current dashboard/onboarding/profile state using Admin QA real-RLS identities;
-6. direct Supabase/RLS verification for canonical rows, relationships, statuses, and isolation;
-7. implemented failure/recovery behavior, including no partial Guardian row on failed save and exactly one successful record after retry;
-8. browser accessibility/responsive/runtime evidence at the accepted boundary.
+Commit `bfc60b1e935a80aa2ad2dc2eef37b869997e790a` adds `20260910030000_launch_demo_public_isolation.sql` and regression coverage.
 
-## Accepted deterministic evidence
+Implemented behavior:
 
-All required workflows passed on accepted SHA `62cba023a4946993ad44fcbd0ab4f7fdab856a52`:
+- backfill offers owned by demo organizations to `offers.is_demo=true` without deleting QA data;
+- add a private trigger so future offers created under demo organizations inherit demo state;
+- exclude demo offers and offers owned by demo organizations from `public_active_offers()`;
+- exclude demo organizations from `public_partner_directory()`;
+- return `null` from direct public partner-profile lookup for demo organizations, preventing guessed public URLs from bypassing directory filtering;
+- preserve authenticated/Admin access to the underlying demo records for QA;
+- update existing offer/profile pgTAP expectations to reflect the public-demo boundary;
+- add dedicated launch isolation pgTAP coverage proving demo data is hidden and non-demo data remains public.
 
-- CI run `34423449021`: success.
-- Database QA run `34423449016`: success.
-- Dependency Review run `34423448979`: success.
-- Merge Gate run `34423449041`: success.
-- Persona QA run `34423448931`: success.
-- Hosted QA run `34423449090`: success.
+No production DNS/custom-domain action and no Phase 3 work was performed.
 
-Final Hosted QA evidence:
+## Validation state
 
-- existing Hosted golden paths: 4 passed;
-- hosted design/axe/runtime QA: 3 passed;
-- dedicated Issue #5 human audit: 5 passed;
-- Admin QA hosted regression: 5 passed;
-- broader legacy hosted suite: 26 passed, 7 hosted-only fresh-email registration tests skipped because those exact registration paths run deterministically in the successful isolated Persona QA lane;
-- no browser failure remained at acceptance.
+On code SHA `bfc60b1e935a80aa2ad2dc2eef37b869997e790a`:
 
-Hosted design evidence artifact:
+- Vercel preview deployment: success.
+- Hosted QA: success.
+- CI: success.
+- Dependency Review: success.
+- Persona QA: success.
+- CodeQL: success.
+- Database QA: still running at the time this handoff was updated; its `database` job had reached local Supabase startup and had not reported a test failure.
+- Merge Gate initially failed because this file still incorrectly reported the already-completed Issue #5 checkpoint as the active `COMPLETE` handoff. That was control-plane drift, not a product/test failure. This handoff now correctly reports Issue #32 as `IN_PROGRESS`, so Merge Gate should remain informational until the active checkpoint reaches acceptance.
 
-- artifact ID: `10131801820`
-- digest: `sha256:1871c6d9a47ac0052afe29945920ae081cd7b3aa1f701740a0259b7345d4cece`
-- retention expiry: September 17, 2026
-- head SHA: `62cba023a4946993ad44fcbd0ab4f7fdab856a52`
+## Shared-development database drift found
 
-Acceptance used `LOCAL_HEAD`: exact PR-head Vite code connected to the shared development Supabase backend while Vercel's free deployment quota was rate-limited. No paid infrastructure was added and the deployment quota did not block product acceptance.
+The connected `shelterpawtners-dev` Supabase project is behind canonical `main` on the accepted CP6 database migrations. Direct inspection found the CP6 contribution/impact tables and helper functions absent even though those migrations are present in GitHub `main`.
 
-## Routine blockers resolved during the audit
+This matters because the new launch-isolation migration deliberately builds on the canonical CP6 function boundary. Do **not** apply the new launch migration directly to shared dev until the missing accepted CP6 migrations are reconciled in canonical order.
 
-The audit found and corrected release-readiness defects without weakening RLS or approved product rules:
+This is an environment/schema-drift blocker for hosted schema rollout, not a reason to weaken the new migration or its regression tests.
 
-- PetBiz offer reload used an ambiguous `offers` -> `offer_versions` nested relationship; the intended relationship is now explicit and real load failures are surfaced instead of silently presenting an empty list.
-- Partner organization matching called `partner_organization_candidates` with parameter names that did not match the canonical database function; the client now sends the correct contract.
-- Shared-dev Partner candidate-dismissal QA state persisted across reruns by design; the regression now resets only the seeded QA user's prior dismissal through ordinary authenticated RLS before verifying a new dismissal.
-- Repeated offer/redemption QA now uses unique run-scoped offer titles instead of colliding with historical shared-dev records.
-- Legacy branded selectors were aligned with the current UI.
-- Repeated fresh-email registration checks remain mandatory in Persona QA's isolated local Supabase lane instead of depending on the hosted default email quota.
-- The legacy Partner profile test now waits for the persisted profile state to hydrate before editing, removing a test race without arbitrary sleeps.
+## Unresolved items in Issue #32
 
-## Release-readiness conclusion
+After Workstream A is accepted and shared dev is aligned:
 
-There is no remaining Issue #5 release-readiness blocker within the currently implemented MVP. PR #31 may merge once the COMPLETE docs-only head passes deterministic merge evidence using the accepted code SHA above.
+1. verify launch-safe real adoption resource candidates immediately before publication and load only sourced, non-misleading records;
+2. improve launch merchandising/Marketplace content without inventing partnerships or discounts;
+3. confirm signup/email readiness, including production SMTP/custom-mail requirements within the no-paid-infrastructure guardrail;
+4. run final pre-cutover release review;
+5. stop at the explicit owner authorization gate before any `shelterpawtners.com` / `www.shelterpawtners.com` DNS or custom-domain change.
 
-Completion of Issue #5 does **not** authorize:
+## Guardrails
 
-- changing `shelterpawtners.com` or `www.shelterpawtners.com` DNS/custom-domain routing;
-- altering Microsoft 365 mail DNS records;
-- beginning Phase 3 feature development;
-- resolving `OD-003` verified-savings customer-facing rules/totals;
-- resolving `OD-004` production giving provider/settlement;
-- paid infrastructure;
-- destructive or material privacy/security/financial/legal changes.
+Still owner-gated/deferred:
 
-Those remain separate owner-authorized decisions. No DNS or Phase 3 action should be taken merely because this handoff is COMPLETE.
+- production-domain/DNS/custom-domain routing;
+- Microsoft 365 mail DNS changes;
+- Phase 3 feature development;
+- `OD-003` verified-savings customer-facing rules/totals;
+- `OD-004` production giving provider/settlement;
+- paid infrastructure unless separately approved;
+- destructive cleanup of QA records or material privacy/security/financial/legal changes.
+
+## Recommended next action
+
+1. Finish Database QA for the current PR head and fix any real regression without weakening tests.
+2. Re-run/confirm Merge Gate with this active handoff state.
+3. Reconcile the missing accepted CP6 migrations into shared dev in canonical order, then apply the launch-isolation migration and verify zero demo leakage while preserving QA records.
+4. Update this handoff to `READY_FOR_ACCEPTANCE` only after deterministic and shared-dev evidence is green.
