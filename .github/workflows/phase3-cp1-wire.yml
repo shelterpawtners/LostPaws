@@ -68,8 +68,8 @@ jobs:
           text = text[:start] + replacement + text[end:]
           path.write_text(text)
           PY
-      - name: Format CP1 files
-        run: npx prettier --write src/main.tsx src/components/GuardianProfileLite.tsx src/components/GuardianPetPassport.tsx e2e/phase-3-guardian-passport.spec.ts .github/workflows/persona-qa.yml supabase/migrations/20260910092500_phase_3_guardian_passport_authority.sql supabase/tests/phase_3_guardian_passport_authority.sql
+      - name: Format CP1 frontend and workflow files
+        run: npx prettier --write src/main.tsx src/components/GuardianProfileLite.tsx src/components/GuardianPetPassport.tsx e2e/phase-3-guardian-passport.spec.ts .github/workflows/persona-qa.yml
       - name: Remove temporary helper and commit
         shell: bash
         run: |
