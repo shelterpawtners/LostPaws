@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import type { Session } from "@supabase/supabase-js";
 import { ShieldCheck } from "lucide-react";
 import { supabase as db } from "../lib/supabase";
+import { GuardianAdoptionVerification } from "./GuardianAdoptionVerification";
 
 type PassportPet = {
   id: string;
@@ -129,9 +130,9 @@ export function GuardianPetPassport({
               </p>
             </div>
             <p>
-              Keep the core identity details current here. Shelter history, care
-              records, emergency sharing, and QR controls arrive in later Phase
-              3 checkpoints without replacing this pet record.
+              Keep the core identity details current here. Verified shelter
+              history can now be requested without making the rest of the
+              Passport public.
             </p>
           </div>
 
@@ -238,6 +239,13 @@ export function GuardianPetPassport({
               {status}
             </p>
           </form>
+
+          <GuardianAdoptionVerification
+            session={session}
+            petId={pet.id}
+            petName={pet.name}
+            canEdit={canEdit}
+          />
         </>
       ) : (
         <div className="panel">
