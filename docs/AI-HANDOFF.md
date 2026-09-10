@@ -20,15 +20,15 @@ Issue #51 / PR #52 — Guardian Deal Moments — is complete and merged to `main
 
 ## Current hosted state
 
-Vercel has a READY production deployment for accepted app SHA `fae7a4cf7a24117868558f7cc4b65987e6e40928` at the generated Vercel deployment URL. The root release remains the accepted application runtime. Runtime-error inspection on 2026-09-10 found no production runtime errors in the latest 24-hour window.
+Vercel still has a READY production deployment for accepted app SHA `fae7a4cf7a24117868558f7cc4b65987e6e40928` at `lost-paws-qc36f535p-jims-projects-acec6bcb.vercel.app`. A direct production root fetch returned HTTP 200 on 2026-09-10, and runtime-error inspection found no production runtime errors in the latest 24-hour window.
 
-The documentation-only handoff commit after the accepted release produced a canceled production build; this does not replace or invalidate the READY accepted app deployment.
+Later documentation-only commits produced canceled production builds; they do not replace or invalidate the READY accepted app deployment.
 
 No paid Vercel upgrade is authorized or needed for the current checkpoint.
 
 ## Transactional email progress completed by owner
 
-The Resend prerequisite is now materially complete:
+The Resend prerequisite is materially complete:
 
 1. Free-tier Resend account/domain setup completed.
 2. Sending domain `auth.shelterpawtners.com` created and verified.
@@ -49,29 +49,36 @@ The remaining launch blockers are provider/account configuration and real extern
 
 1. Inspect current hosted Supabase Auth Site URL and redirect URLs before changing them.
 2. Narrow hosted Supabase Site URL and redirect allowlist to exact approved production/acceptance origins and callback paths. Do not perform final `shelterpawtners.com` web-domain cutover as part of this step.
-3. Install/review confirmation and recovery email templates as needed and execute safe real external inbox acceptance: registration, confirmation, sign-in, password recovery, invalid/expired recovery behavior, and mobile email/link rendering.
-4. Verify transactional mail additions did not disturb existing Microsoft 365 human mailbox send/receive behavior.
-5. Configure and live-test Google OAuth if owner credentials/provider-console access is available.
-6. Configure and live-test supported Facebook Login if owner credentials/provider-console access is available. Do not present Instagram as universal Guardian authentication.
-7. Verify OAuth/email flows do not create duplicate app profile/organization records.
-8. Re-run integrated desktop/mobile/browser acceptance on the final configured release.
-9. Present draft Terms/Privacy to the owner for review; do not publish them as final without approval.
-10. Prepare but do not perform the final `shelterpawtners.com` web-domain DNS/custom-domain cutover until separately authorized.
+3. Verify hosted email-confirmation/security settings and install/review confirmation and recovery email templates as needed.
+4. Execute safe real external inbox acceptance: registration, confirmation, sign-in, password recovery, invalid/expired recovery behavior, and mobile email/link rendering.
+5. Verify transactional mail additions did not disturb existing Microsoft 365 human mailbox send/receive behavior.
+6. Configure and live-test Google OAuth if owner credentials/provider-console access is available.
+7. Configure and live-test supported Facebook Login if owner credentials/provider-console access is available. Do not present Instagram as universal Guardian authentication.
+8. Verify OAuth/email flows do not create duplicate app profile/organization records.
+9. Re-run integrated desktop/mobile/browser acceptance on the final configured release.
+10. Present draft Terms/Privacy to the owner for review; do not publish them as final without approval.
+11. Prepare but do not perform the final `shelterpawtners.com` web-domain DNS/custom-domain cutover until separately authorized.
 
 ## Connected tooling recheck
 
 At this checkpoint:
 
 - GitHub connection: available and authoritative for repository state.
-- Vercel connection: available; accepted production deployment and runtime health are verifiable.
+- Vercel connection: available; accepted production deployment, direct root response, and runtime health are verifiable.
 - Supabase connection: available for project/database/functions/advisors/docs, but the currently exposed connected actions do not provide hosted Auth provider/SMTP/Site-URL dashboard configuration writes.
 - Resend: no direct installed/available connector found. Owner completed the required free-tier domain + SMTP setup manually.
-- SiteGround/authoritative ShelterPawtners DNS: no direct installed/available connector found. Required Resend subdomain records are owner-reported verified; do not alter Microsoft 365 apex mail DNS.
+- SiteGround/authoritative ShelterPawtners DNS: no direct installed/available connector found. Required Resend subdomain records are verified; do not alter Microsoft 365 apex mail DNS.
 - Google Developer/OAuth console: no direct installed/available connector found.
 - Meta/Facebook Developer console: no direct installed/available connector found.
-- Browser automation: no newly installed provider-console automation surfaced in this run; hosted application QA remains independently actionable where authentication prerequisites permit it.
+- Browser automation: no newly installed provider-console automation surfaced in this run.
+- Plugin discovery recheck surfaced Cloudflare as an installable option only. It is not the authoritative DNS provider for this project and is not required for the current checkpoint, so introducing it would add architecture rather than unblock launch readiness.
 
 Re-check these connected capabilities on every controller run. If an authorized provider tool becomes actionable, use it immediately within standing authorization.
+
+## Documentation refreshed this run
+
+- `docs/LL4-AUTH-EMAIL-READINESS.md` now records the verified Resend domain/DNS and saved Supabase SMTP state, and consistently uses the actual sender `noreply@auth.shelterpawtners.com`.
+- `docs/LL6-LAUNCH-READINESS.md` now marks those completed transactional-email prerequisites and records current Vercel production health evidence.
 
 ## Safe independent work while externally blocked
 
