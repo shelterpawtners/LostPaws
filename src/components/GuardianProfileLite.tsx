@@ -73,8 +73,8 @@ export function GuardianProfileLite({ session }: { session: Session | null }) {
         <span className="eyebrow">Private profile</span>
         <h3 id="guardian-profile-heading">Your Guardian details</h3>
         <p>
-          These account details help support your ShelterPawtners experience. They
-          are not published on your pet Passport or Marketplace profile.
+          These account details help support your ShelterPawtners experience.
+          They are not published on your pet Passport or Marketplace profile.
         </p>
         {loading ? (
           <p role="status">Loading your profile…</p>

@@ -159,9 +159,7 @@ test.describe.serial("Phase 2 offer and redemption journey", () => {
     await page.goto("/marketplace");
     const card = page.locator(".offerCard", { hasText: offerTitle });
     await expect(card).toBeVisible();
-    await card
-      .getByRole("link", { name: "See offer and eligibility" })
-      .click();
+    await card.getByRole("link", { name: "See offer and eligibility" }).click();
     await page.reload();
     await expect(
       page.getByText("Demo only. One claim per guardian."),
@@ -180,7 +178,9 @@ test.describe.serial("Phase 2 offer and redemption journey", () => {
       hasText: offerTitle,
     });
     await expect(timelineItem).toBeVisible();
-    await expect(timelineItem.getByText("Pending", { exact: true })).toBeVisible();
+    await expect(
+      timelineItem.getByText("Pending", { exact: true }),
+    ).toBeVisible();
   });
 
   test("Partner captures candidate savings context, confirms once, replay fails safely, and Guardian sees Redeemed", async ({
@@ -188,15 +188,11 @@ test.describe.serial("Phase 2 offer and redemption journey", () => {
   }) => {
     await signIn(page, "partner-admin@example.invalid", "Demo-only-Partner!");
     await page.goto(`/redeem/${redeemCode}`);
-    await expect(
-      page.getByRole("heading", { name: offerTitle }),
-    ).toBeVisible();
+    await expect(page.getByRole("heading", { name: offerTitle })).toBeVisible();
     await expect(page.getByText("Valid claim")).toBeVisible();
 
     await page.getByLabel("Reference/list value in minor units").fill("2500");
-    await page
-      .getByLabel("Amount actually paid in minor units")
-      .fill("1800");
+    await page.getByLabel("Amount actually paid in minor units").fill("1800");
     await page.getByLabel("Currency code").fill("usd");
     await page.getByLabel("Reference value type").selectOption("retail_price");
     await page.getByLabel("Reference source").selectOption("receipt");
@@ -255,7 +251,9 @@ test.describe.serial("Phase 2 offer and redemption journey", () => {
       hasText: offerTitle,
     });
     await expect(timelineItem).toBeVisible();
-    await expect(timelineItem.getByText("Redeemed", { exact: true })).toBeVisible();
+    await expect(
+      timelineItem.getByText("Redeemed", { exact: true }),
+    ).toBeVisible();
   });
 
   test("camera-unavailable path keeps manual entry available", async ({

@@ -1,7 +1,13 @@
 import { useCallback, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import type { Session } from "@supabase/supabase-js";
-import { BadgeCheck, Clock3, RotateCcw, ShieldCheck, TriangleAlert } from "lucide-react";
+import {
+  BadgeCheck,
+  Clock3,
+  RotateCcw,
+  ShieldCheck,
+  TriangleAlert,
+} from "lucide-react";
 import { supabase as db } from "../lib/supabase";
 import "../guardian-social.css";
 
@@ -47,7 +53,11 @@ function formatActivityDate(value: string | null) {
   }).format(new Date(value));
 }
 
-export function GuardianActivityTimeline({ session }: { session: Session | null }) {
+export function GuardianActivityTimeline({
+  session,
+}: {
+  session: Session | null;
+}) {
   const [items, setItems] = useState<GuardianActivity[]>([]);
   const [loading, setLoading] = useState(true);
   const [status, setStatus] = useState("");
@@ -74,15 +84,18 @@ export function GuardianActivityTimeline({ session }: { session: Session | null 
   }, [refresh]);
 
   return (
-    <section className="panel guardianTimeline" aria-labelledby="guardian-activity-heading">
+    <section
+      className="panel guardianTimeline"
+      aria-labelledby="guardian-activity-heading"
+    >
       <div className="guardianTimelineHeader">
         <div>
           <span className="eyebrow">Your activity</span>
           <h3 id="guardian-activity-heading">Savings activity timeline</h3>
           <p>
-            Follow offers you claimed and see when a participating business marks
-            them redeemed. This private timeline uses the transaction record as
-            its source of truth.
+            Follow offers you claimed and see when a participating business
+            marks them redeemed. This private timeline uses the transaction
+            record as its source of truth.
           </p>
         </div>
         <div className="guardianTimelinePrivacy">
@@ -104,7 +117,9 @@ export function GuardianActivityTimeline({ session }: { session: Session | null 
               </span>
               <div className="guardianTimelineContent">
                 <div className="guardianTimelineMeta">
-                  <span className={`activityBadge status-${item.activity_status}`}>
+                  <span
+                    className={`activityBadge status-${item.activity_status}`}
+                  >
                     {statusLabels[item.activity_status] || item.activity_status}
                   </span>
                   <time dateTime={item.activity_at}>

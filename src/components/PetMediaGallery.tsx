@@ -85,7 +85,8 @@ export function PetMediaGallery({
   }, [loadMedia]);
 
   const nextSortOrder = useMemo(
-    () => (media.length ? Math.max(...media.map((item) => item.sort_order)) + 10 : 0),
+    () =>
+      media.length ? Math.max(...media.map((item) => item.sort_order)) + 10 : 0,
     [media],
   );
 
@@ -102,7 +103,9 @@ export function PetMediaGallery({
       return;
     }
     setUploading(true);
-    setStatus(`Uploading ${selected.length} photo${selected.length === 1 ? "" : "s"}…`);
+    setStatus(
+      `Uploading ${selected.length} photo${selected.length === 1 ? "" : "s"}…`,
+    );
     let order = nextSortOrder;
     let firstInsertedId = "";
     for (const file of selected) {
@@ -147,7 +150,8 @@ export function PetMediaGallery({
       const { error } = await db.rpc("set_primary_pet_media", {
         p_media_id: firstInsertedId,
       });
-      if (error) primaryWarning = ` Primary photo could not be set: ${error.message}`;
+      if (error)
+        primaryWarning = ` Primary photo could not be set: ${error.message}`;
     }
     setUploading(false);
     setStatus(
@@ -168,7 +172,10 @@ export function PetMediaGallery({
     const target = index + direction;
     if (target < 0 || target >= media.length) return;
     const reordered = [...media];
-    [reordered[index], reordered[target]] = [reordered[target], reordered[index]];
+    [reordered[index], reordered[target]] = [
+      reordered[target],
+      reordered[index],
+    ];
     const { error } = await db.rpc("reorder_pet_media", {
       p_pet_id: petId,
       p_media_ids: reordered.map((item) => item.id),
@@ -178,14 +185,18 @@ export function PetMediaGallery({
   }
 
   return (
-    <section className="panel petMediaPanel" aria-labelledby="pet-photos-heading">
+    <section
+      className="panel petMediaPanel"
+      aria-labelledby="pet-photos-heading"
+    >
       <div className="petMediaHeader">
         <div>
           <span className="eyebrow">Pet photos</span>
           <h2 id="pet-photos-heading">Passport gallery</h2>
           <p>
             Keep more than one photo with this Passport. Photos are private by
-            default and can later carry source information from approved imports.
+            default and can later carry source information from approved
+            imports.
           </p>
         </div>
         {canEdit && (
@@ -273,8 +284,8 @@ export function PetMediaGallery({
           <div>
             <b>Add the photos people recognize fastest.</b>
             <p>
-              Start with a clear face or full-body photo. You can add several and
-              choose the primary Passport image.
+              Start with a clear face or full-body photo. You can add several
+              and choose the primary Passport image.
             </p>
           </div>
         </div>

@@ -19,7 +19,9 @@ test("Guardian adds multiple Passport photos, changes primary, and reorders", as
 }) => {
   await signIn(page);
   await page.goto(`/pets/${petId}`);
-  await expect(page.getByRole("heading", { name: "Passport gallery" })).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "Passport gallery" }),
+  ).toBeVisible();
 
   await page.locator('input[type="file"]').setInputFiles([
     { name: "passport-one.png", mimeType: "image/png", buffer: onePixelPng },
@@ -29,16 +31,22 @@ test("Guardian adds multiple Passport photos, changes primary, and reorders", as
   const gallery = page.getByLabel("Pet photo gallery");
   const cards = gallery.locator(".petMediaCard");
   await expect(cards).toHaveCount(2, { timeout: 15_000 });
-  await expect(cards.nth(0).getByText("Primary", { exact: true })).toBeVisible();
+  await expect(
+    cards.nth(0).getByText("Primary", { exact: true }),
+  ).toBeVisible();
 
   await cards.nth(1).getByRole("button", { name: "Make primary" }).click();
-  await expect(cards.nth(1).getByText("Primary", { exact: true })).toBeVisible();
+  await expect(
+    cards.nth(1).getByText("Primary", { exact: true }),
+  ).toBeVisible();
 
   await cards
     .nth(1)
     .getByRole("button", { name: "Move photo 2 earlier" })
     .click();
-  await expect(cards.nth(0).getByText("Primary", { exact: true })).toBeVisible();
+  await expect(
+    cards.nth(0).getByText("Primary", { exact: true }),
+  ).toBeVisible();
 
   const layout = await page.evaluate(() => ({
     clientWidth: document.documentElement.clientWidth,
