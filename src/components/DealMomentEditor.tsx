@@ -3,6 +3,7 @@ import type { Session } from "@supabase/supabase-js";
 import { Camera, ImagePlus, RefreshCw, Trash2 } from "lucide-react";
 import { supabase as db } from "../lib/supabase";
 import "../guardian-social.css";
+import "../deal-moments.css";
 
 type DealMoment = {
   id: string;
@@ -224,7 +225,9 @@ export function DealMomentEditor({
       )}
 
       <label className="dealMomentCaption">
-        <span>Caption <small>optional · 280 characters</small></span>
+        <span>
+          Caption <small>optional · 280 characters</small>
+        </span>
         <textarea
           value={caption}
           maxLength={280}
@@ -237,7 +240,11 @@ export function DealMomentEditor({
 
       <div className="dealMomentActions">
         <label className="btn quiet dealMomentUpload">
-          {moment ? <RefreshCw aria-hidden="true" /> : <ImagePlus aria-hidden="true" />}
+          {moment ? (
+            <RefreshCw aria-hidden="true" />
+          ) : (
+            <ImagePlus aria-hidden="true" />
+          )}
           {busy ? "Working…" : moment ? "Replace photo" : "Add Deal Moment"}
           <input
             ref={inputRef}
