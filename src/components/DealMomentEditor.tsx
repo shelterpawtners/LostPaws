@@ -153,7 +153,7 @@ export function DealMomentEditor({
           .remove([result.old_storage_path]);
         setStatus(
           cleanupError
-            ? "Deal Moment updated. The previous stored file is queued for later cleanup."
+            ? "Deal Moment updated. The previous stored file could not be cleaned up yet."
             : "Deal Moment updated.",
         );
       } else {
@@ -189,7 +189,7 @@ export function DealMomentEditor({
           .remove([archived.storage_path]);
         setStatus(
           cleanupError
-            ? "Deal Moment removed from your timeline. Stored-file cleanup is still pending."
+            ? "Deal Moment removed from your timeline. Its stored file could not be cleaned up yet."
             : "Deal Moment removed.",
         );
       } else {
@@ -208,7 +208,11 @@ export function DealMomentEditor({
       <div className="dealMomentIntro">
         <Camera aria-hidden="true" />
         <div>
-          <b>{moment ? "Your Deal Moment" : "Show us your pet enjoying the deal"}</b>
+          <b>
+            {moment
+              ? "Your Deal Moment"
+              : "Show us your pet enjoying the deal"}
+          </b>
           <p>
             Add one optional photo to this activity. It stays private to your
             account and does not use a Pet Passport photo slot.
