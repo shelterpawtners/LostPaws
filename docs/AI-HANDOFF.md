@@ -1,76 +1,68 @@
 # AI Handoff
 
-STATUS: READY_FOR_ACCEPTANCE
+STATUS: IN_PROGRESS
 CURRENT_PHASE: Post-Lost-Lands-MVP data architecture expansion
-CURRENT_CHECKPOINT: Data Architecture Slice 1 / Issue #49 — multi-photo Pet Passport + Guardian activity timeline
-NEXT_CHECKPOINT: Issue #51 — Guardian Deal Moments tied to claim/redemption activity
+CURRENT_CHECKPOINT: Data Architecture Slice 2 / Issue #51 — Guardian Deal Moments
+NEXT_CHECKPOINT: Issue #51 acceptance and merge
 OWNER_DECISION_REQUIRED: NO
 SAFE_TO_CONTINUE: YES
 ACCEPTED_CODE_SHA: NONE
 ACCEPTANCE_DEPLOYED_SHA: NONE
-ACCEPTANCE_RUNTIME: HOSTED_PREVIEW_AND_LOCAL_HEAD
+ACCEPTANCE_RUNTIME: LOCAL_HEAD
+
+## Completed predecessor
+
+Issue #49 / PR #50 — **multi-photo Pet Passport + Guardian activity timeline** is complete and merged to `main` at `3f346cbc2a16f9c68d76a644fb4c7f18e0f125f9` after CI, Database QA, Persona QA, Hosted QA, Dependency Review, and Merge Gate all passed on final head `f3464c532650e00b47c3ac09a60464919b6c4372`.
+
+The shipped Passport rule is a hard maximum of **five active Passport photos per pet**, with safe remove/replace storage cleanup. The stable accepted test branch remains available for owner testing at `https://lost-paws-git-data-architecture-p-046c08-jims-projects-acec6bcb.vercel.app/`.
 
 ## Active task
 
-Issue #49 — **Data Architecture Slice 1: multi-photo Pet Passport + Guardian activity timeline**
+Issue #51 — **Guardian Deal Moments: redemption photo posts in activity timeline**
 
-Branch: `data-architecture/pet-media-guardian-feed`
-PR: #50
-Stable preview: `https://lost-paws-git-data-architecture-p-046c08-jims-projects-acec6bcb.vercel.app/`
+Branch: `data-architecture/deal-moments`
 
-Owner approved this direction on 2026-09-10 and subsequently set a firm product-storage constraint: a Pet Passport may keep **up to five active photos per pet**. Guardians should later be encouraged to post separate Deal Moment photos of a pet receiving/redeeming/using an offer; those activity photos must not consume Passport-gallery slots.
+### Product contract
 
-Current implementation includes the post-DBQA security correction that prevents the five-photo trigger from disclosing another pet's media-count state before RLS denies an unauthorized write. Persona QA explicitly includes `e2e/guardian-pet-media.spec.ts` so a gate-only success cannot be mistaken for five-photo browser acceptance.
+- Offer/redemption photos are activity content, not Passport-gallery slots.
+- First release supports one optional active Deal Moment image per claim plus a short optional caption.
+- Posting is never required for claim or redemption success.
+- CTA language should encourage authentic pet/use content such as “Show us your pet enjoying the deal.”
+- Deal Moments are private to the Guardian who owns the claim in this release.
+- Pending/Redeemed/Reversed/etc. continues to come from canonical claim/redemption records.
+- No OD-003 savings totals or invented verified-savings language.
 
-## Approved scope
+### Architecture decisions for this slice
 
-- Add normalized one-to-many pet media rather than expanding the legacy single-photo columns.
-- Keep pet media private by default, preserve active-guardianship read authority, and require active-primary Guardian authority to manage media.
-- Enforce a **database-level maximum of five active Passport images per pet**, so UI and future imports cannot bypass the storage constraint.
-- Support JPEG/PNG/WebP upload, deterministic primary image, explicit ordering, and safe remove/replace behavior that archives metadata and removes Guardian-owned storage bytes.
-- Retain source-system, external-media, permalink, provenance, capture/import timestamp, and visibility fields so future approved Meta/Facebook/Instagram and shelter/provider imports do not require another photo model.
-- Add a private Guardian activity timeline to the Guardian profile/dashboard.
-- Derive offer claim status directly from canonical `offer_claims` + `redemptions`; do not duplicate financial/economic truth into a social-feed ledger.
-- Show truthful Pending/Redeemed/Reversed/Disputed/Cancelled/Expired states but no customer-facing savings amount while OD-003 remains unresolved.
-- Protect the new behavior with pgTAP/RLS plus Playwright five-photo/replace and claim→redeem timeline assertions.
+- Extend `pet_media` rather than create a second unrelated media store.
+- Add an explicit media context so `passport` and `deal_moment` records have different authorization/counting semantics.
+- Existing pet media backfills/defaults to `passport`.
+- Add optional claim linkage for Deal Moments; require Deal Moment claim ownership and matching pet association.
+- Keep the five-photo trigger scoped only to active `passport` images.
+- Keep Passport gallery/select/reorder/primary operations scoped only to `passport` media.
+- One active Deal Moment per claim is enforced at the database boundary; replacement archives/removes the previous object rather than accumulating active images.
+- Use a separate private `deal-moments` storage bucket so active co-guardianship access to Passport photos cannot expose another Guardian’s private Deal Moment bytes.
+- Deal Moment object paths are Guardian-owned and claim-scoped; read/upload/delete policies verify claim ownership.
+- Client-optimize Deal Moment uploads to WebP, max 1600px longest edge and approximately <=1 MB where practical before upload.
 
-## Shared-dev state
+## Shared-dev policy
 
-- `20260910162500_data_architecture_pet_media_guardian_feed.sql` passed full local Database QA and is applied to shared dev.
-- `20260910163500_limit_active_pet_photos.sql` also passed complete local Supabase reset/seed + pgTAP/RLS and is now applied successfully to shared dev.
-- The five-photo trigger, archive/remove RPC, and Guardian-owned storage delete policy are therefore available to the hosted preview.
+Do not apply the Issue #51 DDL migration to shared dev until the new local Database QA/reset/pgTAP tests are green. Once green, apply the additive migration and verify bucket/policies/index/RPC behavior before hosted acceptance.
 
-## Pre-acceptance proof
+## Acceptance
 
-The reconciled branch ancestry passed substantive CI and database proof before promotion to acceptance:
+1. DB/RLS proof: unrelated Guardian cannot read/create/update/remove another Guardian’s Deal Moment.
+2. DB proof: one active Deal Moment per claim and Deal Moments do not consume the five Passport-photo slots.
+3. Storage proof: `deal-moments` remains private and owner/claim scoped.
+4. Browser regression: Guardian claim -> timeline Pending -> add/replace Deal Moment -> Partner confirms -> same item Redeemed with moment preserved.
+5. Remove operation archives metadata and cleans up Guardian-owned storage bytes.
+6. Existing Passport gallery, claim/redemption, Marketplace, auth, Admin, Persona, and Hosted regressions remain green.
+7. Mobile layout and accessibility remain acceptable.
 
-- CI lint, shell lint, unit tests, and production build: green.
-- Database QA: complete local Supabase startup, reset, seed, migration replay, and pgTAP/RLS: green.
-- Dependency Review: green.
-- Merge Gate: green.
-- The earlier database failure was fixed at the root by preserving RLS denial before photo-cap feedback; no assertion or authorization rule was weakened.
+## Existing external gates preserved
 
-## Next slice already captured
-
-Issue #51 — **Guardian Deal Moments: redemption photo posts in activity timeline**.
-
-First bounded release: one optional, replaceable image plus short caption per claim; private by default; optimized before upload; linked to the claim/redemption timeline; independent of the five Passport-photo slots; no effect on whether redemption succeeds. Meta sharing/import and broad public-feed behavior remain later work.
-
-## Existing launch gate preserved
-
-The previously completed LL-1 through LL-6 engineering remains accepted. External provider work is still separately pending: Resend/auth subdomain + SMTP, hosted Supabase Auth settings, Google OAuth, Meta/Facebook live credentials/testing, external inbox acceptance, owner review of draft Terms/Privacy, and separately authorized final `shelterpawtners.com` web-domain cutover.
-
-This data-architecture work does not authorize any paid upgrade, production web-domain cutover, Microsoft 365 mail DNS change, OD-003/OD-004 decision, destructive production-data operation, or final legal publication.
-
-## Acceptance policy
-
-1. Execute current-head Persona QA including `e2e/guardian-pet-media.spec.ts` and claim→redeem timeline assertions.
-2. Execute Hosted QA against the stable PR #50 preview and confirm the current feature build is reachable.
-3. Require CI, Database QA, Persona QA, Hosted QA, Dependency Review, and Merge Gate green on the final head.
-4. Remove the temporary no-op preview-build marker before merge.
-5. Merge PR #50 under standing owner authorization only after all required final-head gates are green.
-6. Close Issue #49 and continue directly into Issue #51.
+Still owner/external gated: paid upgrades, final `shelterpawtners.com` web-domain cutover, final Terms/Privacy publication, Microsoft 365 mail DNS changes, OD-003 customer-facing verified-savings rules, OD-004 settlement/money movement, destructive production-data cleanup, and live Meta credentials/import/share behavior.
 
 ## Next safe action
 
-Run full current-head browser acceptance, remove the temporary preview marker, reverify the final head, merge #50 if green, then start Issue #51 without waiting for another routine approval.
+Implement the additive Deal Moment schema/RLS/storage boundary and pgTAP proof first; run local Database QA; then wire the Guardian timeline UI and browser regression. Continue autonomously until a genuine remaining owner/external gate.
