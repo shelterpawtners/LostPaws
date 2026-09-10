@@ -4,6 +4,9 @@ import { expect, test, type Page } from "@playwright/test";
 const url = process.env.PLAYWRIGHT_SUPABASE_URL || "";
 const key = process.env.PLAYWRIGHT_SUPABASE_PUBLISHABLE_KEY || "";
 const registrationPassword = "Demo-only-Registration!";
+const hostedQa = process.env.PLAYWRIGHT_HOSTED_QA === "true";
+const hostedSignupReason =
+  "Fresh email signup runs in Persona QA against isolated local Supabase; hosted Auth email delivery is externally rate-limited.";
 
 function client() {
   if (!url || !key)
@@ -76,6 +79,7 @@ test.describe("Guardian pet-centric dashboard", () => {
   test("Guardian with no active pets sees only the setup empty state", async ({
     page,
   }) => {
+    test.skip(hostedQa, hostedSignupReason);
     const email = `qa-empty-guardian-${Date.now()}@example.invalid`;
     await page.goto("/register?type=guardian");
     await page.getByLabel("Full name").fill("Empty Guardian");
