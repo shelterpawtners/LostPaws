@@ -530,6 +530,7 @@ function PartnerOrganizationOnboarding({ kind }: { kind: PartnerKind }) {
     [],
   );
   const [draftId, setDraftId] = useState("");
+  const [resolvedOrganizationId, setResolvedOrganizationId] = useState("");
   const [status, setStatus] = useState("");
   const [reviewedMatches, setReviewedMatches] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -540,6 +541,10 @@ function PartnerOrganizationOnboarding({ kind }: { kind: PartnerKind }) {
   };
   async function saveDraft() {
     if (!db || !session) return "";
+    if (resolvedOrganizationId && draftId) {
+      setStatus("This onboarding is already linked to an organization.");
+      return draftId;
+    }
     const { data, error } = await db
       .from("organization_onboarding_drafts")
       .upsert(
@@ -567,12 +572,20 @@ function PartnerOrganizationOnboarding({ kind }: { kind: PartnerKind }) {
       .order("public_name")
       .then(({ data }) => setParents(data || []));
     db.from("organization_onboarding_drafts")
-      .select("id, form_data")
+      .select("id, form_data, status, resolved_organization_id")
       .eq("created_by", session.user.id)
       .maybeSingle()
       .then(async ({ data }) => {
         if (!data) return;
         setDraftId(data.id);
+        if (
+          (data.status === "resolved_new" ||
+            data.status === "resolved_existing") &&
+          data.resolved_organization_id
+        ) {
+          setResolvedOrganizationId(data.resolved_organization_id);
+          setStatus("This onboarding is already linked to an organization.");
+        }
         if (data.form_data && Object.keys(data.form_data).length)
           setForm((current) => ({
             ...current,
@@ -698,6 +711,26 @@ function PartnerOrganizationOnboarding({ kind }: { kind: PartnerKind }) {
   const visibleMatches = matches.filter(
     (item) => !dismissed.includes(item.organization_id),
   );
+  if (resolvedOrganizationId) {
+    return (
+      <Page>
+        <section className="section shell narrow">
+          <span className="eyebrow">{choice.title} setup</span>
+          <h1>This onboarding is already complete.</h1>
+          <p className="lead">
+            Your saved onboarding is already linked to an organization. Continue
+            to your business profile instead of creating a duplicate entry.
+          </p>
+          <button className="btn" onClick={() => navigate("/business")}>
+            Continue to business profile
+          </button>
+          <p role="status" aria-live="polite" aria-atomic="true">
+            {status}
+          </p>
+        </section>
+      </Page>
+    );
+  }
   return (
     <Page>
       <section className="section shell partnerOnboarding">
