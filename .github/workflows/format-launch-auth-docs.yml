@@ -1,0 +1,40 @@
+name: Format Launch Auth Docs
+
+on:
+  push:
+    branches:
+      - launch/pre-cutover-readiness
+    paths:
+      - .github/workflows/format-launch-auth-docs.yml
+
+permissions:
+  contents: write
+
+jobs:
+  format:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: launch/pre-cutover-readiness
+          fetch-depth: 0
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Format launch auth files
+        run: npx prettier --write docs/AI-HANDOFF.md docs/LAUNCH-AUTH-EMAIL-READINESS.md .github/workflows/persona-qa.yml
+      - name: Remove temporary formatter
+        run: git rm .github/workflows/format-launch-auth-docs.yml
+      - name: Commit formatted files
+        run: |
+          git config user.name "ShelterPawtners automation"
+          git config user.email "shelterpawtners@gmail.com"
+          git add docs/AI-HANDOFF.md docs/LAUNCH-AUTH-EMAIL-READINESS.md .github/workflows/persona-qa.yml
+          if git diff --cached --quiet; then
+            echo "No formatting changes required."
+          else
+            git commit -m "Format launch auth readiness files"
+          fi
+          git push origin HEAD:launch/pre-cutover-readiness
