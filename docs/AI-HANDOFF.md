@@ -19,7 +19,7 @@ PR: #50
 
 Owner approved this direction on 2026-09-10 and subsequently set a firm product-storage constraint: a Pet Passport may keep **up to five active photos per pet**. Guardians should later be encouraged to post separate Deal Moment photos of a pet receiving/redeeming/using an offer; those activity photos must not consume Passport-gallery slots.
 
-Current formatted feature ancestry includes `3d6cb3ed4f49fccf7a2dca524e6dc0302dbcddfb`; this handoff commit intentionally triggers a normal GitHub acceptance cycle after the self-deleting formatter commit.
+Current implementation includes the post-DBQA security correction that prevents the five-photo trigger from disclosing another pet's media-count state before RLS denies an unauthorized write. Persona QA also explicitly includes `e2e/guardian-pet-media.spec.ts` so a gate-only success cannot be mistaken for five-photo browser acceptance.
 
 ## Approved scope
 
@@ -52,7 +52,7 @@ This data-architecture work does not authorize any paid upgrade, production web-
 
 ## Acceptance policy
 
-1. Run CI plus local Database QA against the current post-format head.
+1. Run CI plus local Database QA against the current post-security-fix head.
 2. Database QA must complete Supabase start/reset/seed + pgTAP including the five-photo cap and RLS tests.
 3. Fix deterministic failures without weakening RLS or assertions.
 4. Only after local Database QA is green, apply the follow-up five-photo migration to shared dev and verify the trigger/RPC/storage policy.
@@ -62,4 +62,4 @@ This data-architecture work does not authorize any paid upgrade, production web-
 
 ## Next safe action
 
-Complete the current CI/Database cycle, apply and verify the five-photo follow-up migration on shared dev after local DB proof, then run full browser acceptance and merge #50 if green.
+Complete the current CI/Database cycle on the security-corrected head, apply and verify the five-photo follow-up migration on shared dev after local DB proof, then run full browser acceptance and merge #50 if green.
