@@ -10,7 +10,7 @@ const partnerPassword = "Demo-only-Partner!";
 const partnerOrganizationId = "20000000-0000-0000-0000-000000000001";
 
 const tinyPng = Buffer.from(
-  "iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAIAAAD91JpzAAAAD0lEQVR42mNkYPj/n4GBgQEACfsD/QfKcQAAAABJRU5ErkJggg==",
+  "iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAIAAAD91JpzAAAAFklEQVR4nGNMmXaCgYGBiYGBgYGBAQAU3gHGhQQGWwAAAABJRU5ErkJggg==",
   "base64",
 );
 
