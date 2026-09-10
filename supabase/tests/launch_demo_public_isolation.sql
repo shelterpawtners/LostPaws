@@ -94,6 +94,9 @@ select ok(
 select public.set_partner_offer_state((select offer_id from launch_offer_ids where kind='demo'),'publish');
 select public.set_partner_offer_state((select offer_id from launch_offer_ids where kind='real'),'publish');
 
+-- The temp table only carries test IDs. Grant anon read access so the assertions
+-- can switch to the true public role without accidentally testing temp-table ACLs.
+grant select on launch_offer_ids to anon;
 set local role anon;
 select is(
   (select count(*)::bigint from public.public_active_offers(null) where offer_id=(select offer_id from launch_offer_ids where kind='demo')),
