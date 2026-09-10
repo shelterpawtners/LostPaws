@@ -159,7 +159,9 @@ test.describe.serial("Phase 2 offer and redemption journey", () => {
     await page.goto("/marketplace");
     const card = page.locator(".offerCard", { hasText: offerTitle });
     await expect(card).toBeVisible();
-    await card.getByRole("link", { name: "View offer details" }).click();
+    await card
+      .getByRole("link", { name: "See offer and eligibility" })
+      .click();
     await page.reload();
     await expect(
       page.getByText("Demo only. One claim per guardian."),

@@ -1,15 +1,20 @@
 import { useEffect, useMemo, useState } from "react";
 import { useLocation, useParams } from "react-router-dom";
 import {
+  ArrowDown,
   ArrowUpRight,
+  BadgeCheck,
+  HeartHandshake,
   Search,
   ShieldCheck,
   SlidersHorizontal,
+  Store,
 } from "lucide-react";
 import { supabase as db } from "../lib/supabase";
 import { OfferCard, type PublicOffer } from "./OfferCard";
 import "../marketplace.css";
 import "../marketplace-flagship.css";
+import "../marketplace-premium.css";
 
 function humanize(value: string) {
   return value
@@ -83,6 +88,15 @@ export function OfferMarketplace({
             .filter((value) => Boolean(value)),
         ),
       ).sort(),
+    [offers],
+  );
+
+  const listingCounts = useMemo(
+    () =>
+      offers.reduce<Record<string, number>>((counts, offer) => {
+        counts[offer.classification] = (counts[offer.classification] || 0) + 1;
+        return counts;
+      }, {}),
     [offers],
   );
 
@@ -234,21 +248,68 @@ export function OfferMarketplace({
 
   return (
     <section
-      className={`marketplaceExperience marketplaceFlagship${rave ? " marketplaceRave" : ""}`}
+      className={`marketplaceExperience marketplaceFlagship marketplacePremium${rave ? " marketplaceRave" : ""}`}
       data-marketplace-concept="flagship"
     >
-      <div className="marketplaceConceptIntro marketplaceFlagshipIntro">
-        <span className="eyebrow">
-          {rave
-            ? "RAVE Shelter marketplace view"
-            : "ShelterPawtners marketplace"}
-        </span>
-        <h2>Useful pet-parent value, without the fine-print hunt.</h2>
-        <p>
-          Discover current public adoption benefits alongside offers published
-          by ShelterPawtners participants. Every listing shows who provides it,
-          eligibility context, and current terms before you take the next step.
-        </p>
+      <div className="marketplaceHeroLayout">
+        <div className="marketplaceConceptIntro marketplaceFlagshipIntro">
+          <span className="eyebrow">
+            {rave
+              ? "RAVE Shelter marketplace view"
+              : "ShelterPawtners marketplace"}
+          </span>
+          <h2>Useful pet-parent value, without the fine-print hunt.</h2>
+          <p>
+            Discover current public adoption benefits alongside offers published
+            by ShelterPawtners participants. Every listing shows who provides
+            it, eligibility context, and current terms before you take the next
+            step.
+          </p>
+          <div className="marketplaceHeroActions">
+            <a className="marketplaceHeroJump" href="#marketplace-results">
+              Browse current value <ArrowDown />
+            </a>
+            <span>Based on current published Marketplace listings</span>
+          </div>
+        </div>
+
+        <aside
+          className="marketplaceValuePanel"
+          aria-label="Current Marketplace listing overview"
+        >
+          <div>
+            <span className="marketplaceValueEyebrow">Current marketplace</span>
+            <div className="marketplaceValueTotal">
+              <strong>{offers.length}</strong>
+              <span>
+                {offers.length === 1 ? "active listing" : "active listings"}
+              </span>
+            </div>
+          </div>
+          <div className="marketplaceValueBreakdown">
+            <div>
+              <BadgeCheck />
+              <span>
+                Public adoption benefits
+                <b>{listingCounts.public_program || 0}</b>
+              </span>
+            </div>
+            <div>
+              <HeartHandshake />
+              <span>
+                Community resources
+                <b>{listingCounts.community || 0}</b>
+              </span>
+            </div>
+            <div>
+              <Store />
+              <span>
+                Participant offers
+                <b>{listingCounts.partner_published || 0}</b>
+              </span>
+            </div>
+          </div>
+        </aside>
       </div>
 
       <div className="marketplaceDiscovery">
@@ -258,7 +319,7 @@ export function OfferMarketplace({
           <input
             value={query}
             onChange={(event) => setQuery(event.target.value)}
-            placeholder="Search offers, providers, terms, or where they apply"
+            placeholder="Search benefits, providers, terms, or location"
             aria-label="Search current offers"
           />
         </label>
@@ -280,6 +341,7 @@ export function OfferMarketplace({
               onClick={() => setClassification("all")}
             >
               All current
+              <span className="marketplaceFilterCount">{offers.length}</span>
             </button>
             {classifications.map((item) => (
               <button
@@ -290,6 +352,9 @@ export function OfferMarketplace({
                 onClick={() => setClassification(item)}
               >
                 {listingTypeLabel(item)}
+                <span className="marketplaceFilterCount">
+                  {listingCounts[item] || 0}
+                </span>
               </button>
             ))}
           </div>
@@ -308,7 +373,7 @@ export function OfferMarketplace({
         </div>
       </div>
 
-      <div className="marketplaceResultsHeader">
+      <div className="marketplaceResultsHeader" id="marketplace-results">
         <div role="status" aria-live="polite" aria-atomic="true">
           <strong>{visibleOffers.length}</strong>
           <span>
