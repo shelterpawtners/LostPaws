@@ -14,16 +14,15 @@ async function signIn(page: Page) {
   await expect(page).toHaveURL(/\/dashboard$/);
 }
 
-test("Guardian adds multiple Passport photos, changes primary, and reorders", async ({
-  page,
-}) => {
+test("Guardian manages a five-photo Passport gallery", async ({ page }) => {
   await signIn(page);
   await page.goto(`/pets/${petId}`);
   await expect(
     page.getByRole("heading", { name: "Passport gallery" }),
   ).toBeVisible();
 
-  await page.locator('input[type="file"]').setInputFiles([
+  const fileInput = page.locator('input[type="file"]');
+  await fileInput.setInputFiles([
     { name: "passport-one.png", mimeType: "image/png", buffer: onePixelPng },
     { name: "passport-two.png", mimeType: "image/png", buffer: onePixelPng },
   ]);
@@ -47,6 +46,20 @@ test("Guardian adds multiple Passport photos, changes primary, and reorders", as
   await expect(
     cards.nth(0).getByText("Primary", { exact: true }),
   ).toBeVisible();
+
+  await fileInput.setInputFiles([
+    { name: "passport-three.png", mimeType: "image/png", buffer: onePixelPng },
+    { name: "passport-four.png", mimeType: "image/png", buffer: onePixelPng },
+    { name: "passport-five.png", mimeType: "image/png", buffer: onePixelPng },
+  ]);
+  await expect(cards).toHaveCount(5, { timeout: 15_000 });
+  await expect(page.getByText("5 photo limit reached")).toBeVisible();
+  await expect(fileInput).toBeDisabled();
+
+  await cards.nth(4).getByRole("button", { name: "Remove photo 5" }).click();
+  await expect(cards).toHaveCount(4, { timeout: 15_000 });
+  await expect(page.getByText("Add photos (1 left)")).toBeVisible();
+  await expect(fileInput).toBeEnabled();
 
   const layout = await page.evaluate(() => ({
     clientWidth: document.documentElement.clientWidth,
