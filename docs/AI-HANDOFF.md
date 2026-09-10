@@ -2,8 +2,8 @@
 
 STATUS: EXTERNAL_LAUNCH_GATE
 CURRENT_PHASE: Lost Lands MVP launch readiness
-CURRENT_CHECKPOINT: External provider configuration and real-account acceptance
-NEXT_CHECKPOINT: Resend/auth subdomain + hosted Supabase Auth + Google/Facebook provider acceptance
+CURRENT_CHECKPOINT: Hosted Auth URL configuration + real-account acceptance
+NEXT_CHECKPOINT: Supabase Site URL/redirect allowlist, then real email acceptance, Google/Facebook provider acceptance
 OWNER_DECISION_REQUIRED: YES_FOR_PROVIDER_CONSOLES_AND_FINAL_CUTOVER_ONLY
 SAFE_TO_CONTINUE: YES
 ACCEPTED_CODE_SHA: fae7a4cf7a24117868558f7cc4b65987e6e40928
@@ -20,21 +20,40 @@ Issue #51 / PR #52 — Guardian Deal Moments — is complete and merged to `main
 
 ## Current hosted state
 
-Vercel has a READY production deployment for `main` SHA `fae7a4cf7a24117868558f7cc4b65987e6e40928` at the generated Vercel deployment URL. The root route returns HTTP 200 and the deployed document identifies ShelterPawtners. Vercel runtime-error inspection found no runtime errors in the latest 24-hour window at this checkpoint.
+Vercel has a READY production deployment for accepted app SHA `fae7a4cf7a24117868558f7cc4b65987e6e40928` at the generated Vercel deployment URL. The root release remains the accepted application runtime. Runtime-error inspection on 2026-09-10 found no production runtime errors in the latest 24-hour window.
 
-The prior Vercel preview build-rate limit is no longer an active blocker for this merged release. No paid Vercel upgrade is authorized or needed for the current checkpoint.
+The documentation-only handoff commit after the accepted release produced a canceled production build; this does not replace or invalidate the READY accepted app deployment.
+
+No paid Vercel upgrade is authorized or needed for the current checkpoint.
+
+## Transactional email progress completed by owner
+
+The Resend prerequisite is now materially complete:
+
+1. Free-tier Resend account/domain setup completed.
+2. Sending domain `auth.shelterpawtners.com` created and verified.
+3. Required Resend DNS records were added and all three reported verified:
+   - DKIM TXT at `resend._domainkey.auth`
+   - CNAME `rsend.auth` -> `rsend.forge.rmta.net`
+   - CNAME `send.auth` -> `send.forge.rmta.net`
+4. Resend Receiving remains disabled; Microsoft 365 inbound mail routing was not intentionally changed.
+5. Hosted Supabase custom SMTP was enabled and saved using the verified Resend sending domain.
+6. Configured sender identity is `ShelterPawtners <noreply@auth.shelterpawtners.com>`.
+7. No Resend API key or SMTP secret is stored in this repository/handoff.
+
+Do not repeat or reopen this Resend/DNS setup unless verification regresses or delivery testing produces evidence of a configuration problem.
 
 ## Active external launch gate
 
 The remaining launch blockers are provider/account configuration and real external acceptance, not unfinished core MVP engineering:
 
-1. Resend free-tier sending domain `auth.shelterpawtners.com` must be created/verified.
-2. Add only the Resend-provided transactional-email DNS records for the `auth.shelterpawtners.com` subdomain. Do not alter Microsoft 365 apex mail DNS.
-3. Configure hosted Supabase Auth custom SMTP for the approved transactional sender and install/test confirmation and recovery templates with safe accounts.
-4. Narrow hosted Supabase Site URL and redirect allowlist to exact approved production/acceptance origins and callback paths.
+1. Inspect current hosted Supabase Auth Site URL and redirect URLs before changing them.
+2. Narrow hosted Supabase Site URL and redirect allowlist to exact approved production/acceptance origins and callback paths. Do not perform final `shelterpawtners.com` web-domain cutover as part of this step.
+3. Install/review confirmation and recovery email templates as needed and execute safe real external inbox acceptance: registration, confirmation, sign-in, password recovery, invalid/expired recovery behavior, and mobile email/link rendering.
+4. Verify transactional mail additions did not disturb existing Microsoft 365 human mailbox send/receive behavior.
 5. Configure and live-test Google OAuth if owner credentials/provider-console access is available.
 6. Configure and live-test supported Facebook Login if owner credentials/provider-console access is available. Do not present Instagram as universal Guardian authentication.
-7. Execute safe real-account external inbox acceptance: registration, confirmation, sign-in, password recovery, Google/Facebook where enabled, and verify no duplicate app profile/organization creation.
+7. Verify OAuth/email flows do not create duplicate app profile/organization records.
 8. Re-run integrated desktop/mobile/browser acceptance on the final configured release.
 9. Present draft Terms/Privacy to the owner for review; do not publish them as final without approval.
 10. Prepare but do not perform the final `shelterpawtners.com` web-domain DNS/custom-domain cutover until separately authorized.
@@ -44,14 +63,13 @@ The remaining launch blockers are provider/account configuration and real extern
 At this checkpoint:
 
 - GitHub connection: available and authoritative for repository state.
-- Vercel connection: available; production deployment and runtime health are verifiable.
-- Supabase connection: available for project/database/functions/advisors, but the currently exposed connected actions do not provide hosted Auth provider/SMTP dashboard configuration writes.
-- Resend: no direct installed/available connector found.
-- SiteGround/authoritative ShelterPawtners DNS: no direct installed/available connector found.
+- Vercel connection: available; accepted production deployment and runtime health are verifiable.
+- Supabase connection: available for project/database/functions/advisors/docs, but the currently exposed connected actions do not provide hosted Auth provider/SMTP/Site-URL dashboard configuration writes.
+- Resend: no direct installed/available connector found. Owner completed the required free-tier domain + SMTP setup manually.
+- SiteGround/authoritative ShelterPawtners DNS: no direct installed/available connector found. Required Resend subdomain records are owner-reported verified; do not alter Microsoft 365 apex mail DNS.
 - Google Developer/OAuth console: no direct installed/available connector found.
 - Meta/Facebook Developer console: no direct installed/available connector found.
-- Cloudflare is discoverable, but it must not be introduced merely to bypass SiteGround unless ShelterPawtners DNS is intentionally delegated there under separate approved planning.
-- Browser automation remains available for hosted application QA, but it does not substitute for missing authenticated owner/provider-console sessions or credentials.
+- Browser automation: no newly installed provider-console automation surfaced in this run; hosted application QA remains independently actionable where authentication prerequisites permit it.
 
 Re-check these connected capabilities on every controller run. If an authorized provider tool becomes actionable, use it immediately within standing authorization.
 
@@ -74,4 +92,6 @@ Never purchase or upgrade paid services, make destructive production-data change
 
 ## Next safe action
 
-Re-check provider tooling. If Resend/DNS/Auth/OAuth provider configuration is still unavailable to the controller, perform non-destructive hosted/Supabase launch-health verification and leave the exact external action required from the owner explicit. Do not reopen completed LL slices or Deal Moments absent regression evidence. Continue automatically on the next run until the owner explicitly disables the controller.
+The next manual provider-console action is hosted Supabase Auth URL Configuration: inspect the existing Site URL and Redirect URLs first, then set only the exact approved acceptance/production callback destinations. The connected Supabase tool cannot currently write those hosted Auth settings, so the controller must not invent or bypass that configuration.
+
+In parallel, continue non-destructive Vercel/runtime/Supabase launch-health verification. Do not reopen completed LL slices, PR #50, or PR #52 absent regression evidence. Continue automatically on the next run until the owner explicitly disables the controller.
