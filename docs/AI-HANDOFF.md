@@ -1,78 +1,77 @@
 # AI Handoff
 
-STATUS: READY_FOR_ACCEPTANCE
-CURRENT_PHASE: Post-Lost-Lands-MVP data architecture expansion
-CURRENT_CHECKPOINT: Data Architecture Slice 2 / Issue #51 — Guardian Deal Moments
-NEXT_CHECKPOINT: Issue #51 acceptance and merge
-OWNER_DECISION_REQUIRED: NO
+STATUS: EXTERNAL_LAUNCH_GATE
+CURRENT_PHASE: Lost Lands MVP launch readiness
+CURRENT_CHECKPOINT: External provider configuration and real-account acceptance
+NEXT_CHECKPOINT: Resend/auth subdomain + hosted Supabase Auth + Google/Facebook provider acceptance
+OWNER_DECISION_REQUIRED: YES_FOR_PROVIDER_CONSOLES_AND_FINAL_CUTOVER_ONLY
 SAFE_TO_CONTINUE: YES
-ACCEPTED_CODE_SHA: NONE
-ACCEPTANCE_DEPLOYED_SHA: NONE
-ACCEPTANCE_RUNTIME: LOCAL_HEAD
+ACCEPTED_CODE_SHA: fae7a4cf7a24117868558f7cc4b65987e6e40928
+ACCEPTANCE_DEPLOYED_SHA: fae7a4cf7a24117868558f7cc4b65987e6e40928
+ACCEPTANCE_RUNTIME: VERCEL_PRODUCTION
 
-## Completed predecessor
+## Completed engineering
 
-Issue #49 / PR #50 — **multi-photo Pet Passport + Guardian activity timeline** is complete and merged to `main` at `3f346cbc2a16f9c68d76a644fb4c7f18e0f125f9` after CI, Database QA, Persona QA, Hosted QA, Dependency Review, and Merge Gate all passed on final head `f3464c532650e00b47c3ac09a60464919b6c4372`.
+LL-1 through LL-6 remain accepted. Do not reopen them without evidence of a regression.
 
-The shipped Passport rule is a hard maximum of **five active Passport photos per pet**, with safe remove/replace storage cleanup.
+Issue #49 / PR #50 — multi-photo Pet Passport + Guardian activity timeline — is complete and merged.
 
-## Active task
+Issue #51 / PR #52 — Guardian Deal Moments — is complete and merged to `main` at `fae7a4cf7a24117868558f7cc4b65987e6e40928`. Issue #51 is closed as completed. The accepted Deal Moment implementation keeps activity photos outside the five-photo Passport cap, private to the owning Guardian in this release, and protected by the existing database/RLS/storage acceptance contract.
 
-Issue #51 — **Guardian Deal Moments: redemption photo posts in activity timeline**
+## Current hosted state
 
-Branch: `data-architecture/deal-moments`
-PR: #52
+Vercel has a READY production deployment for `main` SHA `fae7a4cf7a24117868558f7cc4b65987e6e40928` at the generated Vercel deployment URL. The root route returns HTTP 200 and the deployed document identifies ShelterPawtners. Vercel runtime-error inspection found no runtime errors in the latest 24-hour window at this checkpoint.
 
-### Product contract
+The prior Vercel preview build-rate limit is no longer an active blocker for this merged release. No paid Vercel upgrade is authorized or needed for the current checkpoint.
 
-- Offer/redemption photos are activity content, not Passport-gallery slots.
-- First release supports one optional active Deal Moment image per claim plus a short optional caption.
-- Posting is never required for claim or redemption success.
-- CTA language encourages authentic pet/use content such as “Show us your pet enjoying the deal.”
-- Deal Moments are private to the Guardian who owns the claim in this release.
-- Pending/Redeemed/Reversed/etc. continues to come from canonical claim/redemption records.
-- No OD-003 savings totals or invented verified-savings language.
+## Active external launch gate
 
-### Implemented architecture and UX
+The remaining launch blockers are provider/account configuration and real external acceptance, not unfinished core MVP engineering:
 
-- `pet_media` now has explicit `passport` vs `deal_moment` context and optional claim linkage.
-- Existing/default media remains `passport`; Deal Moments do not count toward the five-photo Passport cap.
-- One active Deal Moment per claim is enforced at the database boundary.
-- Deal Moment claim/pet ownership is validated without disclosing another Guardian's claim state before RLS denial.
-- Passport primary/reorder/archive behavior is context-aware and excludes Deal Moments.
-- Deal Moments use a separate private `deal-moments` bucket with Guardian/claim-scoped read, insert, and delete policies.
-- `upsert_deal_moment` atomically archives prior metadata and returns the old object path for storage cleanup.
-- Guardian activity timeline now includes an optional Deal Moment editor for pet-linked claims.
-- Browser client converts JPEG/PNG/WebP source images to WebP, limits the longest edge to 1600px, and requires the optimized object to fit the 1 MB private bucket cap.
-- Replace and remove flows clean up Guardian-owned object bytes; a cleanup failure never restores public access or duplicates active metadata.
-- Dedicated pgTAP coverage verifies private ownership, storage policy separation, one-active-image behavior, replacement/archive provenance, and independence from the five Passport-photo slots.
-- Dedicated Playwright coverage exercises claim -> Pending timeline -> add/replace Deal Moment -> Partner confirmation -> Redeemed timeline with moment preserved -> removal.
-- Persona QA explicitly includes the Deal Moment browser regression.
+1. Resend free-tier sending domain `auth.shelterpawtners.com` must be created/verified.
+2. Add only the Resend-provided transactional-email DNS records for the `auth.shelterpawtners.com` subdomain. Do not alter Microsoft 365 apex mail DNS.
+3. Configure hosted Supabase Auth custom SMTP for the approved transactional sender and install/test confirmation and recovery templates with safe accounts.
+4. Narrow hosted Supabase Site URL and redirect allowlist to exact approved production/acceptance origins and callback paths.
+5. Configure and live-test Google OAuth if owner credentials/provider-console access is available.
+6. Configure and live-test supported Facebook Login if owner credentials/provider-console access is available. Do not present Instagram as universal Guardian authentication.
+7. Execute safe real-account external inbox acceptance: registration, confirmation, sign-in, password recovery, Google/Facebook where enabled, and verify no duplicate app profile/organization creation.
+8. Re-run integrated desktop/mobile/browser acceptance on the final configured release.
+9. Present draft Terms/Privacy to the owner for review; do not publish them as final without approval.
+10. Prepare but do not perform the final `shelterpawtners.com` web-domain DNS/custom-domain cutover until separately authorized.
 
-## Shared-dev policy
+## Connected tooling recheck
 
-Do not apply the Issue #51 migration to shared dev until current-head Database QA/reset/pgTAP is green. Once green, apply the additive migration and verify bucket/policies/index/RPC behavior before final acceptance/merge.
+At this checkpoint:
 
-## Acceptance
+- GitHub connection: available and authoritative for repository state.
+- Vercel connection: available; production deployment and runtime health are verifiable.
+- Supabase connection: available for project/database/functions/advisors, but the currently exposed connected actions do not provide hosted Auth provider/SMTP dashboard configuration writes.
+- Resend: no direct installed/available connector found.
+- SiteGround/authoritative ShelterPawtners DNS: no direct installed/available connector found.
+- Google Developer/OAuth console: no direct installed/available connector found.
+- Meta/Facebook Developer console: no direct installed/available connector found.
+- Cloudflare is discoverable, but it must not be introduced merely to bypass SiteGround unless ShelterPawtners DNS is intentionally delegated there under separate approved planning.
+- Browser automation remains available for hosted application QA, but it does not substitute for missing authenticated owner/provider-console sessions or credentials.
 
-1. Require current-head CI and Database QA green without weakening assertions or RLS.
-2. After DB proof is green, apply the additive Deal Moment migration to shared dev and verify its schema/storage boundary.
-3. Require full Persona QA to execute the Deal Moment browser regression and existing auth/Passport/redemption/Admin regressions.
-4. Require Hosted QA, Dependency Review, and Merge Gate green on the final head.
-5. Fix deterministic failures at the root and rerun affected gates.
-6. Mark PR #52 ready and merge under standing owner authorization only when all required final-head gates are green.
-7. Close Issue #51 and continue to the next independently authorized work without reopening LL-1 through LL-6 absent regression evidence.
+Re-check these connected capabilities on every controller run. If an authorized provider tool becomes actionable, use it immediately within standing authorization.
 
-## Vercel acceptance note
+## Safe independent work while externally blocked
 
-The current Vercel preview deployment is blocked by the account build-rate limit and points to the paid-upgrade path. Paid upgrades are explicitly prohibited. This is not an application failure. `ACCEPTANCE_RUNTIME: LOCAL_HEAD` therefore directs Hosted QA to run its same browser/design assertions against an exact local Vite build of the PR head until Vercel preview capacity becomes available again. This does not weaken the test suite; a true hosted-preview recheck remains desirable once the free-tier rate limit clears.
+While provider-console work remains blocked, continue only useful non-destructive launch-readiness work such as:
 
-## Existing external launch gates preserved
+- verify current production deployment health and release SHA;
+- run non-destructive hosted smoke/regression checks;
+- inspect Supabase security/performance advisors after schema changes;
+- keep cutover/rollback and external acceptance documentation current;
+- fix evidence-backed regressions only;
+- review dependency PRs only when they are low-risk, green, and relevant to launch readiness;
+- keep legal content in draft/review status;
+- avoid speculative feature expansion before launch.
 
-LL-1 through LL-6 remain accepted. External provider/cutover work remains separately bounded: Resend/auth-subdomain SMTP and DNS, hosted Supabase Auth settings, Google OAuth credentials, Meta/Facebook live credentials/testing, external inbox acceptance, owner review of draft Terms/Privacy, and the separately authorized final `shelterpawtners.com` web-domain cutover.
+## Protected restrictions
 
-This slice does not authorize paid upgrades, the final production web-domain cutover, Microsoft 365 mail DNS changes, OD-003 customer-facing verified-savings rules, OD-004 settlement/money movement, destructive production-data cleanup, or final legal publication.
+Never purchase or upgrade paid services, make destructive production-data changes, alter Microsoft 365 mail DNS, decide OD-003 or OD-004, weaken tests/RLS, publish unapproved final Terms/Privacy, expose secrets, or perform the final `shelterpawtners.com` production web-domain DNS/custom-domain cutover without separate owner authorization.
 
 ## Next safe action
 
-Run the full final-head acceptance stack for PR #52. If Database QA is green, apply and verify the additive migration in shared dev, then complete local exact-head Hosted/Persona acceptance and merge #52 if all gates remain green. Recheck the true hosted preview later when the free-tier Vercel build-rate limit clears. Continue autonomously afterward until the next genuine protected gate.
+Re-check provider tooling. If Resend/DNS/Auth/OAuth provider configuration is still unavailable to the controller, perform non-destructive hosted/Supabase launch-health verification and leave the exact external action required from the owner explicit. Do not reopen completed LL slices or Deal Moments absent regression evidence. Continue automatically on the next run until the owner explicitly disables the controller.
