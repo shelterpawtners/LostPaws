@@ -66,37 +66,40 @@ test.describe.serial("Phase 3 Guardian Passport foundation", () => {
     await signIn(page, guardianA.email, guardianA.password);
     await page.goto(`/pets/${petAId}`);
 
-    const passportPanel = page
+    const passportIntro = page
       .getByRole("heading", { name: "Demo Pet A" })
       .locator("..");
+    const passportForm = page
+      .getByRole("heading", { name: "Passport basics" })
+      .locator("..");
     await expect(
-      passportPanel.getByRole("heading", { name: "Demo Pet A" }),
+      passportIntro.getByRole("heading", { name: "Demo Pet A" }),
     ).toBeVisible();
-    await expect(passportPanel.getByText("Private by default")).toBeVisible();
-    await passportPanel.getByLabel("Breed").fill("Phase 3 Labrador mix");
-    await passportPanel.getByLabel("Birth date").fill("2021-05-10");
-    await passportPanel
+    await expect(passportIntro.getByText("Private by default")).toBeVisible();
+    await passportForm.getByLabel("Breed").fill("Phase 3 Labrador mix");
+    await passportForm.getByLabel("Birth date").fill("2021-05-10");
+    await passportForm
       .getByLabel("Spay/neuter status")
       .selectOption("neutered");
-    await passportPanel
+    await passportForm
       .getByRole("button", { name: "Save Passport basics" })
       .click();
-    await expect(passportPanel.getByRole("status")).toContainText(
+    await expect(passportForm.getByRole("status")).toContainText(
       "Passport basics saved",
     );
 
     await page.reload();
-    const reloadedPassportPanel = page
-      .getByRole("heading", { name: "Demo Pet A" })
+    const reloadedPassportForm = page
+      .getByRole("heading", { name: "Passport basics" })
       .locator("..");
-    await expect(reloadedPassportPanel.getByLabel("Breed")).toHaveValue(
+    await expect(reloadedPassportForm.getByLabel("Breed")).toHaveValue(
       "Phase 3 Labrador mix",
     );
-    await expect(reloadedPassportPanel.getByLabel("Birth date")).toHaveValue(
+    await expect(reloadedPassportForm.getByLabel("Birth date")).toHaveValue(
       "2021-05-10",
     );
     await expect(
-      reloadedPassportPanel.getByLabel("Spay/neuter status"),
+      reloadedPassportForm.getByLabel("Spay/neuter status"),
     ).toHaveValue("neutered");
 
     await page.getByRole("link", { name: "Back to your pets" }).click();
