@@ -1,97 +1,109 @@
 # AI Handoff
 
-STATUS: EXTERNAL_LAUNCH_GATE
-CURRENT_PHASE: Lost Lands MVP launch readiness
-CURRENT_CHECKPOINT: Hosted Auth URL configuration + real-account acceptance
-NEXT_CHECKPOINT: Supabase Site URL/redirect allowlist, then real email acceptance, Google/Facebook provider acceptance
-OWNER_DECISION_REQUIRED: YES_FOR_PROVIDER_CONSOLES_AND_FINAL_CUTOVER_ONLY
+STATUS: IN_PROGRESS
+CURRENT_PHASE: Lost Lands MVP launch readiness + owner-requested launch UX polish
+CURRENT_CHECKPOINT: Issue #53 bounded Marketplace density slice / PR #55 acceptance
+NEXT_CHECKPOINT: Merge PR #55 when green, then continue Issue #53 Guardian dashboard + Pet Passport profile hierarchy while external Google/Facebook acceptance remains blocked
+OWNER_DECISION_REQUIRED: YES_FOR_PROVIDER_CONSOLES_LEGAL_AND_FINAL_CUTOVER_ONLY
 SAFE_TO_CONTINUE: YES
 ACCEPTED_CODE_SHA: fae7a4cf7a24117868558f7cc4b65987e6e40928
 ACCEPTANCE_DEPLOYED_SHA: fae7a4cf7a24117868558f7cc4b65987e6e40928
 ACCEPTANCE_RUNTIME: VERCEL_PRODUCTION
+ACTIVE_ISSUE: 53
+ACTIVE_PR: 55
+ACTIVE_BRANCH: launch/ux-polish-53
 
-## Completed engineering
+## Completed Lost Lands engineering
 
 LL-1 through LL-6 remain accepted. Do not reopen them without evidence of a regression.
 
 Issue #49 / PR #50 — multi-photo Pet Passport + Guardian activity timeline — is complete and merged.
 
-Issue #51 / PR #52 — Guardian Deal Moments — is complete and merged to `main` at `fae7a4cf7a24117868558f7cc4b65987e6e40928`. Issue #51 is closed as completed. The accepted Deal Moment implementation keeps activity photos outside the five-photo Passport cap, private to the owning Guardian in this release, and protected by the existing database/RLS/storage acceptance contract.
+Issue #51 / PR #52 — Guardian Deal Moments — is complete and merged to `main` at `fae7a4cf7a24117868558f7cc4b65987e6e40928`. Deal Moment media remains outside the five-photo Passport cap and private to the owning Guardian under the accepted RLS/storage contract.
 
-## Current hosted state
+## Live hosted Auth acceptance now evidenced
 
-Vercel still has a READY production deployment for accepted app SHA `fae7a4cf7a24117868558f7cc4b65987e6e40928` at `lost-paws-qc36f535p-jims-projects-acec6bcb.vercel.app`. A direct production root fetch returned HTTP 200 on 2026-09-10, and runtime-error inspection found no production runtime errors in the latest 24-hour window.
+Owner completed the hosted Auth URL and first real-account email-confirmation path successfully on 2026-09-10:
 
-Later documentation-only commits produced canceled production builds; they do not replace or invalidate the READY accepted app deployment.
+1. Hosted Supabase Site URL changed from localhost to `https://lost-paws-one.vercel.app` for pre-cutover acceptance.
+2. Redirect allowlist was narrowed to exact hosted onboarding/reset paths plus the local-development wildcard; the broad production Vercel wildcard was removed.
+3. Email provider is enabled.
+4. New-user signup is enabled.
+5. Confirm email is enabled.
+6. Minimum password length was identified for tightening from 6 to the repository contract of at least 8 characters; verify saved hosted value before final public launch acceptance.
+7. A real Guardian signup produced an external confirmation email through Supabase Auth -> Resend using the verified `auth.shelterpawtners.com` sending setup.
+8. The confirmation link worked and returned the Guardian to the expected Pet Basics/onboarding flow.
 
-No paid Vercel upgrade is authorized or needed for the current checkpoint.
+This is evidence that the core signup -> transactional email -> confirmation -> persona onboarding route works. Do not repeat Resend/domain setup absent a regression.
 
-## Transactional email progress completed by owner
+Still required for LL-4/LL-6 external acceptance:
+
+- verify hosted minimum password length is saved at 8+;
+- password-recovery external inbox/click-through acceptance;
+- invalid/expired recovery behavior against a real external link;
+- mobile email/link rendering check;
+- verify Microsoft 365 human mailbox behavior remains unaffected;
+- Google OAuth live provider setup and persona-continuity acceptance when Google console access is available;
+- Facebook Login live provider setup and persona-continuity acceptance when Meta console access is available;
+- duplicate profile/organization checks after OAuth acceptance.
+
+## Transactional email state
 
 The Resend prerequisite is materially complete:
 
-1. Free-tier Resend account/domain setup completed.
-2. Sending domain `auth.shelterpawtners.com` created and verified.
-3. Required Resend DNS records were added and all three reported verified:
-   - DKIM TXT at `resend._domainkey.auth`
-   - CNAME `rsend.auth` -> `rsend.forge.rmta.net`
-   - CNAME `send.auth` -> `send.forge.rmta.net`
-4. Resend Receiving remains disabled; Microsoft 365 inbound mail routing was not intentionally changed.
-5. Hosted Supabase custom SMTP was enabled and saved using the verified Resend sending domain.
-6. Configured sender identity is `ShelterPawtners <noreply@auth.shelterpawtners.com>`.
-7. No Resend API key or SMTP secret is stored in this repository/handoff.
+- free-tier Resend setup complete;
+- `auth.shelterpawtners.com` sending domain verified;
+- required DKIM/sending DNS records verified;
+- Resend Receiving remains disabled;
+- Microsoft 365 apex mail DNS was not intentionally changed;
+- hosted Supabase custom SMTP enabled using `ShelterPawtners <noreply@auth.shelterpawtners.com>`;
+- secrets remain outside the repository.
 
-Do not repeat or reopen this Resend/DNS setup unless verification regresses or delivery testing produces evidence of a configuration problem.
+## Active owner-requested UX work — Issue #53
 
-## Active external launch gate
+Owner's live acceptance review found the core flows functional but identified launch-quality UX improvements:
 
-The remaining launch blockers are provider/account configuration and real external acceptance, not unfinished core MVP engineering:
+- Marketplace cards are too large and sparse for the primary acquisition/value surface;
+- Marketplace should support denser scanability and practical Grid/List views;
+- Guardian dashboard is too text-heavy/long and should surface key pet/profile/value/next-action information above the fold;
+- photos should be first-class on Guardian and Pet Passport surfaces;
+- Guardian area should use horizontal navigation separating human Guardian Profile from Pet Passport Profiles;
+- ordinary Guardian dashboard real estate should not be consumed by role-management controls;
+- the pet onboarding concept must not imply that a pet owns an email address; communications should resolve through the responsible Guardian/Shelter relationship using the existing approved identity model rather than inventing a new guardianship model.
 
-1. Inspect current hosted Supabase Auth Site URL and redirect URLs before changing them.
-2. Narrow hosted Supabase Site URL and redirect allowlist to exact approved production/acceptance origins and callback paths. Do not perform final `shelterpawtners.com` web-domain cutover as part of this step.
-3. Verify hosted email-confirmation/security settings and install/review confirmation and recovery email templates as needed.
-4. Execute safe real external inbox acceptance: registration, confirmation, sign-in, password recovery, invalid/expired recovery behavior, and mobile email/link rendering.
-5. Verify transactional mail additions did not disturb existing Microsoft 365 human mailbox send/receive behavior.
-6. Configure and live-test Google OAuth if owner credentials/provider-console access is available.
-7. Configure and live-test supported Facebook Login if owner credentials/provider-console access is available. Do not present Instagram as universal Guardian authentication.
-8. Verify OAuth/email flows do not create duplicate app profile/organization records.
-9. Re-run integrated desktop/mobile/browser acceptance on the final configured release.
-10. Present draft Terms/Privacy to the owner for review; do not publish them as final without approval.
-11. Prepare but do not perform the final `shelterpawtners.com` web-domain DNS/custom-domain cutover until separately authorized.
+PR #55 is the first bounded Issue #53 implementation slice. It adds accessible Grid/List Marketplace controls, increases default grid density, and adds a responsive compact list mode without changing offer truth, source/eligibility logic, claim/redemption mechanics, database schema, OD-003, or OD-004.
+
+PR #55 acceptance workflows were running at handoff. Merge only when required checks are green. Then continue the Guardian/Pet UI hierarchy in a separate bounded slice rather than expanding PR #55 indefinitely.
+
+## RAVE/content roadmap
+
+Issue #54 records the owner-requested RAVE Shelter Lost Lands hub and lightweight stories/announcements capability. Keep it planned, but do not let a full CMS delay launch-critical Auth/UX work. Prefer existing repository/Supabase infrastructure before introducing paid CMS dependencies.
+
+## Current hosted/runtime health
+
+Vercel project `lost-paws` remains on the Hobby/free plan. Runtime-error inspection on 2026-09-10 found no production runtime errors in the latest 24-hour window.
+
+Supabase project `shelterpawtners-dev` remains `ACTIVE_HEALTHY`.
+
+Latest security-advisor recheck found no evidence-backed new schema regression. Existing notices remain:
+
+- two intentionally locked private RLS/no-policy INFO notices (`private.audit_events`, `private.secure_tokens`);
+- four anonymous SECURITY DEFINER warnings for the intentionally public discovery RPC surface;
+- authenticated SECURITY DEFINER application RPC warnings that require function-by-function intent review rather than blanket revocation;
+- leaked-password protection disabled (paid-plan limitation under the no-paid-upgrade guardrail).
+
+Do not weaken RLS or blanket-change SECURITY DEFINER grants merely to silence advisor warnings.
 
 ## Connected tooling recheck
 
-At this checkpoint:
+Rechecked this run:
 
-- GitHub connection: available and authoritative for repository state.
-- Vercel connection: available; accepted production deployment, direct root response, and runtime health are verifiable.
-- Supabase connection: available for project/database/functions/advisors/docs, but the currently exposed connected actions do not provide hosted Auth provider/SMTP/Site-URL dashboard configuration writes.
-- Resend: no direct installed/available connector found. Owner completed the required free-tier domain + SMTP setup manually.
-- SiteGround/authoritative ShelterPawtners DNS: no direct installed/available connector found. Required Resend subdomain records are verified; do not alter Microsoft 365 apex mail DNS.
-- Google Developer/OAuth console: no direct installed/available connector found.
-- Meta/Facebook Developer console: no direct installed/available connector found.
-- Browser automation: no newly installed provider-console automation surfaced in this run.
-- Plugin discovery recheck surfaced Cloudflare as an installable option only. It is not the authoritative DNS provider for this project and is not required for the current checkpoint, so introducing it would add architecture rather than unblock launch readiness.
+- GitHub: connected and authoritative; read/write/PR actions available.
+- Vercel: connected; project/deployment/runtime inspection available.
+- Supabase: connected for project/database/migration/functions/advisors, but current actions still do not expose hosted Auth Site URL/provider-console writes.
+- Plugin discovery found no installable Resend, hosted Supabase Auth-settings, Google OAuth console, Meta/Facebook Developer, SiteGround DNS, or provider-console browser-automation tool.
 
-Re-check these connected capabilities on every controller run. If an authorized provider tool becomes actionable, use it immediately within standing authorization.
-
-## Documentation refreshed this run
-
-- `docs/LL4-AUTH-EMAIL-READINESS.md` now records the verified Resend domain/DNS and saved Supabase SMTP state, and consistently uses the actual sender `noreply@auth.shelterpawtners.com`.
-- `docs/LL6-LAUNCH-READINESS.md` now marks those completed transactional-email prerequisites and records current Vercel production health evidence.
-
-## Safe independent work while externally blocked
-
-While provider-console work remains blocked, continue only useful non-destructive launch-readiness work such as:
-
-- verify current production deployment health and release SHA;
-- run non-destructive hosted smoke/regression checks;
-- inspect Supabase security/performance advisors after schema changes;
-- keep cutover/rollback and external acceptance documentation current;
-- fix evidence-backed regressions only;
-- review dependency PRs only when they are low-risk, green, and relevant to launch readiness;
-- keep legal content in draft/review status;
-- avoid speculative feature expansion before launch.
+Therefore Google/Meta/provider-console setup remains an external owner/browser gate. Continue independent launch engineering/QA instead of stopping.
 
 ## Protected restrictions
 
@@ -99,6 +111,11 @@ Never purchase or upgrade paid services, make destructive production-data change
 
 ## Next safe action
 
-The next manual provider-console action is hosted Supabase Auth URL Configuration: inspect the existing Site URL and Redirect URLs first, then set only the exact approved acceptance/production callback destinations. The connected Supabase tool cannot currently write those hosted Auth settings, so the controller must not invent or bypass that configuration.
+1. Watch PR #55 acceptance.
+2. Fix evidence-backed PR #55 failures without weakening tests.
+3. Merge PR #55 when all required gates are green.
+4. Continue Issue #53 with a fresh bounded Guardian-dashboard/Profile/Passport UI slice from updated `main`.
+5. In parallel on each run, re-check provider tooling. If Google/Meta/Auth-provider console access becomes actionable, resume LL-4/LL-5 live acceptance immediately.
+6. Keep Issue #54 planned behind launch-critical UX/Auth work.
 
-In parallel, continue non-destructive Vercel/runtime/Supabase launch-health verification. Do not reopen completed LL slices, PR #50, or PR #52 absent regression evidence. Continue automatically on the next run until the owner explicitly disables the controller.
+Continue automatically until the owner explicitly disables the controller.
