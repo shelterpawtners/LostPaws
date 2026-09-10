@@ -1,6 +1,6 @@
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(26);
+select plan(29);
 
 set local role anon;
 select throws_ok(
@@ -37,9 +37,18 @@ select lives_ok(
   'atomic partner creation succeeds with membership and multiple locations'
 );
 select is(
+  (select public.create_partner_organization(
+    'petbiz',
+    '{"name":"Atomic Demo Partner","street":"1 Main Street","city":"Detroit","state":"MI","additionalLocations":[{"street":"2 Main Street","city":"Ann Arbor","state":"MI"}]}'::jsonb,
+    (select id from public.organization_onboarding_drafts where created_by='10000000-0000-0000-0000-000000000006')
+  )),
+  (select resolved_organization_id from public.organization_onboarding_drafts where created_by='10000000-0000-0000-0000-000000000006'),
+  'an exact retry on the same resolved draft returns the original organization'
+);
+select is(
   (select count(*)::bigint from public.organizations where public_name='Atomic Demo Partner'),
   1::bigint,
-  'atomic creation creates exactly one organization'
+  'atomic creation and its exact retry create exactly one organization'
 );
 select is(
   (select count(*)::bigint from public.organization_memberships m join public.organizations o on o.id=m.organization_id where o.public_name='Atomic Demo Partner' and m.user_id='10000000-0000-0000-0000-000000000006' and m.role='owner'),
@@ -57,13 +66,26 @@ select throws_ok(
     '{"name":"Atomic denied child","relationship":"corporate_child","parentId":"20000000-0000-0000-0000-000000000001"}'::jsonb,
     (select id from public.organization_onboarding_drafts where created_by='10000000-0000-0000-0000-000000000006')
   )$$,
-  '42501', null,
-  'atomic creation rejects a parent the user does not manage'
+  '22023', null,
+  'a resolved onboarding draft rejects reuse with a different payload'
 );
 select is(
   (select count(*)::bigint from public.organizations where public_name='Atomic denied child'),
   0::bigint,
-  'a rejected atomic creation leaves no partial organization'
+  'a rejected resolved-draft reuse leaves no partial organization'
+);
+select throws_ok(
+  $$update public.organization_onboarding_drafts
+    set form_data='{"name":"Rewritten after resolution"}'::jsonb
+    where created_by='10000000-0000-0000-0000-000000000006'$$,
+  '22023', null,
+  'a resolved onboarding draft payload cannot be rewritten'
+);
+select throws_ok(
+  $$delete from public.organization_onboarding_drafts
+    where created_by='10000000-0000-0000-0000-000000000006'$$,
+  '22023', null,
+  'a resolved onboarding draft cannot be deleted and recreated'
 );
 update public.organizations set public_name='Takeover attempt'
 where id='20000000-0000-0000-0000-000000000001';

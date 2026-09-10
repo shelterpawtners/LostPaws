@@ -1,6 +1,6 @@
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(21);
+select plan(22);
 
 set local role authenticated;
 select set_config('request.jwt.claim.sub','10000000-0000-0000-0000-000000000003',true);
@@ -19,7 +19,8 @@ select throws_ok(format($$select public.revise_partner_offer('%s','{"title":"Att
 
 select set_config('request.jwt.claim.sub','10000000-0000-0000-0000-000000000003',true);
 select is(public.set_partner_offer_state((select offer_id from test_offer_ids),'publish'),'published','complete offer publishes');
-select is((select count(*) from public.public_active_offers(null) where offer_id=(select offer_id from test_offer_ids))::bigint,1::bigint,'published current offer is public');
+select ok((select is_demo from public.offers where id=(select offer_id from test_offer_ids)),'offer created for a demo organization inherits demo state');
+select is((select count(*) from public.public_active_offers(null) where offer_id=(select offer_id from test_offer_ids))::bigint,0::bigint,'published demo offer is excluded from public results');
 select public.revise_partner_offer((select offer_id from test_offer_ids),'{"title":"Demo grooming welcome v2","summary":"New immutable terms.","terms":"New terms remain traceable.","eligibility_kind":"shelter_pet_enhanced","starts_at":"2099-01-01T00:00:00Z","claim_window_days":"14","redemption_instructions":"Show code.","applicability":"all_organization_locations"}'::jsonb);
 select is((select title from public.offer_versions where id=(select version_id from test_offer_ids)),'Demo grooming welcome','published historical version remains unchanged');
 select is((select count(*) from public.offer_versions where offer_id=(select offer_id from test_offer_ids))::bigint,2::bigint,'material edit creates a new version');

@@ -1,6 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
 import { useLocation, useParams } from "react-router-dom";
-import { Search, ShieldCheck, SlidersHorizontal } from "lucide-react";
+import {
+  ArrowUpRight,
+  Search,
+  ShieldCheck,
+  SlidersHorizontal,
+} from "lucide-react";
 import { supabase as db } from "../lib/supabase";
 import { OfferCard, type PublicOffer } from "./OfferCard";
 import "../marketplace.css";
@@ -10,6 +15,17 @@ function humanize(value: string) {
   return value
     .replaceAll("_", " ")
     .replace(/\b\w/g, (letter) => letter.toUpperCase());
+}
+
+function listingTypeLabel(value: string) {
+  if (value === "public_program") return "Public Adoption Benefits";
+  if (value === "community") return "Community Resources";
+  if (value === "partner_published") return "Partner Offers";
+  return humanize(value);
+}
+
+function isExternalResource(offer: PublicOffer) {
+  return ["public_program", "community"].includes(offer.classification);
 }
 
 export function OfferMarketplace({
@@ -81,7 +97,7 @@ export function OfferMarketplace({
         offer.summary,
         offer.business_name,
         offer.terms,
-        humanize(offer.classification || ""),
+        listingTypeLabel(offer.classification || ""),
         humanize(offer.eligibility_kind || ""),
         ...(offer.applicability || []).map(humanize),
       ]
@@ -138,17 +154,40 @@ export function OfferMarketplace({
 
     return (
       <section className="marketplaceDetailPage">
-        {offers.map((offer) => (
-          <div key={offer.offer_id}>
-            <OfferCard offer={offer} detailed concept="trust" featured />
-            <button
-              className="btn marketplaceClaimButton"
-              onClick={() => claimOffer(offer.offer_id)}
-            >
-              Claim this offer
-            </button>
-          </div>
-        ))}
+        {offers.map((offer) => {
+          const external = isExternalResource(offer);
+          const officialUrl = offer.destination_url || offer.source_url;
+          return (
+            <div key={offer.offer_id}>
+              <OfferCard offer={offer} detailed concept="trust" featured />
+              {external ? (
+                officialUrl ? (
+                  <a
+                    className="btn marketplaceClaimButton"
+                    href={officialUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    Visit official program <ArrowUpRight />
+                  </a>
+                ) : (
+                  <p className="notice">
+                    This public resource is listed for reference. Its official
+                    destination is temporarily unavailable, so no claim action
+                    is offered here.
+                  </p>
+                )
+              ) : (
+                <button
+                  className="btn marketplaceClaimButton"
+                  onClick={() => claimOffer(offer.offer_id)}
+                >
+                  Claim this offer
+                </button>
+              )}
+            </div>
+          );
+        })}
         {claim && (
           <div className="panel redemptionCode">
             <h2>Your private redemption code</h2>
@@ -206,8 +245,9 @@ export function OfferMarketplace({
         </span>
         <h2>Useful pet-parent value, without the fine-print hunt.</h2>
         <p>
-          Scan current offers, see who provides them, and check eligibility,
-          where they apply, and current terms before you claim.
+          Discover current public adoption benefits alongside offers published
+          by ShelterPawtners participants. Every listing shows who provides it,
+          eligibility context, and current terms before you take the next step.
         </p>
       </div>
 
@@ -249,7 +289,7 @@ export function OfferMarketplace({
                 aria-pressed={classification === item}
                 onClick={() => setClassification(item)}
               >
-                {humanize(item)}
+                {listingTypeLabel(item)}
               </button>
             ))}
           </div>
@@ -259,10 +299,11 @@ export function OfferMarketplace({
       <div className="marketplaceTrustStrip">
         <ShieldCheck />
         <div>
-          <strong>Provider and eligibility context stays visible.</strong>
+          <strong>Public benefits and partner offers stay distinct.</strong>
           <span>
-            Review who provides the offer, where it applies, and current terms
-            before taking the next step.
+            Public programs link to the responsible third party. ShelterPawtners
+            redemption codes are reserved for offers actually published through
+            this platform.
           </span>
         </div>
       </div>
@@ -271,7 +312,9 @@ export function OfferMarketplace({
         <div role="status" aria-live="polite" aria-atomic="true">
           <strong>{visibleOffers.length}</strong>
           <span>
-            {visibleOffers.length === 1 ? " current offer" : " current offers"}
+            {visibleOffers.length === 1
+              ? " current listing"
+              : " current listings"}
           </span>
         </div>
         {(query || classification !== "all") && (
@@ -315,9 +358,9 @@ export function OfferMarketplace({
       <div className="marketplaceTrustFooter">
         <ShieldCheck />
         <p>
-          Listings identify the responsible provider or public source. Public
-          programs are not presented as ShelterPawtners partnerships. Review
-          current provider terms before claiming.
+          Public adoption benefits are independently listed from official
+          third-party sources and are not ShelterPawtners partnerships or
+          endorsements. Provider terms control eligibility and availability.
         </p>
       </div>
 

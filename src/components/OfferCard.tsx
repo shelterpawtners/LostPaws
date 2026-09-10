@@ -19,6 +19,9 @@ export type PublicOffer = {
   details: string | null;
   terms: string;
   classification: string;
+  destination_url: string | null;
+  eligibility: string | null;
+  last_verified_at: string | null;
   eligibility_kind: string;
   starts_at: string | null;
   ends_at: string | null;
@@ -34,6 +37,13 @@ function humanize(value: string) {
   return value
     .replaceAll("_", " ")
     .replace(/\b\w/g, (letter) => letter.toUpperCase());
+}
+
+function listingTypeLabel(value: string) {
+  if (value === "public_program") return "Public Adoption Benefit";
+  if (value === "community") return "Community Resource";
+  if (value === "partner_published") return "Partner Offer";
+  return humanize(value || "current offer");
 }
 
 function providerInitials(name: string) {
@@ -64,7 +74,10 @@ export function OfferCard({
   featured?: boolean;
 }) {
   const where = applicabilityLabel(offer.applicability);
-  const classification = humanize(offer.classification || "current offer");
+  const external = ["public_program", "community"].includes(
+    offer.classification,
+  );
+  const classification = listingTypeLabel(offer.classification);
   const initials = providerInitials(offer.business_name) || "SP";
 
   return (
@@ -86,7 +99,10 @@ export function OfferCard({
 
         <div className="marketOfferProvider">
           <Store />
-          <span>{offer.business_name}</span>
+          <span>
+            {external ? "Public source · " : ""}
+            {offer.business_name}
+          </span>
         </div>
 
         <h2>{offer.title}</h2>
@@ -104,18 +120,30 @@ export function OfferCard({
               {new Date(offer.ends_at).toLocaleDateString()}
             </span>
           )}
+          {external && offer.last_verified_at && (
+            <span>
+              <ShieldCheck /> Last verified{" "}
+              {new Date(offer.last_verified_at).toLocaleDateString()}
+            </span>
+          )}
         </div>
 
         {detailed && offer.details && <p>{offer.details}</p>}
 
         {detailed && (
           <div className="marketOfferDetailSections">
+            {offer.eligibility && (
+              <section>
+                <h3>Eligibility</h3>
+                <p>{offer.eligibility}</p>
+              </section>
+            )}
             <section>
               <h3>Terms</h3>
               <p>{offer.terms}</p>
             </section>
             <section>
-              <h3>How to use it</h3>
+              <h3>{external ? "How to access it" : "How to use it"}</h3>
               <p>{offer.redemption_instructions}</p>
             </section>
           </div>
@@ -128,22 +156,31 @@ export function OfferCard({
         <div className="marketOfferFooter">
           {!detailed && (
             <Link className="marketOfferCta" to={`/offers/${offer.offer_id}`}>
-              View offer details <ArrowUpRight />
+              {external ? "View benefit details" : "View offer details"}{" "}
+              <ArrowUpRight />
             </Link>
           )}
 
           {offer.source_url && (
-            <a className="marketOfferSource" href={offer.source_url}>
-              Review source or current terms
+            <a
+              className="marketOfferSource"
+              href={offer.source_url}
+              target="_blank"
+              rel="noreferrer"
+            >
+              {external
+                ? "View official source"
+                : "Review source or current terms"}
             </a>
           )}
         </div>
 
         {detailed && (
           <p className="marketOfferTrustNote">
-            <ShieldCheck /> Review the listing type and provider terms above.
-            ShelterPawtners does not independently verify savings or imply
-            endorsement.
+            <ShieldCheck />{" "}
+            {external
+              ? "This is a third-party public program listed from an official source. ShelterPawtners does not imply a partnership, endorsement, or independently verified savings amount."
+              : "Review the listing type and provider terms above. ShelterPawtners does not independently verify savings or imply endorsement."}
           </p>
         )}
       </div>

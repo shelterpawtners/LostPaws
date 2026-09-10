@@ -21,11 +21,11 @@ async function signOut(page: Page) {
   await expect(page).toHaveURL(/\/$/);
 }
 
-test.describe.serial("Hosted partner-to-guardian marketplace golden path", () => {
+test.describe.serial("Hosted demo-partner persistence and public isolation", () => {
   test.skip(!hosted, "Set PLAYWRIGHT_HOSTED_QA=true for hosted QA runs.");
   test.describe.configure({ timeout: 120_000 });
 
-  test("partner profile persistence and offer redemption remain functional", async ({
+  test("demo Partner profile and offer persist without leaking to the public Marketplace", async ({
     page,
   }) => {
     const publicDescription = `Hosted QA profile persistence ${runSuffix}`;
@@ -52,6 +52,8 @@ test.describe.serial("Hosted partner-to-guardian marketplace golden path", () =>
     const saveStatus = page.getByTestId("partner-profile-save-status");
     await expect(saveStatus).toContainText("Saved as a private draft.");
     const selectedOrganizationId = await organization.inputValue();
+    expect(selectedOrganizationId).not.toBe("");
+
     await page.reload();
     await expect(saveDraftButton).toBeEnabled({ timeout: 15_000 });
     await expect(organization).toHaveValue(selectedOrganizationId);
@@ -98,35 +100,13 @@ test.describe.serial("Hosted partner-to-guardian marketplace golden path", () =>
       settingOrDefault("PLAYWRIGHT_GUARDIAN_PASSWORD", "Demo-only-Guardian-A!"),
     );
     await page.goto("/marketplace");
-    const card = page.locator(".offerCard", { hasText: offerTitle });
-    await expect(card).toBeVisible();
-    await card.getByRole("link", { name: "View offer details" }).click();
-    await expect(page.getByText(offerTerms)).toBeVisible();
-    await page.getByRole("button", { name: "Claim this offer" }).click();
-    await expect(page.getByRole("status")).toContainText("Claim ready");
-    const redeemCode =
-      (await page.locator(".redemptionCode code").textContent()) ?? "";
-    expect(redeemCode).toHaveLength(64);
 
-    await signOut(page);
-    await signIn(
-      page,
-      settingOrDefault("PLAYWRIGHT_PARTNER_EMAIL", "partner-admin@example.invalid"),
-      settingOrDefault("PLAYWRIGHT_PARTNER_PASSWORD", "Demo-only-Partner!"),
-    );
-    await page.goto(`/redeem/${redeemCode}`);
-    await expect(page.getByRole("heading", { name: offerTitle })).toBeVisible();
-    await expect(page.getByText("Valid claim")).toBeVisible();
-    await page.getByRole("button", { name: "Confirm utilization" }).click();
-    await expect(page.getByRole("status")).toContainText("Utilization confirmed");
+    const demoOfferCard = page.locator(".offerCard", { hasText: offerTitle });
+    await expect(demoOfferCard).toHaveCount(0);
 
-    await signOut(page);
-    await page.goto(`/partners/${selectedOrganizationId}`);
-    const impact = page.getByTestId("partner-impact-summary");
-    await expect(impact).toBeVisible();
-    await expect(impact).toContainText("Confirmed ShelterPawtners redemptions:");
-    await expect(impact).toContainText(
-      "Commitments and accrued amounts are not counted as settled support.",
-    );
+    const realProgramCard = page.locator(".offerCard", {
+      hasText: "PetSmart Adoption Kit",
+    });
+    await expect(realProgramCard).toBeVisible();
   });
 });

@@ -37,6 +37,33 @@ async function register(
 
 test.describe("Persona registration and onboarding", () => {
   test.describe.configure({ timeout: 60_000 });
+
+  for (const persona of [
+    "guardian",
+    "shelter",
+    "petbiz",
+    "rave_vendor",
+  ] as const) {
+    test(`email confirmation for ${persona} returns to its onboarding route`, async ({
+      page,
+    }) => {
+      test.skip(hostedQa, hostedSignupReason);
+      let redirectTo = "";
+      await page.route("**/auth/v1/signup**", async (route) => {
+        redirectTo =
+          new URL(route.request().url()).searchParams.get("redirect_to") || "";
+        await route.continue();
+      });
+
+      await register(page, persona);
+
+      expect(redirectTo).not.toBe("");
+      const confirmationTarget = new URL(redirectTo);
+      expect(confirmationTarget.origin).toBe(new URL(page.url()).origin);
+      expect(confirmationTarget.pathname).toBe(`/onboarding/${persona}`);
+    });
+  }
+
   test("fresh Guardian registration saves exactly one pet and guardianship", async ({
     page,
   }) => {
