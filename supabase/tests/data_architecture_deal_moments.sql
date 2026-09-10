@@ -59,6 +59,10 @@ select
 from deal_test d
 cross join generate_series(1,5) g;
 
+-- Bucket metadata is intentionally not readable by an ordinary Guardian, so
+-- verify this structural configuration as the test owner rather than weakening
+-- storage metadata access just to make the assertion observable.
+reset role;
 select ok(
   (
     select public=false
@@ -69,6 +73,9 @@ select ok(
   ),
   'Deal Moments use a private one-megabyte WebP-only storage bucket'
 );
+set local role authenticated;
+select set_config('request.jwt.claim.sub','10000000-0000-0000-0000-000000000001',true);
+
 select is(
   (select count(*) from pg_policies where schemaname='storage' and tablename='objects' and policyname in ('deal_moment_owner_read','deal_moment_owner_add','deal_moment_owner_delete'))::bigint,
   3::bigint,
