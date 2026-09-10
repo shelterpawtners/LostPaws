@@ -6,68 +6,62 @@ Phase 1 — Platform + Data Foundation is **complete**.
 
 Phase 2 — Partner Marketplace MVP is **complete**.
 
-The project is in **MVP Design Hardening + Human Release Readiness** before ShelterPawtners domain cutover and before Phase 3 feature work.
+MVP Design Hardening + Human Release Readiness is **complete through Issue #5**.
 
 **Phase 3 remains explicitly owner-gated.**
 
 ## Canonical application state
 
-- `main` is canonical and Vercel Production Branch.
+- `main` is canonical and the Vercel Production Branch.
 - Marketplace Sprint 1 / PR #28 is merged.
 - Brand propagation / PR #30 is merged to `main` at `eeea59cf25435871145118eb244c16753aa3a91b`.
-- Accepted PR #30 product SHA: `38449c1796b5e30542a3c2e88f898119b1d315ee`.
-- Issue #29 is closed.
+- Issue #5 full-site human-style browser and persistence audit is accepted at code SHA `62cba023a4946993ad44fcbd0ab4f7fdab856a52`.
+- PR #31 is the completion PR for Issue #5 and is ready for deterministic merge evidence.
 - `shelterpawtners.com` / `www.shelterpawtners.com` DNS remain unchanged.
 
-## Current priority
+## Issue #5 release-readiness result
 
-**Issue #5 — Full-site human-style browser and persistence audit — is active now.**
+The stabilized MVP passed the broad exact-code audit against the shared development Supabase backend using `LOCAL_HEAD` because the Vercel free deployment quota was rate-limited during acceptance. The quota did not block product validation and no paid infrastructure was added.
 
-Branch: `qa/issue5-full-site-audit`
+Accepted evidence on `62cba023a4946993ad44fcbd0ab4f7fdab856a52`:
 
-This checkpoint validates the stabilized MVP as a human would use it before any public-domain cutover. It is not a redesign and does not begin Phase 3.
+- CI: green.
+- Database QA: green.
+- Dependency Review: green.
+- Merge Gate: green.
+- Persona QA: green, including isolated fresh registration, access/isolation, redemption, and Admin QA security coverage.
+- Hosted QA: green.
+- Hosted golden paths: 4 passed.
+- Hosted design/axe/runtime QA: 3 passed.
+- Dedicated Issue #5 human audit: 5 passed.
+- Admin QA hosted regression: 5 passed.
+- Broader legacy hosted suite: 26 passed, 7 hosted-only signup cases skipped because those exact fresh-registration paths are covered deterministically in Persona QA's isolated local Supabase lane.
 
-The audit must cover:
+Hosted design evidence artifact from run `34423449090`:
 
-- public and protected route traversal/navigation;
-- Guardian multiple-pet, return/reload/sign-in and detail reopening behavior;
-- PetBiz profile/offer lifecycle and multi-record behavior;
-- current Shelter and RAVE Vendor journeys through real QA identities;
-- claim/redemption continuity and existing replay/cross-partner protections;
-- direct database/RLS truth checks after state changes;
-- failure/recovery behavior for implemented requests;
-- fresh-context reconstruction from backend state;
-- human-visible labels, CTAs, statuses, records and next actions.
+- artifact ID: `10131801820`
+- digest: `sha256:1871c6d9a47ac0052afe29945920ae081cd7b3aa1f701740a0259b7345d4cece`
+- accepted head: `62cba023a4946993ad44fcbd0ab4f7fdab856a52`
 
-## Execution model
+## Blocking defects resolved during Issue #5
 
-- Add a dedicated Issue #5 Playwright suite and reusable helpers rather than replacing existing golden tests.
-- Create a coverage matrix for all implemented routes/features.
-- Extend Hosted QA so Issue #5 runs deterministically at its acceptance boundary.
-- Use exact-code `LOCAL_HEAD` acceptance while Vercel is rate-limited.
-- Use Admin QA impersonation for seeded Shelter/RAVE identities instead of adding secrets.
-- Routine blocking defects are fixed autonomously under `docs/QA-AUTOMATION-POLICY.md`.
+The audit found and corrected routine release-readiness defects without weakening RLS or product rules:
 
-## Acceptance goal
+- disambiguated the intended `offers` -> `offer_versions` relationship so PetBiz offers survive leave/return/reload instead of silently appearing empty;
+- corrected the Partner organization-candidate RPC argument contract to match the canonical Supabase function signature;
+- made shared-dev Partner-candidate QA state deterministic while continuing to verify persisted `Not my business` dismissals through normal authenticated RLS;
+- made repeated offer/redemption QA use unique run-scoped offer records;
+- aligned legacy branded selectors with the current UI;
+- delegated fresh-email registration repetition to the isolated Persona QA lane rather than depending on the hosted Supabase default email quota;
+- required the legacy Partner profile regression to wait for the editor's persisted state to hydrate before editing, eliminating a test race without arbitrary sleeps.
 
-A manual tester should not be able to discover obvious navigation/state/persistence defects within a few minutes that this automated audit should reasonably have caught first.
+## Release-readiness conclusion
 
-Before completion:
+The currently implemented MVP is technically ready for an **owner decision on production-domain cutover**. This does not authorize the cutover itself and does not start Phase 3.
 
-1. run the broad suite;
-2. classify defects;
-3. fix routine blockers with regressions;
-4. document future-scope/non-blockers separately;
-5. get deterministic CI/Persona/Database/Hosted evidence green;
-6. record one accepted code SHA;
-7. present release-readiness result before domain cutover.
+Before any public-domain change, the owner must separately authorize routing `shelterpawtners.com` / `www.shelterpawtners.com` to the production application. Existing Microsoft 365 mail DNS records must remain intact during any future cutover.
 
-## Guardrails
-
-Authorized now:
-
-- Issue #5 QA automation, route/persistence verification, browser/accessibility hardening, and bounded routine defect fixes;
-- reversible free/low-cost tooling that preserves security.
+## Guardrails still in force
 
 Still owner-gated/deferred:
 
@@ -79,4 +73,4 @@ Still owner-gated/deferred:
 - paid infrastructure unless separately justified and approved;
 - destructive or material privacy/security/financial/legal changes.
 
-No action needed from Jim right now.
+No DNS, custom-domain, paid-infrastructure, or Phase 3 action is authorized by completion of Issue #5.
