@@ -18,6 +18,8 @@ Branch: `data-architecture/pet-media-guardian-feed`
 
 Owner approved this direction on 2026-09-10 after the expanded persona/Passport data-planning review.
 
+Formatted implementation head entering the first deterministic CI/Database cycle: `15d61053e67a2076e70749ed50588c544084dbb6`.
+
 ## Approved scope
 
 - Add normalized one-to-many pet media rather than expanding the legacy single-photo columns.
@@ -47,4 +49,4 @@ This data-architecture slice does not authorize any paid upgrade, production web
 
 ## Next safe action
 
-Open the Issue #49 PR and run the first CI/Database classification cycle. Continue automatically on any deterministic defect.
+Run the deterministic CI/Database cycle on the formatted implementation. Continue automatically on any reproducible defect; do not count gate-only Persona/Hosted results as acceptance while this handoff remains `IN_PROGRESS`.
