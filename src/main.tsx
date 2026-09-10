@@ -1509,6 +1509,7 @@ function ForgotPassword() {
 function ResetPassword() {
   const [status, setStatus] = useState("");
   const navigate = useNavigate();
+  const { session, loading } = useAuth();
   async function submit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (!db) return setStatus("Development connection is unavailable.");
@@ -1518,6 +1519,32 @@ function ResetPassword() {
     setStatus("Password updated.");
     window.setTimeout(() => navigate("/dashboard", { replace: true }), 700);
   }
+  if (loading)
+    return (
+      <Page>
+        <section className="section shell formPage">
+          <div className="panel">
+            <p role="status">Checking recovery link…</p>
+          </div>
+        </section>
+      </Page>
+    );
+  if (!session)
+    return (
+      <Page>
+        <section className="section shell formPage">
+          <div className="panel">
+            <span className="eyebrow">Account recovery</span>
+            <h1>Recovery link unavailable</h1>
+            <p>
+              This recovery link is invalid, expired, or has already been used.
+              Request a new email to continue securely.
+            </p>
+            <Link to="/forgot-password">Request a new recovery email</Link>
+          </div>
+        </section>
+      </Page>
+    );
   return (
     <Page>
       <section className="section shell formPage">
