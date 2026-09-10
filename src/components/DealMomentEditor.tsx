@@ -164,7 +164,9 @@ export function DealMomentEditor({
       if (newPath) {
         await db.storage.from("deal-moments").remove([newPath]);
       }
-      setStatus(error instanceof Error ? error.message : "Unable to save photo.");
+      setStatus(
+        error instanceof Error ? error.message : "Unable to save photo.",
+      );
     } finally {
       setBusy(false);
       if (inputRef.current) inputRef.current.value = "";
@@ -197,7 +199,9 @@ export function DealMomentEditor({
       }
       await loadMoment();
     } catch (error) {
-      setStatus(error instanceof Error ? error.message : "Unable to remove photo.");
+      setStatus(
+        error instanceof Error ? error.message : "Unable to remove photo.",
+      );
     } finally {
       setBusy(false);
     }
