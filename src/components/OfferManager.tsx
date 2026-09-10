@@ -12,11 +12,7 @@ type Offer = {
   offer_versions: any[];
 };
 type ProfileState =
-  | "draft"
-  | "published"
-  | "unpublished"
-  | "suspended"
-  | "removed";
+  "draft" | "published" | "unpublished" | "suspended" | "removed";
 export function OfferManager({ session }: { session: Session | null }) {
   const [orgs, setOrgs] = useState<Org[]>([]),
     [org, setOrg] = useState(""),
