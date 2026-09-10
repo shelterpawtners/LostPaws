@@ -129,3 +129,46 @@ $$;
 
 revoke all on function public.create_partner_organization(text, jsonb, uuid) from public, anon;
 grant execute on function public.create_partner_organization(text, jsonb, uuid) to authenticated;
+
+-- Once onboarding resolves to an existing or newly-created organization, keep
+-- the identity and submitted payload immutable. This prevents a later UI retry
+-- from rewriting form_data and disguising a changed submission as an exact
+-- retry. Editable/abandoned drafts can still be updated or deleted normally.
+create or replace function private.protect_resolved_organization_onboarding_draft()
+returns trigger
+language plpgsql
+security definer
+set search_path = ''
+as $$
+begin
+  if tg_op = 'DELETE' then
+    if old.status in ('resolved_new', 'resolved_existing') then
+      raise exception 'Resolved onboarding drafts cannot be deleted' using errcode = '22023';
+    end if;
+    return old;
+  end if;
+
+  if old.status in ('resolved_new', 'resolved_existing')
+    and (
+      new.created_by is distinct from old.created_by
+      or new.partner_kind is distinct from old.partner_kind
+      or new.status is distinct from old.status
+      or new.form_data is distinct from old.form_data
+      or new.resolved_organization_id is distinct from old.resolved_organization_id
+      or new.resolution_note is distinct from old.resolution_note
+    )
+  then
+    raise exception 'Resolved onboarding drafts are immutable' using errcode = '22023';
+  end if;
+
+  return new;
+end;
+$$;
+
+revoke all on function private.protect_resolved_organization_onboarding_draft() from public, anon, authenticated;
+
+drop trigger if exists protect_resolved_organization_onboarding_draft
+  on public.organization_onboarding_drafts;
+create trigger protect_resolved_organization_onboarding_draft
+before update or delete on public.organization_onboarding_drafts
+for each row execute function private.protect_resolved_organization_onboarding_draft();
