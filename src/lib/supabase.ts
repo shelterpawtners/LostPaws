@@ -76,13 +76,49 @@ export async function startActingSupabase(tokenHash: string): Promise<Session> {
   return data.session;
 }
 
+function rpcWithCanonicalArgs(client: SupabaseClient) {
+  const rpc = client.rpc.bind(client) as (...args: any[]) => any;
+  return (
+    functionName: string,
+    args?: Record<string, any>,
+    options?: Record<string, any>,
+  ) => {
+    if (
+      functionName === "partner_organization_candidates" &&
+      args &&
+      "p_public_name" in args
+    ) {
+      return rpc(
+        functionName,
+        {
+          input_public_name: args.p_public_name ?? null,
+          input_legal_name: args.p_legal_name ?? null,
+          input_website_url: args.p_website_url ?? null,
+          input_phone: args.p_phone ?? null,
+          input_street_address: args.p_street ?? null,
+          input_city: args.p_city ?? null,
+          input_state_province: args.p_state_province ?? null,
+        },
+        options,
+      );
+    }
+    return rpc(functionName, args, options);
+  };
+}
+
 // Existing application data calls resolve at call time, so QA mode uses the
 // selected user's JWT while the persisted administrator session remains intact.
+// The candidate-matching RPC was shipped with input_* SQL parameter names while
+// the current onboarding caller still sends its earlier p_* names. Normalize
+// that one established boundary here so PostgREST receives the canonical
+// migration signature without changing database policy or function behavior.
 export const supabase = (
   adminSupabase
     ? new Proxy(adminSupabase, {
         get(target, property, receiver) {
-          return Reflect.get(actingSupabase || target, property, receiver);
+          const client = actingSupabase || target;
+          if (property === "rpc") return rpcWithCanonicalArgs(client);
+          return Reflect.get(client, property, receiver);
         },
       })
     : null

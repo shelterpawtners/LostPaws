@@ -1,6 +1,8 @@
 import { createClient } from "@supabase/supabase-js";
 import { expect, test, type Page } from "@playwright/test";
 
+const offerTitle = `Playwright welcome offer ${Date.now()}-${Math.random().toString(16).slice(2)}`;
+
 test.describe.serial("Phase 2 offer and redemption journey", () => {
   let redeemCode = "";
 
@@ -17,6 +19,10 @@ test.describe.serial("Phase 2 offer and redemption journey", () => {
   }) => {
     await signIn(page, "partner-admin@example.invalid", "Demo-only-Partner!");
     await page.goto("/business");
+    await expect(page.getByTestId("partner-profile-save-status")).toHaveText(
+      /^(draft|published|unpublished)$/i,
+      { timeout: 15_000 },
+    );
     await page
       .getByLabel("Public description")
       .fill(
@@ -47,7 +53,7 @@ test.describe.serial("Phase 2 offer and redemption journey", () => {
     await expect(page.getByTestId("marketplace-profile-state")).toContainText(
       "Marketplace profile: published",
     );
-    await page.getByLabel("Title").fill("Playwright welcome offer");
+    await page.getByLabel("Title").fill(offerTitle);
     await page
       .getByLabel("Short description")
       .fill("A test-only Partner offer with clear terms.");
@@ -73,9 +79,7 @@ test.describe.serial("Phase 2 offer and redemption journey", () => {
   }) => {
     await signIn(page, "guardian-a@example.invalid", "Demo-only-Guardian-A!");
     await page.goto("/marketplace");
-    const card = page.locator(".offerCard", {
-      hasText: "Playwright welcome offer",
-    });
+    const card = page.locator(".offerCard", { hasText: offerTitle });
     await expect(card).toBeVisible();
     await card.getByRole("link", { name: "View offer details" }).click();
     await page.reload();
@@ -98,7 +102,7 @@ test.describe.serial("Phase 2 offer and redemption journey", () => {
     await signIn(page, "partner-admin@example.invalid", "Demo-only-Partner!");
     await page.goto(`/redeem/${redeemCode}`);
     await expect(
-      page.getByRole("heading", { name: "Playwright welcome offer" }),
+      page.getByRole("heading", { name: offerTitle }),
     ).toBeVisible();
     await expect(page.getByText("Valid claim")).toBeVisible();
 

@@ -45,7 +45,13 @@ test.describe("Phase 1 authenticated and protected routes", () => {
 
     await page.goto("/business");
     await expect(page).toHaveURL(/\/business$/);
-    await expect(page.getByRole("heading", { name: "Business" })).toBeVisible();
+    await expect(
+      page.getByRole("heading", {
+        level: 1,
+        name: "Make your business easy to understand.",
+        exact: true,
+      }),
+    ).toBeVisible();
   });
 
   test("clears the browser session on logout and protects subsequent access", async ({

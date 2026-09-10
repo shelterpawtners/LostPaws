@@ -42,7 +42,9 @@ export function OfferManager({ session }: { session: Session | null }) {
     void Promise.all([
       db
         .from("offers")
-        .select("id,title,status,current_version_id,offer_versions(*)")
+        .select(
+          "id,title,status,current_version_id,offer_versions:offer_versions!offer_versions_offer_id_fkey(*)",
+        )
         .eq("organization_id", org)
         .order("created_at", { ascending: false }),
       db
@@ -51,7 +53,12 @@ export function OfferManager({ session }: { session: Session | null }) {
         .eq("organization_id", org)
         .maybeSingle(),
     ]).then(([offerResult, profileResult]) => {
-      setOffers((offerResult.data || []) as any);
+      if (offerResult.error) {
+        setOffers([]);
+        setStatus("Unable to load your offers. Please try again.");
+      } else {
+        setOffers((offerResult.data || []) as any);
+      }
       setProfileState(
         (profileResult.data?.publication_status as ProfileState | undefined) ||
           "missing",

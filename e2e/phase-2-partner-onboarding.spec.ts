@@ -1,8 +1,41 @@
+import { createClient } from "@supabase/supabase-js";
 import { expect, test } from "@playwright/test";
 
-const hasLocalSupabase = Boolean(
-  process.env.PLAYWRIGHT_SUPABASE_PUBLISHABLE_KEY,
-);
+const supabaseUrl = process.env.PLAYWRIGHT_SUPABASE_URL || "";
+const publishableKey = process.env.PLAYWRIGHT_SUPABASE_PUBLISHABLE_KEY || "";
+const hasLocalSupabase = Boolean(publishableKey);
+
+async function clearPriorCandidateDismissals() {
+  if (!supabaseUrl || !publishableKey) return;
+
+  const qa = createClient(supabaseUrl, publishableKey, {
+    auth: { persistSession: false, autoRefreshToken: false },
+  });
+  const { data: signIn, error: signInError } =
+    await qa.auth.signInWithPassword({
+      email: "partner-b@example.invalid",
+      password: "Demo-only-Partner-B!",
+    });
+  expect(signInError).toBeNull();
+  expect(signIn.user?.id).toBeTruthy();
+
+  const { data: draft, error: draftError } = await qa
+    .from("organization_onboarding_drafts")
+    .select("id")
+    .eq("created_by", signIn.user!.id)
+    .maybeSingle();
+  expect(draftError).toBeNull();
+
+  if (draft?.id) {
+    const { error: deleteError } = await qa
+      .from("organization_candidate_dismissals")
+      .delete()
+      .eq("draft_id", draft.id);
+    expect(deleteError).toBeNull();
+  }
+
+  await qa.auth.signOut();
+}
 
 test.describe("Phase 2 checkpoint 1 partner organization onboarding", () => {
   test.skip(!hasLocalSupabase, "Local Supabase publishable key is required");
@@ -10,6 +43,11 @@ test.describe("Phase 2 checkpoint 1 partner organization onboarding", () => {
   test("keeps entry-first details, surfaces a match, and offers safe next actions", async ({
     page,
   }) => {
+    // Shared-dev acceptance reruns intentionally reuse the seeded Partner B
+    // account. This test persists a "Not my business" dismissal at the end,
+    // so reset only that QA user's prior dismissal through normal RLS first.
+    await clearPriorCandidateDismissals();
+
     await page.goto("/login");
     await page.getByLabel("Email address").fill("partner-b@example.invalid");
     await page.getByLabel("Password").fill("Demo-only-Partner-B!");

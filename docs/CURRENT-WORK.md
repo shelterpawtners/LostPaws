@@ -6,101 +6,71 @@ Phase 1 — Platform + Data Foundation is **complete**.
 
 Phase 2 — Partner Marketplace MVP is **complete**.
 
-The project is in **MVP Design Hardening + Human Release Readiness** before ShelterPawtners domain cutover and before Phase 3 feature work.
+MVP Design Hardening + Human Release Readiness is **complete through Issue #5**.
 
 **Phase 3 remains explicitly owner-gated.**
 
 ## Canonical application state
 
-- `main` is the canonical application branch and Vercel Production Branch.
-- Stream 1 PR #22 merged to `main`.
-- Stream 2 PR #24 merged to `main`.
-- Stream 3 PR #26 merged to `main`.
-- Marketplace Sprint 1 / PR #28 merged to `main` on September 9, 2026 at `0550625f296c3ef87ffa34dadf810d0f07e318e6`.
-- Accepted Marketplace code SHA: `d9b9c32ea7647ff0e9a616e8c8206bfb9ca5742d`.
-- Issue #27 is closed as completed.
-- `shelterpawtners.com` and `www.shelterpawtners.com` DNS remain unchanged.
+- `main` is canonical and the Vercel Production Branch.
+- Marketplace Sprint 1 / PR #28 is merged.
+- Brand propagation / PR #30 is merged to `main` at `eeea59cf25435871145118eb244c16753aa3a91b`.
+- Issue #5 full-site human-style browser and persistence audit is accepted at code SHA `62cba023a4946993ad44fcbd0ab4f7fdab856a52`.
+- PR #31 is the completion PR for Issue #5 and is ready for deterministic merge evidence.
+- `shelterpawtners.com` / `www.shelterpawtners.com` DNS remain unchanged.
 
-## Current priority
+## Issue #5 release-readiness result
 
-**Issue #29 — Design hardening: propagate flagship brand to shell + Guardian/PetBiz — has completed product/design acceptance on PR #30 and is awaiting owner-authorized merge.**
+The stabilized MVP passed the broad exact-code audit against the shared development Supabase backend using `LOCAL_HEAD` because the Vercel free deployment quota was rate-limited during acceptance. The quota did not block product validation and no paid infrastructure was added.
 
-Branch: `design/brand-propagation`
+Accepted evidence on `62cba023a4946993ad44fcbd0ab4f7fdab856a52`:
 
-Accepted code SHA:
+- CI: green.
+- Database QA: green.
+- Dependency Review: green.
+- Merge Gate: green.
+- Persona QA: green, including isolated fresh registration, access/isolation, redemption, and Admin QA security coverage.
+- Hosted QA: green.
+- Hosted golden paths: 4 passed.
+- Hosted design/axe/runtime QA: 3 passed.
+- Dedicated Issue #5 human audit: 5 passed.
+- Admin QA hosted regression: 5 passed.
+- Broader legacy hosted suite: 26 passed, 7 hosted-only signup cases skipped because those exact fresh-registration paths are covered deterministically in Persona QA's isolated local Supabase lane.
 
-`38449c1796b5e30542a3c2e88f898119b1d315ee`
+Hosted design evidence artifact from run `34423449090`:
 
-Accepted scope:
+- artifact ID: `10131801820`
+- digest: `sha256:1871c6d9a47ac0052afe29945920ae081cd7b3aa1f701740a0259b7345d4cece`
+- accepted head: `62cba023a4946993ad44fcbd0ab4f7fdab856a52`
 
-1. global header/navigation/shell;
-2. Guardian dashboard and high-value pet/passport/Marketplace actions;
-3. PetBiz dashboard/profile/offer-management entry surfaces.
+## Blocking defects resolved during Issue #5
 
-The implementation uses the accepted Marketplace A+B system as the visual reference: premium dark/navy structure, restrained purple/teal accents, stronger typography and hierarchy, purposeful cards/panels, clear action priority, and accessible responsive behavior.
+The audit found and corrected routine release-readiness defects without weakening RLS or product rules:
 
-It does not mechanically copy the Marketplace container onto every screen; the visual language is shared while each surface keeps its own job.
+- disambiguated the intended `offers` -> `offer_versions` relationship so PetBiz offers survive leave/return/reload instead of silently appearing empty;
+- corrected the Partner organization-candidate RPC argument contract to match the canonical Supabase function signature;
+- made shared-dev Partner-candidate QA state deterministic while continuing to verify persisted `Not my business` dismissals through normal authenticated RLS;
+- made repeated offer/redemption QA use unique run-scoped offer records;
+- aligned legacy branded selectors with the current UI;
+- delegated fresh-email registration repetition to the isolated Persona QA lane rather than depending on the hosted Supabase default email quota;
+- required the legacy Partner profile regression to wait for the editor's persisted state to hydrate before editing, eliminating a test race without arbitrary sleeps.
 
-## Issue #29 acceptance result
+## Release-readiness conclusion
 
-Final exact-code Hosted QA run: `34415505122`
+The currently implemented MVP is technically ready for an **owner decision on production-domain cutover**. This does not authorize the cutover itself and does not start Phase 3.
 
-Final responsive/design evidence artifact: `10128931350`
+Before any public-domain change, the owner must separately authorize routing `shelterpawtners.com` / `www.shelterpawtners.com` to the production application. Existing Microsoft 365 mail DNS records must remain intact during any future cutover.
 
-Results on the accepted SHA:
-
-- 4/4 existing hosted Guardian/Partner/Marketplace functional golden paths passed;
-- 3/3 expanded design-QA tests passed;
-- axe WCAG A/AA checks passed on the public shell/Marketplace plus Guardian dashboard, PetBiz dashboard, PetBiz profile, and offer manager;
-- phone 390x844, tablet 768x1024, and desktop 1440x1000 evidence was captured for Guardian/PetBiz dashboards;
-- PetBiz profile and offer-manager desktop evidence was captured;
-- mobile header open/close and role-panel behavior passed;
-- unrelated generic forms remained constrained rather than inheriting PetBiz workspace width;
-- page, console, and meaningful network failure checks passed cleanly;
-- final human visual inspection found no blocking responsive or brand-consistency defect.
-
-The stronger acceptance pass also fixed two issues without weakening QA:
-
-1. corrected a QA-only route assumption from `/partner/profile` to the implemented `/business` route;
-2. fixed a real React missing-key warning in `PartnerProfileEditor` helper-generated social-link fields.
-
-Vercel did not provide a current-head preview for the latest propagation commits, so acceptance used the existing explicit `LOCAL_HEAD` path: exact PR-head Vite code in GitHub Actions connected to the QA Supabase backend. No paid upgrade was required.
-
-## Current decision boundary
-
-PR #30 is accepted but **must not merge until the owner explicitly authorizes the merge**.
-
-The docs-only closeout records the accepted code SHA separately from the later documentation commits so heavy evidence remains tied to the exact tested product code.
-
-## Next after PR #30 merge
-
-Run **Issue #5 — Full-site human-style browser and persistence audit** across the stabilized product. That broader audit should cover all implemented routes/personas, reload/return journeys, persistence truth, multi-record behavior, failure recovery, obvious navigation/state defects, and responsive/accessibility regressions before any ShelterPawtners domain cutover.
-
-Issue #5 is release-readiness validation, not an excuse to reopen the entire product design or add Phase 3 scope.
-
-## Tooling / cost decisions
-
-- Code-first remains the default design workflow.
-- Figma remains deferred and is not a prerequisite.
-- Storybook remains optional; add only when isolated component iteration becomes faster than direct route work.
-- Use existing Playwright/axe/runtime tooling first.
-- No paid tooling or Vercel upgrade solely for temporary build-rate limits without owner approval.
-
-## Guardrails
-
-Authorized after PR #30 merge:
-
-- Issue #5 human QA, persistence verification, browser/accessibility hardening, and bounded defect fixes;
-- reversible free/low-cost tooling that does not weaken security.
+## Guardrails still in force
 
 Still owner-gated/deferred:
 
-- attaching/changing `shelterpawtners.com` or `www.shelterpawtners.com` DNS/custom-domain routing;
-- new Marketplace/offer data-model fields not already approved;
-- fabricated savings, ratings, provider assets, partnerships, ranking/popularity, verification, scarcity, or impact claims;
+- `shelterpawtners.com` / `www.shelterpawtners.com` DNS/custom-domain routing;
+- Phase 3 feature development;
+- new Marketplace/business model fields or material product rules;
 - `OD-003` verified-savings customer-facing rules/totals;
-- `OD-004` giving-provider selection and production charitable settlement/integration;
-- paid infrastructure/tools unless separately justified and approved;
-- destructive operations;
-- material legal/privacy/security/financial/product RED decisions;
-- Phase 3 feature development.
+- `OD-004` giving provider/settlement decisions;
+- paid infrastructure unless separately justified and approved;
+- destructive or material privacy/security/financial/legal changes.
+
+No DNS, custom-domain, paid-infrastructure, or Phase 3 action is authorized by completion of Issue #5.
