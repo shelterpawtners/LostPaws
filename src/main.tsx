@@ -55,6 +55,8 @@ import { PublicPartnerProfile } from "./components/PublicPartnerProfile";
 import { OfferManager } from "./components/OfferManager";
 import { OfferMarketplace } from "./components/OfferMarketplace";
 import { RedemptionFlow } from "./components/RedemptionFlow";
+import { GuardianProfileLite } from "./components/GuardianProfileLite";
+import { GuardianPetPassport } from "./components/GuardianPetPassport";
 import {
   AdminQaMode,
   AdminQaNavLink,
@@ -1780,6 +1782,7 @@ function Dashboard() {
               ))}
             </div>
           )}
+          {kind === "guardian" && <GuardianProfileLite session={session} />}
           <div className="nextCards">
             {kind !== "guardian" || (!petsLoading && pets.length === 0) ? (
               <Link
@@ -1848,70 +1851,9 @@ function Dashboard() {
 function GuardianPetDetail() {
   const { session } = useAuth();
   const { petId } = useParams();
-  const [pet, setPet] = useState<GuardianPet | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [status, setStatus] = useState("");
-  useEffect(() => {
-    if (!db || !session || !petId) return;
-    db.from("guardianships")
-      .select("pets(id,name,species,breed,adopted_self_reported)")
-      .eq("guardian_id", session.user.id)
-      .eq("pet_id", petId)
-      .eq("status", "active")
-      .is("ended_at", null)
-      .maybeSingle()
-      .then(({ data, error }) => {
-        setLoading(false);
-        if (error) return setStatus(error.message);
-        const related = data?.pets as GuardianPet | GuardianPet[] | null;
-        setPet(Array.isArray(related) ? related[0] || null : related || null);
-      });
-  }, [petId, session]);
   return (
     <Page>
-      <section className="section shell narrow petDetail">
-        <Link to="/dashboard">← Back to your pets</Link>
-        {loading ? (
-          <p role="status">Loading pet…</p>
-        ) : pet ? (
-          <div className="panel">
-            <span className="eyebrow">Digital Pet Passport</span>
-            <h1>{pet.name}</h1>
-            <dl>
-              <div>
-                <dt>Species</dt>
-                <dd>{pet.species}</dd>
-              </div>
-              {pet.breed && (
-                <div>
-                  <dt>Breed</dt>
-                  <dd>{pet.breed}</dd>
-                </div>
-              )}
-              <div>
-                <dt>Adoption status</dt>
-                <dd>
-                  {pet.adopted_self_reported
-                    ? "Guardian reported adopted"
-                    : "Not reported as adopted"}
-                </dd>
-              </div>
-            </dl>
-            <p>
-              More Passport details and editing tools are planned for the
-              Guardian and Shelter Passport phase.
-            </p>
-          </div>
-        ) : (
-          <div className="panel">
-            <h1>Pet unavailable</h1>
-            <p>This pet is not available under your active guardianships.</p>
-          </div>
-        )}
-        <p role="status" aria-live="polite">
-          {status}
-        </p>
-      </section>
+      <GuardianPetPassport session={session} petId={petId || ""} />
     </Page>
   );
 }

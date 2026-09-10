@@ -129,9 +129,9 @@ export function GuardianPetPassport({
               </p>
             </div>
             <p>
-              Keep the core identity details current here. Shelter history,
-              care records, emergency sharing, and QR controls arrive in later
-              Phase 3 checkpoints without replacing this pet record.
+              Keep the core identity details current here. Shelter history, care
+              records, emergency sharing, and QR controls arrive in later Phase
+              3 checkpoints without replacing this pet record.
             </p>
           </div>
 

@@ -24,7 +24,9 @@ async function signOut(page: Page) {
 }
 
 test.describe.serial("Phase 3 Guardian Passport foundation", () => {
-  test("Guardian private profile-lite persists and reloads", async ({ page }) => {
+  test("Guardian private profile-lite persists and reloads", async ({
+    page,
+  }) => {
     await signIn(page, guardianA.email, guardianA.password);
 
     await expect(
@@ -46,7 +48,9 @@ test.describe.serial("Phase 3 Guardian Passport foundation", () => {
     await expect(page.getByLabel("Instagram")).toHaveValue("@guardian_a_qa");
   });
 
-  test("primary Guardian edits and reloads Passport basics", async ({ page }) => {
+  test("primary Guardian edits and reloads Passport basics", async ({
+    page,
+  }) => {
     await signIn(page, guardianA.email, guardianA.password);
     await page.goto(`/pets/${petAId}`);
 
@@ -63,13 +67,9 @@ test.describe.serial("Phase 3 Guardian Passport foundation", () => {
     );
 
     await page.reload();
-    await expect(page.getByLabel("Breed")).toHaveValue(
-      "Phase 3 Labrador mix",
-    );
+    await expect(page.getByLabel("Breed")).toHaveValue("Phase 3 Labrador mix");
     await expect(page.getByLabel("Birth date")).toHaveValue("2021-05-10");
-    await expect(page.getByLabel("Spay/neuter status")).toHaveValue(
-      "neutered",
-    );
+    await expect(page.getByLabel("Spay/neuter status")).toHaveValue("neutered");
 
     await page.getByRole("link", { name: "Back to your pets" }).click();
     await expect(page.getByText("Phase 3 Labrador mix")).toBeVisible();
