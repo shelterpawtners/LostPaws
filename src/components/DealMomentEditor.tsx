@@ -145,8 +145,7 @@ export function DealMomentEditor({
       if (error) throw error;
 
       const result = (Array.isArray(data) ? data[0] : null) as
-        | UpsertResult
-        | undefined;
+        UpsertResult | undefined;
       if (result?.old_storage_bucket && result.old_storage_path) {
         const { error: cleanupError } = await db.storage
           .from(result.old_storage_bucket)
