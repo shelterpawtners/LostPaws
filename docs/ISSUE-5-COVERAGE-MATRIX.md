@@ -1,6 +1,6 @@
 # Issue #5 — Full-site browser/persistence coverage matrix
 
-Status: active release-readiness audit.
+Status: **complete — accepted at `62cba023a4946993ad44fcbd0ab4f7fdab856a52`.**
 
 Baseline: `main` after PR #30 (`eeea59cf25435871145118eb244c16753aa3a91b`).
 
@@ -31,28 +31,28 @@ This matrix distinguishes **implemented user behavior** from authenticated found
 - `/dashboard` — Role-aware Guardian dashboard. Covered by Issue #5 and design QA.
 - `/onboarding/guardian`, `/pets/new` — Create pet/Passport foundation. Covered by Issue #5 multi-pet and failure/retry journeys plus existing Guardian tests.
 - `/pets/:petId` — Reopen an owned pet. Covered by multi-pet reopen, reload, protected-route, and fresh-context journeys.
-- Guardian pet persistence — Each successful unique test submission must yield one canonical pet row and one active guardianship under the Guardian's real RLS session.
-- Guardian failed save — Must show a visible error, remain on onboarding, create no partial pet row, and succeed exactly once after retry.
-- Sign out/sign back in — Session must invalidate and backend state must reconstruct. Covered by Issue #5 and Hosted smoke.
-- Browser reload — Saved pet state must reconstruct from backend data. Covered by Issue #5 and existing Hosted suites.
-- Fresh browser context — Pet state must reconstruct after a new login rather than depending on React-only state. Covered by Issue #5.
+- Guardian pet persistence — Each successful unique test submission yields one canonical pet row and one active guardianship under the Guardian's real RLS session.
+- Guardian failed save — Shows a visible error, remains on onboarding, creates no partial pet row, and succeeds exactly once after retry.
+- Sign out/sign back in — Session invalidation and backend-state reconstruction are covered by Issue #5 and Hosted smoke.
+- Browser reload — Saved pet state reconstructs from backend data.
+- Fresh browser context — Pet state reconstructs after a new login instead of depending on React-only state.
 
 ## PetBiz routes and persistence
 
 - `/dashboard` — Role-aware PetBiz dashboard. Covered by Issue #5 and design QA.
 - `/business` — Partner public-profile editor. Covered by Issue #5 profile persistence, RAVE reload, and Marketplace golden path.
 - `/partner/offers` — Create, version, and publish offers. Covered by Issue #5 two-offer persistence/revisit and Marketplace golden path.
-- Offer persistence — Each unique Issue #5 offer must have one canonical `offers` row with version history visible through `offer_versions` under the Partner's real RLS session.
+- Offer persistence — Each unique Issue #5 offer has one canonical `offers` row with version history visible through `offer_versions` under the Partner's real RLS session.
 - `/redeem`, `/redeem/:code` — Validate and confirm redemption. Covered by Marketplace golden and phase-2 redemption suites.
 - Claim/redemption replay and cross-partner isolation — Covered by phase-2 redemption and persona-isolation suites.
 
 ## Shelter, RAVE Vendor, and admin QA
 
 - `/admin-qa` as Platform Admin — Restricted real-RLS persona switching. Covered by Issue #5 Shelter/RAVE traversal and `admin-qa-mode.spec.ts`.
-- `/admin-qa` as non-admin — Must redirect away. Covered by `admin-qa-mode.spec.ts`.
+- `/admin-qa` as non-admin — Redirects away. Covered by `admin-qa-mode.spec.ts`.
 - Shelter current state — Role-aware dashboard plus approved onboarding foundation. Covered through Admin QA real-RLS impersonation and persona-isolation DB suite.
 - RAVE Vendor current state — Partner dashboard/profile behavior. Covered through Admin QA real-RLS impersonation and persona-isolation DB suite.
-- Admin-QA acting-session reload — Existing Admin QA regression plus Issue #5 persona traversal verify that acting identity remains truthful across reload/navigation.
+- Admin-QA acting-session reload — Existing Admin QA regression plus Issue #5 persona traversal verify truthful acting identity across reload/navigation.
 
 ## Authenticated foundation routes
 
@@ -69,11 +69,30 @@ These routes are intentionally present as authenticated foundations. Issue #5 va
 
 ## Cross-cutting runtime evidence
 
-- Page, console, and meaningful network health are covered by Hosted design QA and failure artifacts from Issue #5.
-- Existing Persona QA continues to validate seeded credential and RLS isolation behavior.
-- Existing Database QA continues to validate schema/data-policy state.
-- Existing Marketplace golden paths continue to validate profile publication, offer publication, Guardian claim, Partner redemption, and public impact presentation.
+Accepted SHA: `62cba023a4946993ad44fcbd0ab4f7fdab856a52`.
+
+- CI, Database QA, Dependency Review, Merge Gate, Persona QA, and Hosted QA all passed.
+- Hosted golden paths: 4 passed.
+- Hosted design/axe/runtime QA: 3 passed.
+- Dedicated Issue #5 human audit: 5 passed.
+- Admin QA hosted regression: 5 passed.
+- Broader legacy hosted suite: 26 passed, 7 hosted-only fresh-email registration cases skipped because those same registration paths run deterministically in the successful isolated Persona QA lane.
+- Persona QA passed fresh registration, seeded persona isolation, redemption, and local Admin QA security coverage.
+- Hosted design evidence artifact: `10131801820`, digest `sha256:1871c6d9a47ac0052afe29945920ae081cd7b3aa1f701740a0259b7345d4cece`.
+- Acceptance runtime was `LOCAL_HEAD`: exact PR-head Vite code with the shared development Supabase backend while Vercel's free deployment quota was rate-limited.
+
+## Blocking defects resolved by the audit
+
+- PetBiz offer reload now uses the intended `offers` -> `offer_versions` relationship instead of an ambiguous embed.
+- Partner organization matching now sends the canonical RPC argument names used by the database function.
+- Shared-dev candidate-dismissal test state is reset only for the seeded QA user through authenticated RLS so repeated runs remain deterministic while dismissal persistence is still verified.
+- Repeated offer/redemption tests use run-scoped unique offer titles.
+- Fresh-email signup repetition is isolated to Persona QA rather than the hosted default email quota.
+- Legacy selectors were aligned with the branded UI.
+- Partner profile regression waits for persisted editor hydration before modifying data, preventing a test-only hydration race.
 
 ## Acceptance interpretation
 
-A future capability is not a defect merely because its route is currently a foundation page. A blocker is a broken or misleading behavior inside functionality that is already implemented/approved, incorrect persistence, authorization/RLS failure, duplicate state, false success, broken navigation, or another defect meeting `docs/QA-AUTOMATION-POLICY.md`.
+A future capability is not a defect merely because its route is currently a foundation page. A blocker is broken or misleading behavior inside functionality that is already implemented/approved, incorrect persistence, authorization/RLS failure, duplicate state, false success, broken navigation, or another defect meeting `docs/QA-AUTOMATION-POLICY.md`.
+
+Issue #5 found no remaining release-readiness blocker within the implemented MVP after the fixes above. Production-domain routing and Phase 3 remain separate owner decisions.
