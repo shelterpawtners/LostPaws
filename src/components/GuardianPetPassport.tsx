@@ -4,6 +4,7 @@ import type { Session } from "@supabase/supabase-js";
 import { ShieldCheck } from "lucide-react";
 import { supabase as db } from "../lib/supabase";
 import { GuardianAdoptionVerification } from "./GuardianAdoptionVerification";
+import { PetMediaGallery } from "./PetMediaGallery";
 
 type PassportPet = {
   id: string;
@@ -239,6 +240,8 @@ export function GuardianPetPassport({
               {status}
             </p>
           </form>
+
+          <PetMediaGallery session={session} petId={pet.id} canEdit={canEdit} />
 
           <GuardianAdoptionVerification
             session={session}
