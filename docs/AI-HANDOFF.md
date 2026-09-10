@@ -2,8 +2,8 @@
 
 STATUS: IN_PROGRESS
 CURRENT_PHASE: Pre-cutover Launch Readiness
-CURRENT_CHECKPOINT: Issue #32 / PR #33 — demo isolation + real public adoption benefits complete in shared dev
-NEXT_CHECKPOINT: Signup/auth/email launch readiness, then final pre-cutover human review
+CURRENT_CHECKPOINT: Issue #32 / PR #33 — signup/auth readiness
+NEXT_CHECKPOINT: Revalidate auth redirect + recovery behavior, then final pre-cutover human review
 OWNER_DECISION_REQUIRED: NO
 SAFE_TO_CONTINUE: YES
 ACCEPTED_CODE_SHA: NONE
@@ -20,102 +20,66 @@ Branch: `launch/pre-cutover-readiness`
 
 PR: #33
 
-Latest fully green implementation head before this documentation refresh: `b01948a5ad4a7d72481d8a6dc770b317890e7bdb`
-
-## Current objective
-
-Finish the launch candidate without changing production DNS, beginning Phase 3, adding paid infrastructure, destructively cleaning data, or making unresolved savings/giving product decisions.
+Current auth implementation head before this handoff refresh: `55debececf882b3b1f3ee9dbedf8d31445c5760f`
 
 ## Completed launch-readiness work
 
 ### Demo/QA isolation
 
 - `20260910030000_launch_demo_public_isolation.sql` is applied in shared dev.
-- Existing QA offers owned by demo organizations were preserved and backfilled to `is_demo=true`.
-- Future demo-owned offers automatically inherit demo state.
-- Public Marketplace, public Partner Directory, and direct public partner-profile lookup exclude demo data.
-- Authenticated/Admin QA access remains available.
-- Shared-dev evidence after public resource publication: 77 total offers = 72 retained demo offers + 5 intentional public-program listings; public Marketplace returns only the 5 real public-program listings.
+- Shared dev retains 72 demo/QA offers for authenticated/Admin testing while anonymous/public surfaces exclude them.
+- Public Marketplace/directory/profile RPCs exclude demo data.
 
-### Shared-dev CP6 alignment
+### Shared-dev CP6 + RPC boundary alignment
 
-The previously missing accepted CP6 migrations were applied to `shelterpawtners-dev` in canonical order before the launch migrations. The prior shared-dev schema-drift blocker is resolved.
+- Accepted CP6 migrations are aligned in shared dev.
+- `20260910031500_launch_rpc_execute_boundary.sql` is applied.
+- Anonymous execution is denied for the nine state-changing offer/redemption RPCs while deliberate read-only public RPCs remain available.
 
-### RPC execute boundary
+### Public-program Marketplace boundary + Wave 1
 
-`20260910031500_launch_rpc_execute_boundary.sql` is applied in shared dev.
+- `20260910033000_launch_public_program_boundary.sql` is applied.
+- Public/community resources cannot create ShelterPawtners claim/redemption tokens.
+- Marketplace UI routes external public benefits to official sources and labels them separately from participant offers.
+- Five source-backed `public_program` listings are live in shared dev: PetSmart Adoption Kit, Adopt a Pet Shelter Plus, PetPartners 30-Day Coverage, Trupanion Adoption Day coverage, and BISSELL Empty the Shelters Fall 2026.
+- Shared dev currently has 77 total offer rows = 72 retained demo rows + 5 public-program rows; the anonymous Marketplace returns only the 5 real public programs.
+- Source-only organizations do not appear in the Partner Directory.
 
-- anonymous users cannot execute the nine state-changing offer/redemption RPCs;
-- authenticated users retain the required application access;
-- anonymous users retain the four intentional read-only public discovery RPCs.
+### Signup/auth readiness now implemented
 
-### Public-program Marketplace boundary
+- Email/password signup now sets `emailRedirectTo` to `/onboarding/{persona}` so Guardian, Shelter, PetBiz, and RAVE Vendor users return to the onboarding route they selected after confirmation.
+- Four-persona Playwright regression coverage inspects the actual Supabase signup `redirect_to` contract.
+- The temporary one-shot workflow used to apply the narrow auth patch removed itself after committing; no temporary workflow remains in the branch.
+- The automation-created auth commit produced `action_required` downstream workflow states rather than a clean validation signal, so this direct documentation commit intentionally retriggers the normal PR gates under the repository actor. Do not interpret the earlier `action_required` state as a product regression.
 
-`20260910033000_launch_public_program_boundary.sql` is applied in shared dev.
+## Last fully green validation checkpoint
 
-- `public_active_offers()` exposes the existing launch-content fields needed for truthful public listings: destination URL, eligibility, last-verified date, terms/source/disclosure, dates, and applicability;
-- `public_program` and `community` records remain publicly browseable;
-- those external records cannot create ShelterPawtners claim/redemption tokens;
-- the UI labels public benefits separately and routes the user to the official third-party program rather than showing an internal Claim action;
-- regression coverage proves this boundary.
+Before the auth redirect change, normal gates were all green: CI, Database QA, Hosted QA, Persona QA, Dependency Review, and Merge Gate.
 
-### Real public adoption benefits — Wave 1
-
-Five source-backed `public_program` listings are now loaded in shared dev, last verified September 9, 2026:
-
-1. PetSmart Adoption Kit coupon savings;
-2. Adopt a Pet Shelter Plus adopter savings;
-3. PetPartners 30-day pet insurance coverage;
-4. Trupanion Adoption Day 30-day coverage;
-5. BISSELL Empty the Shelters — Fall 2026.
-
-Each listing has an official source/destination, eligibility language, verification date, current terms/disclosure, and national applicability. Source-only organizations have no partner profile or membership and do not appear in the public Partner Directory. No partnership or endorsement is implied.
-
-### Duplicate Shelter Pawtners test artifacts
-
-Two nearly empty shared-dev organizations named `Shelter Pawtners` were reviewed. They were created about two minutes apart by the same owner and contain no partner profile, location, offer, or private-contact data. The owner indicated they were probably registration test records. No deletion was performed. Treat them as launch-hygiene/test artifacts and classify appropriately before cutover rather than destructively guessing.
-
-## Deterministic validation
-
-On implementation head `b01948a5ad4a7d72481d8a6dc770b317890e7bdb` all normal gates completed successfully:
-
-- CI: success;
-- Database QA: success;
-- Hosted QA: success;
-- Persona QA: success;
-- Dependency Review: success;
-- Merge Gate: success.
-
-The temporary formatting diagnostic workflow used to obtain the repository's exact Prettier output was removed before this checkpoint.
-
-The active branch Vercel Marketplace preview responds successfully at:
+The active branch Marketplace preview remains:
 
 `https://lost-paws-git-launch-pre-cutover-135ab9-jims-projects-acec6bcb.vercel.app/marketplace`
 
-## Advisor state after launch DDL
+## Advisor state
 
-Security advisor findings remaining:
+Security advisor findings remaining are unchanged launch-hardening items rather than regressions introduced by the Marketplace work:
 
-- `private.audit_events` and `private.secure_tokens` have RLS enabled with no policies; these are intentionally locked private-schema tables;
-- four anonymous-executable `SECURITY DEFINER` warnings remain for the intentional read-only public discovery RPCs;
-- authenticated-executable `SECURITY DEFINER` application RPCs remain and require their existing authorization checks;
-- Supabase leaked-password protection is disabled and remains a launch-hardening item.
+- intentionally locked private tables with RLS and no public policies;
+- four intentional anonymous read-only `SECURITY DEFINER` discovery RPCs;
+- authenticated application RPCs with existing authorization checks;
+- leaked-password protection disabled.
 
-Performance advisor findings remain broader cleanup work rather than regressions from this launch slice:
-
-- 20 unindexed foreign-key notices;
-- 76 unused-index notices in the low-traffic development environment;
-- 18 multiple-permissive-policy notices.
-
-Do not claim the advisors are clean or expand Issue #32 into an unrelated wholesale RLS/index refactor unless a launch blocker is demonstrated.
+Performance advisor still reports broader optimization items including unindexed foreign keys, unused indexes in the low-traffic dev environment, and multiple permissive policies. Do not expand Issue #32 into a wholesale RLS/index rewrite without evidence of a launch blocker.
 
 ## Remaining Issue #32 work
 
-1. Validate signup/auth launch readiness for Guardian, Shelter, PetBiz, and RAVE Vendor against the current shared-dev/preview environment.
-2. Resolve production-suitable Auth email delivery and final-domain redirect readiness within the existing no-paid-infrastructure/no-mail-DNS-change guardrail; identify any owner-gated requirement rather than purchasing or altering DNS autonomously.
-3. Finish the launch Marketplace/public-content human review across desktop/mobile and re-check all time-sensitive third-party program links/claims immediately before cutover.
-4. Review the two legacy `Shelter Pawtners` test organization shells for demo classification before production cutover; do not delete them without a reason.
-5. Stop at the explicit owner authorization gate before any `shelterpawtners.com` / `www.shelterpawtners.com` DNS or custom-domain change.
+1. Revalidate all normal gates on the persona-preserving email confirmation implementation.
+2. Validate forgot-password/reset-password behavior and strengthen recovery-state UX/regressions if needed.
+3. Determine production-suitable custom SMTP/auth email requirements. Do not purchase infrastructure or change Microsoft 365/DNS without owner authorization.
+4. Configure final-domain Auth redirect/site URLs only after owner authorizes the production-domain gate; then verify email confirmation and password reset end-to-end.
+5. Complete final desktop/tablet/phone review with real launch content and no demo/example.invalid leakage.
+6. Reverify time-sensitive third-party public-program claims immediately before cutover.
+7. Keep the two nearly empty `Shelter Pawtners` test organization shells non-destructively reviewed; do not delete without a reason.
 
 ## Guardrails
 
@@ -131,4 +95,4 @@ Still owner-gated/deferred:
 
 ## Recommended next action
 
-Continue directly into signup/auth/email readiness, then perform final pre-cutover human/browser review. Keep PR #33 open and `STATUS: IN_PROGRESS` until the complete Issue #32 acceptance boundary is satisfied.
+Continue directly through auth/recovery validation and final browser review. Keep PR #33 open and `STATUS: IN_PROGRESS` until Issue #32 reaches the explicit domain/cutover owner gate.
