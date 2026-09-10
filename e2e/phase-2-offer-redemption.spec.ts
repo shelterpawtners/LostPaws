@@ -120,7 +120,10 @@ test.describe.serial("Phase 2 offer and redemption journey", () => {
     await expect(page.getByRole("status")).toContainText("Published.");
 
     await page.goto("/partner/offers");
-    const offerOrganization = page.getByLabel("Organization");
+    const offerOrganization = page
+      .locator("aside.rolePanel")
+      .getByRole("combobox")
+      .first();
     await expect(offerOrganization).toContainText(partnerOrganizationName, {
       timeout: 15_000,
     });
