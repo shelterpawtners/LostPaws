@@ -45,10 +45,10 @@ Where Safari/Firefox device/browser execution is unavailable to the current auto
 
 Before production web cutover, complete the external-console checklist from `docs/LL4-AUTH-EMAIL-READINESS.md`:
 
-- [ ] Resend free-tier sending domain `auth.shelterpawtners.com` verified.
-- [ ] Only Resend-provided subdomain DNS records added; Microsoft 365 apex mail DNS unchanged.
-- [ ] Supabase custom SMTP configured for `no-reply@auth.shelterpawtners.com`.
-- [ ] Email confirmation enabled.
+- [x] Resend free-tier sending domain `auth.shelterpawtners.com` verified.
+- [x] Only Resend-provided subdomain DNS records added; Microsoft 365 apex mail DNS intentionally unchanged.
+- [x] Supabase custom SMTP configured with `ShelterPawtners <noreply@auth.shelterpawtners.com>`.
+- [ ] Email confirmation enabled/verified in hosted Auth settings.
 - [ ] Confirmation/recovery templates installed and tested with safe accounts.
 - [ ] Supabase Site URL and redirect allowlist narrowed to exact approved origins/paths.
 - [ ] Google provider configured and live-tested if credentials are available.
@@ -88,6 +88,14 @@ Prepare these items but do **not** perform the final production domain/DNS/custo
 8. Confirm the prior public site remains recoverable until the new deployment is accepted.
 9. Prepare a post-cutover smoke checklist: home, register/login, Guardian onboarding, Passport, Marketplace, shelter verification response page, password recovery, and configured social login.
 10. Stop here and obtain the separately required authorization for the final web-domain cutover.
+
+## Current hosted evidence
+
+- Accepted application SHA remains `fae7a4cf7a24117868558f7cc4b65987e6e40928`.
+- Vercel production deployment for that SHA remains `READY`.
+- Production root fetch returned HTTP 200 on 2026-09-10.
+- Vercel runtime error inspection found no production runtime errors in the latest 24-hour window on 2026-09-10.
+- Later documentation-only production builds were cancelled and do not replace the accepted READY application deployment.
 
 ## Rollback plan
 
