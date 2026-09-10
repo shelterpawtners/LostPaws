@@ -12,9 +12,9 @@ create temp table deal_test(
 );
 grant select, insert, update on table deal_test to authenticated;
 
-set local role authenticated;
-select set_config('request.jwt.claim.sub','10000000-0000-0000-0000-000000000001',true);
-
+-- Fixture ownership is established by the test owner before impersonating a
+-- Guardian. This avoids exercising unrelated guardianship bootstrap policies
+-- while keeping every Deal Moment authorization assertion under authenticated.
 with p as (
   insert into public.pets(created_by,name,species)
   values('10000000-0000-0000-0000-000000000001','Deal Moment QA Pet','dog')
@@ -26,6 +26,7 @@ insert into public.guardianships(pet_id,guardian_id,relationship,status)
 select pet_id,'10000000-0000-0000-0000-000000000001','primary','active'
 from deal_test;
 
+set local role authenticated;
 select set_config('request.jwt.claim.sub','10000000-0000-0000-0000-000000000003',true);
 update deal_test
 set offer_id=public.create_partner_offer(
