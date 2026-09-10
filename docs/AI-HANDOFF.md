@@ -20,7 +20,7 @@ Branch: `launch/pre-cutover-readiness`
 
 PR: #33
 
-Acceptance candidate immediately before this handoff commit: `12c69b56497181a4ea1e553c7cc8902d1608e561`
+Formatted acceptance control-plane head before this direct retrigger: `8e896f7a29d0283961e79aa1bbff7a8ef8258fc2`
 
 ## Acceptance intent
 
