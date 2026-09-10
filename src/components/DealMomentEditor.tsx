@@ -208,11 +208,7 @@ export function DealMomentEditor({
       <div className="dealMomentIntro">
         <Camera aria-hidden="true" />
         <div>
-          <b>
-            {moment
-              ? "Your Deal Moment"
-              : "Show us your pet enjoying the deal"}
-          </b>
+          <b>{moment ? "Your Deal Moment" : "Show us your pet enjoying the deal"}</b>
           <p>
             Add one optional photo to this activity. It stays private to your
             account and does not use a Pet Passport photo slot.
