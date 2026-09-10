@@ -2,16 +2,16 @@
 
 ## Authority
 
-ShelterPawtners/LostPaws is in active MVP design hardening and release-readiness work.
+ShelterPawtners/LostPaws is in active MVP implementation.
 
 - **Phase 1 is complete.**
 - **Phase 2 is complete.**
-- The current authorized work is **design hardening + human release readiness**, with the Marketplace as the flagship experience.
-- **Phase 3 feature development is not authorized.**
+- **Pre-cutover Launch Readiness / PR #33 is merged and accepted.**
+- **Phase 3 — Guardian + Shelter Passport MVP is explicitly authorized and active.**
 - `main` is the canonical application branch and the Vercel production branch.
 - Use one short-lived branch -> one bounded PR -> `main` for new work.
-- Do not auto-merge unless the owner explicitly approves that specific merge.
-- Do not modify ShelterPawtners production DNS, create paid infrastructure, perform destructive migrations, weaken RLS, expose secrets, or cross a material legal/privacy/security/financial/product RED boundary without owner approval.
+- The owner has authorized autonomous non-destructive MVP implementation and merge of bounded work when required checks are green; preserve explicit RED restrictions below.
+- Do not modify the final `shelterpawtners.com` production web DNS/custom-domain routing, create/upgrade paid infrastructure, perform destructive production-data changes, change Microsoft 365 mail DNS, weaken RLS, expose secrets, decide OD-003 verified-savings rules, decide OD-004 production money movement, or publish final legal policies without owner review.
 - Newer explicit owner decisions and the live handoff supersede stale historical planning text.
 
 ## Start every meaningful task here
@@ -21,10 +21,11 @@ Read only the context needed for the task, in this order:
 1. active GitHub Issue/PR;
 2. `docs/AI-HANDOFF.md`;
 3. `docs/CURRENT-WORK.md`;
-4. `docs/AI-TOOLING-AND-DESIGN-ROADMAP.md` when the work affects UX, visual design, testing, or AI tooling;
-5. `docs/AUTONOMOUS-EXECUTION-POLICY.md`;
-6. `docs/DEV-LOOP-V2.md`;
-7. relevant product/architecture/security/design files.
+4. `docs/phases/PHASE-3.md` for Phase 3 scope;
+5. `docs/AI-TOOLING-AND-DESIGN-ROADMAP.md` when the work affects UX, visual design, testing, or AI tooling;
+6. `docs/AUTONOMOUS-EXECUTION-POLICY.md`;
+7. `docs/DEV-LOOP-V2.md`;
+8. relevant product/architecture/security/design files.
 
 Do not load unrelated historical files just for completeness.
 
@@ -37,7 +38,7 @@ Use one bounded Issue -> one short-lived branch -> one PR -> one acceptance boun
 - Use specialist design/review agents as independent advisers; do not run competing coding agents on the same code path.
 - GitHub Actions/scripts own deterministic validation: formatting, lint, unit tests, build, migration replay, pgTAP/RLS, Playwright, dependency/security review, and merge evidence.
 - AI is reserved for implementation, product/design reasoning, non-obvious diagnosis, architecture/security reasoning, visual critique, semantic acceptance, and RED decisions.
-- Legacy Phase 2 automation that explicitly targets `build/festival-mvp` is historical/maintenance infrastructure. Do not use it as the target for new design-hardening work unless the workflow is intentionally refactored first.
+- Legacy Phase 2 automation that explicitly targets `build/festival-mvp` is historical/maintenance infrastructure. Do not use it as the target for new work unless intentionally refactored.
 
 ## Autonomous behavior
 
@@ -55,19 +56,28 @@ Use one bounded Issue -> one short-lived branch -> one PR -> one acceptance boun
 - Never fabricate partnerships, verification, donations, discounts, metrics, affiliations, reviews, scarcity, or production facts.
 - Preserve WCAG-minded accessibility, keyboard behavior, reduced-motion support, and mobile-first behavior.
 - Prefer the existing model and stack before adding dependencies, services, frameworks, or parallel data structures.
-- **Code-first design is the default. Figma is not a prerequisite.** Add a design workspace only when collaboration or design-system complexity clearly saves more time than it costs.
-- The Marketplace must communicate tangible user value, offer quality, partner credibility, savings, location/relevance, and shelter impact; do not optimize only for visual polish.
+- **Code-first design is the default. Figma is not a prerequisite.**
+- The Marketplace and Passport experiences must communicate tangible user value rather than generic card-grid UI.
 - Avoid generic AI UI patterns: interchangeable card grids, excessive pills, gratuitous gradients/glassmorphism, unnecessary containers, filler copy, and decoration without hierarchy or product meaning.
-- For material UI work, use the relevant repository skills under `.github/skills/` and seek independent review from the appropriate agents under `.github/agents/`.
+- For material UI work, use the relevant repository skills under `.github/skills/` and seek independent review from appropriate agents under `.github/agents/` when available.
+
+## Phase 3 architectural invariants
+
+- Shelter Report Card and Guardian Digital Pet Passport are views/lifecycle states of the same canonical pet data, not duplicate pet databases.
+- Passport data is private by default; public/emergency exposure is explicitly Guardian-controlled.
+- Preserve provenance so shelter-authored/imported/provider/Guardian/system history cannot be silently relabeled.
+- QR routes use opaque identifiers and contain no private pet or Guardian data.
+- Full microchip identifiers are never public by default.
+- Shelter access must narrow appropriately after Guardian claim while historical shelter provenance remains.
 
 ## Validation
 
 The native change-impact classifier determines the minimum deterministic checks.
 
 - **Implementation:** CI plus Database QA when database/RLS paths changed.
-- **UI/design:** responsive review at phone/tablet/desktop, keyboard/accessibility review, relevant Playwright coverage, and before/after screenshots when practical.
-- **Acceptance:** Persona QA only for persona-sensitive changes; Hosted QA for product/browser-impacting changes when applicable.
-- **Release readiness:** run the broader Issue #5 human-style/security/accessibility regression before ShelterPawtners domain cutover.
+- **UI/design:** responsive phone/tablet/desktop review, keyboard/accessibility review, relevant Playwright coverage, and screenshots when practical.
+- **Acceptance:** Persona QA for persona-sensitive changes; Hosted QA for product/browser-impacting changes when applicable.
+- **Release readiness:** broader human-style/security/accessibility regression before final production-domain cutover.
 
 When impact is uncertain, classify conservatively and run the broader deterministic test.
 
