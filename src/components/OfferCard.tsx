@@ -46,6 +46,13 @@ function listingTypeLabel(value: string) {
   return humanize(value || "current offer");
 }
 
+function visualLabel(value: string) {
+  if (value === "public_program") return "Official-source benefit";
+  if (value === "community") return "Community resource";
+  if (value === "partner_published") return "ShelterPawtners offer";
+  return "Current listing";
+}
+
 function providerInitials(name: string) {
   return name
     .split(/\s+/)
@@ -79,12 +86,18 @@ export function OfferCard({
   );
   const classification = listingTypeLabel(offer.classification);
   const initials = providerInitials(offer.business_name) || "SP";
+  const providerContext = external
+    ? "Official third-party source"
+    : "Published by a ShelterPawtners participant";
 
   return (
     <article
-      className={`offerCard marketOfferCard marketOfferCard-${concept}${featured ? " marketOfferCard-featured" : ""}`}
+      className={`offerCard marketOfferCard marketOfferCard-${concept} marketOfferCard-${offer.classification || "current"}${featured ? " marketOfferCard-featured" : ""}`}
     >
       <div className="marketOfferVisual" aria-hidden="true">
+        <span className="marketOfferVisualLabel">
+          {visualLabel(offer.classification)}
+        </span>
         <span className="marketOfferMonogram">{initials}</span>
         <span className="marketOfferVisualIcon">
           <Tag />
@@ -100,13 +113,22 @@ export function OfferCard({
         <div className="marketOfferProvider">
           <Store />
           <span>
-            {external ? "Public source · " : ""}
             {offer.business_name}
+            <small className="marketOfferProviderContext">
+              {providerContext}
+            </small>
           </span>
         </div>
 
         <h2>{offer.title}</h2>
         <p className="marketOfferSummary">{offer.summary}</p>
+
+        {!detailed && offer.eligibility && (
+          <div className="marketOfferEligibilityPreview">
+            <span>Eligibility</span>
+            <p>{offer.eligibility}</p>
+          </div>
+        )}
 
         <div className="marketOfferMeta">
           {where && (
@@ -156,7 +178,7 @@ export function OfferCard({
         <div className="marketOfferFooter">
           {!detailed && (
             <Link className="marketOfferCta" to={`/offers/${offer.offer_id}`}>
-              {external ? "View benefit details" : "View offer details"}{" "}
+              {external ? "See benefit and eligibility" : "See offer and eligibility"}{" "}
               <ArrowUpRight />
             </Link>
           )}
