@@ -34,6 +34,7 @@ Protected gates remain: no paid upgrades, no destructive production-data changes
 Reuse the existing `public.adoption_verification_requests` record and `private.secure_tokens` infrastructure. Do not create a parallel verification model.
 
 Required boundaries:
+
 - Guardian submission from an active-primary guardianship, with shelter/rescue contact information and no fabricated verified state.
 - High-entropy 30-day responder token issued only through a service-only function; raw token is never exposed to the Guardian client.
 - Anonymous responder lookup is token-scoped and returns only the minimum pet/adoption context needed to answer.

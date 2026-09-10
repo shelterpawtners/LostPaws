@@ -95,7 +95,8 @@ export function GuardianAdoptionVerification({
     const { error } = await db.rpc("request_adoption_verification", {
       p_pet_id: petId,
       p_shelter_name: String(form.get("shelter_name") || ""),
-      p_shelter_contact_name: String(form.get("shelter_contact_name") || "") || null,
+      p_shelter_contact_name:
+        String(form.get("shelter_contact_name") || "") || null,
       p_shelter_email: String(form.get("shelter_email") || "") || null,
       p_shelter_phone: String(form.get("shelter_phone") || "") || null,
       p_shelter_website_or_social:
@@ -110,15 +111,23 @@ export function GuardianAdoptionVerification({
       setStatus(`Unable to submit verification. ${error.message}`);
       return;
     }
-    setStatus("Verification submitted. Shelter outreach will use the secure responder link.");
+    setStatus(
+      "Verification submitted. Shelter outreach will use the secure responder link.",
+    );
     await load();
   }
 
   const isOpen = verification ? openStates.has(verification.status) : false;
-  const canStart = canEdit && (!verification || !isOpen) && verification?.status !== "confirmed";
+  const canStart =
+    canEdit &&
+    (!verification || !isOpen) &&
+    verification?.status !== "confirmed";
 
   return (
-    <section className="panel detail" aria-labelledby="adoption-verification-heading">
+    <section
+      className="panel detail"
+      aria-labelledby="adoption-verification-heading"
+    >
       <span className="eyebrow">Adoption verification</span>
       <h2 id="adoption-verification-heading">Shelter-confirmed adoption</h2>
       <p>
@@ -134,7 +143,8 @@ export function GuardianAdoptionVerification({
           <div>
             <b>Verified by {verification.shelter_name}</b>
             <p>
-              Adoption date: {verification.response_adoption_date || "Confirmed"}
+              Adoption date:{" "}
+              {verification.response_adoption_date || "Confirmed"}
               {verification.responder_name
                 ? ` · ${verification.responder_name}${verification.responder_role ? `, ${verification.responder_role}` : ""}`
                 : ""}
@@ -152,7 +162,8 @@ export function GuardianAdoptionVerification({
             </p>
             {verification.token_expires_at ? (
               <p>
-                Secure link expires {new Date(verification.token_expires_at).toLocaleDateString()}.
+                Secure link expires{" "}
+                {new Date(verification.token_expires_at).toLocaleDateString()}.
               </p>
             ) : null}
           </div>
@@ -201,9 +212,9 @@ export function GuardianAdoptionVerification({
             <input name="approximate_adoption_date" type="date" />
           </label>
           <label className="checkRow">
-            <input name="contact_consent" type="checkbox" required />
-            I authorize ShelterPawtners to contact this shelter or rescue about
-            this adoption.
+            <input name="contact_consent" type="checkbox" required />I authorize
+            ShelterPawtners to contact this shelter or rescue about this
+            adoption.
           </label>
           <button className="btn" disabled={saving}>
             <Send /> {saving ? "Submitting…" : "Request shelter verification"}

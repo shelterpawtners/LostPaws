@@ -99,16 +99,18 @@ export function AdoptionVerificationResponder() {
           <BadgeCheck />
           <span className="eyebrow">Response recorded</span>
           <h1>
-            {completed === "confirmed" ? "Adoption verified" : "Response complete"}
+            {completed === "confirmed"
+              ? "Adoption verified"
+              : "Response complete"}
           </h1>
           <p>
-            Thank you. The Guardian can now see the updated verification state in
-            their private Digital Pet Passport.
+            Thank you. The Guardian can now see the updated verification state
+            in their private Digital Pet Passport.
           </p>
           <div className="notice">
             <p>
-              ShelterPawtners is free for shelters and rescues. Organizations can
-              create profiles, help pets carry verified history forward, and
+              ShelterPawtners is free for shelters and rescues. Organizations
+              can create profiles, help pets carry verified history forward, and
               participate without paying to respond to verification requests.
             </p>
           </div>
