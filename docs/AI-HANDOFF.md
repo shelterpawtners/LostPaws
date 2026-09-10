@@ -2,8 +2,8 @@
 
 STATUS: IN_PROGRESS
 CURRENT_PHASE: Pre-cutover Launch Readiness
-CURRENT_CHECKPOINT: Issue #32 / PR #33 — signup/auth readiness
-NEXT_CHECKPOINT: Revalidate auth redirect + recovery behavior, then final pre-cutover human review
+CURRENT_CHECKPOINT: Issue #32 / PR #33 — signup/auth/recovery readiness
+NEXT_CHECKPOINT: Validate normal gates and production email/domain prerequisites, then final pre-cutover human review
 OWNER_DECISION_REQUIRED: NO
 SAFE_TO_CONTINUE: YES
 ACCEPTED_CODE_SHA: NONE
@@ -20,7 +20,7 @@ Branch: `launch/pre-cutover-readiness`
 
 PR: #33
 
-Current auth implementation head before this handoff refresh: `55debececf882b3b1f3ee9dbedf8d31445c5760f`
+Current auth/recovery implementation head before this handoff refresh: `f020cb5e78075d350dfe56fccc39c4513bbc3ef9`
 
 ## Completed launch-readiness work
 
@@ -45,16 +45,19 @@ Current auth implementation head before this handoff refresh: `55debececf882b3b1
 - Shared dev currently has 77 total offer rows = 72 retained demo rows + 5 public-program rows; the anonymous Marketplace returns only the 5 real public programs.
 - Source-only organizations do not appear in the Partner Directory.
 
-### Signup/auth readiness now implemented
+### Signup/auth/recovery readiness implemented
 
-- Email/password signup now sets `emailRedirectTo` to `/onboarding/{persona}` so Guardian, Shelter, PetBiz, and RAVE Vendor users return to the onboarding route they selected after confirmation.
+- Email/password signup sets `emailRedirectTo` to `/onboarding/{persona}` so Guardian, Shelter, PetBiz, and RAVE Vendor users return to the onboarding route they selected after confirmation.
 - Four-persona Playwright regression coverage inspects the actual Supabase signup `redirect_to` contract.
-- The temporary one-shot workflow used to apply the narrow auth patch removed itself after committing; no temporary workflow remains in the branch.
-- The automation-created auth commit produced `action_required` downstream workflow states rather than a clean validation signal, so this direct documentation commit intentionally retriggers the normal PR gates under the repository actor. Do not interpret the earlier `action_required` state as a product regression.
+- Forgot-password already targets `${location.origin}/reset-password`; dedicated launch regression coverage now verifies the actual recovery request `redirect_to` contract.
+- `/reset-password` now checks application auth state before presenting a password update form. A manual, expired, invalid, or already-consumed unauthenticated recovery URL shows `Recovery link unavailable` and links back to `/forgot-password` instead of presenting a misleading active password form.
+- Existing authenticated password update still uses Supabase `updateUser({ password })`.
+- Both temporary one-shot workflows used for the narrow auth changes removed themselves after committing; no temporary auth patch workflow remains in the branch.
+- Automation-authored commits can cause downstream GitHub workflow `action_required` states, so this direct handoff commit intentionally retriggers the standard PR gates under the repository actor.
 
 ## Last fully green validation checkpoint
 
-Before the auth redirect change, normal gates were all green: CI, Database QA, Hosted QA, Persona QA, Dependency Review, and Merge Gate.
+Before the recovery-state addition, the persona-preserving confirmation redirect was revalidated successfully in Persona QA, Hosted QA, Database QA, Dependency Review, and Merge Gate; the general CI lane had not yet completed when the next recovery hardening change was started.
 
 The active branch Marketplace preview remains:
 
@@ -73,13 +76,13 @@ Performance advisor still reports broader optimization items including unindexed
 
 ## Remaining Issue #32 work
 
-1. Revalidate all normal gates on the persona-preserving email confirmation implementation.
-2. Validate forgot-password/reset-password behavior and strengthen recovery-state UX/regressions if needed.
-3. Determine production-suitable custom SMTP/auth email requirements. Do not purchase infrastructure or change Microsoft 365/DNS without owner authorization.
-4. Configure final-domain Auth redirect/site URLs only after owner authorizes the production-domain gate; then verify email confirmation and password reset end-to-end.
-5. Complete final desktop/tablet/phone review with real launch content and no demo/example.invalid leakage.
-6. Reverify time-sensitive third-party public-program claims immediately before cutover.
-7. Keep the two nearly empty `Shelter Pawtners` test organization shells non-destructively reviewed; do not delete without a reason.
+1. Revalidate all standard gates on the auth/recovery implementation and prove the new recovery regression runs in an appropriate QA lane.
+2. Determine production-suitable custom SMTP/auth email requirements. Supabase default SMTP is development-only/restricted; do not purchase infrastructure or alter Microsoft 365/DNS without owner authorization.
+3. Prepare final-domain Auth site/redirect URL requirements but apply them only after owner authorization for the production-domain gate; then verify email confirmation and password reset end-to-end.
+4. Complete final desktop/tablet/phone review with real launch content and no demo/example.invalid leakage.
+5. Reverify time-sensitive third-party public-program claims immediately before cutover.
+6. Keep the two nearly empty `Shelter Pawtners` test organization shells non-destructively reviewed; do not delete without a reason.
+7. Stop before production DNS/custom-domain routing and present the owner gate when all pre-cutover items that can be completed autonomously are green.
 
 ## Guardrails
 
@@ -95,4 +98,4 @@ Still owner-gated/deferred:
 
 ## Recommended next action
 
-Continue directly through auth/recovery validation and final browser review. Keep PR #33 open and `STATUS: IN_PROGRESS` until Issue #32 reaches the explicit domain/cutover owner gate.
+Continue directly through deterministic auth/recovery validation, SMTP/domain prerequisite analysis, and final browser review. Keep PR #33 open and `STATUS: IN_PROGRESS` until Issue #32 reaches the explicit domain/cutover owner gate.
