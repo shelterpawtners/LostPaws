@@ -395,7 +395,10 @@ function Signup({ c }: { c: (typeof choices)[number] }) {
     const { data, error } = await db.auth.signUp({
       email: String(fd.get("email")),
       password: String(fd.get("password")),
-      options: { data: { full_name: fd.get("name"), onboarding_type: c.kind } },
+      options: {
+        emailRedirectTo: `${location.origin}/onboarding/${c.kind}`,
+        data: { full_name: fd.get("name"), onboarding_type: c.kind },
+      },
     });
     if (error) return setStatus(error.message);
     if (data.session) navigate(`/onboarding/${c.kind}`);
