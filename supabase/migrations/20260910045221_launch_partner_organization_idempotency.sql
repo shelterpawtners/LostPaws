@@ -1,3 +1,4 @@
+-- Final acceptance candidate: exercise this migration through full Database QA.
 -- Prevent retry/double-submit races from creating more than one Partner
 -- organization from the same onboarding draft. Exact retries return the
 -- already-created organization; attempts to reuse a resolved draft with
