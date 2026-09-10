@@ -1,14 +1,14 @@
 # AI Handoff
 
-STATUS: IN_PROGRESS
+STATUS: READY_FOR_ACCEPTANCE
 CURRENT_PHASE: Pre-cutover Launch Readiness
-CURRENT_CHECKPOINT: Issue #32 / PR #33 — signup/auth/recovery readiness
-NEXT_CHECKPOINT: Validate normal gates and production email/domain prerequisites, then final pre-cutover human review
+CURRENT_CHECKPOINT: Issue #32 / PR #33 — autonomous pre-cutover acceptance
+NEXT_CHECKPOINT: Run exact-code LOCAL_HEAD Persona/Hosted acceptance, fix deterministic regressions, then stop at final owner launch gate
 OWNER_DECISION_REQUIRED: NO
 SAFE_TO_CONTINUE: YES
 ACCEPTED_CODE_SHA: NONE
 ACCEPTANCE_DEPLOYED_SHA: NONE
-ACCEPTANCE_RUNTIME: PR_PREVIEW
+ACCEPTANCE_RUNTIME: LOCAL_HEAD
 
 ## Active task
 
@@ -20,7 +20,13 @@ Branch: `launch/pre-cutover-readiness`
 
 PR: #33
 
-Current auth/recovery implementation head before this handoff refresh: `f020cb5e78075d350dfe56fccc39c4513bbc3ef9`
+Acceptance candidate immediately before this handoff commit: `12c69b56497181a4ea1e553c7cc8902d1608e561`
+
+## Acceptance intent
+
+`READY_FOR_ACCEPTANCE` is being used only to run the repository's full deterministic Persona/Hosted browser suites. It is not authorization to merge PR #33, change production DNS, attach production custom domains, create external provider accounts, publish owner-unapproved legal terms, or begin Phase 3.
+
+`ACCEPTANCE_RUNTIME: LOCAL_HEAD` is intentional because Vercel is currently build-rate-limiting new previews. Exact-code local acceptance is preferred over paying to bypass a temporary hosting quota.
 
 ## Completed launch-readiness work
 
@@ -29,6 +35,7 @@ Current auth/recovery implementation head before this handoff refresh: `f020cb5e
 - `20260910030000_launch_demo_public_isolation.sql` is applied in shared dev.
 - Shared dev retains 72 demo/QA offers for authenticated/Admin testing while anonymous/public surfaces exclude them.
 - Public Marketplace/directory/profile RPCs exclude demo data.
+- Latest public-data audit returns 5 intentional Marketplace programs, 0 suspicious demo/QA/example.invalid Marketplace strings, and 0 public Partner Directory rows.
 
 ### Shared-dev CP6 + RPC boundary alignment
 
@@ -42,47 +49,68 @@ Current auth/recovery implementation head before this handoff refresh: `f020cb5e
 - Public/community resources cannot create ShelterPawtners claim/redemption tokens.
 - Marketplace UI routes external public benefits to official sources and labels them separately from participant offers.
 - Five source-backed `public_program` listings are live in shared dev: PetSmart Adoption Kit, Adopt a Pet Shelter Plus, PetPartners 30-Day Coverage, Trupanion Adoption Day coverage, and BISSELL Empty the Shelters Fall 2026.
-- Shared dev currently has 77 total offer rows = 72 retained demo rows + 5 public-program rows; the anonymous Marketplace returns only the 5 real public programs.
+- Shared dev has 77 total offer rows = 72 retained demo rows + 5 public-program rows; the anonymous Marketplace returns only the 5 real public programs.
 - Source-only organizations do not appear in the Partner Directory.
 
-### Signup/auth/recovery readiness implemented
+### Signup/auth/recovery readiness
 
 - Email/password signup sets `emailRedirectTo` to `/onboarding/{persona}` so Guardian, Shelter, PetBiz, and RAVE Vendor users return to the onboarding route they selected after confirmation.
 - Four-persona Playwright regression coverage inspects the actual Supabase signup `redirect_to` contract.
-- Forgot-password already targets `${location.origin}/reset-password`; dedicated launch regression coverage now verifies the actual recovery request `redirect_to` contract.
-- `/reset-password` now checks application auth state before presenting a password update form. A manual, expired, invalid, or already-consumed unauthenticated recovery URL shows `Recovery link unavailable` and links back to `/forgot-password` instead of presenting a misleading active password form.
-- Existing authenticated password update still uses Supabase `updateUser({ password })`.
-- Both temporary one-shot workflows used for the narrow auth changes removed themselves after committing; no temporary auth patch workflow remains in the branch.
-- Automation-authored commits can cause downstream GitHub workflow `action_required` states, so this direct handoff commit intentionally retriggers the standard PR gates under the repository actor.
+- Forgot-password targets `${location.origin}/reset-password`; dedicated launch regression coverage verifies the actual recovery request `redirect_to` contract.
+- `/reset-password` checks application auth state before presenting a password update form.
+- A manual, expired, invalid, or already-consumed unauthenticated recovery URL shows `Recovery link unavailable` and links back to `/forgot-password` instead of presenting a misleading active password form.
+- Existing authenticated password update continues through Supabase `updateUser({ password })`.
+- Full Persona QA now permanently includes `e2e/auth-recovery.spec.ts`.
 
-## Last fully green validation checkpoint
+### Production auth email readiness
 
-Before the recovery-state addition, the persona-preserving confirmation redirect was revalidated successfully in Persona QA, Hosted QA, Database QA, Dependency Review, and Merge Gate; the general CI lane had not yet completed when the next recovery hardening change was started.
+- `docs/LAUNCH-AUTH-EMAIL-READINESS.md` documents the pre-cutover plan.
+- Supabase built-in SMTP is treated as development/testing only.
+- Microsoft 365 remains the human/business mailbox system instead of becoming an application SMTP dependency.
+- Preferred MVP transactional path is Resend with a dedicated `auth.shelterpawtners.com` sending subdomain and `no-reply@auth.shelterpawtners.com` sender.
+- No paid tier is currently recommended for the controlled MVP.
+- Provider account creation, credentials, sending-domain DNS, final Auth Site URL/redirect allowlist, and real external-email validation remain owner-controlled production actions.
 
-The active branch Marketplace preview remains:
+### Public signup/legal finding
 
-`https://lost-paws-git-launch-pre-cutover-135ab9-jims-projects-acec6bcb.vercel.app/marketplace`
+Registration currently requires agreement to the Terms and acknowledgement of the Privacy Notice, but those labels are not links and the repository contains no owner-approved corresponding policy pages.
 
-## Advisor state
+Do not fabricate or silently publish material legal policy text. Owner-approved Terms of Service and Privacy Notice content are required before public signup is enabled at production cutover.
 
-Security advisor findings remaining are unchanged launch-hardening items rather than regressions introduced by the Marketplace work:
+## Acceptance requirements now running
 
-- intentionally locked private tables with RLS and no public policies;
-- four intentional anonymous read-only `SECURITY DEFINER` discovery RPCs;
-- authenticated application RPCs with existing authorization checks;
-- leaked-password protection disabled.
+The exact-code acceptance must prove, rather than infer, that:
 
-Performance advisor still reports broader optimization items including unindexed foreign keys, unused indexes in the low-traffic dev environment, and multiple permissive policies. Do not expand Issue #32 into a wholesale RLS/index rewrite without evidence of a launch blocker.
+1. the full Persona browser job actually runs rather than only its lightweight gate;
+2. `e2e/auth-recovery.spec.ts` executes and passes;
+3. fresh Guardian, Shelter, PetBiz, and RAVE Vendor flows remain green;
+4. offer/redemption and access-isolation regressions remain green;
+5. Hosted QA uses `LOCAL_HEAD` and runs the relevant exact-code browser/design/accessibility suites rather than a stale Vercel preview;
+6. normal CI, Database QA, Dependency Review, and Merge Gate remain green.
 
-## Remaining Issue #32 work
+Any genuine deterministic failure returns the work to `IN_PROGRESS`, is fixed without weakening tests, and is revalidated.
 
-1. Revalidate all standard gates on the auth/recovery implementation and prove the new recovery regression runs in an appropriate QA lane.
-2. Determine production-suitable custom SMTP/auth email requirements. Supabase default SMTP is development-only/restricted; do not purchase infrastructure or alter Microsoft 365/DNS without owner authorization.
-3. Prepare final-domain Auth site/redirect URL requirements but apply them only after owner authorization for the production-domain gate; then verify email confirmation and password reset end-to-end.
-4. Complete final desktop/tablet/phone review with real launch content and no demo/example.invalid leakage.
-5. Reverify time-sensitive third-party public-program claims immediately before cutover.
-6. Keep the two nearly empty `Shelter Pawtners` test organization shells non-destructively reviewed; do not delete without a reason.
-7. Stop before production DNS/custom-domain routing and present the owner gate when all pre-cutover items that can be completed autonomously are green.
+## Known non-code constraints
+
+- Vercel is currently rate-limiting new builds; this is not an application defect.
+- `shelterpawtners.com` / `www.shelterpawtners.com` remain unattached to Vercel and DNS is unchanged.
+- Supabase leaked-password protection remains disabled and should be enabled before public traffic if available in the selected project configuration.
+- Performance advisor findings remain broader optimization work unless acceptance demonstrates a launch blocker.
+- Two nearly empty `Shelter Pawtners` shared-dev organization shells remain non-destructively reviewed and are not public directory records.
+
+## Final owner gate after deterministic acceptance
+
+When exact-code acceptance is green, set the handoff to `BLOCKED`, `OWNER_DECISION_REQUIRED: YES`, and `SAFE_TO_CONTINUE: NO` rather than merging or changing production systems.
+
+Remaining owner-controlled launch actions will be:
+
+1. provide/approve Terms of Service content;
+2. provide/approve Privacy Notice content;
+3. authorize/create the transactional-email provider account and credentials;
+4. authorize the transactional sending-subdomain DNS records;
+5. authorize final Supabase production Site URL/redirect/email configuration and real external-email tests;
+6. authorize Vercel custom-domain attachment and production web DNS cutover;
+7. authorize Phase 3 separately after launch readiness is complete.
 
 ## Guardrails
 
@@ -90,12 +118,12 @@ Still owner-gated/deferred:
 
 - production-domain/DNS/custom-domain routing;
 - Microsoft 365 mail DNS changes;
+- transactional-email provider account/credential/DNS activation;
+- owner-approved Terms and Privacy Notice content;
 - Phase 3 feature development;
 - `OD-003` verified-savings customer-facing rules/totals;
 - `OD-004` production giving provider/settlement;
 - paid infrastructure unless separately approved;
 - destructive cleanup or material privacy/security/financial/legal changes.
 
-## Recommended next action
-
-Continue directly through deterministic auth/recovery validation, SMTP/domain prerequisite analysis, and final browser review. Keep PR #33 open and `STATUS: IN_PROGRESS` until Issue #32 reaches the explicit domain/cutover owner gate.
+PR #33 remains open. Do not merge it during this acceptance run.
