@@ -48,7 +48,7 @@ select throws_ok(
 
 set local role anon;
 select is((select count(*)::bigint from public.organization_private_contacts),0::bigint,'public users cannot read private contacts');
-select ok(not (public.public_partner_profile_details('20000000-0000-0000-0000-000000000001') ? 'primary_contact_email'),'public profile details exclude private contacts');
+select is(public.public_partner_profile_details('20000000-0000-0000-0000-000000000001'),null::jsonb,'published demo profile is hidden from public details');
 
 reset role;
 update public.organization_partner_profiles set publication_status='unpublished' where organization_id='20000000-0000-0000-0000-000000000001';
