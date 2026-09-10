@@ -20,7 +20,7 @@ Branch: `launch/pre-cutover-readiness`
 
 PR: #33 (acceptance)
 
-Formatted acceptance control-plane head before this direct retrigger: `8e896f7a29d0283961e79aa1bbff7a8ef8258fc2`
+Acceptance candidate source head before this direct retrigger: `74525a6bd6bb1dd36d4d3514e3f97769665621dc`
 
 ## Acceptance intent
 
@@ -33,7 +33,7 @@ Formatted acceptance control-plane head before this direct retrigger: `8e896f7a2
 ### Demo/QA isolation
 
 - `20260910030000_launch_demo_public_isolation.sql` is applied in shared dev.
-- Shared dev retains 72 demo/QA offers for authenticated/Admin testing while anonymous/public surfaces exclude them.
+- Shared dev preserves demo/QA offers for authenticated/Admin testing while anonymous/public surfaces exclude them.
 - Public Marketplace/directory/profile RPCs exclude demo data.
 - Latest public-data audit returns 5 intentional Marketplace programs, 0 suspicious demo/QA/example.invalid Marketplace strings, and 0 public Partner Directory rows.
 
@@ -49,7 +49,7 @@ Formatted acceptance control-plane head before this direct retrigger: `8e896f7a2
 - Public/community resources cannot create ShelterPawtners claim/redemption tokens.
 - Marketplace UI routes external public benefits to official sources and labels them separately from participant offers.
 - Five source-backed `public_program` listings are live in shared dev: PetSmart Adoption Kit, Adopt a Pet Shelter Plus, PetPartners 30-Day Coverage, Trupanion Adoption Day coverage, and BISSELL Empty the Shelters Fall 2026.
-- Shared dev has 77 total offer rows = 72 retained demo rows + 5 public-program rows; the anonymous Marketplace returns only the 5 real public programs.
+- Anonymous Marketplace invariant is 5 non-demo public programs; retained QA/demo rows may grow during Hosted QA but remain excluded from public discovery.
 - Source-only organizations do not appear in the Partner Directory.
 
 ### Signup/auth/recovery readiness
@@ -61,6 +61,15 @@ Formatted acceptance control-plane head before this direct retrigger: `8e896f7a2
 - A manual, expired, invalid, or already-consumed unauthenticated recovery URL shows `Recovery link unavailable` and links back to `/forgot-password` instead of presenting a misleading active password form.
 - Existing authenticated password update continues through Supabase `updateUser({ password })`.
 - Full Persona QA now permanently includes `e2e/auth-recovery.spec.ts`.
+
+### Partner onboarding duplicate prevention
+
+- The two nearly empty shared-dev organizations named `Shelter Pawtners` are `pet_business` rows created about two minutes apart by the same user. Neither is linked to the current onboarding-draft/access-request/duplicate-review flow, and no creation-window audit events exist; evidence points to the older direct PetBiz creation path rather than repeated current-flow duplication.
+- `20260910045221_launch_partner_organization_idempotency.sql` is under final acceptance. It locks the caller-owned onboarding draft, makes exact same-draft retries return the previously created organization, rejects changed-payload reuse, and makes resolved draft identity/payload immutable.
+- pgTAP coverage proves exact retry reuse, one-organization cardinality, changed-payload rejection, and resolved-draft update/delete protection.
+- Persona offer/redemption QA now creates an isolated non-demo local Partner through `create_partner_organization` so the complete public claim/redemption path remains tested without weakening demo isolation.
+- PetBiz/RAVE onboarding now recognizes a resolved draft and sends the user back to the existing business profile instead of reopening a duplicate-creation path.
+- No destructive cleanup of the two historical shared-dev shells has been performed.
 
 ### Production auth email readiness
 
@@ -96,7 +105,7 @@ Any genuine deterministic failure returns the work to `IN_PROGRESS`, is fixed wi
 - `shelterpawtners.com` / `www.shelterpawtners.com` remain unattached to Vercel and DNS is unchanged.
 - Supabase leaked-password protection remains disabled and should be enabled before public traffic if available in the selected project configuration.
 - Performance advisor findings remain broader optimization work unless acceptance demonstrates a launch blocker.
-- Two nearly empty `Shelter Pawtners` shared-dev organization shells remain non-destructively reviewed and are not public directory records.
+- The two historical `Shelter Pawtners` shared-dev organization shells remain non-destructively reviewed and are not public directory records.
 
 ## Final owner gate after deterministic acceptance
 
