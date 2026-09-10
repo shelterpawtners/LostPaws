@@ -65,6 +65,7 @@ export function PetMediaGallery({
         "id,media_type,storage_bucket,storage_path,external_url,external_permalink,caption,alt_text,sort_order,is_primary,provenance_code,captured_at,created_at",
       )
       .eq("pet_id", petId)
+      .eq("media_context", "passport")
       .eq("media_type", "image")
       .eq("status", "active")
       .order("sort_order")
@@ -151,6 +152,7 @@ export function PetMediaGallery({
           pet_id: petId,
           created_by: session.user.id,
           media_type: "image",
+          media_context: "passport",
           storage_bucket: "pet-photos",
           storage_path: path,
           alt_text: `${file.name} — pet photo`,
