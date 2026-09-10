@@ -8,7 +8,7 @@ OWNER_DECISION_REQUIRED: NO
 SAFE_TO_CONTINUE: YES
 ACCEPTED_CODE_SHA: NONE
 ACCEPTANCE_DEPLOYED_SHA: NONE
-ACCEPTANCE_RUNTIME: LOCAL_HEAD_AND_PR_PREVIEW
+ACCEPTANCE_RUNTIME: LOCAL_HEAD
 
 ## Completed predecessor
 
@@ -51,7 +51,7 @@ PR: #52
 
 ## Shared-dev policy
 
-Do not apply the Issue #51 migration to shared dev until current-head Database QA/reset/pgTAP is green. Once green, apply the additive migration and verify bucket/policies/index/RPC behavior before final hosted acceptance/merge.
+Do not apply the Issue #51 migration to shared dev until current-head Database QA/reset/pgTAP is green. Once green, apply the additive migration and verify bucket/policies/index/RPC behavior before final acceptance/merge.
 
 ## Acceptance
 
@@ -63,6 +63,10 @@ Do not apply the Issue #51 migration to shared dev until current-head Database Q
 6. Mark PR #52 ready and merge under standing owner authorization only when all required final-head gates are green.
 7. Close Issue #51 and continue to the next independently authorized work without reopening LL-1 through LL-6 absent regression evidence.
 
+## Vercel acceptance note
+
+The current Vercel preview deployment is blocked by the account build-rate limit and points to the paid-upgrade path. Paid upgrades are explicitly prohibited. This is not an application failure. `ACCEPTANCE_RUNTIME: LOCAL_HEAD` therefore directs Hosted QA to run its same browser/design assertions against an exact local Vite build of the PR head until Vercel preview capacity becomes available again. This does not weaken the test suite; a true hosted-preview recheck remains desirable once the free-tier rate limit clears.
+
 ## Existing external launch gates preserved
 
 LL-1 through LL-6 remain accepted. External provider/cutover work remains separately bounded: Resend/auth-subdomain SMTP and DNS, hosted Supabase Auth settings, Google OAuth credentials, Meta/Facebook live credentials/testing, external inbox acceptance, owner review of draft Terms/Privacy, and the separately authorized final `shelterpawtners.com` web-domain cutover.
@@ -71,4 +75,4 @@ This slice does not authorize paid upgrades, the final production web-domain cut
 
 ## Next safe action
 
-Run the full final-head acceptance stack for PR #52. If Database QA is green, apply and verify the additive migration in shared dev, then complete Persona/Hosted acceptance and merge #52 if all gates remain green. Continue autonomously afterward until the next genuine protected gate.
+Run the full final-head acceptance stack for PR #52. If Database QA is green, apply and verify the additive migration in shared dev, then complete local exact-head Hosted/Persona acceptance and merge #52 if all gates remain green. Recheck the true hosted preview later when the free-tier Vercel build-rate limit clears. Continue autonomously afterward until the next genuine protected gate.
