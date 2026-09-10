@@ -1,0 +1,44 @@
+name: LL3 Format
+
+on:
+  push:
+    branches: [phase3/shelter-verification]
+    paths: [.github/workflows/ll3-format.yml]
+
+permissions:
+  contents: write
+
+jobs:
+  format:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: phase3/shelter-verification
+          fetch-depth: 0
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: Format LL-3 files
+        run: >-
+          npx prettier --write
+          docs/AI-HANDOFF.md
+          src/components/AdoptionVerificationResponder.tsx
+          src/components/GuardianAdoptionVerification.tsx
+          src/components/GuardianPetPassport.tsx
+          src/main.tsx
+      - name: Commit formatting and remove temporary workflow
+        shell: bash
+        run: |
+          git rm .github/workflows/ll3-format.yml
+          git add docs/AI-HANDOFF.md src/components/AdoptionVerificationResponder.tsx src/components/GuardianAdoptionVerification.tsx src/components/GuardianPetPassport.tsx src/main.tsx
+          if git diff --cached --quiet; then
+            echo "No formatting changes required"
+            exit 0
+          fi
+          git config user.name "shelterpawtners-automation"
+          git config user.email "actions@users.noreply.github.com"
+          git commit -m "Format LL-3 adoption verification slice"
+          git push origin HEAD:phase3/shelter-verification
