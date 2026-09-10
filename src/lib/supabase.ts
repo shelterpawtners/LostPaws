@@ -126,3 +126,6 @@ export const supabase = (
 
 export const googleAuthEnabled =
   import.meta.env.VITE_GOOGLE_AUTH_ENABLED === "true";
+
+export const facebookAuthEnabled =
+  import.meta.env.VITE_FACEBOOK_AUTH_ENABLED === "true";
