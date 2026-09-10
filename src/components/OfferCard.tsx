@@ -168,7 +168,9 @@ export function OfferCard({
               target="_blank"
               rel="noreferrer"
             >
-              {external ? "View official source" : "Review source or current terms"}
+              {external
+                ? "View official source"
+                : "Review source or current terms"}
             </a>
           )}
         </div>
