@@ -1,12 +1,12 @@
 # AI Handoff
 
-STATUS: READY_FOR_ACCEPTANCE
+STATUS: COMPLETE
 CURRENT_PHASE: MVP Design Hardening + Human Release Readiness
-CURRENT_CHECKPOINT: Issue #5 — full-site human-style browser and persistence audit
-NEXT_CHECKPOINT: Run the first complete exact-code Issue #5 audit, classify/fix routine blockers, then repeat until release-readiness evidence is green.
+CURRENT_CHECKPOINT: Issue #5 — full-site human-style browser and persistence audit accepted
+NEXT_CHECKPOINT: Present the release-readiness result and await separate owner authorization before production-domain cutover or Phase 3 work.
 OWNER_DECISION_REQUIRED: NO
 SAFE_TO_CONTINUE: YES
-ACCEPTED_CODE_SHA: NONE
+ACCEPTED_CODE_SHA: 62cba023a4946993ad44fcbd0ab4f7fdab856a52
 ACCEPTANCE_DEPLOYED_SHA: NONE
 ACCEPTANCE_RUNTIME: LOCAL_HEAD
 
@@ -16,78 +16,82 @@ PR #30 / Issue #29 merged to `main` on September 9, 2026 at:
 
 `eeea59cf25435871145118eb244c16753aa3a91b`
 
-Accepted brand-propagation product SHA from PR #30:
+Issue #5 accepted code SHA:
 
-`38449c1796b5e30542a3c2e88f898119b1d315ee`
-
-## Active checkpoint — Issue #5
+`62cba023a4946993ad44fcbd0ab4f7fdab856a52`
 
 Branch: `qa/issue5-full-site-audit`
 
-Issue #5 is a release-readiness audit, not Phase 3 development. The audit must behave like a human moving through the current application and verify persisted truth rather than isolated happy-path responses.
+PR: #31
 
-Required coverage:
+## Issue #5 result
 
-1. every currently implemented public and authenticated route;
-2. Guardian create -> leave -> return -> reopen -> reload/sign-in journeys;
-3. multiple pets and correct empty/non-empty CTA behavior;
-4. PetBiz profile + multiple-offer lifecycle, revisit, claim, redemption, replay/cross-partner protections already implemented;
-5. Shelter and RAVE Vendor current dashboard/onboarding/profile state using Admin QA impersonation where useful;
+The full-site human-style browser and persistence audit is complete. It exercised the currently implemented MVP as a human would use it and verified persisted truth through the application's authenticated/RLS paths instead of relying only on isolated responses.
+
+Accepted coverage includes:
+
+1. implemented public and authenticated route traversal, aliases, back/forward, reload, and unknown-route behavior;
+2. Guardian multi-pet create -> leave -> return -> reopen -> reload/sign-in reconstruction;
+3. Guardian empty/non-empty CTA behavior and direct canonical pet/guardianship truth checks;
+4. PetBiz profile persistence, multiple-offer creation/publication/revisit, claim, redemption, replay, and cross-partner protections already implemented;
+5. Shelter and RAVE Vendor current dashboard/onboarding/profile state using Admin QA real-RLS identities;
 6. direct Supabase/RLS verification for canonical rows, relationships, statuses, and isolation;
-7. failure/recovery behavior for currently implemented request paths;
-8. browser back/forward/reload and fresh-context reconstruction where material;
-9. failure evidence with route/persona/runtime context.
+7. implemented failure/recovery behavior, including no partial Guardian row on failed save and exactly one successful record after retry;
+8. browser accessibility/responsive/runtime evidence at the accepted boundary.
 
-## Test strategy
+## Accepted deterministic evidence
 
-- Reuse existing Playwright golden paths, Persona QA, axe/runtime checks, and QA Supabase fixtures.
-- Add one dedicated Issue #5 human-audit suite plus reusable helpers/coverage matrix rather than duplicating all existing tests.
-- Use `LOCAL_HEAD` exact-code acceptance while Vercel remains rate-limited.
-- Use Admin QA Mode for Shelter/RAVE seeded identities so their real RLS sessions are exercised without adding credentials.
-- Direct database checks must authenticate as the persona being verified; do not use service-role credentials in browser code or test artifacts.
+All required workflows passed on accepted SHA `62cba023a4946993ad44fcbd0ab4f7fdab856a52`:
 
-## Defect policy
+- CI run `34423449021`: success.
+- Database QA run `34423449016`: success.
+- Dependency Review run `34423448979`: success.
+- Merge Gate run `34423449041`: success.
+- Persona QA run `34423448931`: success.
+- Hosted QA run `34423449090`: success.
 
-Follow `docs/QA-AUTOMATION-POLICY.md`:
+Final Hosted QA evidence:
 
-- blocking routine engineering defect -> document, fix immediately, add regression, rerun;
-- non-blocking -> log and continue when acceptance remains valid;
-- decision-required -> stop only for a material product/privacy/security/financial/domain/Phase 3 choice.
+- existing Hosted golden paths: 4 passed;
+- hosted design/axe/runtime QA: 3 passed;
+- dedicated Issue #5 human audit: 5 passed;
+- Admin QA hosted regression: 5 passed;
+- broader legacy hosted suite: 26 passed, 7 hosted-only fresh-email registration tests skipped because those exact registration paths run deterministically in the successful isolated Persona QA lane;
+- no browser failure remained at acceptance.
 
-## Guardrails
+Hosted design evidence artifact:
 
-- no new Phase 3 features;
-- no new product/business-rule fields merely to satisfy tests;
-- no fabricated savings, ratings, verification, ranking, scarcity, partnerships, or impact claims;
-- preserve RLS and economic-history integrity;
-- no DNS/custom-domain change;
-- no paid infrastructure required;
-- do not weaken tests to make the audit green.
+- artifact ID: `10131801820`
+- digest: `sha256:1871c6d9a47ac0052afe29945920ae081cd7b3aa1f701740a0259b7345d4cece`
+- retention expiry: September 17, 2026
+- head SHA: `62cba023a4946993ad44fcbd0ab4f7fdab856a52`
 
-## Acceptance boundary
+Acceptance used `LOCAL_HEAD`: exact PR-head Vite code connected to the shared development Supabase backend while Vercel's free deployment quota was rate-limited. No paid infrastructure was added and the deployment quota did not block product acceptance.
 
-The coverage matrix, reusable helpers, dedicated human-audit suite, Admin QA exact-code enablement, and acceptance-gated workflow integration are now present. Fast validation passed lint, shell checks, unit tests, TypeScript, and the production build before entering this boundary.
+## Routine blockers resolved during the audit
 
-The first full acceptance run must execute:
+The audit found and corrected release-readiness defects without weakening RLS or approved product rules:
 
-1. existing Hosted Guardian/Partner/Marketplace golden paths;
-2. existing hosted design/axe/runtime QA;
-3. `e2e/issue-5-human-audit.spec.ts`;
-4. `e2e/admin-qa-mode.spec.ts`;
-5. the existing phase/persona browser and RLS suites listed in Hosted QA.
+- PetBiz offer reload used an ambiguous `offers` -> `offer_versions` nested relationship; the intended relationship is now explicit and real load failures are surfaced instead of silently presenting an empty list.
+- Partner organization matching called `partner_organization_candidates` with parameter names that did not match the canonical database function; the client now sends the correct contract.
+- Shared-dev Partner candidate-dismissal QA state persisted across reruns by design; the regression now resets only the seeded QA user's prior dismissal through ordinary authenticated RLS before verifying a new dismissal.
+- Repeated offer/redemption QA now uses unique run-scoped offer titles instead of colliding with historical shared-dev records.
+- Legacy branded selectors were aligned with the current UI.
+- Repeated fresh-email registration checks remain mandatory in Persona QA's isolated local Supabase lane instead of depending on the hosted default email quota.
+- The legacy Partner profile test now waits for the persisted profile state to hydrate before editing, removing a test race without arbitrary sleeps.
 
-Any routine blocker found by this run is fixed with regression coverage before acceptance can complete.
+## Release-readiness conclusion
 
-## Completion boundary
+There is no remaining Issue #5 release-readiness blocker within the currently implemented MVP. PR #31 may merge once the COMPLETE docs-only head passes deterministic merge evidence using the accepted code SHA above.
 
-Before Issue #5 can complete:
+Completion of Issue #5 does **not** authorize:
 
-1. coverage matrix maps implemented routes/features to automated journeys;
-2. broad audit executes deterministically against exact code;
-3. routine blocking defects from the first full run are fixed with regression coverage;
-4. remaining non-blockers/future-scope items are documented separately;
-5. final CI/Persona/Database/Hosted evidence is green;
-6. one accepted code SHA is recorded;
-7. release-readiness result is presented before any `shelterpawtners.com` cutover or Phase 3 work.
+- changing `shelterpawtners.com` or `www.shelterpawtners.com` DNS/custom-domain routing;
+- altering Microsoft 365 mail DNS records;
+- beginning Phase 3 feature development;
+- resolving `OD-003` verified-savings customer-facing rules/totals;
+- resolving `OD-004` production giving provider/settlement;
+- paid infrastructure;
+- destructive or material privacy/security/financial/legal changes.
 
-No action needed from Jim right now.
+Those remain separate owner-authorized decisions. No DNS or Phase 3 action should be taken merely because this handoff is COMPLETE.
