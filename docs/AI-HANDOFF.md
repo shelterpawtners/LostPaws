@@ -1,6 +1,6 @@
 # AI Handoff
 
-STATUS: IN_PROGRESS
+STATUS: READY_FOR_ACCEPTANCE
 CURRENT_PHASE: Post-Lost-Lands-MVP data architecture expansion
 CURRENT_CHECKPOINT: Data Architecture Slice 1 / Issue #49 — multi-photo Pet Passport + Guardian activity timeline
 NEXT_CHECKPOINT: Issue #51 — Guardian Deal Moments tied to claim/redemption activity
@@ -8,7 +8,7 @@ OWNER_DECISION_REQUIRED: NO
 SAFE_TO_CONTINUE: YES
 ACCEPTED_CODE_SHA: NONE
 ACCEPTANCE_DEPLOYED_SHA: NONE
-ACCEPTANCE_RUNTIME: LOCAL_HEAD
+ACCEPTANCE_RUNTIME: HOSTED_PREVIEW_AND_LOCAL_HEAD
 
 ## Active task
 
@@ -16,10 +16,11 @@ Issue #49 — **Data Architecture Slice 1: multi-photo Pet Passport + Guardian a
 
 Branch: `data-architecture/pet-media-guardian-feed`
 PR: #50
+Stable preview: `https://lost-paws-git-data-architecture-p-046c08-jims-projects-acec6bcb.vercel.app/`
 
 Owner approved this direction on 2026-09-10 and subsequently set a firm product-storage constraint: a Pet Passport may keep **up to five active photos per pet**. Guardians should later be encouraged to post separate Deal Moment photos of a pet receiving/redeeming/using an offer; those activity photos must not consume Passport-gallery slots.
 
-Current implementation includes the post-DBQA security correction that prevents the five-photo trigger from disclosing another pet's media-count state before RLS denies an unauthorized write. Persona QA also explicitly includes `e2e/guardian-pet-media.spec.ts` so a gate-only success cannot be mistaken for five-photo browser acceptance.
+Current implementation includes the post-DBQA security correction that prevents the five-photo trigger from disclosing another pet's media-count state before RLS denies an unauthorized write. Persona QA explicitly includes `e2e/guardian-pet-media.spec.ts` so a gate-only success cannot be mistaken for five-photo browser acceptance.
 
 ## Approved scope
 
@@ -35,8 +36,19 @@ Current implementation includes the post-DBQA security correction that prevents 
 
 ## Shared-dev state
 
-- The foundational `20260910162500_data_architecture_pet_media_guardian_feed.sql` migration passed full local Database QA and has been applied successfully to shared dev.
-- The follow-up `20260910163500_limit_active_pet_photos.sql` five-photo/storage-cleanup migration is **not yet applied to shared dev**. Apply it only after the current local Database QA/reset/pgTAP cycle is green.
+- `20260910162500_data_architecture_pet_media_guardian_feed.sql` passed full local Database QA and is applied to shared dev.
+- `20260910163500_limit_active_pet_photos.sql` also passed complete local Supabase reset/seed + pgTAP/RLS and is now applied successfully to shared dev.
+- The five-photo trigger, archive/remove RPC, and Guardian-owned storage delete policy are therefore available to the hosted preview.
+
+## Pre-acceptance proof
+
+The reconciled branch ancestry passed substantive CI and database proof before promotion to acceptance:
+
+- CI lint, shell lint, unit tests, and production build: green.
+- Database QA: complete local Supabase startup, reset, seed, migration replay, and pgTAP/RLS: green.
+- Dependency Review: green.
+- Merge Gate: green.
+- The earlier database failure was fixed at the root by preserving RLS denial before photo-cap feedback; no assertion or authorization rule was weakened.
 
 ## Next slice already captured
 
@@ -52,14 +64,13 @@ This data-architecture work does not authorize any paid upgrade, production web-
 
 ## Acceptance policy
 
-1. Run CI plus local Database QA against the current post-security-fix head.
-2. Database QA must complete Supabase start/reset/seed + pgTAP including the five-photo cap and RLS tests.
-3. Fix deterministic failures without weakening RLS or assertions.
-4. Only after local Database QA is green, apply the follow-up five-photo migration to shared dev and verify the trigger/RPC/storage policy.
-5. Move this handoff to `READY_FOR_ACCEPTANCE` and execute the actual Persona/Hosted browser acceptance, including the five-photo remove/replace test and claim→redeem timeline assertion.
-6. Merge PR #50 under standing owner authorization only after the required current-head gates are green.
-7. Close Issue #49 and continue directly into Issue #51.
+1. Execute current-head Persona QA including `e2e/guardian-pet-media.spec.ts` and claim→redeem timeline assertions.
+2. Execute Hosted QA against the stable PR #50 preview and confirm the current feature build is reachable.
+3. Require CI, Database QA, Persona QA, Hosted QA, Dependency Review, and Merge Gate green on the final head.
+4. Remove the temporary no-op preview-build marker before merge.
+5. Merge PR #50 under standing owner authorization only after all required final-head gates are green.
+6. Close Issue #49 and continue directly into Issue #51.
 
 ## Next safe action
 
-Complete the current CI/Database cycle on the security-corrected head, apply and verify the five-photo follow-up migration on shared dev after local DB proof, then run full browser acceptance and merge #50 if green.
+Run full current-head browser acceptance, remove the temporary preview marker, reverify the final head, merge #50 if green, then start Issue #51 without waiting for another routine approval.
