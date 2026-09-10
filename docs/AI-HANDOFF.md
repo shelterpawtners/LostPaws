@@ -32,9 +32,10 @@ ACCEPTANCE_RUNTIME: MAIN
 - Current Supabase security advisor still reports leaked-password protection disabled. Do not upgrade solely to enable it; the no-paid-upgrade guardrail remains in force.
 - Existing private `audit_events` and `secure_tokens` tables remain RLS-enabled with intentionally no client policies. Existing public/authenticated `SECURITY DEFINER` RPC warnings require function-by-function review; do not mechanically change tested authorization boundaries.
 - Current Supabase connected tooling exposes database/project/Edge Function operations but not hosted Auth configuration writes for SMTP, Site URL/redirect allowlists, or social-provider credentials.
-- No currently installed/available Resend/DNS/browser integration was found that can complete the provider-console steps autonomously in this run.
-- Vercel project `lost-paws` is connected and healthy. The current production deployment is `READY` on application SHA `031c69f77ef94b286f627910f73346aecc366942` (LL-5). This is application-code equivalent to the accepted LL-6 lineage because PR #47 changed only `docs/AI-HANDOFF.md`, `docs/LL6-LAUNCH-READINESS.md`, and the two draft legal documents; it contained no application/runtime files.
-- Vercel reported no runtime error clusters in the preceding 24-hour window during this recheck.
+- No currently installed Resend, SiteGround DNS, or provider-console integration is available to complete the remaining provider-console steps autonomously. An installable Cloudflare plugin is discoverable, but the current DNS authority is not established as Cloudflare and it should not be introduced merely to bypass the existing DNS provider.
+- Vercel project `lost-paws` is connected on the Hobby plan. The active production runtime remains `READY` on application SHA `031c69f77ef94b286f627910f73346aecc366942` (LL-5). This is application-code equivalent to the accepted LL-6 lineage because PR #47 changed only documentation/legal-draft files and contained no application/runtime files.
+- Vercel's subsequent production attempt for docs-only main commit `bb8b442c6f4fb327e68edf3c1cacf4c053b75d73` is `CANCELED` with Vercel's `ignored-build-step` reason, not a build/runtime failure. Do not treat this as a regression or force a deployment solely to publish documentation-only commits.
+- Vercel runtime error clustering reports zero production runtime errors in the preceding 24-hour window during the latest recheck.
 
 ## Exact external blocker
 
