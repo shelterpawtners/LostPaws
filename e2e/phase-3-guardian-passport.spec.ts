@@ -29,23 +29,35 @@ test.describe.serial("Phase 3 Guardian Passport foundation", () => {
   }) => {
     await signIn(page, guardianA.email, guardianA.password);
 
+    const profilePanel = page
+      .getByRole("heading", { name: "Your Guardian details" })
+      .locator("..");
     await expect(
-      page.getByRole("heading", { name: "Your Guardian details" }),
+      profilePanel.getByRole("heading", { name: "Your Guardian details" }),
     ).toBeVisible();
-    await page.getByLabel("Full name").fill("Guardian A Phase 3");
-    await page.getByLabel("Phone").fill("248-555-0101");
-    await page.getByLabel("Instagram").fill("@guardian_a_qa");
-    await page.getByRole("button", { name: "Save private profile" }).click();
-    await expect(page.getByRole("status")).toContainText(
+    await profilePanel.getByLabel("Full name").fill("Guardian A Phase 3");
+    await profilePanel.getByLabel("Phone").fill("248-555-0101");
+    await profilePanel.getByLabel("Instagram").fill("@guardian_a_qa");
+    await profilePanel
+      .getByRole("button", { name: "Save private profile" })
+      .click();
+    await expect(profilePanel.getByRole("status")).toContainText(
       "Private profile saved",
     );
 
     await page.reload();
-    await expect(page.getByLabel("Full name")).toHaveValue(
+    const reloadedProfilePanel = page
+      .getByRole("heading", { name: "Your Guardian details" })
+      .locator("..");
+    await expect(reloadedProfilePanel.getByLabel("Full name")).toHaveValue(
       "Guardian A Phase 3",
     );
-    await expect(page.getByLabel("Phone")).toHaveValue("248-555-0101");
-    await expect(page.getByLabel("Instagram")).toHaveValue("@guardian_a_qa");
+    await expect(reloadedProfilePanel.getByLabel("Phone")).toHaveValue(
+      "248-555-0101",
+    );
+    await expect(reloadedProfilePanel.getByLabel("Instagram")).toHaveValue(
+      "@guardian_a_qa",
+    );
   });
 
   test("primary Guardian edits and reloads Passport basics", async ({
@@ -54,22 +66,38 @@ test.describe.serial("Phase 3 Guardian Passport foundation", () => {
     await signIn(page, guardianA.email, guardianA.password);
     await page.goto(`/pets/${petAId}`);
 
+    const passportPanel = page
+      .getByRole("heading", { name: "Demo Pet A" })
+      .locator("..");
     await expect(
-      page.getByRole("heading", { name: "Demo Pet A" }),
+      passportPanel.getByRole("heading", { name: "Demo Pet A" }),
     ).toBeVisible();
-    await expect(page.getByText("Private by default")).toBeVisible();
-    await page.getByLabel("Breed").fill("Phase 3 Labrador mix");
-    await page.getByLabel("Birth date").fill("2021-05-10");
-    await page.getByLabel("Spay/neuter status").selectOption("neutered");
-    await page.getByRole("button", { name: "Save Passport basics" }).click();
-    await expect(page.getByRole("status")).toContainText(
+    await expect(passportPanel.getByText("Private by default")).toBeVisible();
+    await passportPanel.getByLabel("Breed").fill("Phase 3 Labrador mix");
+    await passportPanel.getByLabel("Birth date").fill("2021-05-10");
+    await passportPanel
+      .getByLabel("Spay/neuter status")
+      .selectOption("neutered");
+    await passportPanel
+      .getByRole("button", { name: "Save Passport basics" })
+      .click();
+    await expect(passportPanel.getByRole("status")).toContainText(
       "Passport basics saved",
     );
 
     await page.reload();
-    await expect(page.getByLabel("Breed")).toHaveValue("Phase 3 Labrador mix");
-    await expect(page.getByLabel("Birth date")).toHaveValue("2021-05-10");
-    await expect(page.getByLabel("Spay/neuter status")).toHaveValue("neutered");
+    const reloadedPassportPanel = page
+      .getByRole("heading", { name: "Demo Pet A" })
+      .locator("..");
+    await expect(reloadedPassportPanel.getByLabel("Breed")).toHaveValue(
+      "Phase 3 Labrador mix",
+    );
+    await expect(reloadedPassportPanel.getByLabel("Birth date")).toHaveValue(
+      "2021-05-10",
+    );
+    await expect(
+      reloadedPassportPanel.getByLabel("Spay/neuter status"),
+    ).toHaveValue("neutered");
 
     await page.getByRole("link", { name: "Back to your pets" }).click();
     await expect(page.getByText("Phase 3 Labrador mix")).toBeVisible();
