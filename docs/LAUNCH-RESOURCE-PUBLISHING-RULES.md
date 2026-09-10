@@ -12,6 +12,7 @@ Public adoption-benefit listings are a resource service. They must never imply a
 ## Minimum evidence
 
 Each public program must record:
+
 - organization/program name;
 - concise factual benefit;
 - eligibility and geography;
