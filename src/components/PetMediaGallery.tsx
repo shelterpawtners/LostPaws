@@ -142,16 +142,17 @@ export function PetMediaGallery({
       if (!firstInsertedId) firstInsertedId = inserted.id;
       order += 10;
     }
+    let primaryWarning = "";
     if (!media.some((item) => item.is_primary) && firstInsertedId) {
       const { error } = await db.rpc("set_primary_pet_media", {
         p_media_id: firstInsertedId,
       });
-      if (error) setStatus(`Photos uploaded, but primary photo was not set. ${error.message}`);
+      if (error) primaryWarning = ` Primary photo could not be set: ${error.message}`;
     }
     setUploading(false);
-    if (!status.startsWith("Photos uploaded")) {
-      setStatus(`${selected.length} photo${selected.length === 1 ? "" : "s"} added.`);
-    }
+    setStatus(
+      `${selected.length} photo${selected.length === 1 ? "" : "s"} added.${primaryWarning}`,
+    );
     await loadMedia();
   }
 
