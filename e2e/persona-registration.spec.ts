@@ -4,6 +4,9 @@ import { createClient } from "@supabase/supabase-js";
 const password = "Demo-only-Registration!";
 const url = process.env.PLAYWRIGHT_SUPABASE_URL || "";
 const key = process.env.PLAYWRIGHT_SUPABASE_PUBLISHABLE_KEY || "";
+const hostedQa = process.env.PLAYWRIGHT_HOSTED_QA === "true";
+const hostedSignupReason =
+  "Fresh email signup runs in Persona QA against isolated local Supabase; hosted Auth email delivery is externally rate-limited.";
 
 function client() {
   if (!url || !key)
@@ -37,6 +40,7 @@ test.describe("Persona registration and onboarding", () => {
   test("fresh Guardian registration saves exactly one pet and guardianship", async ({
     page,
   }) => {
+    test.skip(hostedQa, hostedSignupReason);
     const email = await register(page, "guardian");
 
     await page.getByLabel("Pet name").fill("QA Guardian Pet");
@@ -87,6 +91,7 @@ test.describe("Persona registration and onboarding", () => {
   test("Guardian pet save failure is visible and retryable", async ({
     page,
   }) => {
+    test.skip(hostedQa, hostedSignupReason);
     await register(page, "guardian");
     await page.getByLabel("Pet name").fill("Retryable Pet");
     await page.getByLabel("Species").selectOption("cat");
@@ -110,6 +115,7 @@ test.describe("Persona registration and onboarding", () => {
   test("Guardian pet save recovers when session verification fails", async ({
     page,
   }) => {
+    test.skip(hostedQa, hostedSignupReason);
     await register(page, "guardian");
     await page.getByLabel("Pet name").fill("Session Retry Pet");
     await page.getByLabel("Species").selectOption("dog");
@@ -130,6 +136,7 @@ test.describe("Persona registration and onboarding", () => {
     test(`fresh ${persona} registration reaches its onboarding route`, async ({
       page,
     }) => {
+      test.skip(hostedQa, hostedSignupReason);
       await register(page, persona);
       await expect(page.getByText(/setup/i).first()).toBeVisible();
     });
