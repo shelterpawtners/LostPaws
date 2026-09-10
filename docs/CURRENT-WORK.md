@@ -12,102 +12,127 @@ The active work remains **Issue #32 / PR #33: Pre-cutover Launch Readiness** on 
 
 **Phase 3 remains explicitly owner-gated. Production-domain cutover remains explicitly owner-gated.**
 
-## Active launch-readiness sequence
+## Pre-cutover work completed
 
-1. **Demo/QA isolation — complete in shared dev.** The 72 QA offers remain available for authenticated/Admin testing but are excluded from anonymous/public Marketplace and directory surfaces.
-2. **Shared-dev schema alignment — complete.** Accepted CP6 migrations and the launch isolation/RPC-boundary migrations are applied in canonical order.
-3. **Real adoption-resource publication — Wave 1 complete.** Five source-backed public adoption benefits are now live in shared dev.
-4. **Launch merchandising/public-program boundary — complete for Wave 1.** Public third-party benefits are visually/behaviorally distinct from ShelterPawtners participant offers and route to official sources instead of internal redemption claims.
-5. **Signup/email readiness — active next.** Validate public personas, hosted Auth delivery, password reset, and final-domain redirect requirements within current infrastructure constraints.
-6. **Final pre-cutover review — pending.** Complete desktop/mobile human review, reverify time-sensitive program links, and stop at owner authorization before production DNS/custom-domain routing.
+### Demo/QA isolation
 
-## Current implementation
+- Shared dev preserves 72 QA/demo offers for authenticated/Admin testing.
+- Demo organizations and offers are excluded from anonymous Marketplace, directory, and public-profile surfaces.
+- Future offers owned by demo organizations inherit demo state automatically.
+- Dedicated database regressions protect the public/demo boundary.
 
-Latest fully green implementation head before documentation refresh: `b01948a5ad4a7d72481d8a6dc770b317890e7bdb`.
+### Shared-dev schema and RPC security
 
-Launch database boundaries now include:
+- Accepted CP6 migrations are aligned in shared dev.
+- `20260910030000_launch_demo_public_isolation.sql` is applied.
+- `20260910031500_launch_rpc_execute_boundary.sql` is applied.
+- `20260910033000_launch_public_program_boundary.sql` is applied.
+- Anonymous callers cannot execute the nine state-changing offer/redemption RPCs.
+- Deliberate read-only discovery RPCs remain available to anonymous visitors.
 
-- `20260910030000_launch_demo_public_isolation.sql`;
-- `20260910031500_launch_rpc_execute_boundary.sql`;
-- `20260910033000_launch_public_program_boundary.sql`.
+### Real launch Marketplace content
 
-Current shared-dev Marketplace evidence:
+Wave 1 contains five freshly sourced third-party `public_program` listings:
+
+1. PetSmart Adoption Kit coupon savings.
+2. Adopt a Pet Shelter Plus adopter savings.
+3. PetPartners 30-day pet insurance coverage.
+4. Trupanion Adoption Day 30-day coverage.
+5. BISSELL Empty the Shelters — Fall 2026.
+
+Shared-dev public-data audit:
 
 - 77 total offer rows;
 - 72 retained demo/QA offer rows;
-- 5 non-demo `public_program` rows;
-- 5 rows returned by the anonymous/public Marketplace RPC;
-- all 5 public Marketplace rows are the intentional public programs;
-- 0 of the five source-only public-program organizations appear in the public Partner Directory.
+- 5 non-demo public-program rows;
+- 5 rows returned by the anonymous Marketplace RPC;
+- 0 suspicious `demo`, `QA`, `Playwright`, or `example.invalid` strings in anonymous Marketplace results;
+- 0 public Partner Directory rows, so neither source-only program organizations nor demo organizations leak into the directory.
 
-Wave 1 public benefits:
+Public programs are labeled separately from ShelterPawtners participant offers, show provider/eligibility/source context, route to official third-party destinations, and cannot create ShelterPawtners claim/redemption tokens.
 
-1. PetSmart Adoption Kit coupon savings;
-2. Adopt a Pet Shelter Plus adopter savings;
-3. PetPartners 30-day pet insurance coverage;
-4. Trupanion Adoption Day 30-day coverage;
-5. BISSELL Empty the Shelters — Fall 2026.
+### Signup/auth/recovery readiness
 
-The Marketplace UI labels these as public adoption benefits, shows provider/eligibility/verification context, links to the official third-party destination, and does not present them as ShelterPawtners-managed claims.
+- Fresh Guardian, Shelter, PetBiz, and RAVE Vendor registration/onboarding flows have isolated Persona QA coverage.
+- Email/password signup now preserves the selected persona through its confirmation `redirect_to` contract.
+- Four-persona regression coverage inspects the actual Supabase signup redirect request.
+- Forgot-password targets `/reset-password` on the current application origin.
+- Dedicated recovery regression coverage verifies the actual Supabase recovery redirect request.
+- `/reset-password` now checks auth state before presenting a password update form.
+- Invalid, expired, manually opened, or already-consumed unauthenticated recovery URLs show `Recovery link unavailable` and route users back to request a fresh recovery email.
+- Full Persona QA now permanently includes `e2e/auth-recovery.spec.ts`.
+
+### Production auth email plan
+
+`docs/LAUNCH-AUTH-EMAIL-READINESS.md` documents the proposed production design.
+
+- Supabase built-in SMTP remains development/testing only and is not suitable for public launch.
+- Microsoft 365 remains the human/business mailbox system rather than becoming an application SMTP dependency.
+- Preferred MVP transactional provider is Resend using a dedicated `auth.shelterpawtners.com` sending subdomain and `no-reply@auth.shelterpawtners.com` sender.
+- The current Resend free tier appears sufficient for initial controlled MVP traffic, so no paid infrastructure is recommended at launch.
+- Provider account creation, credentials, and production DNS remain owner-gated.
+
+## Current blockers that require owner-controlled launch actions
+
+### Terms and Privacy Notice
+
+Registration currently requires a checkbox stating agreement to the Terms and acknowledgement of the Privacy Notice, but those labels are plain text and there are no corresponding policy routes/pages in the repository.
+
+Before public signup is enabled, the project needs owner-approved Terms of Service and Privacy Notice content and real links from registration. Engineering automation must not invent material legal terms.
+
+### Production auth/email/domain configuration
+
+Final public email confirmation/recovery testing requires:
+
+- an authorized transactional-email provider account and credentials;
+- the approved transactional sending-subdomain DNS records;
+- final Supabase Site URL and redirect allowlist configuration;
+- real email confirmation/recovery tests to non-team addresses;
+- final Vercel custom-domain and web DNS cutover authorization.
+
+These are intentionally not autonomous changes.
 
 ## Validation state
 
-On implementation head `b01948a5ad4a7d72481d8a6dc770b317890e7bdb`:
+The latest exact-code acceptance has not run yet. The next repository checkpoint will switch `docs/AI-HANDOFF.md` to `READY_FOR_ACCEPTANCE` with `ACCEPTANCE_RUNTIME: LOCAL_HEAD` so the heavy Persona and Hosted browser suites run against the exact branch code.
 
-- CI: green;
-- Database QA: green;
-- Hosted QA: green;
-- Persona QA: green;
-- Dependency Review: green;
-- Merge Gate: green.
+`LOCAL_HEAD` is required because Vercel has currently rate-limited new preview builds. This is a hosting quota condition, not an application failure, and no paid bypass is recommended.
 
-The active branch preview responds at:
+Before the latest auth/recovery additions, CI, Database QA, Hosted QA, Persona QA, Dependency Review, and Merge Gate were green. Subsequent failures observed during this slice were Markdown Prettier failures and were mechanically corrected; do not treat lightweight gate-only success as evidence that heavy browser acceptance ran.
 
-`https://lost-paws-git-launch-pre-cutover-135ab9-jims-projects-acec6bcb.vercel.app/marketplace`
+## Vercel/domain state
 
-## Data hygiene note
+- `main` remains the Vercel Production Branch.
+- The Vercel project currently has only Vercel-owned domains.
+- `shelterpawtners.com` / `www.shelterpawtners.com` have not been attached or rerouted.
+- The older branch Marketplace preview can still be used to inspect the Wave 1 Marketplace, but it must not be represented as containing the newest auth/recovery code while Vercel preview builds are rate-limited.
 
-Two nearly empty non-demo organizations named `Shelter Pawtners` exist in shared dev. They were created about two minutes apart by the same owner and contain no profile, locations, offers, or private contacts. The owner believes these were probably registration test records. They were intentionally not deleted. Treat them as test artifacts to classify before cutover unless later evidence demonstrates a registration defect.
+## Other known launch notes
 
-## Advisor state
+Two nearly empty non-demo organizations named `Shelter Pawtners` remain in shared dev. They were reviewed as likely registration/test artifacts and intentionally not deleted. No destructive cleanup is required for current public isolation because they do not have published directory profiles or offers.
 
-Post-DDL security advice contains no newly introduced launch regression. Remaining notices are:
+Security advisor findings still include intentional locked private tables, deliberate anonymous read-only discovery RPCs, authenticated application RPCs, and leaked-password protection being disabled. Performance advisor still reports broader index/policy optimization opportunities. Those are tracked separately unless evidence shows a launch blocker.
 
-- intentional locked private tables with RLS and no policies;
-- four intentional anonymous read-only public `SECURITY DEFINER` discovery RPCs;
-- authenticated application RPCs that retain their authorization boundaries;
-- leaked-password protection currently disabled.
+## Immediate next sequence
 
-Performance advice still reports 20 unindexed foreign keys, 76 unused indexes, and 18 multiple-permissive-policy cases. These are tracked as broader optimization work rather than an Issue #32 launch blocker unless profiling demonstrates otherwise.
-
-## Canonical application state
-
-- `main` remains canonical and the Vercel Production Branch.
-- Issue #5 full-site audit remains accepted at code SHA `62cba023a4946993ad44fcbd0ab4f7fdab856a52`.
-- Active launch branch: `launch/pre-cutover-readiness`.
-- Active PR: #33.
-- `shelterpawtners.com` / `www.shelterpawtners.com` DNS remain unchanged.
-
-## Active next work
-
-Continue without routine owner interruption on:
-
-1. Guardian/Shelter/PetBiz/RAVE Vendor fresh signup, confirmation/login, persistence, and password-reset readiness;
-2. production-suitable Auth email delivery options and final-domain redirect configuration requirements, stopping before any paid purchase or Microsoft 365/DNS change;
-3. final Marketplace/public-content browser review and source revalidation;
-4. pre-cutover classification review of legacy test organization shells.
+1. Move PR #33 to `READY_FOR_ACCEPTANCE` using `LOCAL_HEAD`.
+2. Verify the heavy Persona and Hosted browser jobs actually run against the exact branch head.
+3. Confirm the new signup and recovery regressions run and pass.
+4. Fix any genuine deterministic regression and repeat acceptance as needed.
+5. When exact-code acceptance is green, update the launch checklist and handoff to the final owner gate rather than merging or changing DNS.
 
 ## Guardrails still in force
 
 Still owner-gated/deferred:
 
-- `shelterpawtners.com` / `www.shelterpawtners.com` DNS/custom-domain routing;
+- production-domain/DNS/custom-domain routing;
 - Microsoft 365 mail DNS changes;
+- transactional-email provider account/credential/DNS activation;
+- owner-approved Terms and Privacy Notice content;
 - Phase 3 feature development;
-- new Marketplace/business-model rules beyond approved Issue #32 scope;
 - `OD-003` verified-savings customer-facing rules/totals;
 - `OD-004` giving provider/settlement decisions;
 - paid infrastructure unless separately justified and approved;
 - destructive cleanup or material privacy/security/financial/legal changes.
 
-No DNS, custom-domain, paid-infrastructure, or Phase 3 action is authorized by this pre-cutover work.
+PR #33 remains open. Do not merge it until the acceptance protocol and owner gate are resolved.
