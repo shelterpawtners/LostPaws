@@ -1,12 +1,12 @@
 # AI Handoff
 
-STATUS: READY_FOR_ACCEPTANCE
+STATUS: BLOCKED
 CURRENT_PHASE: Pre-cutover Launch Readiness
-CURRENT_CHECKPOINT: Issue #32 / PR #33 — autonomous pre-cutover acceptance
-NEXT_CHECKPOINT: Run exact-code LOCAL_HEAD Persona/Hosted acceptance, fix deterministic regressions, then stop at final owner launch gate
-OWNER_DECISION_REQUIRED: NO
-SAFE_TO_CONTINUE: YES
-ACCEPTED_CODE_SHA: NONE
+CURRENT_CHECKPOINT: Issue #32 / PR #33 — deterministic acceptance complete
+NEXT_CHECKPOINT: Owner launch decisions and production cutover authorization
+OWNER_DECISION_REQUIRED: YES
+SAFE_TO_CONTINUE: NO
+ACCEPTED_CODE_SHA: 08e0924aa1ed532f72b0c37be8d9f35dedd07d5e
 ACCEPTANCE_DEPLOYED_SHA: NONE
 ACCEPTANCE_RUNTIME: LOCAL_HEAD
 
@@ -18,113 +18,112 @@ Agent: ChatGPT / GitHub operator
 
 Branch: `launch/pre-cutover-readiness`
 
-PR: #33 (acceptance)
+PR: #33
 
-Acceptance candidate source head before this direct retrigger: `74525a6bd6bb1dd36d4d3514e3f97769665621dc`
+The accepted application/database code head is `08e0924aa1ed532f72b0c37be8d9f35dedd07d5e`. PR #33 remains open and must not be merged without owner authorization.
 
-## Acceptance intent
+## Deterministic acceptance result
 
-`READY_FOR_ACCEPTANCE` is being used only to run the repository's full deterministic Persona/Hosted browser suites. It is not authorization to merge PR #33, change production DNS, attach production custom domains, create external provider accounts, publish owner-unapproved legal terms, or begin Phase 3.
+Exact-code acceptance is complete and green.
 
-`ACCEPTANCE_RUNTIME: LOCAL_HEAD` is intentional because Vercel is currently build-rate-limiting new previews. Exact-code local acceptance is preferred over paying to bypass a temporary hosting quota.
+- CI: success — lint, shell lint, unit tests, build, CI Gate.
+- Database QA: success — local Supabase reset/seed, full pgTAP/RLS suite, Database QA Gate.
+- Hosted QA: success — LOCAL_HEAD golden paths, design QA, Issue #5 browser audit, Hosted QA Gate.
+- Persona QA: success — Guardian/Shelter/PetBiz/RAVE registration, auth recovery, access isolation, Partner offer creation, Guardian claim, Partner redemption, camera/manual fallback, local Admin QA security regression, Persona QA Gate.
+- Dependency Review: success.
+- Merge Gate: success.
+
+A prior Persona run caught an ambiguous Playwright locator after the non-demo Partner fixture was introduced. The test locator was narrowed without changing application behavior or weakening coverage; the full Persona suite then passed.
 
 ## Completed launch-readiness work
 
 ### Demo/QA isolation
 
 - `20260910030000_launch_demo_public_isolation.sql` is applied in shared dev.
-- Shared dev preserves demo/QA offers for authenticated/Admin testing while anonymous/public surfaces exclude them.
-- Public Marketplace/directory/profile RPCs exclude demo data.
-- Latest public-data audit returns 5 intentional Marketplace programs, 0 suspicious demo/QA/example.invalid Marketplace strings, and 0 public Partner Directory rows.
+- Demo organizations/offers remain available for authenticated/Admin QA but are excluded from anonymous Marketplace, Partner Directory, and public-profile discovery.
+- Future offers owned by demo organizations inherit demo state.
+- Shared-dev public invariant remains 5 non-demo Marketplace programs.
 
-### Shared-dev CP6 + RPC boundary alignment
+### RPC execution boundary
 
 - Accepted CP6 migrations are aligned in shared dev.
 - `20260910031500_launch_rpc_execute_boundary.sql` is applied.
-- Anonymous execution is denied for the nine state-changing offer/redemption RPCs while deliberate read-only public RPCs remain available.
+- Anonymous execution is denied for state-changing offer/redemption RPCs.
+- Four intentional read-only public discovery RPCs remain anonymous-accessible.
 
-### Public-program Marketplace boundary + Wave 1
+### Public-program Marketplace Wave 1
 
 - `20260910033000_launch_public_program_boundary.sql` is applied.
+- Five source-backed `public_program` listings are live: PetSmart Adoption Kit, Adopt a Pet Shelter Plus, PetPartners 30-Day Coverage, Trupanion Adoption Day coverage, and BISSELL Empty the Shelters Fall 2026.
 - Public/community resources cannot create ShelterPawtners claim/redemption tokens.
-- Marketplace UI routes external public benefits to official sources and labels them separately from participant offers.
-- Five source-backed `public_program` listings are live in shared dev: PetSmart Adoption Kit, Adopt a Pet Shelter Plus, PetPartners 30-Day Coverage, Trupanion Adoption Day coverage, and BISSELL Empty the Shelters Fall 2026.
-- Anonymous Marketplace invariant is 5 non-demo public programs; retained QA/demo rows may grow during Hosted QA but remain excluded from public discovery.
 - Source-only organizations do not appear in the Partner Directory.
+- Hosted QA may create additional demo/QA rows, so total raw offer count is not a launch invariant; anonymous discovery is the invariant.
 
 ### Signup/auth/recovery readiness
 
-- Email/password signup sets `emailRedirectTo` to `/onboarding/{persona}` so Guardian, Shelter, PetBiz, and RAVE Vendor users return to the onboarding route they selected after confirmation.
-- Four-persona Playwright regression coverage inspects the actual Supabase signup `redirect_to` contract.
-- Forgot-password targets `${location.origin}/reset-password`; dedicated launch regression coverage verifies the actual recovery request `redirect_to` contract.
-- `/reset-password` checks application auth state before presenting a password update form.
-- A manual, expired, invalid, or already-consumed unauthenticated recovery URL shows `Recovery link unavailable` and links back to `/forgot-password` instead of presenting a misleading active password form.
-- Existing authenticated password update continues through Supabase `updateUser({ password })`.
-- Full Persona QA now permanently includes `e2e/auth-recovery.spec.ts`.
+- Email/password signup preserves Guardian, Shelter, PetBiz, and RAVE Vendor onboarding routes through the confirmation `redirect_to` contract.
+- Forgot-password returns to `/reset-password` on the current app origin.
+- Invalid/expired/manual recovery URLs do not present an active password form.
+- Auth recovery is permanently included in full Persona QA.
 
 ### Partner onboarding duplicate prevention
 
-- The two nearly empty shared-dev organizations named `Shelter Pawtners` are `pet_business` rows created about two minutes apart by the same user. Neither is linked to the current onboarding-draft/access-request/duplicate-review flow, and no creation-window audit events exist; evidence points to the older direct PetBiz creation path rather than repeated current-flow duplication.
-- `20260910045221_launch_partner_organization_idempotency.sql` is under final acceptance. It locks the caller-owned onboarding draft, makes exact same-draft retries return the previously created organization, rejects changed-payload reuse, and makes resolved draft identity/payload immutable.
-- pgTAP coverage proves exact retry reuse, one-organization cardinality, changed-payload rejection, and resolved-draft update/delete protection.
-- Persona offer/redemption QA now creates an isolated non-demo local Partner through `create_partner_organization` so the complete public claim/redemption path remains tested without weakening demo isolation.
-- PetBiz/RAVE onboarding now recognizes a resolved draft and sends the user back to the existing business profile instead of reopening a duplicate-creation path.
-- No destructive cleanup of the two historical shared-dev shells has been performed.
+- Two historical nearly-empty shared-dev organizations named `Shelter Pawtners` were traced to `pet_business` rows created about two minutes apart by the same user. Evidence points to the older direct PetBiz creation path; they are not linked to the current onboarding-draft/access-request/duplicate-review workflow.
+- `20260910045221_launch_partner_organization_idempotency.sql` is applied in shared dev and passed full Database QA.
+- Exact same-draft retries now return the existing organization.
+- Reuse of a resolved draft with a different payload is rejected.
+- Resolved onboarding draft identity/payload cannot be rewritten or deleted.
+- PetBiz/RAVE onboarding recognizes an already-resolved draft and routes the user back to the existing business profile instead of reopening creation.
+- Full Persona claim/redemption QA now uses an isolated non-demo Partner fixture while preserving the complete public redemption journey.
+- No destructive cleanup of the two historical organization shells was performed.
 
-### Production auth email readiness
+### Advisor state after final DDL
 
-- `docs/LAUNCH-AUTH-EMAIL-READINESS.md` documents the pre-cutover plan.
-- Supabase built-in SMTP is treated as development/testing only.
-- Microsoft 365 remains the human/business mailbox system instead of becoming an application SMTP dependency.
-- Preferred MVP transactional path is Resend with a dedicated `auth.shelterpawtners.com` sending subdomain and `no-reply@auth.shelterpawtners.com` sender.
-- No paid tier is currently recommended for the controlled MVP.
-- Provider account creation, credentials, sending-domain DNS, final Auth Site URL/redirect allowlist, and real external-email validation remain owner-controlled production actions.
+Security advisor was rerun after the idempotency migration.
 
-### Public signup/legal finding
-
-Registration currently requires agreement to the Terms and acknowledgement of the Privacy Notice, but those labels are not links and the repository contains no owner-approved corresponding policy pages.
-
-Do not fabricate or silently publish material legal policy text. Owner-approved Terms of Service and Privacy Notice content are required before public signup is enabled at production cutover.
-
-## Acceptance requirements now running
-
-The exact-code acceptance must prove, rather than infer, that:
-
-1. the full Persona browser job actually runs rather than only its lightweight gate;
-2. `e2e/auth-recovery.spec.ts` executes and passes;
-3. fresh Guardian, Shelter, PetBiz, and RAVE Vendor flows remain green;
-4. offer/redemption and access-isolation regressions remain green;
-5. Hosted QA uses `LOCAL_HEAD` and runs the relevant exact-code browser/design/accessibility suites rather than a stale Vercel preview;
-6. normal CI, Database QA, Dependency Review, and Merge Gate remain green.
-
-Any genuine deterministic failure returns the work to `IN_PROGRESS`, is fixed without weakening tests, and is revalidated.
-
-## Known non-code constraints
-
-- Vercel is currently rate-limiting new builds; this is not an application defect.
-- `shelterpawtners.com` / `www.shelterpawtners.com` remain unattached to Vercel and DNS is unchanged.
+- No new security regression was introduced.
+- Two private RLS/no-policy INFO notices remain for intentionally locked `private.audit_events` and `private.secure_tokens`.
+- Four anonymous SECURITY DEFINER warnings remain for intentional read-only public discovery RPCs.
+- Authenticated SECURITY DEFINER warnings remain for application RPCs whose internal authorization remains covered by QA.
 - Supabase leaked-password protection remains disabled and should be enabled before public traffic if available in the selected project configuration.
-- Performance advisor findings remain broader optimization work unless acceptance demonstrates a launch blocker.
-- The two historical `Shelter Pawtners` shared-dev organization shells remain non-destructively reviewed and are not public directory records.
 
-## Final owner gate after deterministic acceptance
+Performance advisor remains optimization work: 20 unindexed foreign-key notices, multiple permissive-policy warnings, and many unused-index notices in the low-traffic dev database. Acceptance found no correctness blocker from those findings.
 
-When exact-code acceptance is green, set the handoff to `BLOCKED`, `OWNER_DECISION_REQUIRED: YES`, and `SAFE_TO_CONTINUE: NO` rather than merging or changing production systems.
+## Production auth email readiness
 
-Remaining owner-controlled launch actions will be:
+`docs/LAUNCH-AUTH-EMAIL-READINESS.md` contains the pre-cutover plan.
+
+- Microsoft 365 remains the human/business mailbox system.
+- Preferred MVP transactional path is Resend on `auth.shelterpawtners.com` with `no-reply@auth.shelterpawtners.com`.
+- No paid tier is currently recommended for controlled MVP launch volume.
+- Provider account creation, credentials, DNS, final Supabase Auth configuration, and real external-email tests remain owner-controlled.
+
+## Public signup/legal blocker
+
+Registration requires agreement to Terms and acknowledgement of a Privacy Notice, but the repository has no owner-approved policy pages/links.
+
+Do not fabricate or silently publish material legal policy text. Owner-approved Terms of Service and Privacy Notice content are required before public signup is enabled.
+
+## Final owner gate
+
+Autonomous engineering for this checkpoint is complete. Do not continue implementation, merge PR #33, or change production systems until the owner chooses the next action.
+
+Owner-controlled launch actions:
 
 1. provide/approve Terms of Service content;
 2. provide/approve Privacy Notice content;
 3. authorize/create the transactional-email provider account and credentials;
-4. authorize the transactional sending-subdomain DNS records;
-5. authorize final Supabase production Site URL/redirect/email configuration and real external-email tests;
+4. authorize transactional sending-subdomain DNS records;
+5. authorize final Supabase production Site URL/redirect/email configuration and real external-email validation;
 6. authorize Vercel custom-domain attachment and production web DNS cutover;
-7. authorize Phase 3 separately after launch readiness is complete.
+7. authorize merge of PR #33 when ready;
+8. authorize Phase 3 separately after launch readiness/cutover decisions.
 
 ## Guardrails
 
 Still owner-gated/deferred:
 
+- PR #33 merge;
 - production-domain/DNS/custom-domain routing;
 - Microsoft 365 mail DNS changes;
 - transactional-email provider account/credential/DNS activation;
@@ -134,5 +133,3 @@ Still owner-gated/deferred:
 - `OD-004` production giving provider/settlement;
 - paid infrastructure unless separately approved;
 - destructive cleanup or material privacy/security/financial/legal changes.
-
-PR #33 remains open. Do not merge it during this acceptance run.
