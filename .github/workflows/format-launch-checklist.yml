@@ -1,0 +1,34 @@
+name: Format Launch Checklist
+
+on:
+  push:
+    branches:
+      - launch/pre-cutover-readiness
+    paths:
+      - .github/workflows/format-launch-checklist.yml
+
+permissions:
+  contents: write
+
+jobs:
+  format:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: launch/pre-cutover-readiness
+          fetch-depth: 0
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx prettier --write docs/LAUNCH-READINESS-CHECKLIST.md
+      - run: git rm .github/workflows/format-launch-checklist.yml
+      - name: Commit formatted checklist
+        run: |
+          git config user.name "ShelterPawtners automation"
+          git config user.email "shelterpawtners@gmail.com"
+          git add docs/LAUNCH-READINESS-CHECKLIST.md
+          git commit -m "Format launch readiness checklist"
+          git push origin HEAD:launch/pre-cutover-readiness
