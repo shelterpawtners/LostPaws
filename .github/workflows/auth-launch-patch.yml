@@ -1,0 +1,43 @@
+name: Auth Launch Patch
+
+on:
+  push:
+    branches:
+      - launch/pre-cutover-readiness
+    paths:
+      - .github/workflows/auth-launch-patch.yml
+
+permissions:
+  contents: write
+
+jobs:
+  patch-auth-redirect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: launch/pre-cutover-readiness
+          fetch-depth: 0
+      - name: Add persona-preserving confirmation redirect
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          path = Path('src/main.tsx')
+          text = path.read_text()
+          old = '      options: { data: { full_name: fd.get("name"), onboarding_type: c.kind } },\n'
+          new = '''      options: {\n        emailRedirectTo: `${location.origin}/onboarding/${c.kind}`,\n        data: { full_name: fd.get("name"), onboarding_type: c.kind },\n      },\n'''
+          if old not in text:
+              raise SystemExit('Expected signup options block not found exactly once')
+          if text.count(old) != 1:
+              raise SystemExit('Expected signup options block was not unique')
+          path.write_text(text.replace(old, new))
+          PY
+      - name: Remove temporary patch workflow
+        run: git rm .github/workflows/auth-launch-patch.yml
+      - name: Commit patch
+        run: |
+          git config user.name "ShelterPawtners automation"
+          git config user.email "shelterpawtners@gmail.com"
+          git add src/main.tsx
+          git commit -m "Preserve persona through email confirmation"
+          git push origin HEAD:launch/pre-cutover-readiness
