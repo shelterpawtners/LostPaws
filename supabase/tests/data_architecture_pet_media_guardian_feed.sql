@@ -6,16 +6,18 @@ set local role authenticated;
 select set_config('request.jwt.claim.sub','10000000-0000-0000-0000-000000000001',true);
 
 create temp table media_test(first_id uuid,second_id uuid);
-insert into public.pet_media(
-  pet_id,created_by,storage_bucket,storage_path,caption,sort_order,provenance_code
-) values (
-  '30000000-0000-0000-0000-000000000001',
-  '10000000-0000-0000-0000-000000000001',
-  'pet-photos','10000000-0000-0000-0000-000000000001/30000000-0000-0000-0000-000000000001/first.jpg',
-  'First pet photo',0,'guardian_entered'
-) returning id into strict media_test.first_id;
+with first_media as (
+  insert into public.pet_media(
+    pet_id,created_by,storage_bucket,storage_path,caption,sort_order,provenance_code
+  ) values (
+    '30000000-0000-0000-0000-000000000001',
+    '10000000-0000-0000-0000-000000000001',
+    'pet-photos','10000000-0000-0000-0000-000000000001/30000000-0000-0000-0000-000000000001/first.jpg',
+    'First pet photo',0,'guardian_entered'
+  ) returning id
+)
+insert into media_test(first_id) select id from first_media;
 
--- A temp-table UPDATE is used to capture the second id without depending on row order.
 with second_media as (
   insert into public.pet_media(
     pet_id,created_by,storage_bucket,storage_path,caption,sort_order,provenance_code
