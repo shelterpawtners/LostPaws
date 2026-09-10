@@ -42,7 +42,23 @@ Required final redirect paths:
 - `https://shelterpawtners.com/onboarding/rave_vendor`
 - `https://shelterpawtners.com/reset-password`
 
-For pre-cutover hosted QA, add the exact active Vercel production/QA origin with the same paths. Remove obsolete preview origins after acceptance. Do not add an unrestricted `https://*.vercel.app/**` production wildcard.
+For pre-cutover hosted QA, use the exact active Vercel production/QA origin with the same paths. Remove obsolete preview origins after acceptance. Do not add an unrestricted `https://*.vercel.app/**` or broad production-origin wildcard.
+
+### Hosted owner checkpoint — 2026-09-10
+
+The owner changed the hosted Supabase Site URL from `http://localhost:3000` to:
+
+- `https://lost-paws-one.vercel.app`
+
+The owner also added broad `/**` redirect entries for the Vercel origin and localhost during the interactive setup. Before real external acceptance, tighten the production Vercel allowlist to the exact application paths below, matching the existing client behavior:
+
+- `https://lost-paws-one.vercel.app/onboarding/guardian`
+- `https://lost-paws-one.vercel.app/onboarding/shelter`
+- `https://lost-paws-one.vercel.app/onboarding/petbiz`
+- `https://lost-paws-one.vercel.app/onboarding/rave_vendor`
+- `https://lost-paws-one.vercel.app/reset-password`
+
+Local development may retain `http://localhost:3000/**` while development remains active. The broad Vercel production `/**` entry should be removed after the exact paths are present.
 
 ## Resend DNS boundary
 
@@ -98,7 +114,7 @@ Do not mark LL-4 complete until all available items are evidenced:
 - [x] `auth.shelterpawtners.com` verified using only Resend subdomain DNS records.
 - [x] Supabase custom SMTP enabled with Resend credentials.
 - [ ] Production email confirmations enabled/verified in hosted Auth settings.
-- [ ] Site URL and redirect allowlist narrowed to the exact approved hosted origins/paths.
+- [ ] Site URL and redirect allowlist narrowed to the exact approved hosted origins/paths. Site URL is now correct for pre-cutover Vercel acceptance; exact-path redirect tightening remains.
 - [ ] Safe test signup receives an external confirmation email.
 - [ ] Confirmation link returns to the correct persona onboarding path.
 - [ ] Safe test password recovery receives an external recovery email.
@@ -114,7 +130,7 @@ The connected tooling can inspect GitHub, Vercel, and Supabase project/database 
 
 The remaining external-console actions are:
 
-1. inspect and configure hosted Supabase Site URL and exact redirect allowlist;
+1. tighten hosted Supabase redirect allowlist to the exact Vercel onboarding/recovery paths listed above;
 2. verify email confirmation and secure email-change settings;
 3. install/verify the confirmation and recovery templates in hosted Supabase Auth;
 4. perform safe live signup/confirmation/recovery inbox click-through tests;
