@@ -312,7 +312,9 @@ export function OfferMarketplace({
         <div role="status" aria-live="polite" aria-atomic="true">
           <strong>{visibleOffers.length}</strong>
           <span>
-            {visibleOffers.length === 1 ? " current listing" : " current listings"}
+            {visibleOffers.length === 1
+              ? " current listing"
+              : " current listings"}
           </span>
         </div>
         {(query || classification !== "all") && (
