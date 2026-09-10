@@ -83,8 +83,8 @@ jobs:
           fi
       - name: Install Chromium
         run: bash scripts/install-playwright-chromium.sh
-      - name: Run persona registration, auth recovery, access, and redemption tests
-        run: npx playwright test e2e/guardian-dashboard.spec.ts e2e/persona-registration.spec.ts e2e/auth-recovery.spec.ts e2e/persona-access-isolation.spec.ts e2e/phase-2-offer-redemption.spec.ts
+      - name: Run persona registration, auth recovery, access, Passport, and redemption tests
+        run: npx playwright test e2e/guardian-dashboard.spec.ts e2e/persona-registration.spec.ts e2e/auth-recovery.spec.ts e2e/persona-access-isolation.spec.ts e2e/phase-3-guardian-passport.spec.ts e2e/phase-2-offer-redemption.spec.ts
       - name: Run local Admin QA security regression
         env:
           VITE_ADMIN_QA_MODE_ENABLED: "true"
