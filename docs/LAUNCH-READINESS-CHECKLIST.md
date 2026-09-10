@@ -3,6 +3,7 @@
 This checklist gates the first public ShelterPawtners domain cutover.
 
 ## Data hygiene
+
 - [ ] Demo organizations excluded from public directory results.
 - [ ] Offers created by demo organizations inherit `is_demo=true`.
 - [ ] Existing shared-dev QA offers backfilled as demo.
@@ -11,12 +12,14 @@ This checklist gates the first public ShelterPawtners domain cutover.
 - [ ] Regression proves Hosted QA cannot repopulate public Marketplace.
 
 ## Public resource catalog
+
 - [ ] Verify and publish first wave of active public adoption-benefit programs.
 - [ ] Each listing has source URL, destination URL, eligibility, geography, dates, last-verified date, and non-partnership disclosure.
 - [ ] Expired/uncertain programs are hidden or clearly not active.
 - [ ] Public programs are visually distinct from ShelterPawtners partner offers.
 
 ## Signup/auth
+
 - [ ] Guardian fresh signup -> confirm -> login -> pet save/reload works.
 - [ ] Shelter fresh signup -> onboarding save -> dashboard works.
 - [ ] PetBiz fresh signup -> organization/profile/offer persistence works.
@@ -26,6 +29,7 @@ This checklist gates the first public ShelterPawtners domain cutover.
 - [ ] Final domain auth redirect URLs are configured.
 
 ## Human launch review
+
 - [ ] No QA/demo/test/Playwright names appear publicly.
 - [ ] Marketplace has credible real-world launch content.
 - [ ] Public directory contains only intentional public records.
@@ -33,6 +37,7 @@ This checklist gates the first public ShelterPawtners domain cutover.
 - [ ] Phone/tablet/desktop review passes.
 
 ## Domain cutover
+
 - [ ] Vercel custom domains are configured.
 - [ ] DNS web records are identified before changes.
 - [ ] Microsoft 365 MX/SPF/DKIM/DMARC records are preserved unchanged.
