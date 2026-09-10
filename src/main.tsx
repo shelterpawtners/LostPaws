@@ -57,6 +57,7 @@ import { OfferMarketplace } from "./components/OfferMarketplace";
 import { RedemptionFlow } from "./components/RedemptionFlow";
 import { GuardianProfileLite } from "./components/GuardianProfileLite";
 import { GuardianPetPassport } from "./components/GuardianPetPassport";
+import { AdoptionVerificationResponder } from "./components/AdoptionVerificationResponder";
 import {
   AdminQaMode,
   AdminQaNavLink,
@@ -1902,6 +1903,14 @@ function App() {
       <Route path="/sign-up" element={<Navigate to="/register" replace />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password" element={<ResetPassword />} />
+      <Route
+        path="/verify/adoption/:token"
+        element={
+          <Page>
+            <AdoptionVerificationResponder />
+          </Page>
+        }
+      />
       <Route
         path="/dashboard"
         element={
