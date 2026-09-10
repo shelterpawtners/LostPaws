@@ -19,6 +19,10 @@ test.describe.serial("Phase 2 offer and redemption journey", () => {
   }) => {
     await signIn(page, "partner-admin@example.invalid", "Demo-only-Partner!");
     await page.goto("/business");
+    await expect(page.getByTestId("partner-profile-save-status")).toHaveText(
+      /^(draft|published|unpublished)$/i,
+      { timeout: 15_000 },
+    );
     await page
       .getByLabel("Public description")
       .fill(
