@@ -1,53 +1,46 @@
 # AI Handoff
 
-STATUS: IN_PROGRESS
-CURRENT_PHASE: Phase 3 — Lost Lands MVP
-CURRENT_CHECKPOINT: LL-6 / Issue #46 — final regression, launch readiness, and owner-gated cutover prep
-NEXT_CHECKPOINT: OWNER-GATED production cutover after external provider acceptance and explicit owner authorization
-OWNER_DECISION_REQUIRED: NO
-SAFE_TO_CONTINUE: YES
-ACCEPTED_CODE_SHA: 031c69f77ef94b286f627910f73346aecc366942
+STATUS: BLOCKED
+CURRENT_PHASE: Phase 3 — Lost Lands MVP engineering complete
+CURRENT_CHECKPOINT: Post-LL-6 external provider acceptance / owner-gated production cutover
+NEXT_CHECKPOINT: Complete external provider setup/acceptance, then perform final production cutover only with separate owner authorization
+OWNER_DECISION_REQUIRED: YES
+SAFE_TO_CONTINUE: NO
+ACCEPTED_CODE_SHA: 0bee999152e4bc84b910dfeccf7a11074a14445b
 ACCEPTANCE_DEPLOYED_SHA: NONE
 ACCEPTANCE_RUNTIME: MAIN
 
-## Active task
+## Completed Lost Lands MVP slices
 
-Issue #46 — **LL-6: final regression, launch readiness, and owner-gated cutover prep**
+- LL-1 Guardian Digital Pet Passport merged via PR #37.
+- LL-2 Premium Marketplace merged via PR #42.
+- LL-3 Shelter adoption verification merged via PR #43 after full required acceptance.
+- LL-4 provider-independent production Auth/email readiness merged via PR #44 after CI, Hosted QA, Database QA, Persona QA, Dependency Review, and Merge Gate passed.
+- LL-5 Meta social-auth capability prep merged via PR #45 after the same required acceptance stack passed. Facebook is the truthful general Meta sign-in path; universal consumer Instagram login is not advertised.
+- LL-6 final regression/launch-readiness preparation merged via PR #47 at `0bee999152e4bc84b910dfeccf7a11074a14445b` after CI, Hosted QA, Database QA, Persona QA, Dependency Review, and Merge Gate were all green on the exact PR head.
 
-Agent: ChatGPT / GitHub operator
+## Launch-readiness artifacts
 
-Branch: `phase3/ll6-launch-readiness`
+- `docs/LL4-AUTH-EMAIL-READINESS.md` — production Auth/email/provider setup and live acceptance contract.
+- `docs/LL6-LAUNCH-READINESS.md` — integrated regression, browser/mobile/accessibility, security, provider prerequisites, main-domain pre-cutover, and rollback checklist.
+- `docs/legal/DRAFT-TERMS-OF-SERVICE.md` — owner/legal-review draft only; not approved for publication.
+- `docs/legal/DRAFT-PRIVACY-NOTICE.md` — owner/legal-review draft only; not approved for publication.
 
-## Owner authorization
+## Exact external blocker
 
-The owner has authorized autonomous continuation through the Lost Lands MVP and standing merge authorization for green engineering PRs until revoked. After a completed or externally blocked slice, immediately advance to the next authorized independent slice.
+The remaining work requires provider-console/browser access that is not exposed by the current connected tools:
 
-Protected gates remain: no paid upgrades, no destructive production-data changes, no Microsoft 365 mail DNS changes, no OD-003 customer-facing verified-savings rule invention, no OD-004 money movement/settlement decisions, no publication of final unreviewed Terms/Privacy, and no final `shelterpawtners.com` production web-domain DNS/custom-domain cutover.
+1. Create/sign into the Resend free-tier account and verify `auth.shelterpawtners.com` using only Resend-provided subdomain DNS records; do not alter Microsoft 365 apex mail DNS.
+2. Generate Resend SMTP credentials and configure Supabase Auth custom SMTP for `no-reply@auth.shelterpawtners.com`.
+3. Configure the hosted Supabase Auth Site URL and exact redirect allowlist; enable/test confirmation and recovery templates.
+4. Configure Google OAuth credentials/provider and run live persona/duplicate-prevention acceptance if credentials are available.
+5. Configure Meta/Facebook app credentials/provider and run live Facebook sign-in acceptance. Do not add a misleading universal Instagram-login path.
+6. Perform safe external inbox signup/confirmation/recovery click-through tests.
+7. Review/approve the draft Terms and Privacy Notice before any final publication.
+8. Separately authorize the final `shelterpawtners.com` production web-domain DNS/custom-domain cutover after the above acceptance is complete.
 
-## Completed launch slices
+Leaked-password protection remains a post-MVP candidate while it requires a paid Supabase tier; the MVP guardrail prohibits purchasing/upgrading solely for it.
 
-- LL-1 Guardian Digital Pet Passport merged via PR #37 at `0ae4b4d86f8f1083343d8e23357d64268ccce06c`.
-- LL-2 Premium Marketplace merged via PR #42 at `08bd137ea79b951e540b3f0c2909a4ea5adc82fc`.
-- LL-3 Shelter adoption verification merged via PR #43 at `33447725649cc91cfeb1e388b06092e086558321` after full required acceptance.
-- LL-4 provider-independent production Auth/email readiness merged via PR #44 at `cdf827fc255bf446a9eb61bbb647ce7d1d03f2da` after CI, Hosted QA, Database QA, Persona QA, Dependency Review, and Merge Gate all passed. Live Resend SMTP, hosted Auth URL/provider configuration, and inbox click-through remain an external-console prerequisite documented in `docs/LL4-AUTH-EMAIL-READINESS.md`.
-- LL-5 Meta social-auth capability prep merged via PR #45 at `031c69f77ef94b286f627910f73346aecc366942` after CI, Hosted QA, Database QA, Persona QA, Dependency Review, and Merge Gate all passed. Facebook is the truthful general Meta sign-in path; universal consumer Instagram login is not advertised. Live Facebook acceptance remains dependent on Meta/Supabase provider credentials.
+## Protected stop
 
-## LL-6 objective
-
-Run the full integrated Lost Lands MVP regression against the current main lineage; document mobile/browser/accessibility acceptance; prepare launch-readiness, rollback, legal-review drafts, and the main-domain cutover procedure; then stop before the protected final `shelterpawtners.com` production web-domain DNS/custom-domain change.
-
-## Current external capability boundary
-
-Live provider acceptance still requires external console/browser access not exposed by the current connectors:
-
-1. Resend free-tier account/domain verification and SMTP credentials for `auth.shelterpawtners.com`.
-2. Supabase hosted Auth Site URL, exact redirect allowlist, SMTP, email confirmation/recovery, Google provider, and Facebook provider settings.
-3. Google OAuth credentials and live flow validation.
-4. Meta developer app credentials and live Facebook flow validation.
-5. Safe inbox click-through tests for confirmation and recovery.
-
-Leaked-password protection is currently documented by Supabase as Pro-only; paid upgrades remain prohibited for this MVP.
-
-## Next safe action
-
-Complete Issue #46 as a bounded launch-readiness PR: add the exact cutover/rollback checklist and owner-review legal drafts, run all repository gates against the exact PR head, fix only evidenced defects without weakening tests/RLS, merge when green, and stop immediately before the final production web-domain DNS/custom-domain change. External provider-console actions should be recorded precisely but must not idle independent engineering work.
+No independent repository engineering task remains in the agreed LL-1 through LL-6 launch order. Do not perform the final production web-domain DNS/custom-domain cutover, publish the legal drafts as final, make OD-003/OD-004 decisions, purchase paid services, make destructive production-data changes, or alter Microsoft 365 mail DNS without the separately required owner action/authorization.
