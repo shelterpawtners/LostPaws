@@ -1,0 +1,128 @@
+name: Patch Resolved Onboarding UI
+
+on:
+  push:
+    branches:
+      - launch/pre-cutover-readiness
+    paths:
+      - .github/workflows/patch-resolved-onboarding-ui.yml
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: launch/pre-cutover-readiness
+      - name: Patch resolved onboarding handling and remove workflow
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path("src/main.tsx")
+          text = path.read_text()
+
+          old = '''  const [draftId, setDraftId] = useState("");
+  const [status, setStatus] = useState("");'''
+          new = '''  const [draftId, setDraftId] = useState("");
+  const [resolvedOrganizationId, setResolvedOrganizationId] = useState("");
+  const [status, setStatus] = useState("");'''
+          assert text.count(old) == 1
+          text = text.replace(old, new, 1)
+
+          old = '''  async function saveDraft() {
+    if (!db || !session) return "";
+    const { data, error } = await db'''
+          new = '''  async function saveDraft() {
+    if (!db || !session) return "";
+    if (resolvedOrganizationId && draftId) {
+      setStatus("This onboarding is already linked to an organization.");
+      return draftId;
+    }
+    const { data, error } = await db'''
+          assert text.count(old) == 1
+          text = text.replace(old, new, 1)
+
+          old = '''    db.from("organization_onboarding_drafts")
+      .select("id, form_data")
+      .eq("created_by", session.user.id)
+      .maybeSingle()
+      .then(async ({ data }) => {
+        if (!data) return;
+        setDraftId(data.id);
+        if (data.form_data && Object.keys(data.form_data).length)
+          setForm((current) => ({
+            ...current,
+            ...(data.form_data as PartnerForm),
+          }));'''
+          new = '''    db.from("organization_onboarding_drafts")
+      .select("id, form_data, status, resolved_organization_id")
+      .eq("created_by", session.user.id)
+      .maybeSingle()
+      .then(async ({ data }) => {
+        if (!data) return;
+        setDraftId(data.id);
+        if (
+          (data.status === "resolved_new" || data.status === "resolved_existing") &&
+          data.resolved_organization_id
+        ) {
+          setResolvedOrganizationId(data.resolved_organization_id);
+          setStatus("This onboarding is already linked to an organization.");
+        }
+        if (data.form_data && Object.keys(data.form_data).length)
+          setForm((current) => ({
+            ...current,
+            ...(data.form_data as PartnerForm),
+          }));'''
+          assert text.count(old) == 1
+          text = text.replace(old, new, 1)
+
+          old = '''  const visibleMatches = matches.filter(
+    (item) => !dismissed.includes(item.organization_id),
+  );
+  return (
+    <Page>
+      <section className="section shell partnerOnboarding">'''
+          new = '''  const visibleMatches = matches.filter(
+    (item) => !dismissed.includes(item.organization_id),
+  );
+  if (resolvedOrganizationId) {
+    return (
+      <Page>
+        <section className="section shell narrow">
+          <span className="eyebrow">{choice.title} setup</span>
+          <h1>This onboarding is already complete.</h1>
+          <p className="lead">
+            Your saved onboarding is already linked to an organization. Continue
+            to your business profile instead of creating a duplicate entry.
+          </p>
+          <button className="btn" onClick={() => navigate("/business")}>
+            Continue to business profile
+          </button>
+          <p role="status" aria-live="polite" aria-atomic="true">
+            {status}
+          </p>
+        </section>
+      </Page>
+    );
+  }
+  return (
+    <Page>
+      <section className="section shell partnerOnboarding">'''
+          assert text.count(old) == 1
+          text = text.replace(old, new, 1)
+
+          path.write_text(text)
+          PY
+          npx prettier --write src/main.tsx
+          rm .github/workflows/patch-resolved-onboarding-ui.yml
+          git config user.name 'ShelterPawtners automation'
+          git config user.email 'shelterpawtners@gmail.com'
+          git add src/main.tsx .github/workflows/patch-resolved-onboarding-ui.yml
+          git commit -m 'Recognize resolved Partner onboarding drafts'
+          git push origin HEAD:launch/pre-cutover-readiness
