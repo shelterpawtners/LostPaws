@@ -24,6 +24,7 @@ Every entry below must be reverified from its source immediately before database
 ## Expansion queue
 
 Research current programs from:
+
 - IAMS / PEDIGREE / Nutro / Royal Canin / Greenies / Temptations / PrettyLitter / Whistle;
 - Chewy and other national retailers;
 - VCA, Thrive, Vetco and other veterinary networks;
