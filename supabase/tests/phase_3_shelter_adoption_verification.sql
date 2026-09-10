@@ -1,6 +1,6 @@
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(18);
+select plan(19);
 
 select ok(has_function_privilege('authenticated','public.request_adoption_verification(uuid,text,text,text,text,text,text,date)','execute'),'authenticated Guardian can request verification');
 select ok(not has_function_privilege('anon','public.request_adoption_verification(uuid,text,text,text,text,text,text,date)','execute'),'anonymous caller cannot create verification request');
