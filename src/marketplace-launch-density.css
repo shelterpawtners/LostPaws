@@ -1,0 +1,258 @@
+/* Issue #53 launch-density presentation controls. */
+.marketplaceResultsActions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.marketplaceViewControls {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px;
+  border: 1px solid #40536f;
+  border-radius: 12px;
+  background: #101d32;
+}
+
+.marketplaceViewControls button {
+  min-height: 36px;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 11px;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  color: #aebdd0;
+  font: inherit;
+  font-size: 0.74rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.marketplaceViewControls button:hover,
+.marketplaceViewControls button:focus-visible,
+.marketplaceViewControls button.active {
+  background: #edfdfa;
+  color: #163049;
+}
+
+.marketplaceViewControls svg {
+  width: 15px;
+  height: 15px;
+}
+
+.marketplacePremium .marketplaceCardGrid-grid {
+  grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+  gap: 16px;
+}
+
+.marketplacePremium .marketplaceCardGrid-grid .marketOfferVisual {
+  min-height: 124px;
+  padding: 16px;
+}
+
+.marketplacePremium .marketplaceCardGrid-grid .marketOfferVisualLabel {
+  top: 13px;
+  left: 14px;
+  min-height: 24px;
+  font-size: 0.58rem;
+}
+
+.marketplacePremium .marketplaceCardGrid-grid .marketOfferMonogram {
+  width: 52px;
+  height: 52px;
+  border-radius: 15px;
+  font-size: 1rem;
+}
+
+.marketplacePremium .marketplaceCardGrid-grid .marketOfferVisualIcon {
+  width: 38px;
+  height: 38px;
+}
+
+.marketplacePremium .marketplaceCardGrid-grid .marketOfferBody {
+  padding: 17px;
+}
+
+.marketplacePremium .marketplaceCardGrid-grid .marketOfferCard h2 {
+  font-size: 1.18rem;
+  line-height: 1.12;
+}
+
+.marketplacePremium .marketplaceCardGrid-grid .marketOfferSummary {
+  display: -webkit-box;
+  overflow: hidden;
+  font-size: 0.82rem;
+  line-height: 1.45;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.marketplacePremium .marketplaceCardGrid-grid .marketOfferEligibilityPreview {
+  margin-top: 11px;
+  padding: 9px 10px;
+}
+
+.marketplacePremium .marketplaceCardGrid-grid .marketOfferMeta {
+  margin-top: 11px;
+}
+
+.marketplacePremium .marketplaceCardGrid-grid .marketOfferFooter {
+  padding-top: 13px;
+}
+
+.marketplacePremium .marketplaceCardGrid-grid .marketOfferCta {
+  min-height: 42px;
+}
+
+.marketplacePremium .marketplaceCardGrid-list {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+
+.marketplacePremium .marketplaceCardGrid-list .marketOfferCard {
+  display: grid;
+  grid-template-columns: minmax(150px, 190px) minmax(0, 1fr);
+  min-height: 0;
+  border-radius: 18px;
+}
+
+.marketplacePremium .marketplaceCardGrid-list .marketOfferVisual {
+  min-height: 100%;
+  padding: 15px;
+  border-radius: 17px 0 0 17px;
+}
+
+.marketplacePremium .marketplaceCardGrid-list .marketOfferVisualLabel {
+  top: 12px;
+  left: 12px;
+  right: 12px;
+  width: fit-content;
+  max-width: calc(100% - 24px);
+  min-height: 23px;
+  font-size: 0.54rem;
+}
+
+.marketplacePremium .marketplaceCardGrid-list .marketOfferMonogram {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  font-size: 0.95rem;
+}
+
+.marketplacePremium .marketplaceCardGrid-list .marketOfferVisualIcon {
+  width: 36px;
+  height: 36px;
+}
+
+.marketplacePremium .marketplaceCardGrid-list .marketOfferBody {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  column-gap: 18px;
+  align-content: start;
+  padding: 16px 18px;
+}
+
+.marketplacePremium .marketplaceCardGrid-list .marketOfferBadges,
+.marketplacePremium .marketplaceCardGrid-list .marketOfferProvider,
+.marketplacePremium .marketplaceCardGrid-list h2,
+.marketplacePremium .marketplaceCardGrid-list .marketOfferSummary,
+.marketplacePremium .marketplaceCardGrid-list .marketOfferEligibilityPreview,
+.marketplacePremium .marketplaceCardGrid-list .marketOfferMeta {
+  grid-column: 1;
+}
+
+.marketplacePremium .marketplaceCardGrid-list .marketOfferFooter {
+  grid-column: 2;
+  grid-row: 1 / span 6;
+  min-width: 180px;
+  margin-top: 0;
+  padding-top: 0;
+  align-self: center;
+}
+
+.marketplacePremium .marketplaceCardGrid-list .marketOfferCard h2 {
+  margin-bottom: 5px;
+  font-size: 1.08rem;
+}
+
+.marketplacePremium .marketplaceCardGrid-list .marketOfferSummary {
+  display: -webkit-box;
+  overflow: hidden;
+  margin: 0;
+  font-size: 0.8rem;
+  line-height: 1.4;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.marketplacePremium .marketplaceCardGrid-list .marketOfferEligibilityPreview {
+  margin-top: 9px;
+  padding: 8px 10px;
+}
+
+.marketplacePremium .marketplaceCardGrid-list .marketOfferMeta {
+  margin-top: 9px;
+}
+
+.marketplacePremium .marketplaceCardGrid-list .marketOfferCta {
+  min-height: 42px;
+}
+
+@media (max-width: 760px) {
+  .marketplaceResultsActions {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .marketplacePremium .marketplaceCardGrid-grid {
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  }
+
+  .marketplacePremium .marketplaceCardGrid-list .marketOfferCard {
+    grid-template-columns: 112px minmax(0, 1fr);
+  }
+
+  .marketplacePremium .marketplaceCardGrid-list .marketOfferBody {
+    display: block;
+    padding: 14px;
+  }
+
+  .marketplacePremium .marketplaceCardGrid-list .marketOfferFooter {
+    min-width: 0;
+    margin-top: 12px;
+  }
+
+  .marketplacePremium .marketplaceCardGrid-list .marketOfferEligibilityPreview {
+    display: none;
+  }
+}
+
+@media (max-width: 520px) {
+  .marketplaceViewControls {
+    width: 100%;
+  }
+
+  .marketplaceViewControls button {
+    flex: 1;
+    justify-content: center;
+  }
+
+  .marketplacePremium .marketplaceCardGrid-list .marketOfferCard {
+    grid-template-columns: 92px minmax(0, 1fr);
+  }
+
+  .marketplacePremium .marketplaceCardGrid-list .marketOfferVisual {
+    padding: 10px;
+  }
+
+  .marketplacePremium .marketplaceCardGrid-list .marketOfferVisualLabel,
+  .marketplacePremium .marketplaceCardGrid-list .marketOfferVisualIcon {
+    display: none;
+  }
+}
