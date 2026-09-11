@@ -241,7 +241,15 @@ jobs:
             await page.waitForURL(/\/LostPaws\/dashboard$/, { timeout: 20000 });
             await page.locator('#main').waitFor({ state: 'visible', timeout: 15000 });
 
+            if (viewport.name === 'mobile') {
+              const mobileNavButton = page.getByRole('button', { name: 'Open menu' });
+              await mobileNavButton.waitFor({ state: 'visible', timeout: 10000 });
+              await mobileNavButton.click();
+              await page.getByRole('button', { name: 'Close menu' }).waitFor({ state: 'visible', timeout: 10000 });
+            }
+
             const accountMenu = page.locator('.guardianAccountMenu');
+            await accountMenu.locator('summary').waitFor({ state: 'visible', timeout: 10000 });
             await accountMenu.locator('summary').click();
             const helpButton = accountMenu.getByRole('button', { name: 'Help & feedback' });
             await helpButton.waitFor({ state: 'visible', timeout: 10000 });
@@ -254,7 +262,14 @@ jobs:
               throw new Error(`${viewport.name}: Guardian Passport navigation did not remain on the protected route.`);
             }
 
-            await page.getByRole('button', { name: 'Sign out' }).click();
+            if (viewport.name === 'mobile') {
+              const mobileNavButton = page.getByRole('button', { name: 'Open menu' });
+              await mobileNavButton.waitFor({ state: 'visible', timeout: 10000 });
+              await mobileNavButton.click();
+            }
+            const signOutButton = page.getByRole('button', { name: 'Sign out' });
+            await signOutButton.waitFor({ state: 'visible', timeout: 10000 });
+            await signOutButton.click();
             await page.waitForURL(/\/LostPaws\/?$/, { timeout: 15000 });
             await page.goto(`${process.env.SITE_URL}/dashboard`, { waitUntil: 'networkidle' });
             await page.waitForURL(/\/LostPaws\/login$/, { timeout: 15000 });
