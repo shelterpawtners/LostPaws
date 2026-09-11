@@ -1,49 +1,72 @@
 import { useEffect, useState } from "react";
 import type { Session } from "@supabase/supabase-js";
+import { Camera, UserRound } from "lucide-react";
 import { supabase as db } from "../lib/supabase";
 import { GuardianActivityTimeline } from "./GuardianActivityTimeline";
 import { HelpFeedback } from "./HelpFeedback";
+import "../guardian-profile-lite.css";
 
 type ProfileLite = {
   full_name: string;
   phone: string;
   instagram_handle: string;
+  avatar_path: string;
 };
 
 const emptyProfile: ProfileLite = {
   full_name: "",
   phone: "",
   instagram_handle: "",
+  avatar_path: "",
+};
+
+const avatarTypes: Record<string, string> = {
+  "image/jpeg": "jpg",
+  "image/png": "png",
+  "image/webp": "webp",
 };
 
 export function GuardianProfileLite({ session }: { session: Session | null }) {
   const [profile, setProfile] = useState<ProfileLite>(emptyProfile);
+  const [avatarUrl, setAvatarUrl] = useState("");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [status, setStatus] = useState("");
 
   useEffect(() => {
-    if (!db || !session) {
+    const client = db;
+    if (!client || !session) {
       setLoading(false);
       return;
     }
     setLoading(true);
-    void db
+    void client
       .from("profiles")
-      .select("full_name,phone,instagram_handle")
+      .select("full_name,phone,instagram_handle,avatar_path")
       .eq("id", session.user.id)
       .single()
-      .then(({ data, error }) => {
+      .then(async ({ data, error }) => {
         setLoading(false);
         if (error || !data) {
           setStatus(error?.message || "Unable to load your private profile.");
           return;
         }
-        setProfile({
+        const nextProfile = {
           full_name: data.full_name || "",
           phone: data.phone || "",
           instagram_handle: data.instagram_handle || "",
-        });
+          avatar_path: data.avatar_path || "",
+        };
+        setProfile(nextProfile);
+        if (!nextProfile.avatar_path) {
+          setAvatarUrl("");
+          return;
+        }
+        const { data: signed, error: signedError } = await client.storage
+          .from("profile-avatars")
+          .createSignedUrl(nextProfile.avatar_path, 3600);
+        setAvatarUrl(signedError ? "" : signed?.signedUrl || "");
       });
   }, [session]);
 
@@ -68,6 +91,47 @@ export function GuardianProfileLite({ session }: { session: Session | null }) {
     setStatus(error ? error.message : "Private profile saved.");
   }
 
+  async function uploadAvatar(files: FileList | null) {
+    if (!db || !session || !files?.length || uploadingAvatar) return;
+    const file = files[0];
+    const extension = avatarTypes[file.type];
+    if (!extension || file.size > 5 * 1024 * 1024) {
+      setStatus("Use a JPEG, PNG, or WebP profile photo up to 5 MB.");
+      return;
+    }
+    setUploadingAvatar(true);
+    setStatus("Updating your profile photo…");
+    const path = `${session.user.id}/avatar.${extension}`;
+    const { error: uploadError } = await db.storage
+      .from("profile-avatars")
+      .upload(path, file, { cacheControl: "3600", upsert: true });
+    if (uploadError) {
+      setUploadingAvatar(false);
+      setStatus(uploadError.message);
+      return;
+    }
+    const { error: profileError } = await db
+      .from("profiles")
+      .update({ avatar_path: path })
+      .eq("id", session.user.id);
+    if (profileError) {
+      setUploadingAvatar(false);
+      setStatus(profileError.message);
+      return;
+    }
+    const { data: signed, error: signedError } = await db.storage
+      .from("profile-avatars")
+      .createSignedUrl(path, 3600);
+    setUploadingAvatar(false);
+    setProfile((current) => ({ ...current, avatar_path: path }));
+    setAvatarUrl(signedError ? "" : signed?.signedUrl || "");
+    setStatus(
+      signedError
+        ? "Profile photo saved. Refresh if the preview does not appear yet."
+        : "Profile photo updated.",
+    );
+  }
+
   return (
     <>
       <section className="panel" aria-labelledby="guardian-profile-heading">
@@ -81,6 +145,36 @@ export function GuardianProfileLite({ session }: { session: Session | null }) {
           <p role="status">Loading your profile…</p>
         ) : (
           <form className="detail" onSubmit={save}>
+            <div className="guardianProfileIdentity">
+              <div
+                className="guardianProfileAvatar"
+                aria-label="Guardian profile photo"
+              >
+                {avatarUrl ? (
+                  <img
+                    src={avatarUrl}
+                    alt={`${profile.full_name || "Guardian"} profile`}
+                  />
+                ) : (
+                  <UserRound aria-hidden="true" />
+                )}
+              </div>
+              <label className="guardianAvatarUpload">
+                <Camera aria-hidden="true" />
+                <span>
+                  {uploadingAvatar ? "Uploading…" : "Choose profile photo"}
+                </span>
+                <input
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+                  disabled={uploadingAvatar}
+                  onChange={(event) => void uploadAvatar(event.target.files)}
+                />
+              </label>
+              <small>
+                JPEG, PNG, or WebP up to 5 MB. Private to your account.
+              </small>
+            </div>
             <div className="fields">
               <label>
                 Full name

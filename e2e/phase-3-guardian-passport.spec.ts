@@ -9,6 +9,10 @@ const guardianB = {
   password: "Demo-only-Guardian-B!",
 };
 const petAId = "30000000-0000-0000-0000-000000000001";
+const avatarPng = Buffer.from(
+  "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAusB9Y9ZQ2sAAAAASUVORK5CYII=",
+  "base64",
+);
 
 async function signIn(page: Page, email: string, password: string) {
   await page.goto("/login");
@@ -24,7 +28,7 @@ async function signOut(page: Page) {
 }
 
 test.describe.serial("Phase 3 Guardian Passport foundation", () => {
-  test("Guardian private profile-lite persists and reloads", async ({
+  test("Guardian private profile-lite and avatar persist and reload", async ({
     page,
   }) => {
     await signIn(page, guardianA.email, guardianA.password);
@@ -45,6 +49,18 @@ test.describe.serial("Phase 3 Guardian Passport foundation", () => {
       "Private profile saved",
     );
 
+    await profilePanel.getByLabel("Choose profile photo").setInputFiles({
+      name: "guardian-avatar.png",
+      mimeType: "image/png",
+      buffer: avatarPng,
+    });
+    await expect(profilePanel.getByRole("status")).toContainText(
+      "Profile photo updated",
+    );
+    await expect(
+      profilePanel.getByRole("img", { name: "Guardian A Phase 3 profile" }),
+    ).toBeVisible();
+
     await page.reload();
     const reloadedProfilePanel = page
       .getByRole("heading", { name: "Your Guardian details" })
@@ -58,6 +74,11 @@ test.describe.serial("Phase 3 Guardian Passport foundation", () => {
     await expect(reloadedProfilePanel.getByLabel("Instagram")).toHaveValue(
       "@guardian_a_qa",
     );
+    await expect(
+      reloadedProfilePanel.getByRole("img", {
+        name: "Guardian A Phase 3 profile",
+      }),
+    ).toBeVisible();
   });
 
   test("primary Guardian edits and reloads Passport basics", async ({
