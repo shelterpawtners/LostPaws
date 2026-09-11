@@ -1,0 +1,180 @@
+from pathlib import Path
+
+path = Path("src/main.tsx")
+text = path.read_text()
+
+import_anchor = 'import { AdoptionVerificationResponder } from "./components/AdoptionVerificationResponder";\n'
+mission_import = 'import { RaveShelterMission } from "./components/RaveShelterMission";\n'
+if mission_import not in text:
+    if import_anchor not in text:
+        raise SystemExit("Issue 100 import anchor not found")
+    text = text.replace(import_anchor, import_anchor + mission_import, 1)
+
+old_home = '''      <section className="lostPawsFeature">
+        <div className="shell lostPawsFeatureCard">
+          <div>
+            <span className="eyebrow">
+              Featured this month · September 2026
+            </span>
+            <h2>
+              LostPaws is launching the RAVE Shelter mission in the music
+              community.
+            </h2>
+            <p className="lead">
+              LostPaws is our first public RAVE Shelter activation: a focused
+              way for ravers to discover useful festival-ready value and for
+              vendors to reach the community while helping bring more attention
+              and support to shelter pets and adoption.
+            </p>
+            <div className="actions">
+              <Link className="btn" to="/lostpaws">
+                Explore LostPaws <ArrowRight />
+              </Link>
+              <Link className="btn quiet" to="/rave">
+                Meet RAVE Shelter
+              </Link>
+            </div>
+            <small>
+              Independent community initiative. No festival affiliation or
+              endorsement is implied.
+            </small>
+          </div>
+          <aside className="lostPawsRoadmap" aria-label="RAVE Shelter roadmap">
+            <Music2 />
+            <span className="eyebrow">What comes next</span>
+            <h3>RAVE Shelter grows beyond this launch.</h3>
+            <p>
+              RAVE Shelter — the Rescue and Adoption Vendor Ecosystem — is being
+              built to connect ravers, vendors, shelters, and pet adoption
+              around useful offers and measurable community value. LostPaws is
+              the first activation; the broader initiative is targeted for
+              rollout at the end of 2026.
+            </p>
+            <Link to="/register?type=rave_vendor">
+              Vendors: join the ecosystem <ArrowRight />
+            </Link>
+          </aside>
+        </div>
+      </section>
+'''
+new_home = '''      <section className="lostPawsFeature">
+        <div className="shell lostPawsFeatureCard">
+          <div>
+            <span className="eyebrow">LostPaws × RAVE Shelter</span>
+            <h2>Music. Community. More resources for shelter pets.</h2>
+            <p className="lead">
+              LostPaws is the music-community activation of RAVE Shelter — the
+              Rescue and Adoption Vendor Ecosystem. Shop participating partners,
+              save on useful products and merch, and help turn everyday spending
+              into more support for shelter pets.
+            </p>
+            <div className="actions">
+              <Link className="btn" to="/rave">
+                See the RAVE Shelter mission <ArrowRight />
+              </Link>
+              <Link className="btn quiet" to="/marketplace?channel=rave">
+                Browse RAVE offers
+              </Link>
+            </div>
+            <small>
+              Independent community initiative. No festival affiliation or
+              endorsement is implied.
+            </small>
+          </div>
+          <aside className="lostPawsRoadmap" aria-label="How RAVE Shelter works">
+            <Music2 />
+            <span className="eyebrow">The simple idea</span>
+            <h3>Shop. Save. Help shelter pets.</h3>
+            <p>
+              Participating partners create useful value for the community while
+              supporting the shelter mission. Our giving roadmap also lets
+              Guardians pass eligible savings forward as those tools come online.
+            </p>
+            <Link to="/register?type=rave_vendor">
+              Vendors: join RAVE Shelter <ArrowRight />
+            </Link>
+          </aside>
+        </div>
+      </section>
+'''
+if old_home in text:
+    text = text.replace(old_home, new_home, 1)
+elif "See the RAVE Shelter mission" not in text:
+    raise SystemExit("Issue 100 home block did not match expected source")
+
+old_rave = '''function Rave() {
+  return (
+    <Page>
+      <section className="raveHero">
+        <div className="shell">
+          <picture>
+            <source
+              media="(prefers-reduced-motion: reduce)"
+              srcSet="/brand/rave-shelter-logo-static-v2.png"
+            />
+            <img
+              src="/brand/rave-shelter-logo-animated-v2.gif"
+              alt="RAVE Shelter"
+            />
+          </picture>
+          <span className="eyebrow">Rescue and Adoption Vendor Ecosystem</span>
+          <h1>
+            Deals for ravers.
+            <br />
+            <i>Support for shelter pets.</i>
+          </h1>
+          <p>
+            Festival-ready products and services from vendors joining a
+            community that wants its energy to mean something beyond the dance
+            floor.
+          </p>
+          <div className="actions">
+            <Link className="btn" to="/marketplace?channel=rave">
+              Find RAVE deals
+            </Link>
+            <Link className="btn quiet" to="/register?type=rave_vendor">
+              Join as a vendor
+            </Link>
+          </div>
+          <small>
+            Independent LostPaws initiative. No festival affiliation is implied.
+          </small>
+        </div>
+      </section>
+    </Page>
+  );
+}
+'''
+new_rave = '''function RaveMissionPage() {
+  return (
+    <Page>
+      <RaveShelterMission />
+    </Page>
+  );
+}
+'''
+if old_rave in text:
+    text = text.replace(old_rave, new_rave, 1)
+elif "function RaveMissionPage()" not in text:
+    raise SystemExit("Issue 100 RAVE component did not match expected source")
+
+lostpaws_foundation = '''  lostpaws: {
+    eyebrow: "LostPaws",
+    title: "Music community energy for shelter pets.",
+    copy: "An independent community activation connecting ravers and vendors with ShelterPawtners’ adoption mission.",
+  },
+'''
+text = text.replace(lostpaws_foundation, "", 1)
+
+route_replacements = {
+    '<Route path="/rave" element={<Rave />} />': '<Route path="/rave" element={<RaveMissionPage />} />',
+    '<Route path="/rave-shelter" element={<Rave />} />': '<Route path="/rave-shelter" element={<Navigate to="/rave" replace />} />',
+    '<Route path="/lostpaws" element={<FoundationPage name="lostpaws" />} />': '<Route path="/lostpaws" element={<RaveMissionPage />} />',
+}
+for old, new in route_replacements.items():
+    if old in text:
+        text = text.replace(old, new, 1)
+    elif new not in text:
+        raise SystemExit(f"Issue 100 route patch missing: {old}")
+
+path.write_text(text)
