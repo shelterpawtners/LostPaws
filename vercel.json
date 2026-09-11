@@ -4,5 +4,9 @@
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "ignoreCommand": "bash scripts/vercel-ignore-build.sh",
-  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
+  "rewrites": [
+    { "source": "/lostpaws", "destination": "/lostpaws.html" },
+    { "source": "/lostpaws/", "destination": "/lostpaws.html" },
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
 }

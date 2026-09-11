@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="LostPaws connects festival-goers with RAVE Shelter offers, vendors, Pet Passports, and shelter-supporting participation."
+    />
+    <meta name="theme-color" content="#050507" />
+    <title>LostPaws | RAVE Shelter by ShelterPawtners</title>
+    <style>
+      :root { color-scheme: dark; font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #050507; color: #fff; --cyan: #35e9ff; --pink: #ff46bb; --yellow: #ffe24a; --muted: #bdb7c6; --panel: #0d0c11; }
+      * { box-sizing: border-box; } html { scroll-behavior: smooth; } body { margin: 0; background: #050507; color: #fff; } a { color: inherit; } img { display: block; max-width: 100%; }
+      .skip { position: absolute; left: 1rem; top: -5rem; z-index: 20; padding: .7rem 1rem; background: #fff; color: #050507; } .skip:focus { top: 1rem; }
+      .topbar { position: sticky; top: 0; z-index: 10; display: flex; align-items: center; justify-content: center; gap: .25rem; padding: .55rem .75rem; background: rgba(5,5,7,.92); border-bottom: 1px solid rgba(255,255,255,.1); backdrop-filter: blur(12px); }
+      .topbar a { padding: .48rem .72rem; border-radius: 999px; text-decoration: none; font-size: .72rem; font-weight: 900; letter-spacing: .07em; text-transform: uppercase; color: #ddd7e4; } .topbar a:hover, .topbar a:focus-visible { background: #fff; color: #09090c; outline: none; }
+      .hero { position: relative; background: #030305; overflow: hidden; } .hero img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; } .hero::after { content: ""; position: absolute; inset: auto 0 0; height: 22%; pointer-events: none; background: linear-gradient(transparent, #050507); }
+      main { overflow: hidden; } .wrap { width: min(1120px, calc(100% - 2rem)); margin: 0 auto; } .intro { padding: 1.6rem 0 2.4rem; text-align: center; }
+      .kicker { margin: 0 0 .55rem; color: var(--cyan); font-size: .72rem; font-weight: 900; letter-spacing: .14em; text-transform: uppercase; } h1, h2, h3, p { margin-top: 0; }
+      h1 { margin: 0 auto .7rem; max-width: 760px; font-size: clamp(2rem, 5vw, 4.2rem); line-height: .95; letter-spacing: -.045em; text-transform: uppercase; } h1 span { color: var(--yellow); }
+      .lede { max-width: 660px; margin: 0 auto 1.35rem; color: var(--muted); font-size: clamp(.94rem, 1.6vw, 1.08rem); line-height: 1.45; }
+      .actions { display: flex; flex-wrap: wrap; justify-content: center; gap: .65rem; } .button { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: .72rem 1rem; border: 1px solid rgba(255,255,255,.24); border-radius: 4px; background: #fff; color: #050507; text-decoration: none; font-size: .8rem; font-weight: 900; letter-spacing: .06em; text-transform: uppercase; }
+      .button.alt { background: transparent; color: #fff; } .button.cyan { background: var(--cyan); border-color: var(--cyan); } .button.pink { background: var(--pink); border-color: var(--pink); color: #080409; } .button:focus-visible { outline: 3px solid var(--yellow); outline-offset: 3px; }
+      .chooser { padding: 2.6rem 0 3.3rem; border-top: 1px solid rgba(255,255,255,.1); background: radial-gradient(circle at 10% 20%, rgba(53,233,255,.09), transparent 30%), radial-gradient(circle at 90% 80%, rgba(255,70,187,.08), transparent 34%); }
+      .section-head { text-align: center; margin-bottom: 1.2rem; } .section-head h2 { margin: .25rem 0 .3rem; font-size: clamp(1.8rem, 4vw, 3.2rem); letter-spacing: -.035em; text-transform: uppercase; } .section-head p { margin: 0; color: var(--muted); font-size: .92rem; }
+      .grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: .8rem; } .card { min-height: 230px; padding: 1.25rem; border: 1px solid rgba(255,255,255,.13); border-radius: 8px; background: rgba(13,12,17,.9); display: flex; flex-direction: column; }
+      .card .tag { display: inline-block; align-self: flex-start; margin-bottom: .8rem; padding: .26rem .45rem; border: 1px solid currentColor; font-size: .64rem; font-weight: 900; letter-spacing: .1em; text-transform: uppercase; color: var(--cyan); } .card.vendor .tag { color: var(--pink); } .card.pet .tag { color: var(--yellow); }
+      .card h3 { margin: 0 0 .45rem; font-size: 1.45rem; line-height: 1.05; letter-spacing: -.025em; text-transform: uppercase; } .card p { margin: 0 0 1rem; color: var(--muted); font-size: .9rem; line-height: 1.45; } .card .button { margin-top: auto; align-self: flex-start; }
+      .strip { padding: 1.2rem 0; border-top: 1px solid rgba(255,255,255,.1); border-bottom: 1px solid rgba(255,255,255,.1); background: #0a090d; } .strip-inner { display: flex; align-items: center; justify-content: space-between; gap: 1rem; } .strip strong { font-size: .86rem; letter-spacing: .06em; text-transform: uppercase; } .strip span { color: var(--muted); font-size: .82rem; }
+      footer { padding: 1.5rem 0 2.5rem; color: #817b89; font-size: .74rem; line-height: 1.5; text-align: center; } footer p { margin: .25rem auto; max-width: 900px; }
+      @media (max-width: 760px) { .topbar { justify-content: flex-start; overflow-x: auto; } .topbar a { flex: 0 0 auto; } .wrap { width: min(100% - 1.2rem, 1120px); } .hero img { aspect-ratio: 16 / 9; object-fit: cover; } .intro { padding-top: 1rem; } .grid { grid-template-columns: 1fr; } .card { min-height: 0; } .strip-inner { align-items: flex-start; flex-direction: column; } }
+      @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+    </style>
+  </head>
+  <body>
+    <a class="skip" href="#main">Skip to main content</a>
+    <nav class="topbar" aria-label="LostPaws quick navigation"><a href="#ravers">Raver deals</a><a href="#vendors">Vendors</a><a href="#pet-passport">Pet Passport</a></nav>
+    <header class="hero" aria-label="LostPaws"><img src="/brand/lostpaws-hero-16x9.png" alt="LostPaws" width="1672" height="941" /></header>
+    <main id="main">
+      <section class="intro"><div class="wrap"><p class="kicker">RAVE Shelter · Rescue and Adoption Vendor Ecosystem</p><h1>Rave. Save. <span>Help shelter pets.</span></h1><p class="lede">Festival-friendly offers, local vendors, and a pet community built around adoption.</p><div class="actions"><a class="button cyan" href="/marketplace?channel=rave">Find deals</a><a class="button alt" href="/register?type=rave_vendor">Join as a vendor</a></div></div></section>
+      <section class="chooser" aria-labelledby="choose-path"><div class="wrap"><div class="section-head"><p class="kicker">Choose your path</p><h2 id="choose-path">What are you here for?</h2><p>Pick one. We’ll take you straight there.</p></div><div class="grid">
+        <article class="card" id="ravers"><span class="tag">For ravers</span><h3>Find festival deals</h3><p>Browse current RAVE Shelter offers from participating vendors.</p><a class="button cyan" href="/marketplace?channel=rave">Browse offers</a></article>
+        <article class="card vendor" id="vendors"><span class="tag">For vendors</span><h3>Get discovered</h3><p>Create a free profile, publish an offer, and reach the festival community.</p><a class="button pink" href="/register?type=rave_vendor">Join RAVE Shelter</a></article>
+        <article class="card pet" id="pet-passport"><span class="tag">For pet people</span><h3>Start a Pet Passport</h3><p>Join ShelterPawtners and build your pet’s digital profile and community.</p><a class="button" href="/register?type=guardian">Create account</a></article>
+      </div></div></section>
+      <section class="strip" aria-label="RAVE Shelter information"><div class="wrap strip-inner"><div><strong>RAVE Shelter by ShelterPawtners</strong><br /><span>Festival energy. Useful perks. A mission that lasts beyond the weekend.</span></div><a class="button alt" href="/rave">Learn more</a></div></section>
+    </main>
+    <footer><div class="wrap"><p><strong>LostPaws</strong> is an independent ShelterPawtners / RAVE Shelter initiative created by pet lovers in the festival community.</p><p>LostPaws and ShelterPawtners are not affiliated with, sponsored by, endorsed by, or an official program of Lost Lands, Excision, or their affiliates.</p></div></footer>
+  </body>
+</html>
