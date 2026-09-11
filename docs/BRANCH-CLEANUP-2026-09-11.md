@@ -18,12 +18,15 @@ Do not create another long-lived integration or release branch.
 ## Current confirmed state
 
 - GitHub default branch: `main`.
+- Current main head at this audit: `9507a76b9b8d102039ffa6c08253829415a48bf3`.
 - Issue #87 completed the functional reconciliation and established `main` as the sole release candidate.
 - No open pull requests remain at the time of this cleanup pass.
 - Recent launch-critical work has been merged to `main` through PRs #94, #95, #102, #104 and #106.
 - Historical branches must not be wholesale-merged merely because Git ancestry reports them as ahead/diverged; several were squash-merged or superseded.
 
-## Recent merged branches confirmed safe to retire
+## Confirmed retirement candidates
+
+Recent merged/superseded work:
 
 - `issue-56-password-recovery-readiness` — merged via PR #94.
 - `issue-56-support-delivery-runtime` — merged via PR #95.
@@ -33,24 +36,29 @@ Do not create another long-lived integration or release branch.
 - `fix/issue-96-canonical-lostpaws` — superseded by Issue #100 / PR #102.
 - `issue-58-lostpaws` — superseded by Issue #100 / PR #102.
 
-## Safe-delete candidates already documented by Issue #87
-
-These branches were explicitly found to contain no unique accepted product delta relative to `main` or to be obsolete release branches:
+Branches explicitly found by Issue #87 to have no unique accepted product delta or to be obsolete release branches:
 
 - `build/festival-mvp`
 - `launch/pre-cutover-readiness`
 - `phase3/auth-email-readiness`
 - `phase3/shelter-verification`
 
-## Review-before-delete candidates
+Previously review-only branches now resolved:
 
-Do not delete or merge these wholesale until final tree/functionality review:
+- `ux/guardian-marketplace-launch-polish` — only one historical docs file is ahead; no product code. Current product/docs direction is represented on `main` and in Issue #53/current controller docs. Safe to retire.
+- `phase3/meta-social-login` — historical `.env`/feature-flag/config/docs prep only. Current Facebook source readiness was implemented and accepted independently on `main` through PR #106, with Google base-aware routing through PR #104. Safe to retire; do not merge the old branch.
+- `phase3/marketplace-polish` — historical branch remains 11 commits ahead by ancestry but is 164 commits behind current `main`. Its Marketplace files are an earlier implementation: current `main` already contains the premium Marketplace layer and adds newer grid/list view state plus `marketplace-launch-density.css`. Safe to retire; do not merge the old branch.
 
-- `phase3/marketplace-polish` — historical branch head `6bc6af76f340604916e392173eb9b40ffbbc7987`; Issue #87 reported ancestry ahead even though accepted Marketplace functionality exists on `main`.
-- `phase3/meta-social-login` — historical provider-gated candidate work; current Facebook source readiness was implemented independently on `main` via PR #106.
-- `ux/guardian-marketplace-launch-polish` — historical docs-only commit ahead at the time of Issue #87.
+## Remaining historical branches
 
-If a genuinely missing accepted MVP delta is found, create a fresh branch from current `main` and port only that delta. Never merge the historical branch wholesale.
+All other old feature/fix/QA/docs branches should be treated as historical refs, not alternate sources of truth. Before deleting a batch, verify either:
+
+- associated PR was merged;
+- issue/work was superseded;
+- branch is fully behind `main`; or
+- current `main` contains the accepted functionality through a later implementation.
+
+If a genuinely missing accepted MVP delta is ever found, create a fresh branch from current `main` and port only that delta. Never merge a historical branch wholesale.
 
 ## Protection correction required
 
