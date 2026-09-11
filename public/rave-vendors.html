@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Join RAVE Shelter as a festival or community vendor. Create a free profile, publish a current offer, and become discoverable through the ShelterPawtners Marketplace."
+    />
+    <meta name="theme-color" content="#08050f" />
+    <title>Join RAVE Shelter | Vendors</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        font-family:
+          Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+          "Segoe UI", sans-serif;
+        background: #08050f;
+        color: #fffaf9;
+      }
+      * { box-sizing: border-box; }
+      body { margin: 0; background: #08050f; color: #fffaf9; }
+      a { color: inherit; }
+      img { max-width: 100%; display: block; }
+      .skip {
+        position: absolute;
+        left: 1rem;
+        top: -5rem;
+        z-index: 20;
+        background: white;
+        color: #08050f;
+        padding: .75rem 1rem;
+      }
+      .skip:focus { top: 1rem; }
+      .wrap { width: min(1120px, calc(100% - 2rem)); margin: 0 auto; }
+      .hero {
+        min-height: 78vh;
+        display: grid;
+        align-items: center;
+        padding: 3rem 0 5rem;
+        background:
+          radial-gradient(circle at 10% 20%, rgba(34, 229, 255, .17), transparent 34%),
+          radial-gradient(circle at 88% 35%, rgba(255, 50, 177, .16), transparent 35%),
+          linear-gradient(180deg, #0b0713, #08050f);
+      }
+      .brand {
+        width: min(390px, 76vw);
+        margin-bottom: 2rem;
+      }
+      .eyebrow {
+        display: inline-block;
+        color: #72edff;
+        text-transform: uppercase;
+        letter-spacing: .15em;
+        font-size: .8rem;
+        font-weight: 850;
+      }
+      h1 {
+        max-width: 960px;
+        margin: .9rem 0 1.2rem;
+        font-size: clamp(3.25rem, 8.5vw, 7.5rem);
+        line-height: .9;
+        letter-spacing: -.06em;
+      }
+      h1 span { color: #ffd339; }
+      .lede {
+        max-width: 760px;
+        color: #d8d2df;
+        font-size: clamp(1.08rem, 2.1vw, 1.42rem);
+        line-height: 1.6;
+      }
+      .actions { display: flex; flex-wrap: wrap; gap: .75rem; margin-top: 2rem; }
+      .button {
+        min-height: 50px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: .9rem 1.2rem;
+        border-radius: 999px;
+        border: 1px solid rgba(255,255,255,.22);
+        background: #fffaf9;
+        color: #08050f;
+        text-decoration: none;
+        font-weight: 850;
+      }
+      .button.alt { background: transparent; color: #fff; }
+      .button:focus-visible { outline: 3px solid #25e6ff; outline-offset: 3px; }
+      .section { padding: clamp(4rem, 8vw, 7rem) 0; }
+      .section h2 {
+        max-width: 800px;
+        margin: .7rem 0 2rem;
+        font-size: clamp(2.6rem, 5.8vw, 5.4rem);
+        line-height: .95;
+        letter-spacing: -.05em;
+      }
+      .steps {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 1rem;
+      }
+      .card {
+        border-radius: 26px;
+        border: 1px solid rgba(255,255,255,.14);
+        padding: 1.6rem;
+        background: linear-gradient(145deg, rgba(255,255,255,.07), rgba(255,255,255,.018));
+      }
+      .count {
+        width: 2.15rem;
+        height: 2.15rem;
+        display: grid;
+        place-items: center;
+        border-radius: 50%;
+        background: rgba(114,237,255,.12);
+        color: #72edff;
+        font-weight: 900;
+      }
+      .card h3 { margin: 1.3rem 0 .65rem; font-size: 1.45rem; }
+      .card p, .truth p { color: #d5cfdb; line-height: 1.6; }
+      .truth {
+        background:
+          linear-gradient(135deg, rgba(255, 211, 57, .075), transparent 48%),
+          #0e0a17;
+      }
+      .truth-grid {
+        display: grid;
+        grid-template-columns: .8fr 1.2fr;
+        gap: 2rem;
+        align-items: start;
+      }
+      .truth ul { margin: 0; padding-left: 1.2rem; color: #d5cfdb; }
+      .truth li { margin-bottom: .8rem; line-height: 1.55; }
+      .conversion {
+        text-align: center;
+        padding: clamp(4rem, 9vw, 8rem) 0;
+      }
+      .conversion h2 { margin-left: auto; margin-right: auto; }
+      .conversion p { max-width: 620px; margin: 0 auto; color: #d5cfdb; line-height: 1.6; }
+      .conversion .actions { justify-content: center; }
+      footer {
+        padding: 2.5rem 0 4rem;
+        border-top: 1px solid rgba(255,255,255,.11);
+        color: #aaa3b4;
+        font-size: .9rem;
+        line-height: 1.6;
+      }
+      footer strong { color: white; }
+      @media (max-width: 760px) {
+        .wrap { width: min(100% - 1.25rem, 1120px); }
+        .hero { min-height: auto; padding-top: 2rem; }
+        .steps, .truth-grid { grid-template-columns: 1fr; }
+        h1 { font-size: clamp(3rem, 15vw, 5.2rem); }
+      }
+    </style>
+  </head>
+  <body>
+    <a class="skip" href="#main">Skip to main content</a>
+    <main id="main">
+      <section class="hero">
+        <div class="wrap">
+          <picture>
+            <source
+              media="(prefers-reduced-motion: reduce)"
+              srcset="/brand/rave-shelter-logo-static-v2.png"
+            />
+            <img
+              class="brand"
+              src="/brand/rave-shelter-logo-animated-v2.gif"
+              alt="RAVE Shelter"
+            />
+          </picture>
+          <span class="eyebrow">Rescue and Adoption Vendor Ecosystem</span>
+          <h1>Bring a deal. Meet the community. <span>Help shelter pets.</span></h1>
+          <p class="lede">
+            Create a free RAVE Shelter vendor profile, publish a current offer,
+            and become discoverable through the ShelterPawtners Marketplace.
+            Keep your offer clear, current, and useful to the community.
+          </p>
+          <div class="actions">
+            <a class="button" href="/register?type=rave_vendor">Join RAVE Shelter for the festival</a>
+            <a class="button alt" href="/marketplace?channel=rave">See current RAVE deals</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" aria-labelledby="how-it-works">
+        <div class="wrap">
+          <span class="eyebrow">Fast setup</span>
+          <h2 id="how-it-works">Three steps from vendor to visible.</h2>
+          <div class="steps">
+            <article class="card">
+              <span class="count">1</span>
+              <h3>Create your vendor profile</h3>
+              <p>Start with the business and contact details needed for a usable RAVE Shelter presence.</p>
+            </article>
+            <article class="card">
+              <span class="count">2</span>
+              <h3>Add an offer</h3>
+              <p>Publish a current deal with straightforward eligibility, timing, and provider-controlled terms.</p>
+            </article>
+            <article class="card">
+              <span class="count">3</span>
+              <h3>Get discovered</h3>
+              <p>Appear through supported RAVE Shelter and Marketplace surfaces and use supported redemption tracking.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section truth" aria-labelledby="participation">
+        <div class="wrap truth-grid">
+          <div>
+            <span class="eyebrow">Participation expectations</span>
+            <h2 id="participation">Clear offers. Clear relationship.</h2>
+          </div>
+          <div>
+            <ul>
+              <li>Your offer should be truthful, current, and written so a customer can understand the terms before claiming it.</li>
+              <li>You control your offer terms; ShelterPawtners does not promise guaranteed traffic, sales, or festival placement.</li>
+              <li>RAVE Shelter participation does not mean official festival sponsorship, endorsement, or affiliation.</li>
+              <li>Listings that are misleading, unsupported, or no longer current may be withheld or removed under platform rules.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section class="conversion">
+        <div class="wrap">
+          <span class="eyebrow">Ready when you are</span>
+          <h2>Join the RAVE Shelter vendor network.</h2>
+          <p>Free MVP signup. No paid placement is required to create your vendor profile and begin the current onboarding flow.</p>
+          <div class="actions">
+            <a class="button" href="/register?type=rave_vendor">Join RAVE Shelter for the festival</a>
+            <a class="button alt" href="mailto:petbiz@shelterpawtners.com">PetBiz questions</a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div class="wrap">
+        <p><strong>RAVE Shelter</strong> is part of ShelterPawtners and is independently operated.</p>
+        <p>RAVE Shelter and ShelterPawtners are not affiliated with, sponsored by, endorsed by, or official programs of Lost Lands, Excision, or their affiliates.</p>
+      </div>
+    </footer>
+  </body>
+</html>
