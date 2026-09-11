@@ -8,15 +8,15 @@ Phase 2 — Partner Marketplace MVP is **complete**.
 
 Lost Lands MVP LL-1 through LL-6 are **accepted** and must not be reopened without regression evidence.
 
-**Current state: launch readiness with active Guardian UX / Support OS follow-up plus external provider acceptance gates.**
+**Current state: launch readiness with active Support OS follow-up plus external provider acceptance gates.**
 
 Production web-domain cutover and Phase 3 remain explicitly owner-gated.
 
-Current `main` SHA: `cfe94db48b5b80435adb9f78e413a208971d6f83`.
+Current application code baseline before docs reconciliation: `cfe94db48b5b80435adb9f78e413a208971d6f83`.
 
 ## Accepted launch-readiness engineering
 
-The authoritative detailed history remains in `docs/AI-HANDOFF.md`. Current accepted post-MVP work includes:
+The authoritative detailed history remains in `docs/AI-HANDOFF.md` and the relevant GitHub issues/PRs. Current accepted post-MVP work includes:
 
 - Pet Passport multi-photo/activity improvements.
 - Guardian Deal Moments.
@@ -30,7 +30,9 @@ The authoritative detailed history remains in `docs/AI-HANDOFF.md`. Current acce
 - launch legal-review checklist; draft Terms/Privacy remain unapproved and must not be published as final.
 - current frontend-core dependency update from PR #21; all repository gates passed before merge.
 
-Do not reopen accepted slices without evidence of a regression.
+Issue #53 is **closed/completed** in GitHub. Do not reopen or extend it without regression evidence or a new explicit follow-up issue.
+
+Do not reopen any other accepted slice without evidence of a regression.
 
 ## Auth/email status
 
@@ -45,17 +47,6 @@ Completed hosted prerequisites:
 
 Do not redo Resend/domain/SMTP/Guardian-confirmation work without regression evidence.
 
-## Active Issue #53 — Guardian launch UX
-
-Next safe order:
-
-1. Surface the existing private Guardian avatar in the account menu without duplicating profile/storage state.
-2. Replace generic pet-card iconography with existing primary pet media where available while preserving private signed-media semantics.
-3. Continue compact, photo-forward Guardian dashboard / Pet Passport density with mobile-first coverage.
-4. Add bounded first-use/settings guidance only after the photo-forward shell remains green.
-
-Do not introduce Figma as a prerequisite and do not make role management prominent on the ordinary Guardian surface.
-
 ## Active Issue #56 — Support OS
 
 Supabase remains the operational source of truth. Raw support content/PII must never auto-mirror to GitHub.
@@ -67,15 +58,16 @@ Current safe follow-up:
 3. Keep privacy/P0/P1 cases human-gated; never auto-close or auto-fix them.
 4. Optional screenshot/storage support remains later and requires explicit privacy/storage controls.
 
-Live shared-dev preflight on 2026-09-11 found neither `pg_cron` nor `pg_net` currently enabled. Do not assume scheduled delivery exists. Any scheduler introduction must be repository-backed, tested and least-privilege rather than an ad-hoc production-only change.
+Live shared-dev preflight on 2026-09-11 found neither `pg_cron` nor `pg_net` currently enabled. Do not assume scheduled delivery exists. Any scheduler introduction must be repository-backed, tested and least-privilege rather than an ad-hoc shared-dev-only change.
 
 ## Hosted/Vercel state
 
 - `main` remains the Vercel Production Branch.
 - newest visible Vercel deployment is a READY PR #21 preview for commit `69d292b0ec6046029e6192d2aeefc996a91157c4`.
-- current merged `main` is `cfe94db48b5b80435adb9f78e413a208971d6f83`.
+- merged application baseline is `cfe94db48b5b80435adb9f78e413a208971d6f83`.
 - latest visible READY **production-target** deployment remains older (`8606424b7a655c68b9e25737eb063db7ad86af7e`).
 - recent `main` production attempts were skipped/canceled by the configured Ignored Build Step; production freshness remains a launch-readiness item, not a reason to purchase an upgrade.
+- the current READY preview returns HTTP 200 for `/lostpaws` and `/rave-vendors`.
 - final `shelterpawtners.com` custom-domain/DNS cutover remains owner-gated.
 
 ## Remaining external launch gate
@@ -93,11 +85,11 @@ Current connected tooling does not expose hosted Google/Meta provider configurat
 
 ## Current next sequence
 
-1. Continue Issue #53 photo-forward Guardian UX using existing private avatar/pet media state.
-2. Continue Issue #56 only with privacy-safe bounded scheduling/delivery and aging/escalation regression.
-3. Reconcile Vercel production freshness and obtain a current READY hosted candidate without purchasing/upgrading or performing final domain cutover.
-4. Re-check password-recovery/Google/Meta provider tooling each run and act immediately if an authorized prerequisite becomes actionable.
-5. Keep legal publication, Phase 3 and final production-domain cutover owner-gated.
+1. Continue Issue #56 only with privacy-safe bounded scheduling/delivery and aging/escalation regression.
+2. Reconcile Vercel production freshness and obtain a current READY hosted candidate without purchasing/upgrading or performing final domain cutover.
+3. Re-check password-recovery/Google/Meta provider tooling each run and act immediately if an authorized prerequisite becomes actionable.
+4. Keep legal publication, Phase 3 and final production-domain cutover owner-gated.
+5. If additional Guardian photo-forward UX is desired after completed Issue #53, create a new explicit follow-up issue rather than silently reopening #53.
 
 ## Guardrails still in force
 
