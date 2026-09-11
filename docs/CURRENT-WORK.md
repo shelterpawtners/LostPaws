@@ -8,9 +8,11 @@ Phase 2 — Partner Marketplace MVP is **complete**.
 
 Lost Lands MVP LL-1 through LL-6 are **accepted** and must not be reopened without regression evidence.
 
-**Current state: launch readiness with accepted launch-UX changes awaiting the free-tier Vercel deployment window, one remaining Support OS delivery-runtime gap, and external provider acceptance gates.**
+**Current state: one reconciled MVP release candidate on `main`, with final GitHub Pages public and authenticated Guardian acceptance green, one remaining Support OS delivery-runtime gap, and external provider acceptance gates.**
 
-Current accepted frontend/source baseline: `fbb5a02e081d4bd634034a9fadd8bb17c3744e4a` (PR #81).
+Issue #87 reconciliation completed on `main` at `53978542abae1e40b253e79cc82dcc2354b08406`. Historical branches were classified by functionality/tree state rather than ancestry; no accepted product feature required a wholesale historical merge. See `docs/MVP-RECONCILIATION.md`.
+
+Current accepted frontend/source baseline: `53978542abae1e40b253e79cc82dcc2354b08406` (PR #91, following Issue #87 matrix PRs #88 and #90).
 
 Current deployed frontend baseline: `5bf64450a598fa19126fc9069632dea2d3cf4601` (PR #78), READY on Vercel production. PR #81 is not hosted yet because Vercel Hobby reported `Deployment rate limited — retry in 24 hours.`
 
@@ -30,6 +32,7 @@ Recent accepted work includes:
 - PR #78: photo-first Guardian Passport + compact Passport cards; all six required gates passed; merged at `5bf64450a598fa19126fc9069632dea2d3cf4601`.
 - PR #79: private provider-neutral support delivery contract plus cross-day aging/escalation regression; all six required gates passed; merged at `1443d7138d923033bb4e9c20ab8971a49647eefb`.
 - PR #81 / Issue #80: launch navigation cleanup + homepage LostPaws/RAVE Shelter feature; authenticated Dashboard/Account/Help/Sign out controls moved into the global header, LostPaws and RAVE Shelter added to primary navigation, and the home page now features the September 2026 LostPaws activation with the broader end-of-2026 RAVE Shelter roadmap. All required PR gates passed; merged at `fbb5a02e081d4bd634034a9fadd8bb17c3744e4a`.
+- PRs #88, #90, and #91: final GitHub Pages public and authenticated Guardian acceptance matrices, including mobile navigation behavior; all required gates and the post-merge live matrices passed.
 - launch legal-review checklist; draft Terms/Privacy remain unapproved and must not be published as final.
 
 Issue #53 remains **closed/completed**. PR #78 was a separate owner-directed follow-up and does not reopen that issue.
