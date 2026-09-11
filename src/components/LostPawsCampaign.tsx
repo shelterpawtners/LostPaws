@@ -44,7 +44,9 @@ export function LostPawsCampaign() {
             <article className="lpCard">
               <span className="lpTag">For ravers</span>
               <h3>Find festival deals</h3>
-              <p>Browse current RAVE Shelter offers from participating vendors.</p>
+              <p>
+                Browse current RAVE Shelter offers from participating vendors.
+              </p>
               <Link className="lpButton lpCyan" to="/marketplace?channel=rave">
                 Browse offers
               </Link>
