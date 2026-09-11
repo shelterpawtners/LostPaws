@@ -1,0 +1,41 @@
+name: Issue 99 apply OAuth base-aware patch
+
+on:
+  push:
+    branches:
+      - fix/issue-99-oauth-base-aware
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/issue-99-oauth-base-aware
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Apply focused source patch
+        run: python scripts/issue99_integrate.py
+      - name: Install dependencies
+        run: npm ci
+      - name: Check source
+        run: npm run check
+      - name: Build app
+        run: npm run build
+      - name: Commit integrated source
+        run: |
+          if git diff --quiet; then
+            echo "No source changes to commit."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/main.tsx
+          git commit -m "Issue #99: wire base-aware Google OAuth returns"
+          git push origin HEAD:fix/issue-99-oauth-base-aware
