@@ -12,7 +12,7 @@ Lost Lands MVP LL-1 through LL-6 are **accepted** and must not be reopened witho
 
 Production web-domain cutover and Phase 3 remain explicitly owner-gated.
 
-Current application code baseline before docs reconciliation: `cfe94db48b5b80435adb9f78e413a208971d6f83`.
+Current accepted application baseline: `54628c2b5ab831d203ffc8413920b4431e78b979`.
 
 ## Accepted launch-readiness engineering
 
@@ -27,6 +27,7 @@ The authoritative detailed history remains in `docs/AI-HANDOFF.md` and the relev
 - Guardian pet-contact correction.
 - compact Guardian account/avatar menu with Help & feedback reuse.
 - private Guardian profile avatar upload/persistence.
+- Support OS release-context capture via PR #77: Help & feedback submissions now populate the existing `support_tickets.app_release` field from the deployed build commit identifier.
 - launch legal-review checklist; draft Terms/Privacy remain unapproved and must not be published as final.
 - current frontend-core dependency update from PR #21; all repository gates passed before merge.
 
@@ -42,7 +43,7 @@ Completed hosted prerequisites:
 - `auth.shelterpawtners.com` transactional-email-only DNS is verified.
 - Microsoft 365 inbound/human-mail DNS remains intentionally unchanged.
 - Supabase custom SMTP is enabled with `ShelterPawtners <noreply@auth.shelterpawtners.com>`.
-- Supabase Site URL targets the hosted QA application.
+- Supabase Site URL targets the hosted application.
 - real Guardian signup/confirmation through Supabase + Resend was accepted.
 
 Do not redo Resend/domain/SMTP/Guardian-confirmation work without regression evidence.
@@ -51,23 +52,31 @@ Do not redo Resend/domain/SMTP/Guardian-confirmation work without regression evi
 
 Supabase remains the operational source of truth. Raw support content/PII must never auto-mirror to GitHub.
 
+Completed through PR #77:
+
+1. authenticated Help & feedback intake/status under RLS;
+2. privacy-safe duplicate, aging, triage, classification and owner-digest views;
+3. bounded human-escalation policy with no autonomous closure/fix behavior;
+4. release/version context now captured in the existing `app_release` field for new support reports.
+
 Current safe follow-up:
 
-1. Add bounded scheduling/delivery for the already-private classification/digest outputs.
+1. Add repository-backed, least-privilege scheduling/delivery for the already-private classification/digest outputs.
 2. Add regression for cross-day aging persistence and escalation behavior.
 3. Keep privacy/P0/P1 cases human-gated; never auto-close or auto-fix them.
 4. Optional screenshot/storage support remains later and requires explicit privacy/storage controls.
 
-Live shared-dev preflight on 2026-09-11 found neither `pg_cron` nor `pg_net` currently enabled. Do not assume scheduled delivery exists. Any scheduler introduction must be repository-backed, tested and least-privilege rather than an ad-hoc shared-dev-only change.
+Live shared-dev preflight on 2026-09-11 found neither `pg_cron` nor `pg_net` currently enabled and no existing support-digest Edge Function to reuse. Do not assume scheduled delivery exists. Any scheduler introduction must be repository-backed, generated through the normal migration workflow, tested and least-privilege rather than an ad-hoc shared-dev-only change.
 
 ## Hosted/Vercel state
 
 - `main` remains the Vercel Production Branch.
-- newest visible Vercel deployment is a READY PR #21 preview for commit `69d292b0ec6046029e6192d2aeefc996a91157c4`.
-- merged application baseline is `cfe94db48b5b80435adb9f78e413a208971d6f83`.
-- latest visible READY **production-target** deployment remains older (`8606424b7a655c68b9e25737eb063db7ad86af7e`).
-- recent `main` production attempts were skipped/canceled by the configured Ignored Build Step; production freshness remains a launch-readiness item, not a reason to purchase an upgrade.
-- the current READY preview returns HTTP 200 for `/lostpaws` and `/rave-vendors`.
+- PR #77 passed all six required repository gates and squash-merged at `54628c2b5ab831d203ffc8413920b4431e78b979`.
+- Vercel production deployment `dpl_79DAvPwJRAsycmdxBJVWzLLAK8Fd` is READY for that exact merge SHA.
+- `lost-paws-one.vercel.app` now points to the current accepted production deployment.
+- hosted checks on the current production alias return HTTP 200 for `/lostpaws` and `/rave-vendors`.
+- Vercel reports no runtime errors in the last 24 hours.
+- the prior production-freshness gap is therefore resolved; later docs-only `main` commits may still be intentionally skipped by the Ignored Build Step.
 - final `shelterpawtners.com` custom-domain/DNS cutover remains owner-gated.
 
 ## Remaining external launch gate
@@ -81,12 +90,12 @@ Live shared-dev preflight on 2026-09-11 found neither `pg_cron` nor `pg_net` cur
 7. Present draft Terms/Privacy and owner checklist for owner/legal review; do not publish as final without approval.
 8. Prepare but do not perform final production web-domain/custom-domain cutover without separate authorization.
 
-Current connected tooling does not expose hosted Google/Meta provider configuration. Meta phone/provider interaction must not block independent repository, database, QA or launch-readiness work.
+Current connected Supabase tooling still does not expose hosted Google/Meta provider configuration. A fresh plugin search on 2026-09-11 did not surface a usable Meta/Facebook, Google OAuth, Resend or DNS/domain-management provider plugin. Meta phone/provider interaction must not block independent repository, database, QA or launch-readiness work.
 
 ## Current next sequence
 
-1. Continue Issue #56 only with privacy-safe bounded scheduling/delivery and aging/escalation regression.
-2. Reconcile Vercel production freshness and obtain a current READY hosted candidate without purchasing/upgrading or performing final domain cutover.
+1. Continue Issue #56 only with repository-backed, privacy-safe scheduling/delivery and cross-day aging/escalation regression. Do not improvise shared-dev-only scheduler DDL.
+2. Use the current READY production candidate for integrated desktop/mobile/browser acceptance when an executable browser-capable surface is available.
 3. Re-check password-recovery/Google/Meta provider tooling each run and act immediately if an authorized prerequisite becomes actionable.
 4. Keep legal publication, Phase 3 and final production-domain cutover owner-gated.
 5. If additional Guardian photo-forward UX is desired after completed Issue #53, create a new explicit follow-up issue rather than silently reopening #53.
