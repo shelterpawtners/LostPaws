@@ -193,7 +193,7 @@ jobs:
         run: npx playwright test e2e/hosted-design-qa.spec.ts
       - name: Upload hosted design QA evidence
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: hosted-design-qa-evidence
           path: test-results/
@@ -214,7 +214,7 @@ jobs:
           npx playwright test e2e/phase-1-accessibility.spec.ts e2e/phase-1-auth.spec.ts e2e/guardian-dashboard.spec.ts e2e/persona-access-isolation.spec.ts e2e/persona-registration.spec.ts e2e/phase-2-partner-onboarding.spec.ts e2e/phase-2-offer-redemption.spec.ts
       - name: Upload Playwright failure evidence
         if: failure()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: hosted-playwright-results
           path: test-results/
