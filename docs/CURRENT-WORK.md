@@ -90,9 +90,9 @@ Shared-dev verification remains valid:
 
 Remaining #56 work:
 
-1. Implement the actual repository-backed, least-privilege scheduler/delivery worker only when a supported runtime plus approved owner-alert transport credential/destination and hosted secret path are available.
-2. Consume only the accepted privacy-minimized delivery contract; do not transport raw ticket content/PII.
-3. Do not enable `pg_cron`/`pg_net` ad hoc or create a shared-dev-only scheduler outside repository review/tests.
+1. A reviewed dormant delivery runtime is ready in source: a private idempotency/retry ledger, service-role-only claim/complete interfaces, server-only Edge Function, and manually dispatched GitHub runner. It consumes only the accepted privacy-minimized contract.
+2. It transports no raw ticket content, reporter identity, AI payload, or ticket ID. Human escalation remains mandatory for privacy/safety, P0/P1, and `human_review_required` cases; it cannot change ticket state, close a case, fix a problem, or implement a suggestion.
+3. The exact remaining external blocker is an approved owner-alert webhook destination with idempotency support, plus managed `SUPPORT_DELIVERY_WEBHOOK_URL` and `SUPPORT_DELIVERY_INVOKE_SECRET` values and reviewed hosted deployment. Its server-to-server invocation uses that dedicated secret rather than a browser/user JWT. Do not enable `pg_cron`/`pg_net` ad hoc.
 4. Optional screenshot/storage support remains later and requires explicit privacy/storage controls.
 
 ## Hosted runtime state

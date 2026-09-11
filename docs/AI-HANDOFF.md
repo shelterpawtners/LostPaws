@@ -120,10 +120,11 @@ Verified shared-dev state:
 
 Remaining #56 focus:
 
-1. Implement the actual repository-backed, least-privilege scheduler/delivery worker only when a supported runtime plus approved owner-alert transport credential/destination and hosted secret-management path are available.
-2. Consume only `private.support_delivery_candidates`; never transport raw ticket content/PII.
-3. Do not enable `pg_cron`/`pg_net` ad hoc or create a shared-dev-only scheduler outside repository review/tests.
-4. Optional screenshot/storage support remains later and requires explicit privacy/storage controls.
+1. The repository now contains a reviewed, dormant delivery runtime: a private idempotency/retry ledger, service-role-only bounded claim/complete RPCs, a server-only Edge Function, and a manually dispatched GitHub runner. It consumes only `private.support_delivery_candidates` and logs only aggregate operational metadata.
+2. It never transports raw ticket content, reporter identity, AI payloads, or ticket IDs to the configured destination. The destination receives only the minimized owner-review cue and must honor its `Idempotency-Key` header.
+3. Privacy/safety, P0, P1, and any `human_review_required` case remain explicit human-review cues. The worker cannot close tickets, update ticket state, auto-fix, or implement suggestions.
+4. The worker is intentionally not deployed or scheduled yet. The exact external blocker is an approved owner-alert webhook destination that supports idempotency, plus managed `SUPPORT_DELIVERY_WEBHOOK_URL` and `SUPPORT_DELIVERY_INVOKE_SECRET` values and the reviewed hosted deployment. Its server-to-server invocation uses that dedicated secret rather than a browser/user JWT. Do not enable `pg_cron`/`pg_net` ad hoc.
+5. Optional screenshot/storage support remains later and requires explicit privacy/storage controls.
 
 ## Hosted runtime state
 
