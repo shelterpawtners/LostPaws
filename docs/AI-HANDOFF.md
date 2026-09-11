@@ -6,7 +6,7 @@ CURRENT_CHECKPOINT: Guardian launch UX + password-recovery/provider acceptance
 NEXT_CHECKPOINT: Google OAuth, Facebook auth, integrated browser/mobile acceptance, owner legal review, cutover prep
 OWNER_DECISION_REQUIRED: YES_FOR_PROVIDER_CONSOLES_AND_FINAL_CUTOVER_ONLY
 SAFE_TO_CONTINUE: YES
-ACCEPTED_CODE_SHA: 8606424b7a655c68b9e25737eb063db7ad86af7e
+ACCEPTED_CODE_SHA: 8147d35fed4f8ac63ad71346152b1daaf7c85f0f
 ACCEPTANCE_RUNTIME: REPOSITORY_GATES_GREEN; VERCEL_DAILY_FREE_TIER_LIMIT_FOR_NEW_DEPLOYS
 
 ## Completed engineering
@@ -74,8 +74,8 @@ Completed:
 Active order:
 
 1. Guardian pet-contact correction — PR #69 passed all six required gates and squash-merged at `8606424b7a655c68b9e25737eb063db7ad86af7e`. Guardian Pet Basics no longer renders pet-level contact email/social fields; the save RPC, authenticated account email, and organization-contact inputs remain unchanged.
-2. PR #70 is in progress for the compact Guardian shell/account menu. It reuses `HelpFeedback` as the primary Support entry and adds targeted regression coverage; all required gates must be green before merge.
-3. Photo-forward Guardian dashboard / Pet Passport density.
+2. Compact Guardian shell/account menu — PR #70 passed CI, Hosted QA, Persona QA, Database QA, Dependency Review and Merge Gate, then squash-merged at `8147d35fed4f8ac63ad71346152b1daaf7c85f0f`. It provides an avatar/account control and a primary Help & feedback entry by reusing the existing Support OS component; no duplicate support data path was created.
+3. Photo-forward Guardian dashboard / Pet Passport density is the next focused product slice.
 
 GitHub Copilot cloud-agent execution is blocked by insufficient GitHub AI Credits. Do not repeatedly retry it. The Work handoff remains `docs/prompts/ISSUE-53-GUARDIAN-PET-CONTACT-WORK.md`.
 
@@ -126,8 +126,8 @@ Never purchase/upgrade paid services, make destructive production-data changes, 
 
 ## Next safe action
 
-1. Complete PR #70 for the compact Guardian avatar/account-menu shell and reuse `HelpFeedback` as the primary Support entry only after all gates are green.
-2. Continue photo-forward Guardian dashboard / Pet Passport density in a focused follow-up PR.
+1. Continue photo-forward Guardian dashboard / Pet Passport density in a focused follow-up PR, retaining mobile-first behavior and existing Passport/Deal Moments/RLS coverage.
+2. Re-check Vercel capacity, then perform integrated hosted desktop/mobile acceptance for `/lostpaws`, `/rave-vendors`, Guardian onboarding, Marketplace, Passport, shelter verification and the new account-menu Help & feedback path. Do not purchase an upgrade.
 3. Continue Issue #56 classification/digest automation only if it can be implemented without unsafe whole-file rewrites or raw PII exposure.
 4. Re-check Vercel availability each run; after capacity resets, perform hosted desktop/mobile visual acceptance for `/lostpaws`, `/rave-vendors` and final golden paths without purchasing an upgrade.
 5. Re-check password-recovery/Google/Meta provider tooling each run and act immediately if an authorized prerequisite becomes actionable.
