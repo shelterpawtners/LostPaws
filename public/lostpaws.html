@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="LostPaws connects the festival community with RAVE Shelter vendors, pet-friendly savings, and shelter-supporting participation."
+    />
+    <meta name="theme-color" content="#090511" />
+    <title>LostPaws | RAVE Shelter by ShelterPawtners</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        font-family:
+          Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+          "Segoe UI", sans-serif;
+        background: #090511;
+        color: #fffaf9;
+      }
+      * { box-sizing: border-box; }
+      html { scroll-behavior: smooth; }
+      body { margin: 0; background: #090511; color: #fffaf9; }
+      a { color: inherit; }
+      img { display: block; max-width: 100%; }
+      .skip {
+        position: absolute;
+        left: 1rem;
+        top: -5rem;
+        padding: .75rem 1rem;
+        background: white;
+        color: #090511;
+        z-index: 10;
+      }
+      .skip:focus { top: 1rem; }
+      .hero {
+        position: relative;
+        min-height: min(56.25vw, 900px);
+        background: #05020a;
+        overflow: hidden;
+      }
+      .hero img {
+        width: 100%;
+        aspect-ratio: 16 / 9;
+        object-fit: cover;
+      }
+      .hero-fallback {
+        position: absolute;
+        inset: 0;
+        z-index: -1;
+        background:
+          radial-gradient(circle at 15% 20%, rgba(31, 236, 255, .2), transparent 30%),
+          radial-gradient(circle at 85% 45%, rgba(255, 42, 177, .2), transparent 35%),
+          #05020a;
+      }
+      main { overflow: hidden; }
+      .wrap { width: min(1180px, calc(100% - 2rem)); margin: 0 auto; }
+      .intro {
+        padding: clamp(3.5rem, 8vw, 7rem) 0;
+        position: relative;
+      }
+      .intro::before,
+      .paths::before {
+        content: "";
+        position: absolute;
+        left: 50%;
+        width: 120vw;
+        height: 1px;
+        transform: translateX(-50%) rotate(-1deg);
+        background: linear-gradient(90deg, transparent, #25e6ff, #ff3eb5, #ffd233, transparent);
+        opacity: .7;
+      }
+      .eyebrow {
+        display: inline-flex;
+        gap: .5rem;
+        align-items: center;
+        font-size: .82rem;
+        font-weight: 800;
+        letter-spacing: .14em;
+        text-transform: uppercase;
+        color: #7ceeff;
+      }
+      h1, h2, h3, p { margin-top: 0; }
+      h1 {
+        max-width: 920px;
+        margin: 1rem 0 1.25rem;
+        font-size: clamp(3rem, 8vw, 7rem);
+        line-height: .92;
+        letter-spacing: -.055em;
+      }
+      h1 span { color: #ffd233; }
+      .lede {
+        max-width: 760px;
+        font-size: clamp(1.1rem, 2.2vw, 1.45rem);
+        line-height: 1.55;
+        color: #d8d2df;
+      }
+      .actions { display: flex; flex-wrap: wrap; gap: .8rem; margin-top: 2rem; }
+      .button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 50px;
+        padding: .9rem 1.2rem;
+        border: 1px solid rgba(255,255,255,.22);
+        border-radius: 999px;
+        font-weight: 800;
+        text-decoration: none;
+        background: #fffaf9;
+        color: #090511;
+      }
+      .button.alt { background: transparent; color: white; }
+      .button:focus-visible { outline: 3px solid #25e6ff; outline-offset: 3px; }
+      .paths { position: relative; padding: clamp(4rem, 8vw, 7rem) 0; }
+      .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+      .path {
+        position: relative;
+        min-height: 340px;
+        padding: clamp(1.5rem, 4vw, 2.5rem);
+        border: 1px solid rgba(255,255,255,.15);
+        border-radius: 28px;
+        background: linear-gradient(145deg, rgba(255,255,255,.085), rgba(255,255,255,.025));
+        overflow: hidden;
+      }
+      .path::after {
+        content: "";
+        position: absolute;
+        width: 180px;
+        height: 180px;
+        right: -55px;
+        bottom: -55px;
+        border-radius: 50%;
+        background: rgba(37,230,255,.11);
+        filter: blur(2px);
+      }
+      .path.vendor::after { background: rgba(255,62,181,.13); }
+      .path h2 { margin: .6rem 0 1rem; font-size: clamp(2.2rem, 4vw, 4rem); letter-spacing: -.04em; }
+      .steps { display: grid; gap: .6rem; margin: 1.5rem 0 2rem; color: #d8d2df; }
+      .step { display: flex; gap: .7rem; align-items: flex-start; }
+      .num {
+        flex: 0 0 1.8rem;
+        height: 1.8rem;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        background: rgba(255,255,255,.1);
+        color: #fff;
+        font-weight: 800;
+        font-size: .8rem;
+      }
+      .impact {
+        padding: clamp(4rem, 8vw, 7rem) 0;
+        background:
+          linear-gradient(130deg, rgba(37,230,255,.08), transparent 45%),
+          linear-gradient(310deg, rgba(255,62,181,.08), transparent 45%);
+      }
+      .impact-grid { display: grid; grid-template-columns: .8fr 1.2fr; gap: 2rem; align-items: start; }
+      .impact h2 { font-size: clamp(2.4rem, 5vw, 5rem); line-height: .98; letter-spacing: -.045em; }
+      .impact p { color: #d8d2df; font-size: 1.08rem; line-height: 1.65; }
+      footer {
+        border-top: 1px solid rgba(255,255,255,.12);
+        padding: 2.5rem 0 4rem;
+        color: #aaa3b4;
+        font-size: .9rem;
+        line-height: 1.6;
+      }
+      footer strong { color: #fff; }
+      @media (max-width: 760px) {
+        .wrap { width: min(100% - 1.25rem, 1180px); }
+        .grid, .impact-grid { grid-template-columns: 1fr; }
+        .hero { min-height: auto; }
+        .path { min-height: 0; }
+        h1 { font-size: clamp(2.8rem, 15vw, 5rem); }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        html { scroll-behavior: auto; }
+      }
+    </style>
+  </head>
+  <body>
+    <a class="skip" href="#main">Skip to main content</a>
+    <header class="hero" aria-label="LostPaws">
+      <div class="hero-fallback" aria-hidden="true"></div>
+      <img
+        src="/brand/lostpaws-hero-16x9.png"
+        alt="LostPaws"
+        width="1536"
+        height="864"
+      />
+    </header>
+
+    <main id="main">
+      <section class="intro">
+        <div class="wrap">
+          <span class="eyebrow">RAVE Shelter · Rescue and Adoption Vendor Ecosystem</span>
+          <h1>Rave. Save. <span>Help shelter pets.</span></h1>
+          <p class="lede">
+            LostPaws brings the festival community into the RAVE Shelter network:
+            discover useful offers from participating vendors, support a mission
+            built around shelter adoption, and keep the connection going after the festival.
+          </p>
+          <div class="actions">
+            <a class="button" href="/marketplace?channel=rave">Explore RAVE offers</a>
+            <a class="button alt" href="/register?type=rave_vendor">Join as a vendor</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="paths" aria-labelledby="choose-path">
+        <div class="wrap">
+          <span class="eyebrow">Choose your path</span>
+          <h2 id="choose-path" style="font-size:clamp(2.5rem,6vw,5.5rem);letter-spacing:-.045em;margin:.7rem 0 2rem;">One scene. Two ways in.</h2>
+          <div class="grid">
+            <article class="path">
+              <span class="eyebrow">For ravers</span>
+              <h2>Find something worth claiming.</h2>
+              <div class="steps">
+                <div class="step"><span class="num">1</span><span>Browse current RAVE Shelter offers and participating vendors.</span></div>
+                <div class="step"><span class="num">2</span><span>Review each provider’s current terms before you claim.</span></div>
+                <div class="step"><span class="num">3</span><span>Join ShelterPawtners when you want a Pet Passport and the broader pet community.</span></div>
+              </div>
+              <a class="button" href="/marketplace?channel=rave">Browse offers</a>
+            </article>
+            <article class="path vendor">
+              <span class="eyebrow">For vendors</span>
+              <h2>Show up for the crowd and the mission.</h2>
+              <div class="steps">
+                <div class="step"><span class="num">1</span><span>Create a free RAVE Shelter vendor profile.</span></div>
+                <div class="step"><span class="num">2</span><span>Publish a festival-relevant offer with clear terms.</span></div>
+                <div class="step"><span class="num">3</span><span>Build discovery inside a network designed to support shelter pets.</span></div>
+              </div>
+              <a class="button" href="/register?type=rave_vendor">Join RAVE Shelter for the festival</a>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="impact">
+        <div class="wrap impact-grid">
+          <div>
+            <span class="eyebrow">Beyond the weekend</span>
+            <h2>Festival energy with a longer tail.</h2>
+          </div>
+          <div>
+            <p>
+              ShelterPawtners is building a Digital Pet Passport, practical savings,
+              and a community around shelter adoption. LostPaws is a festival-facing
+              doorway into that mission—not an official festival program.
+            </p>
+            <div class="actions">
+              <a class="button alt" href="/register?type=guardian">Create a Pet Guardian account</a>
+              <a class="button alt" href="/rave">Learn about RAVE Shelter</a>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div class="wrap">
+        <p><strong>LostPaws</strong> is an independent ShelterPawtners / RAVE Shelter initiative created by pet lovers in the festival community.</p>
+        <p>LostPaws and ShelterPawtners are not affiliated with, sponsored by, endorsed by, or an official program of Lost Lands, Excision, or their affiliates.</p>
+      </div>
+    </footer>
+  </body>
+</html>
