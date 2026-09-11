@@ -132,7 +132,12 @@ function Header() {
   const [o, setO] = useState(false);
   const { session } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
   useEffect(() => setO(false), [location.pathname, location.search]);
+  async function signOut() {
+    navigate("/", { replace: true });
+    await db?.auth.signOut();
+  }
   return (
     <header>
       <div className="shell head">
@@ -155,12 +160,23 @@ function Header() {
           aria-label="Primary navigation"
         >
           <Link to="/marketplace">Marketplace</Link>
+          <Link to="/lostpaws">LostPaws</Link>
           <Link to="/rave">RAVE Shelter</Link>
-          <Link to="/register">Join</Link>
+          {!session && <Link to="/register">Join</Link>}
           {session && <AdminQaNavLink />}
-          <Link className="btn quiet" to={session ? "/dashboard" : "/login"}>
-            {session ? "My dashboard" : "Sign in"}
-          </Link>
+          {session ? (
+            <>
+              <Link to="/dashboard">My dashboard</Link>
+              <GuardianAccountMenu session={session} />
+              <button className="navSignOut" type="button" onClick={signOut}>
+                Sign out
+              </button>
+            </>
+          ) : (
+            <Link className="btn quiet" to="/login">
+              Sign in
+            </Link>
+          )}
         </nav>
       </div>
     </header>
@@ -257,6 +273,52 @@ function Home() {
               story.
             </p>
           </div>
+        </div>
+      </section>
+      <section className="lostPawsFeature">
+        <div className="shell lostPawsFeatureCard">
+          <div>
+            <span className="eyebrow">
+              Featured this month · September 2026
+            </span>
+            <h2>
+              LostPaws is launching the RAVE Shelter mission in the music
+              community.
+            </h2>
+            <p className="lead">
+              LostPaws is our first public RAVE Shelter activation: a focused
+              way for ravers to discover useful festival-ready value and for
+              vendors to reach the community while helping bring more attention
+              and support to shelter pets and adoption.
+            </p>
+            <div className="actions">
+              <Link className="btn" to="/lostpaws">
+                Explore LostPaws <ArrowRight />
+              </Link>
+              <Link className="btn quiet" to="/rave">
+                Meet RAVE Shelter
+              </Link>
+            </div>
+            <small>
+              Independent community initiative. No festival affiliation or
+              endorsement is implied.
+            </small>
+          </div>
+          <aside className="lostPawsRoadmap" aria-label="RAVE Shelter roadmap">
+            <Music2 />
+            <span className="eyebrow">What comes next</span>
+            <h3>RAVE Shelter grows beyond this launch.</h3>
+            <p>
+              RAVE Shelter — the Rescue and Adoption Vendor Ecosystem — is being
+              built to connect ravers, vendors, shelters, and pet adoption
+              around useful offers and measurable community value. LostPaws is
+              the first activation; the broader initiative is targeted for
+              rollout at the end of 2026.
+            </p>
+            <Link to="/register?type=rave_vendor">
+              Vendors: join the ecosystem <ArrowRight />
+            </Link>
+          </aside>
         </div>
       </section>
       <section className="section shell">
@@ -1636,23 +1698,17 @@ type GuardianPet = {
   breed: string | null;
   adopted_self_reported: boolean | null;
 };
-function GuardianAccountMenu({
-  session,
-  onSignOut,
-}: {
-  session: Session | null;
-  onSignOut: () => void;
-}) {
+function GuardianAccountMenu({ session }: { session: Session | null }) {
   const [showHelp, setShowHelp] = useState(false);
   const name =
     session?.user.user_metadata.full_name ||
     session?.user.email?.split("@")[0] ||
-    "Guardian";
-  const initial = name.trim().charAt(0).toUpperCase() || "G";
+    "Member";
+  const initial = name.trim().charAt(0).toUpperCase() || "S";
 
   return (
     <details className="guardianAccountMenu">
-      <summary aria-label="Open Guardian account menu">
+      <summary aria-label="Open account menu">
         <span className="guardianAvatar" aria-hidden="true">
           {initial}
         </span>
@@ -1661,16 +1717,13 @@ function GuardianAccountMenu({
       <div className="guardianAccountPanel">
         <div>
           <b>{name}</b>
-          <p>Guardian account</p>
+          <p>ShelterPawtners account</p>
         </div>
-        <a href="#guardian-profile-heading">Guardian profile</a>
+        <Link to="/dashboard">My dashboard</Link>
         <button type="button" onClick={() => setShowHelp(true)}>
           Help &amp; feedback
         </button>
         {showHelp && <HelpFeedback session={session} initiallyOpen />}
-        <button className="accountSignOut" type="button" onClick={onSignOut}>
-          Sign out
-        </button>
       </div>
     </details>
   );
@@ -1733,10 +1786,6 @@ function Dashboard() {
     switchRole(role);
     navigate(`/onboarding/${kind}`);
   }
-  async function signOut() {
-    navigate("/", { replace: true });
-    await db?.auth.signOut();
-  }
   const active = (activeRole || "guardian") as UserRole;
   const kind: Kind | "platform_admin" = active.startsWith("shelter")
     ? "shelter"
@@ -1761,18 +1810,6 @@ function Dashboard() {
               information stay the same.
             </p>
           </div>
-          {kind === "guardian" ? (
-            <div className="dashboardAccountActions">
-              <GuardianAccountMenu session={session} onSignOut={signOut} />
-              <button className="btn quiet" onClick={signOut}>
-                Sign out
-              </button>
-            </div>
-          ) : (
-            <button className="btn quiet" onClick={signOut}>
-              Sign out
-            </button>
-          )}
         </div>
       </section>
       <section className="section shell dashboardGrid">
