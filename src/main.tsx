@@ -64,6 +64,7 @@ import { GuardianProfileLite } from "./components/GuardianProfileLite";
 import { GuardianPetPassport } from "./components/GuardianPetPassport";
 import { HelpFeedback } from "./components/HelpFeedback";
 import { AdoptionVerificationResponder } from "./components/AdoptionVerificationResponder";
+import { RaveShelterMission } from "./components/RaveShelterMission";
 import {
   AdminQaMode,
   AdminQaNavLink,
@@ -315,25 +316,20 @@ function Home() {
       <section className="lostPawsFeature">
         <div className="shell lostPawsFeatureCard">
           <div>
-            <span className="eyebrow">
-              Featured this month · September 2026
-            </span>
-            <h2>
-              LostPaws is launching the RAVE Shelter mission in the music
-              community.
-            </h2>
+            <span className="eyebrow">LostPaws × RAVE Shelter</span>
+            <h2>Music. Community. More resources for shelter pets.</h2>
             <p className="lead">
-              LostPaws is our first public RAVE Shelter activation: a focused
-              way for ravers to discover useful festival-ready value and for
-              vendors to reach the community while helping bring more attention
-              and support to shelter pets and adoption.
+              LostPaws is the music-community activation of RAVE Shelter — the
+              Rescue and Adoption Vendor Ecosystem. Shop participating partners,
+              save on useful products and merch, and help turn everyday spending
+              into more support for shelter pets.
             </p>
             <div className="actions">
-              <Link className="btn" to="/lostpaws">
-                Explore LostPaws <ArrowRight />
+              <Link className="btn" to="/rave">
+                See the RAVE Shelter mission <ArrowRight />
               </Link>
-              <Link className="btn quiet" to="/rave">
-                Meet RAVE Shelter
+              <Link className="btn quiet" to="/marketplace?channel=rave">
+                Browse RAVE offers
               </Link>
             </div>
             <small>
@@ -341,19 +337,21 @@ function Home() {
               endorsement is implied.
             </small>
           </div>
-          <aside className="lostPawsRoadmap" aria-label="RAVE Shelter roadmap">
+          <aside
+            className="lostPawsRoadmap"
+            aria-label="How RAVE Shelter works"
+          >
             <Music2 />
-            <span className="eyebrow">What comes next</span>
-            <h3>RAVE Shelter grows beyond this launch.</h3>
+            <span className="eyebrow">The simple idea</span>
+            <h3>Shop. Save. Help shelter pets.</h3>
             <p>
-              RAVE Shelter — the Rescue and Adoption Vendor Ecosystem — is being
-              built to connect ravers, vendors, shelters, and pet adoption
-              around useful offers and measurable community value. LostPaws is
-              the first activation; the broader initiative is targeted for
-              rollout at the end of 2026.
+              Participating partners create useful value for the community while
+              supporting the shelter mission. Our giving roadmap also lets
+              Guardians pass eligible savings forward as those tools come
+              online.
             </p>
             <Link to="/register?type=rave_vendor">
-              Vendors: join the ecosystem <ArrowRight />
+              Vendors: join RAVE Shelter <ArrowRight />
             </Link>
           </aside>
         </div>
@@ -419,45 +417,10 @@ function Offers() {
     </div>
   );
 }
-function Rave() {
+function RaveMissionPage() {
   return (
     <Page>
-      <section className="raveHero">
-        <div className="shell">
-          <picture>
-            <source
-              media="(prefers-reduced-motion: reduce)"
-              srcSet="/brand/rave-shelter-logo-static-v2.png"
-            />
-            <img
-              src="/brand/rave-shelter-logo-animated-v2.gif"
-              alt="RAVE Shelter"
-            />
-          </picture>
-          <span className="eyebrow">Rescue and Adoption Vendor Ecosystem</span>
-          <h1>
-            Deals for ravers.
-            <br />
-            <i>Support for shelter pets.</i>
-          </h1>
-          <p>
-            Festival-ready products and services from vendors joining a
-            community that wants its energy to mean something beyond the dance
-            floor.
-          </p>
-          <div className="actions">
-            <Link className="btn" to="/marketplace?channel=rave">
-              Find RAVE deals
-            </Link>
-            <Link className="btn quiet" to="/register?type=rave_vendor">
-              Join as a vendor
-            </Link>
-          </div>
-          <small>
-            Independent LostPaws initiative. No festival affiliation is implied.
-          </small>
-        </div>
-      </section>
+      <RaveShelterMission />
     </Page>
   );
 }
@@ -1472,11 +1435,6 @@ const publicFoundations: Record<
     title: "Help each adoption carry trusted history forward.",
     copy: "ShelterPawtners is free for shelters. The foundation supports adoption confirmation, report cards, transfers, and future imports.",
   },
-  lostpaws: {
-    eyebrow: "LostPaws",
-    title: "Music community energy for shelter pets.",
-    copy: "An independent community activation connecting ravers and vendors with ShelterPawtners’ adoption mission.",
-  },
   about: {
     eyebrow: "Care. Savings. Community.",
     title: "Built to support the full life after adoption.",
@@ -2010,8 +1968,8 @@ function App() {
   return (
     <Routes>
       <Route path="/" element={<Home />} />
-      <Route path="/rave" element={<Rave />} />
-      <Route path="/rave-shelter" element={<Rave />} />
+      <Route path="/rave" element={<RaveMissionPage />} />
+      <Route path="/rave-shelter" element={<Navigate to="/rave" replace />} />
       <Route path="/passport" element={<FoundationPage name="passport" />} />
       <Route path="/partners" element={<FoundationPage name="partners" />} />
       <Route
@@ -2023,7 +1981,7 @@ function App() {
         }
       />
       <Route path="/shelters" element={<FoundationPage name="shelters" />} />
-      <Route path="/lostpaws" element={<FoundationPage name="lostpaws" />} />
+      <Route path="/lostpaws" element={<RaveMissionPage />} />
       <Route path="/about" element={<FoundationPage name="about" />} />
       <Route path="/register" element={<Register />} />
       <Route
