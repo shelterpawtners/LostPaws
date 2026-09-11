@@ -39,6 +39,17 @@ jobs:
           GITHUB_PAGES: "true"
         run: npm run build
 
+      - name: Verify compiled artifact
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -q '/LostPaws/assets/.*\.js' dist/index.html
+          grep -q '/LostPaws/assets/.*\.css' dist/index.html
+          if grep -q '/src/main.tsx' dist/index.html; then
+            echo 'ERROR: dist/index.html still references source TypeScript.' >&2
+            exit 1
+          fi
+
       - name: Add SPA fallback
         run: cp dist/index.html dist/404.html
 
@@ -62,3 +73,58 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
+  verify-live:
+    name: Verify live Pages site
+    runs-on: ubuntu-latest
+    needs: deploy
+    steps:
+      - name: Verify compiled app is publicly served
+        shell: bash
+        env:
+          SITE_URL: https://shelterpawtners.github.io/LostPaws/
+        run: |
+          set -euo pipefail
+          cache_bust="${GITHUB_SHA}-${GITHUB_RUN_ATTEMPT}"
+          html=""
+
+          # Pages/CDN can take a short period to expose the just-deployed release.
+          for attempt in {1..12}; do
+            html="$(curl -fsSL --retry 2 --retry-delay 2 "${SITE_URL}?release=${cache_bust}" || true)"
+            if printf '%s' "$html" | grep -q '/LostPaws/assets/.*\.js' && \
+               printf '%s' "$html" | grep -q '/LostPaws/assets/.*\.css'; then
+              break
+            fi
+            echo "Pages release not visible yet (attempt ${attempt}/12)."
+            sleep 5
+          done
+
+          printf '%s' "$html" > /tmp/live-index.html
+          echo 'Live index asset references:'
+          grep -oE '/LostPaws/assets/[^" ]+' /tmp/live-index.html || true
+
+          if grep -q '/src/main.tsx' /tmp/live-index.html; then
+            echo 'ERROR: GitHub Pages is serving the raw repository index.html instead of the compiled artifact.' >&2
+            exit 1
+          fi
+
+          js_path="$(grep -oE '/LostPaws/assets/[^" ]+\.js' /tmp/live-index.html | head -1)"
+          css_path="$(grep -oE '/LostPaws/assets/[^" ]+\.css' /tmp/live-index.html | head -1)"
+
+          if [[ -z "$js_path" || -z "$css_path" ]]; then
+            echo 'ERROR: Live page does not reference the compiled JS and CSS assets.' >&2
+            cat /tmp/live-index.html >&2
+            exit 1
+          fi
+
+          curl -fsSI "https://shelterpawtners.github.io${js_path}?release=${cache_bust}" | head -20
+          curl -fsSI "https://shelterpawtners.github.io${css_path}?release=${cache_bust}" | head -20
+          curl -fsSL "https://shelterpawtners.github.io${js_path}?release=${cache_bust}" -o /tmp/app.js
+          curl -fsSL "https://shelterpawtners.github.io${css_path}?release=${cache_bust}" -o /tmp/app.css
+
+          test -s /tmp/app.js
+          test -s /tmp/app.css
+          grep -q 'basename:`/LostPaws`' /tmp/app.js
+          grep -q '\.skip' /tmp/app.css
+
+          echo 'GitHub Pages live acceptance passed: compiled app, router base, JS, and CSS are publicly available.'
