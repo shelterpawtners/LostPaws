@@ -1,6 +1,6 @@
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(12);
+select plan(14);
 
 set local role authenticated;
 select set_config('request.jwt.claim.sub','10000000-0000-0000-0000-000000000003',true);
@@ -52,17 +52,30 @@ select ok(
   ) select bool_and(public.complete_support_delivery_candidate(delivery_id, lease_token, false, 'transport_timeout')) from claimed),
   'a safe failed delivery releases its lease for retry'
 );
+
+create temporary table retry_claim on commit drop as
+select * from public.claim_support_delivery_candidates(25, 60)
+where reference_code = (select reference_code from public.support_tickets where subject = 'Runtime retry delivery');
+
 select ok(
-  exists (select 1 from public.claim_support_delivery_candidates(25, 60)
-    where reference_code = (select reference_code from public.support_tickets where subject = 'Runtime retry delivery')),
+  exists (select 1 from retry_claim),
   'a failed delivery can be claimed again without creating a second ledger row'
 );
+select is(
+  (select count(*)::bigint
+    from private.support_delivery_attempts
+    where ticket_id = (select id from public.support_tickets where subject = 'Runtime retry delivery')),
+  1::bigint,
+  'retry claims reuse the existing delivery ledger row'
+);
+select is(
+  (select public.complete_support_delivery_candidate(delivery_id, gen_random_uuid(), true, null) from retry_claim limit 1),
+  false,
+  'a mismatched lease token cannot complete a delivery'
+);
 select ok(
-  (with claimed as (
-    select * from public.claim_support_delivery_candidates(25, 60)
-    where reference_code = (select reference_code from public.support_tickets where subject = 'Runtime retry delivery')
-  ) select bool_and(public.complete_support_delivery_candidate(delivery_id, lease_token, true, null)) from claimed),
-  'a successful delivery completes only with its matching lease token'
+  (select bool_and(public.complete_support_delivery_candidate(delivery_id, lease_token, true, null)) from retry_claim),
+  'a successful delivery completes with its matching lease token'
 );
 select is(
   (select count(*)::bigint from public.claim_support_delivery_candidates(25, 60)
