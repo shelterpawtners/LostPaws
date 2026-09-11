@@ -53,8 +53,12 @@ jobs:
           set -euo pipefail
           grep -q '/LostPaws/assets/.*\.js' dist/index.html
           grep -q '/LostPaws/assets/.*\.css' dist/index.html
-          if grep -RIl '/brand/' dist | xargs -r grep -nE '(^|["'"'(=: ])/brand/'; then
-            echo 'ERROR: project Pages artifact still contains root-relative brand assets.' >&2
+          if grep -RIl '/brand/' dist | xargs -r grep -Fn '"/brand/'; then
+            echo 'ERROR: project Pages artifact still contains double-quoted root-relative brand assets.' >&2
+            exit 1
+          fi
+          if grep -RIl '/brand/' dist | xargs -r grep -Fn "'/brand/"; then
+            echo 'ERROR: project Pages artifact still contains single-quoted root-relative brand assets.' >&2
             exit 1
           fi
           if grep -q '/src/main.tsx' dist/index.html; then
