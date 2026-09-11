@@ -48,8 +48,14 @@ function browserFamily() {
   return "other";
 }
 
-export function HelpFeedback({ session }: { session: Session | null }) {
-  const [open, setOpen] = useState(false);
+export function HelpFeedback({
+  session,
+  initiallyOpen = false,
+}: {
+  session: Session | null;
+  initiallyOpen?: boolean;
+}) {
+  const [open, setOpen] = useState(initiallyOpen);
   const [category, setCategory] = useState<SupportCategory>("bug");
   const [subject, setSubject] = useState("");
   const [description, setDescription] = useState("");

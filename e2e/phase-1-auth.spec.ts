@@ -74,6 +74,25 @@ test.describe("Phase 1 authenticated and protected routes", () => {
     await expect(page).toHaveURL(/\/login$/);
   });
 
+  test("Guardian account menu makes Help & feedback a primary entry", async ({
+    page,
+  }) => {
+    await signIn(page, "guardian-a@example.invalid", "Demo-only-Guardian-A!");
+    const accountMenu = page.locator(".guardianAccountMenu");
+
+    await accountMenu.locator("summary").click();
+    await expect(
+      accountMenu.getByRole("button", { name: "Help & feedback" }),
+    ).toBeVisible();
+    await accountMenu.getByRole("button", { name: "Help & feedback" }).click();
+    await expect(
+      accountMenu.getByRole("heading", { name: "Help & feedback" }),
+    ).toBeVisible();
+    await expect(
+      accountMenu.getByRole("button", { name: "Close help form" }),
+    ).toBeVisible();
+  });
+
   test("denies a guardian access to another guardian's pet through RLS", async ({
     page,
   }) => {

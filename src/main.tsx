@@ -57,6 +57,7 @@ import { OfferMarketplace } from "./components/OfferMarketplace";
 import { RedemptionFlow } from "./components/RedemptionFlow";
 import { GuardianProfileLite } from "./components/GuardianProfileLite";
 import { GuardianPetPassport } from "./components/GuardianPetPassport";
+import { HelpFeedback } from "./components/HelpFeedback";
 import { AdoptionVerificationResponder } from "./components/AdoptionVerificationResponder";
 import {
   AdminQaMode,
@@ -1635,6 +1636,45 @@ type GuardianPet = {
   breed: string | null;
   adopted_self_reported: boolean | null;
 };
+function GuardianAccountMenu({
+  session,
+  onSignOut,
+}: {
+  session: Session | null;
+  onSignOut: () => void;
+}) {
+  const [showHelp, setShowHelp] = useState(false);
+  const name =
+    session?.user.user_metadata.full_name ||
+    session?.user.email?.split("@")[0] ||
+    "Guardian";
+  const initial = name.trim().charAt(0).toUpperCase() || "G";
+
+  return (
+    <details className="guardianAccountMenu">
+      <summary aria-label="Open Guardian account menu">
+        <span className="guardianAvatar" aria-hidden="true">
+          {initial}
+        </span>
+        <span>Account</span>
+      </summary>
+      <div className="guardianAccountPanel">
+        <div>
+          <b>{name}</b>
+          <p>Guardian account</p>
+        </div>
+        <a href="#guardian-profile-heading">Guardian profile</a>
+        <button type="button" onClick={() => setShowHelp(true)}>
+          Help &amp; feedback
+        </button>
+        {showHelp && <HelpFeedback session={session} initiallyOpen />}
+        <button className="accountSignOut" type="button" onClick={onSignOut}>
+          Sign out
+        </button>
+      </div>
+    </details>
+  );
+}
 function Dashboard() {
   const { session } = useAuth();
   const [roles, setRoles] = useState<string[]>([]);
@@ -1721,9 +1761,18 @@ function Dashboard() {
               information stay the same.
             </p>
           </div>
-          <button className="btn quiet" onClick={signOut}>
-            Sign out
-          </button>
+          {kind === "guardian" ? (
+            <div className="dashboardAccountActions">
+              <GuardianAccountMenu session={session} onSignOut={signOut} />
+              <button className="btn quiet" onClick={signOut}>
+                Sign out
+              </button>
+            </div>
+          ) : (
+            <button className="btn quiet" onClick={signOut}>
+              Sign out
+            </button>
+          )}
         </div>
       </section>
       <section className="section shell dashboardGrid">
