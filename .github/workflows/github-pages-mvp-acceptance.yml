@@ -1,0 +1,115 @@
+name: GitHub Pages MVP Acceptance
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - ".github/workflows/github-pages-mvp-acceptance.yml"
+      - ".github/workflows/github-pages-staging.yml"
+      - "src/**"
+      - "public/**"
+      - "index.html"
+      - "vite.config.ts"
+      - "package.json"
+      - "package-lock.json"
+  workflow_run:
+    workflows: ["GitHub Pages Staging"]
+    types: [completed]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pages-mvp-acceptance-${{ github.event.pull_request.number || github.event.workflow_run.head_sha || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  public-release-matrix:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Exercise live GitHub Pages release candidate
+        shell: bash
+        env:
+          SITE_URL: https://shelterpawtners.github.io/LostPaws
+        run: |
+          set -euo pipefail
+          node --input-type=module <<'EOF'
+          import { chromium } from '@playwright/test';
+
+          const browser = await chromium.launch({ headless: true });
+          const viewports = [
+            { name: 'mobile', width: 390, height: 844 },
+            { name: 'tablet', width: 768, height: 1024 },
+            { name: 'desktop', width: 1440, height: 1000 },
+          ];
+          const appRoutes = [
+            '/', '/lostpaws', '/passport', '/marketplace', '/register', '/login',
+            '/forgot-password', '/reset-password',
+          ];
+
+          for (const viewport of viewports) {
+            const page = await browser.newPage({ viewport });
+            for (const route of appRoutes) {
+              const pageErrors = [];
+              const failedResponses = [];
+              const onPageError = error => pageErrors.push(error.message);
+              const onResponse = response => {
+                if (response.status() >= 500) failedResponses.push(`${response.status()} ${response.url()}`);
+              };
+              page.on('pageerror', onPageError);
+              page.on('response', onResponse);
+              const response = await page.goto(`${process.env.SITE_URL}${route}`, { waitUntil: 'networkidle' });
+              if (!response || response.status() >= 500) {
+                throw new Error(`${viewport.name} ${route}: navigation failed with ${response?.status()}`);
+              }
+              await page.locator('#main').waitFor({ state: 'visible', timeout: 15000 });
+              await page.locator('h1, h2').filter({ visible: true }).first().waitFor({ state: 'visible', timeout: 15000 });
+              const hasHorizontalOverflow = await page.evaluate(
+                () => document.documentElement.scrollWidth > document.documentElement.clientWidth + 1,
+              );
+              if (hasHorizontalOverflow) throw new Error(`${viewport.name} ${route}: horizontal viewport overflow detected`);
+              if (pageErrors.length) throw new Error(`${viewport.name} ${route}: page errors:\n${pageErrors.join('\n')}`);
+              if (failedResponses.length) throw new Error(`${viewport.name} ${route}: 5xx responses:\n${failedResponses.join('\n')}`);
+              page.off('pageerror', onPageError);
+              page.off('response', onResponse);
+            }
+            await page.goto(`${process.env.SITE_URL}/marketplace`, { waitUntil: 'networkidle' });
+            await page.locator('[data-marketplace-concept="flagship"]').waitFor({ state: 'visible', timeout: 15000 });
+            await page.locator('.offerCard').first().waitFor({ state: 'visible', timeout: 15000 });
+            await page.close();
+          }
+
+          const campaign = await browser.newPage({ viewport: { width: 390, height: 844 } });
+          const vendorResponse = await campaign.goto(`${process.env.SITE_URL}/rave-vendors.html`, { waitUntil: 'networkidle' });
+          if (!vendorResponse || !vendorResponse.ok()) {
+            throw new Error(`RAVE vendor campaign page failed with ${vendorResponse?.status()}`);
+          }
+          const vendorBody = await campaign.locator('body').innerText();
+          if (!vendorBody.includes('Join the RAVE Shelter vendor network.')) {
+            throw new Error('RAVE vendor acquisition content did not render.');
+          }
+          const vendorOverflow = await campaign.evaluate(
+            () => document.documentElement.scrollWidth > document.documentElement.clientWidth + 1,
+          );
+          if (vendorOverflow) throw new Error('RAVE vendor page overflows the mobile viewport.');
+          await campaign.close();
+          console.log('GitHub Pages MVP public release matrix passed on mobile, tablet, and desktop.');
+          await browser.close();
+          EOF
