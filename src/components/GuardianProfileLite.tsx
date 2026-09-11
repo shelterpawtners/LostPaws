@@ -145,16 +145,24 @@ export function GuardianProfileLite({ session }: { session: Session | null }) {
         ) : (
           <form className="detail" onSubmit={save}>
             <div className="guardianProfileIdentity">
-              <div className="guardianProfileAvatar" aria-label="Guardian profile photo">
+              <div
+                className="guardianProfileAvatar"
+                aria-label="Guardian profile photo"
+              >
                 {avatarUrl ? (
-                  <img src={avatarUrl} alt={`${profile.full_name || "Guardian"} profile`} />
+                  <img
+                    src={avatarUrl}
+                    alt={`${profile.full_name || "Guardian"} profile`}
+                  />
                 ) : (
                   <UserRound aria-hidden="true" />
                 )}
               </div>
               <label className="guardianAvatarUpload">
                 <Camera aria-hidden="true" />
-                <span>{uploadingAvatar ? "Uploading…" : "Choose profile photo"}</span>
+                <span>
+                  {uploadingAvatar ? "Uploading…" : "Choose profile photo"}
+                </span>
                 <input
                   type="file"
                   accept="image/jpeg,image/png,image/webp"
@@ -162,7 +170,9 @@ export function GuardianProfileLite({ session }: { session: Session | null }) {
                   onChange={(event) => void uploadAvatar(event.target.files)}
                 />
               </label>
-              <small>JPEG, PNG, or WebP up to 5 MB. Private to your account.</small>
+              <small>
+                JPEG, PNG, or WebP up to 5 MB. Private to your account.
+              </small>
             </div>
             <div className="fields">
               <label>
