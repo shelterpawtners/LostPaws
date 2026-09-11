@@ -41,6 +41,7 @@ import {
 import { oauthReturnUrl } from "./lib/auth-oauth";
 import {
   adminSupabase,
+  facebookAuthEnabled,
   getActingSupabase,
   googleAuthEnabled,
   restoreActingSupabase,
@@ -489,6 +490,24 @@ function Signup({ c }: { c: (typeof choices)[number] }) {
     });
     if (error) setStatus(error.message);
   }
+  async function facebook() {
+    if (!db)
+      return setStatus(
+        "The development connection will be added during deployment.",
+      );
+    localStorage.setItem("sp_kind", c.kind);
+    const { error } = await db.auth.signInWithOAuth({
+      provider: "facebook",
+      options: {
+        redirectTo: oauthReturnUrl(
+          location.origin,
+          import.meta.env.BASE_URL,
+          `onboarding/${c.kind}`,
+        ),
+      },
+    });
+    if (error) setStatus("Facebook sign-in couldn't start. Please try again.");
+  }
   const I = icons[c.kind];
   return (
     <div className="signup">
@@ -517,6 +536,16 @@ function Signup({ c }: { c: (typeof choices)[number] }) {
           {googleAuthEnabled
             ? "Continue with Google"
             : "Google sign-in coming soon"}
+        </button>
+        <button
+          className="btn quiet full"
+          type="button"
+          onClick={facebook}
+          disabled={!facebookAuthEnabled}
+        >
+          {facebookAuthEnabled
+            ? "Continue with Facebook"
+            : "Facebook sign-in coming soon"}
         </button>
         <hr />
         <label>
@@ -1528,6 +1557,16 @@ function Login() {
     });
     if (error) setStatus(error.message);
   }
+  async function facebook() {
+    if (!db) return setStatus("Development connection is unavailable.");
+    const { error } = await db.auth.signInWithOAuth({
+      provider: "facebook",
+      options: {
+        redirectTo: oauthReturnUrl(location.origin, import.meta.env.BASE_URL),
+      },
+    });
+    if (error) setStatus("Facebook sign-in couldn't start. Please try again.");
+  }
   return (
     <Page>
       <section className="section shell narrow">
@@ -1550,6 +1589,16 @@ function Login() {
               {googleAuthEnabled
                 ? "Continue with Google"
                 : "Google sign-in coming soon"}
+            </button>
+            <button
+              className="btn quiet full"
+              type="button"
+              onClick={facebook}
+              disabled={!facebookAuthEnabled}
+            >
+              {facebookAuthEnabled
+                ? "Continue with Facebook"
+                : "Facebook sign-in coming soon"}
             </button>
             <hr />
             <label>
