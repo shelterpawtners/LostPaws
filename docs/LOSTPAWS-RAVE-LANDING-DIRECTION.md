@@ -1,7 +1,7 @@
 # LostPaws / RAVE Shelter Landing Direction
 
-Status: OWNER-DIRECTION-LOCKED / IMPLEMENTATION PENDING
-Issues: #58, #54
+Status: OWNER-DIRECTION-LOCKED / IMPLEMENTATION IN PROGRESS
+Issues: #96 (current implementation authority), #58 (superseded shell direction), #54
 
 ## Canonical destination
 
@@ -20,12 +20,16 @@ The owner supplied two approved LostPaws logo/artwork keepers on 2026-09-10.
 
 ## Page identity
 
-`/lostpaws` is intentionally separate from the ordinary ShelterPawtners application shell.
+`/lostpaws` is the single canonical LostPaws campaign destination inside the ShelterPawtners application.
 
-- Do not render the normal ShelterPawtners global header/navigation on this route.
-- Start immediately with the approved LostPaws 16:9 banner.
-- Make ShelterPawtners ownership/relationship clear in copy and footer, but secondary in the initial visual hierarchy.
-- Use a custom campaign shell rather than inheriting the standard consumer dashboard look.
+Issue #96 records the owner's current direction and supersedes the earlier Issue #58 shell requirement: the normal ShelterPawtners global header/navigation **must remain present** on `/lostpaws` so visitors can reliably return Home and navigate Marketplace, LostPaws, RAVE Shelter, and account/sign-in areas on desktop and mobile.
+
+- Keep the standard ShelterPawtners global header/navigation.
+- Render the approved custom LostPaws campaign experience immediately below the global header.
+- Keep the campaign body visually distinct from the ordinary ShelterPawtners application/dashboard experience.
+- Keep ShelterPawtners ownership/relationship clear in campaign copy and the footer.
+- Use deployment-independent application routes. Do not hardcode the GitHub Pages hostname, the `/LostPaws/` preview prefix, or the future production hostname into internal app navigation.
+- GitHub Pages preview and the future root-domain deployment must use the same React routes so final domain cutover does not require a LostPaws navigation rewrite.
 
 ## Visual language
 
@@ -101,10 +105,13 @@ Legal wording may be refined before final publication, but the non-affiliation m
 
 ## MVP acceptance
 
-- `/lostpaws` renders on hosted preview and is responsive on mobile/desktop.
-- Exact owner-supplied 16:9 artwork appears as the top banner.
-- Standard ShelterPawtners header/navigation is absent.
-- RAVE Shelter purpose and raver value are visible immediately after the banner.
+- `/lostpaws` is the single canonical campaign route and renders the approved custom campaign experience, not the generic `FoundationPage`.
+- Exact owner-supplied 16:9 artwork appears as the campaign hero.
+- Standard ShelterPawtners global header/navigation remains present and functional.
+- Home -> LostPaws and LostPaws -> Home/Marketplace/RAVE Shelter work on desktop and mobile.
+- Internal application links remain deployment-independent on GitHub Pages and the future root-domain deployment.
+- Legacy `/lostpaws.html` does not remain a competing public experience.
+- RAVE Shelter purpose and raver value are immediately clear.
 - Vendor signup is reachable quickly through existing onboarding.
 - QR decodes exactly to `https://shelterpawtners.com/lostpaws`.
 - Existing registration, Marketplace, auth, RLS and accepted LL-1 through LL-6 behavior are not weakened.
