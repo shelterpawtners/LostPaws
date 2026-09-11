@@ -48,6 +48,7 @@ test.describe("Phase 1 public accessibility and responsive regressions", () => {
     for (const route of [
       "/",
       "/rave",
+      "/lostpaws",
       "/marketplace",
       "/register?type=guardian",
     ]) {
@@ -60,20 +61,14 @@ test.describe("Phase 1 public accessibility and responsive regressions", () => {
     }
   });
 
-  test("uses the static RAVE mark when reduced motion is requested", async ({
+  test("uses the static approved RAVE mark on the unified mission page", async ({
     page,
   }) => {
-    await page.emulateMedia({ reducedMotion: "reduce" });
     await page.goto("/rave");
 
-    await expect(page.locator(".raveHero img")).toHaveAttribute(
+    await expect(page.locator(".rsmLogoPanel img")).toHaveAttribute(
       "src",
-      /rave-shelter-logo-animated-v2\.gif/,
+      /rave-shelter-logo-static-v2\.png/,
     );
-    await expect
-      .poll(() =>
-        page.locator(".raveHero img").evaluate((image) => image.currentSrc),
-      )
-      .toMatch(/rave-shelter-logo-static-v2\.png/);
   });
 });
