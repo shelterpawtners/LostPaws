@@ -2,7 +2,7 @@
 
 STATUS: EXTERNAL_LAUNCH_GATE_WITH_ACTIVE_UX_POLISH
 CURRENT_PHASE: Lost Lands MVP launch readiness
-CURRENT_CHECKPOINT: Password-recovery acceptance + launch UX polish
+CURRENT_CHECKPOINT: Password-recovery acceptance + launch UX polish + support foundation
 NEXT_CHECKPOINT: Google OAuth, Facebook auth, integrated acceptance, legal owner review, cutover prep
 OWNER_DECISION_REQUIRED: YES_FOR_PROVIDER_CONSOLES_AND_FINAL_CUTOVER_ONLY
 SAFE_TO_CONTINUE: YES
@@ -55,17 +55,45 @@ Owner acceptance feedback:
 - Guardian profile photo and pet photos/thumbnails should be prominent;
 - Guardian area should use a horizontal navigation separating human Guardian Profile from Pet Passport Profiles;
 - ordinary Guardian dashboard should not spend primary real estate on role-management controls;
-- Marketplace cards/hero are too large and information-sparse; add denser scan-friendly presentation and grid/list views while preserving truthful eligibility/source behavior.
+- Marketplace cards/hero are too large and information-sparse; add denser scan-friendly presentation and grid/list views while preserving truthful eligibility/source behavior;
+- owner selected a hybrid consumer-app-leaning design and explicitly rejected Figma as a prerequisite;
+- add an avatar/user menu and guided profile-completion/help affordances without notification overload.
 
-Repository audit completed for the Marketplace. `OfferMarketplace.tsx` already contains the required behavioral primitives (published-offer RPC, search, classification filters, source/claim distinction, detail routes and accessibility status behavior). Treat this as a presentation/information-architecture refactor first, not a database/RPC rewrite. Issue #53 contains the implementation plan.
+Repository/runtime audit findings:
+
+- `OfferMarketplace.tsx` already contains the required behavioral primitives; treat Marketplace work as presentation/information-architecture refactor first, not schema/RPC rewrite.
+- Guardian onboarding currently renders a generic `Contact email` field even though the Guardian pet-save RPC does not persist a pet email. Shelter contact email is separately persisted only when adoption confirmation is requested. The fix should remove the misleading Guardian pet-email field rather than invent a pet email model.
+- Live Supabase schema confirms `profiles.avatar_path` already exists and pet media already has primary-image semantics, so Guardian/photo-forward UX should reuse existing identity/media models.
+
+The `ux/guardian-marketplace-launch-polish` branch exists and currently contains the approved UX execution plan. Continue the implementation there when code-editing execution is available.
 
 Issue #54 records the RAVE Shelter Lost Lands hub + lightweight stories/announcements roadmap. Do not introduce a paid/full CMS as an MVP prerequisite.
 
+## Support OS work
+
+Issue #56 — MVP Support OS — is open and authorized. Architecture direction is Supabase as the protected operational support source of truth and GitHub only for sanitized reproducible engineering defects.
+
+Branch `support/mvp-support-os` and PR #57 now contain a bounded first implementation slice:
+
+- versioned Support Operating Model;
+- severity/human-escalation policy;
+- repository migration for `support_tickets`, `support_ticket_messages`, and `support_ticket_events`;
+- RLS that restricts reporters to their own tickets/messages, keeps internal events/admin triage privileged, and prevents client self-assignment of elevated severity/AI/admin state;
+- pgTAP coverage for anonymous denial, own-ticket access, cross-user isolation, reporter append behavior and platform-admin visibility.
+
+Do not apply this migration directly to hosted Supabase until PR #57 is green/accepted. Continue with Help & feedback user-menu UI after the current UX shell is implemented or when the branch can be edited safely.
+
 ## Connected tooling recheck
 
+2026-09-10 recheck:
+
 - GitHub: connected and authoritative.
-- Plugin search this run found no newly actionable Supabase Auth, Resend, Google OAuth, Meta/Facebook, Vercel or DNS provider plugin.
-- Therefore provider-console writes remain owner/manual unless a future run surfaces an actionable connected tool.
+- Supabase: connected for projects/database/functions/advisors. `shelterpawtners-dev` is ACTIVE_HEALTHY. Hosted Auth provider/Site-URL console writes are still not exposed by the connector.
+- Plugin discovery found no actionable Resend, Google OAuth, Meta/Facebook, DNS/domain-management, Vercel or browser-automation provider plugin. Figma surfaced but is explicitly not desired and is not needed.
+- Local/container direct GitHub clone is unavailable because that runtime has no external DNS/network access; use the GitHub connector for repository operations.
+- PR #57 Vercel status currently fails only with the Vercel build-rate-limit/upgrade URL. Paid upgrade is forbidden; do not purchase or upgrade to clear this check. Recheck later for rate-limit recovery and do not treat this as an application regression without separate evidence.
+
+Supabase security-advisor review on 2026-09-10 reported existing SECURITY DEFINER execution warnings plus intentionally policy-less private audit/token tables, and leaked-password protection disabled. Do not change these automatically: public/authenticated RPC exposure must be reviewed against intended API contracts, and leaked-password protection is already documented as a paid-plan feature not authorized for MVP.
 
 Re-check provider/tool availability every run and act immediately when an authorized prerequisite becomes actionable.
 
@@ -75,4 +103,7 @@ Never purchase/upgrade paid services, make destructive production-data changes, 
 
 ## Next safe action
 
-Continue Issue #53 with implementation-level audit of Guardian/Pet components and the pet-email field, then implement the highest-impact low-risk presentation slice when the required files/tests are identified. In parallel, keep password-recovery/Google/Meta acceptance documentation current and do not reopen completed LL slices absent regression evidence.
+1. Recheck PR #57 for a non-rate-limit CI signal; merge only when green and accepted.
+2. Continue Issue #53 implementation on `ux/guardian-marketplace-launch-polish`, starting with removal of the misleading Guardian pet contact-email field, compact Guardian shell/avatar menu, and highest-impact low-risk dashboard/Marketplace presentation changes.
+3. If code execution remains unavailable, continue non-destructive review/docs/test preparation rather than applying hosted schema changes directly.
+4. In parallel, keep password-recovery/Google/Meta acceptance documentation current and do not reopen completed LL slices absent regression evidence.
