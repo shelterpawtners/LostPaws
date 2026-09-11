@@ -30,48 +30,10 @@ jobs:
         run: |
           python <<'PY'
           from pathlib import Path
+          import re
 
           path = Path('src/main.tsx')
           text = path.read_text()
-
-          old_header = '''function Header() {
-            const [o, setO] = useState(false);
-            const { session } = useAuth();
-            const location = useLocation();
-            useEffect(() => setO(false), [location.pathname, location.search]);
-            return (
-              <header>
-                <div className="shell head">
-                  <Link className="brand" to="/">
-                    <img src="/brand/shelterpawtners.png" alt="" />
-                    ShelterPawtners
-                  </Link>
-                  <button
-                    className="menu"
-                    onClick={() => setO(!o)}
-                    aria-expanded={o}
-                    aria-controls="primary-navigation"
-                    aria-label={o ? "Close menu" : "Open menu"}
-                  >
-                    {o ? <X /> : <Menu />}
-                  </button>
-                  <nav
-                    id="primary-navigation"
-                    className={o ? "open" : ""}
-                    aria-label="Primary navigation"
-                  >
-                    <Link to="/marketplace">Marketplace</Link>
-                    <Link to="/rave">RAVE Shelter</Link>
-                    <Link to="/register">Join</Link>
-                    {session && <AdminQaNavLink />}
-                    <Link className="btn quiet" to={session ? "/dashboard" : "/login"}>
-                      {session ? "My dashboard" : "Sign in"}
-                    </Link>
-                  </nav>
-                </div>
-              </header>
-            );
-          }'''
 
           new_header = '''function Header() {
             const [o, setO] = useState(false);
@@ -128,97 +90,61 @@ jobs:
             );
           }'''
 
-          if old_header not in text:
-            raise SystemExit('Header source block did not match; refusing unsafe patch')
-          text = text.replace(old_header, new_header, 1)
+          text, count = re.subn(
+            r'function Header\(\) \{.*?\n\}\nfunction Footer\(\)',
+            new_header + '\nfunction Footer()',
+            text,
+            count=1,
+            flags=re.S,
+          )
+          if count != 1:
+            raise SystemExit('Header boundary did not match; refusing unsafe patch')
 
-          home_marker = '''      </section>
-                <section className="section shell">
-                  <span className="eyebrow">Choose your path</span>'''
-          home_feature = '''      </section>
-                <section className="lostPawsFeature">
-                  <div className="shell lostPawsFeatureCard">
-                    <div>
-                      <span className="eyebrow">Featured this month · September 2026</span>
-                      <h2>LostPaws is launching the RAVE Shelter mission in the music community.</h2>
-                      <p className="lead">
-                        LostPaws is our first public RAVE Shelter activation: a focused way for ravers
-                        to discover useful festival-ready value and for vendors to reach the community
-                        while helping bring more attention and support to shelter pets and adoption.
-                      </p>
-                      <div className="actions">
-                        <Link className="btn" to="/lostpaws">
-                          Explore LostPaws <ArrowRight />
-                        </Link>
-                        <Link className="btn quiet" to="/rave">
-                          Meet RAVE Shelter
-                        </Link>
-                      </div>
-                      <small>
-                        Independent community initiative. No festival affiliation or endorsement is implied.
-                      </small>
-                    </div>
-                    <aside className="lostPawsRoadmap" aria-label="RAVE Shelter roadmap">
-                      <Music2 />
-                      <span className="eyebrow">What comes next</span>
-                      <h3>RAVE Shelter grows beyond this launch.</h3>
-                      <p>
-                        RAVE Shelter — the Rescue and Adoption Vendor Ecosystem — is being built to
-                        connect ravers, vendors, shelters, and pet adoption around useful offers and
-                        measurable community value. LostPaws is the first activation; the broader
-                        initiative is targeted for rollout at the end of 2026.
-                      </p>
-                      <Link to="/register?type=rave_vendor">
-                        Vendors: join the ecosystem <ArrowRight />
-                      </Link>
-                    </aside>
-                  </div>
-                </section>
-                <section className="section shell">
-                  <span className="eyebrow">Choose your path</span>'''
-          if home_marker not in text:
-            raise SystemExit('Home insertion point did not match; refusing unsafe patch')
-          text = text.replace(home_marker, home_feature, 1)
-
-          old_menu = '''function GuardianAccountMenu({
-            session,
-            onSignOut,
-          }: {
-            session: Session | null;
-            onSignOut: () => void;
-          }) {
-            const [showHelp, setShowHelp] = useState(false);
-            const name =
-              session?.user.user_metadata.full_name ||
-              session?.user.email?.split("@")[0] ||
-              "Guardian";
-            const initial = name.trim().charAt(0).toUpperCase() || "G";
-
-            return (
-              <details className="guardianAccountMenu">
-                <summary aria-label="Open Guardian account menu">
-                  <span className="guardianAvatar" aria-hidden="true">
-                    {initial}
-                  </span>
-                  <span>Account</span>
-                </summary>
-                <div className="guardianAccountPanel">
+          choose_path = '''<section className="section shell">
+                <span className="eyebrow">Choose your path</span>'''
+          feature = '''<section className="lostPawsFeature">
+                <div className="shell lostPawsFeatureCard">
                   <div>
-                    <b>{name}</b>
-                    <p>Guardian account</p>
+                    <span className="eyebrow">Featured this month · September 2026</span>
+                    <h2>LostPaws is launching the RAVE Shelter mission in the music community.</h2>
+                    <p className="lead">
+                      LostPaws is our first public RAVE Shelter activation: a focused way for ravers
+                      to discover useful festival-ready value and for vendors to reach the community
+                      while helping bring more attention and support to shelter pets and adoption.
+                    </p>
+                    <div className="actions">
+                      <Link className="btn" to="/lostpaws">
+                        Explore LostPaws <ArrowRight />
+                      </Link>
+                      <Link className="btn quiet" to="/rave">
+                        Meet RAVE Shelter
+                      </Link>
+                    </div>
+                    <small>
+                      Independent community initiative. No festival affiliation or endorsement is implied.
+                    </small>
                   </div>
-                  <a href="#guardian-profile-heading">Guardian profile</a>
-                  <button type="button" onClick={() => setShowHelp(true)}>
-                    Help &amp; feedback
-                  </button>
-                  {showHelp && <HelpFeedback session={session} initiallyOpen />}
-                  <button className="accountSignOut" type="button" onClick={onSignOut}>
-                    Sign out
-                  </button>
+                  <aside className="lostPawsRoadmap" aria-label="RAVE Shelter roadmap">
+                    <Music2 />
+                    <span className="eyebrow">What comes next</span>
+                    <h3>RAVE Shelter grows beyond this launch.</h3>
+                    <p>
+                      RAVE Shelter — the Rescue and Adoption Vendor Ecosystem — is being built to
+                      connect ravers, vendors, shelters, and pet adoption around useful offers and
+                      measurable community value. LostPaws is the first activation; the broader
+                      initiative is targeted for rollout at the end of 2026.
+                    </p>
+                    <Link to="/register?type=rave_vendor">
+                      Vendors: join the ecosystem <ArrowRight />
+                    </Link>
+                  </aside>
                 </div>
-              </details>
-            );
-          }'''
+              </section>
+              <section className="section shell">
+                <span className="eyebrow">Choose your path</span>'''
+          if choose_path not in text:
+            raise SystemExit('Home Choose your path insertion point did not match')
+          text = text.replace(choose_path, feature, 1)
 
           new_menu = '''function GuardianAccountMenu({ session }: { session: Session | null }) {
             const [showHelp, setShowHelp] = useState(false);
@@ -250,36 +176,48 @@ jobs:
               </details>
             );
           }'''
-          if old_menu not in text:
-            raise SystemExit('Account menu source block did not match; refusing unsafe patch')
-          text = text.replace(old_menu, new_menu, 1)
+          text, count = re.subn(
+            r'function GuardianAccountMenu\(.*?\n\}\nfunction Dashboard\(\)',
+            new_menu + '\nfunction Dashboard()',
+            text,
+            count=1,
+            flags=re.S,
+          )
+          if count != 1:
+            raise SystemExit('Account menu boundary did not match; refusing unsafe patch')
 
-          old_dashboard_signout = '''  async function signOut() {
-            navigate("/", { replace: true });
-            await db?.auth.signOut();
-          }
+          start = text.find('function Dashboard() {')
+          end = text.find('\nfunction GuardianPetDetail()', start)
+          if start < 0 or end < 0:
+            raise SystemExit('Dashboard boundaries did not match')
+          dashboard = text[start:end]
+
+          dashboard, count = re.subn(
+            r'\n  async function signOut\(\) \{\n    navigate\("/", \{ replace: true \}\);\n    await db\?\.auth\.signOut\(\);\n  \}',
+            '',
+            dashboard,
+            count=1,
+          )
+          if count != 1:
+            raise SystemExit('Dashboard sign-out block did not match')
+
+          old_actions = '''          {kind === "guardian" ? (
+            <div className="dashboardAccountActions">
+              <GuardianAccountMenu session={session} onSignOut={signOut} />
+              <button className="btn quiet" onClick={signOut}>
+                Sign out
+              </button>
+            </div>
+          ) : (
+            <button className="btn quiet" onClick={signOut}>
+              Sign out
+            </button>
+          )}
           '''
-          if old_dashboard_signout not in text:
-            raise SystemExit('Dashboard sign-out source did not match; refusing unsafe patch')
-          text = text.replace(old_dashboard_signout, '', 1)
-
-          old_dashboard_actions = '''          {kind === "guardian" ? (
-                    <div className="dashboardAccountActions">
-                      <GuardianAccountMenu session={session} onSignOut={signOut} />
-                      <button className="btn quiet" onClick={signOut}>
-                        Sign out
-                      </button>
-                    </div>
-                  ) : (
-                    <button className="btn quiet" onClick={signOut}>
-                      Sign out
-                    </button>
-                  )}
-          '''
-          if old_dashboard_actions not in text:
-            raise SystemExit('Dashboard account action source did not match; refusing unsafe patch')
-          text = text.replace(old_dashboard_actions, '', 1)
-
+          if old_actions not in dashboard:
+            raise SystemExit('Dashboard account actions did not match')
+          dashboard = dashboard.replace(old_actions, '', 1)
+          text = text[:start] + dashboard + text[end:]
           path.write_text(text)
 
           styles = Path('src/styles.css')
