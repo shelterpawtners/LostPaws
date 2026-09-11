@@ -6,7 +6,7 @@ CURRENT_CHECKPOINT: Guardian launch UX + password-recovery/provider acceptance
 NEXT_CHECKPOINT: Google OAuth, Facebook auth, integrated browser/mobile acceptance, owner legal review, cutover prep
 OWNER_DECISION_REQUIRED: YES_FOR_PROVIDER_CONSOLES_AND_FINAL_CUTOVER_ONLY
 SAFE_TO_CONTINUE: YES
-ACCEPTED_CODE_SHA: 8147d35fed4f8ac63ad71346152b1daaf7c85f0f
+ACCEPTED_CODE_SHA: af32593c8abd2727b8c9b5c844a32e17425cd680
 ACCEPTANCE_RUNTIME: REPOSITORY_GATES_GREEN; VERCEL_DAILY_FREE_TIER_LIMIT_FOR_NEW_DEPLOYS
 
 ## Completed engineering
@@ -31,10 +31,17 @@ Post-MVP launch-readiness slices integrated:
   - `anon` and `authenticated` browser roles cannot read those private views;
   - direct shared-dev verification and pgTAP Database QA passed.
 - Issue #56 privacy-safe advisory triage queue — PR #68, all six required gates green and squash-merged at `045a592449441b398e7732d4a206cd77ab2ffc7f`.
-  - shared-dev migration `20260911072000_support_triage_queue` is applied;
+  - repository migration `20260911072000_support_triage_queue` is now applied to shared dev after an autonomous reconciliation found the accepted migration had been missed operationally;
   - `private.support_triage_queue` ranks unresolved work using only safe metadata, duplicate evidence, aging and required-human-review signals;
   - privacy/safety cases always recommend human escalation, and the queue performs no ticket mutation, auto-close or auto-fix;
   - `anon` and `authenticated` browser roles cannot read the queue, and pgTAP coverage verifies its privacy, duplicate and aging boundaries.
+- Issue #53 private Guardian profile avatar — PR #72, all six required gates plus CodeQL green and squash-merged at `af32593c8abd2727b8c9b5c844a32e17425cd680`.
+  - reuses canonical `profiles.avatar_path` rather than introducing a parallel identity/media model;
+  - shared-dev migration `guardian_profile_avatar_storage` is applied;
+  - private `profile-avatars` Storage bucket is limited to JPEG/PNG/WebP up to 5 MB;
+  - owner-folder Storage policies gate read/insert/update/delete to the authenticated user;
+  - Guardian private profile now uploads and previews the avatar through signed URLs;
+  - pgTAP and Playwright cover Storage boundaries plus avatar upload/reload persistence.
 - Launch legal-review checklist — PR #65. Draft Terms/Privacy remain unapproved and must not be published as final.
 
 ## Auth/email progress complete
@@ -70,16 +77,18 @@ Completed:
 
 - Marketplace density/grid-list via PR #59.
 - Reusable Support intake/status component plus Guardian-profile Help & feedback entry via PR #66.
+- Guardian pet-contact correction via PR #69, squash-merged at `8606424b7a655c68b9e25737eb063db7ad86af7e`; Guardian Pet Basics no longer renders pet-level contact email/social fields while the save RPC, authenticated account email and organization-contact inputs remain unchanged.
+- Compact Guardian shell/account menu via PR #70, squash-merged at `8147d35fed4f8ac63ad71346152b1daaf7c85f0f`; the account control includes the primary Help & feedback entry by reusing the Support OS component.
+- Private Guardian avatar upload/persistence via PR #72, squash-merged at `af32593c8abd2727b8c9b5c844a32e17425cd680`.
 
 Active order:
 
-1. Guardian pet-contact correction — PR #69 passed all six required gates and squash-merged at `8606424b7a655c68b9e25737eb063db7ad86af7e`. Guardian Pet Basics no longer renders pet-level contact email/social fields; the save RPC, authenticated account email, and organization-contact inputs remain unchanged.
-2. Compact Guardian shell/account menu — PR #70 passed CI, Hosted QA, Persona QA, Database QA, Dependency Review and Merge Gate, then squash-merged at `8147d35fed4f8ac63ad71346152b1daaf7c85f0f`. It provides an avatar/account control and a primary Help & feedback entry by reusing the existing Support OS component; no duplicate support data path was created.
-3. Photo-forward Guardian dashboard / Pet Passport density is the next focused product slice.
+1. Surface the now-real Guardian avatar in the account menu without duplicating profile/storage state.
+2. Replace generic pet-card iconography with existing primary pet media where available and keep signed/private media semantics intact.
+3. Continue compact, photo-forward Guardian dashboard / Pet Passport density with mobile-first coverage and no role-management prominence on the ordinary Guardian surface.
+4. Add bounded first-use/settings guidance only after the photo-forward shell remains green.
 
-GitHub Copilot cloud-agent execution is blocked by insufficient GitHub AI Credits. Do not repeatedly retry it. The Work handoff remains `docs/prompts/ISSUE-53-GUARDIAN-PET-CONTACT-WORK.md`.
-
-Current execution note: PR #69's initial CI found `docs/AI-HANDOFF.md` was not formatted according to the repository Prettier gate. Canonical formatting was applied, then all six required gates passed before merge. Preserve that formatting gate for all subsequent work.
+GitHub Copilot cloud-agent execution is blocked by insufficient GitHub AI Credits. Do not repeatedly retry it. Use direct bounded repository work here; use Work only for high-leverage browser/visual/provider-console tasks.
 
 ## Support OS
 
@@ -89,18 +98,22 @@ Completed:
 
 - `support_tickets`, `support_ticket_messages`, `support_ticket_events` under RLS;
 - Guardian categorized intake/status UI;
+- primary Guardian account-menu Help & feedback entry;
 - support operating model, severity, AI guardrails, human escalation, notification policy and domain/persona runbooks;
 - sanitized engineering-handoff contract;
 - reporter duplicate-group hardening;
-- privacy-safe duplicate-candidate and daily-digest aggregate database plumbing.
+- privacy-safe duplicate-candidate and daily-digest aggregate database plumbing;
 - privacy-safe advisory triage queue for unresolved work; it retains human escalation for privacy/safety/account cases and never mutates or resolves tickets.
+
+Current bounded hardening:
+
+- PR #73 pins `private.support_ticket_fingerprint(text,text,text)` to `search_path = pg_catalog` and adds a regression proving normalization behavior is unchanged. The exact migration is already applied to shared dev, and the Supabase security advisor no longer reports this helper for mutable search path. Merge only if current-head repository gates are green.
 
 Remaining Issue #56 focus:
 
-1. primary avatar/user-menu Help & feedback entry during Issue #53 shell work;
-2. bounded classification/digest automation consuming the private aggregate sources;
-3. regression for classification/digest scheduling and aging behavior;
-4. optional screenshot/storage support only later, after explicit privacy/storage controls.
+1. bounded classification/digest automation consuming the private aggregate sources;
+2. regression for classification/digest scheduling and aging behavior;
+3. optional screenshot/storage support only later, after explicit privacy/storage controls.
 
 AI must not auto-implement arbitrary suggestions, auto-close potential security/privacy issues, mutate destructive production data, or treat a fingerprint/duplicate signal as sufficient resolution evidence.
 
@@ -115,10 +128,10 @@ Do not decide legal entity/contact identity, minimum age, governing law, arbitra
 ## Connected tooling recheck — 2026-09-11
 
 - GitHub: connected and authoritative for repository operations/CI. GitHub AI coding credits remain unavailable.
-- Supabase: connected and actionable for SQL/migrations; shared-dev support migration #67 was applied and verified. Hosted Auth provider-console writes are still not exposed by the current connector surface.
-- Vercel: connected, but recent preview creation hit the Hobby/free-tier daily deployment limit. Do not purchase/upgrade; treat as transient only.
+- Supabase: connected and actionable for SQL/migrations. Shared dev is reconciled through the accepted Support OS triage queue plus Guardian avatar storage; hosted Auth provider-console writes are still not exposed by the current connector surface.
+- Vercel: connected, but recent preview creation continues to hit the Hobby/free-tier daily deployment limit. Do not purchase/upgrade; treat as transient only.
 - No currently available provider-console plugin exposes Google OAuth, Meta/Facebook, DNS or Resend console configuration in this automation runtime.
-- Browser automation in an interactive ChatGPT Work session remains preferred for provider consoles, real password-recovery acceptance, visual QA and safe patch-based edits to existing large source files.
+- Browser automation in an interactive ChatGPT Work session remains preferred for provider consoles, real password-recovery acceptance, visual QA and multi-step hosted acceptance.
 
 ## Protected restrictions
 
@@ -126,9 +139,9 @@ Never purchase/upgrade paid services, make destructive production-data changes, 
 
 ## Next safe action
 
-1. Continue photo-forward Guardian dashboard / Pet Passport density in a focused follow-up PR, retaining mobile-first behavior and existing Passport/Deal Moments/RLS coverage.
-2. Re-check Vercel capacity, then perform integrated hosted desktop/mobile acceptance for `/lostpaws`, `/rave-vendors`, Guardian onboarding, Marketplace, Passport, shelter verification and the new account-menu Help & feedback path. Do not purchase an upgrade.
-3. Continue Issue #56 classification/digest automation only if it can be implemented without unsafe whole-file rewrites or raw PII exposure.
-4. Re-check Vercel availability each run; after capacity resets, perform hosted desktop/mobile visual acceptance for `/lostpaws`, `/rave-vendors` and final golden paths without purchasing an upgrade.
+1. Finish/review PR #73 only on final-head green repository evidence; if merged, record the accepted SHA here.
+2. Continue Issue #53 with account-menu real-avatar rendering and primary-pet-media thumbnails in a focused photo-forward follow-up, preserving private signed-media semantics and existing Passport/Deal Moments/RLS coverage.
+3. Continue Issue #56 classification/digest automation only through privacy-minimized aggregate sources and explicit human escalation boundaries.
+4. Re-check Vercel capacity each run; after capacity resets, perform integrated hosted desktop/mobile visual acceptance for `/lostpaws`, `/rave-vendors`, Guardian onboarding, Marketplace, Passport, shelter verification and Help & feedback without purchasing an upgrade.
 5. Re-check password-recovery/Google/Meta provider tooling each run and act immediately if an authorized prerequisite becomes actionable.
 6. Keep legal publication and final production-domain cutover owner-gated.
