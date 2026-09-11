@@ -6,158 +6,109 @@ Phase 1 — Platform + Data Foundation is **complete**.
 
 Phase 2 — Partner Marketplace MVP is **complete**.
 
-MVP Design Hardening + Human Release Readiness through Issue #5 is **complete**.
+Lost Lands MVP LL-1 through LL-6 are **accepted** and must not be reopened without regression evidence.
 
-Issue #32 / PR #33 — Pre-cutover Launch Readiness has completed deterministic engineering acceptance on accepted code SHA `08e0924aa1ed532f72b0c37be8d9f35dedd07d5e`.
+**Current state: launch readiness with active Guardian UX / Support OS follow-up plus external provider acceptance gates.**
 
-**Current state: BLOCKED at the final owner launch gate.**
+Production web-domain cutover and Phase 3 remain explicitly owner-gated.
 
-**Phase 3 remains explicitly owner-gated. Production-domain cutover remains explicitly owner-gated. PR #33 remains open and must not be merged without owner authorization.**
+Current `main` SHA: `cfe94db48b5b80435adb9f78e413a208971d6f83`.
 
-## Pre-cutover work completed
+## Accepted launch-readiness engineering
 
-### Demo/QA isolation
+The authoritative detailed history remains in `docs/AI-HANDOFF.md`. Current accepted post-MVP work includes:
 
-- Shared dev preserves QA/demo data for authenticated/Admin testing.
-- Demo organizations and offers are excluded from anonymous Marketplace, directory, and public-profile surfaces.
-- Future offers owned by demo organizations inherit demo state automatically.
-- Dedicated database and browser regressions protect the public/demo boundary.
-- Raw QA/demo row counts are intentionally not treated as stable because acceptance runs may create additional demo fixtures.
+- Pet Passport multi-photo/activity improvements.
+- Guardian Deal Moments.
+- denser Marketplace presentation.
+- LostPaws campaign landing.
+- RAVE Shelter vendor acquisition surface.
+- Support OS foundation, runbooks, Help & feedback intake/status, duplicate/digest plumbing, privacy-safe triage queue, fingerprint hardening and private classification/owner digest.
+- Guardian pet-contact correction.
+- compact Guardian account/avatar menu with Help & feedback reuse.
+- private Guardian profile avatar upload/persistence.
+- launch legal-review checklist; draft Terms/Privacy remain unapproved and must not be published as final.
+- current frontend-core dependency update from PR #21; all repository gates passed before merge.
 
-### Shared-dev schema and RPC security
+Do not reopen accepted slices without evidence of a regression.
 
-- Accepted CP6 migrations are aligned in shared dev.
-- `20260910030000_launch_demo_public_isolation.sql` is applied.
-- `20260910031500_launch_rpc_execute_boundary.sql` is applied.
-- `20260910033000_launch_public_program_boundary.sql` is applied.
-- `20260910045221_launch_partner_organization_idempotency.sql` is applied.
-- Anonymous callers cannot execute the state-changing offer/redemption RPCs.
-- Deliberate read-only public discovery RPCs remain available to anonymous visitors.
+## Auth/email status
 
-### Real launch Marketplace content
+Completed hosted prerequisites:
 
-Wave 1 contains five sourced third-party `public_program` listings:
+- Resend free-tier setup is complete.
+- `auth.shelterpawtners.com` transactional-email-only DNS is verified.
+- Microsoft 365 inbound/human-mail DNS remains intentionally unchanged.
+- Supabase custom SMTP is enabled with `ShelterPawtners <noreply@auth.shelterpawtners.com>`.
+- Supabase Site URL targets the hosted QA application.
+- real Guardian signup/confirmation through Supabase + Resend was accepted.
 
-1. PetSmart Adoption Kit coupon savings.
-2. Adopt a Pet Shelter Plus adopter savings.
-3. PetPartners 30-day pet insurance coverage.
-4. Trupanion Adoption Day 30-day coverage.
-5. BISSELL Empty the Shelters — Fall 2026.
+Do not redo Resend/domain/SMTP/Guardian-confirmation work without regression evidence.
 
-Current shared-dev public invariants:
+## Active Issue #53 — Guardian launch UX
 
-- 5 non-demo rows returned by the anonymous Marketplace RPC;
-- 0 suspicious demo/QA/test strings in intended public Marketplace discovery;
-- 0 public Partner Directory leakage from source-only or demo organizations.
+Next safe order:
 
-Public programs are labeled separately from ShelterPawtners participant offers, show provider/eligibility/source context, route to official third-party destinations, and cannot create ShelterPawtners claim/redemption tokens.
+1. Surface the existing private Guardian avatar in the account menu without duplicating profile/storage state.
+2. Replace generic pet-card iconography with existing primary pet media where available while preserving private signed-media semantics.
+3. Continue compact, photo-forward Guardian dashboard / Pet Passport density with mobile-first coverage.
+4. Add bounded first-use/settings guidance only after the photo-forward shell remains green.
 
-### Signup/auth/recovery readiness
+Do not introduce Figma as a prerequisite and do not make role management prominent on the ordinary Guardian surface.
 
-- Fresh Guardian, Shelter, PetBiz, and RAVE Vendor registration/onboarding flows have isolated Persona QA coverage.
-- Email/password signup preserves the selected persona through its confirmation `redirect_to` contract.
-- Forgot-password targets `/reset-password` on the current application origin.
-- `/reset-password` verifies auth state before presenting a password update form.
-- Invalid, expired, manually opened, or already-consumed unauthenticated recovery URLs show `Recovery link unavailable` and route users back to request a new recovery email.
-- Full Persona QA permanently includes `e2e/auth-recovery.spec.ts`.
+## Active Issue #56 — Support OS
 
-### Partner onboarding duplicate prevention
+Supabase remains the operational source of truth. Raw support content/PII must never auto-mirror to GitHub.
 
-- The two historical nearly-empty shared-dev organizations named `Shelter Pawtners` are `pet_business` rows created about two minutes apart by the same user. They are not linked to the current onboarding-draft/access-request/duplicate-review flow, and evidence points to the older direct PetBiz creation path.
-- Current Partner organization creation is now retry-safe at the database boundary.
-- Exact retries from the same resolved draft return the existing organization instead of inserting another row.
-- Changed-payload reuse of a resolved draft is rejected.
-- Resolved onboarding draft identity/payload cannot be rewritten or deleted.
-- PetBiz/RAVE onboarding recognizes a resolved draft and routes the user to the existing business profile instead of reopening creation.
-- Persona offer/redemption QA uses an isolated non-demo Partner fixture so public claim/redemption remains tested without weakening demo isolation.
-- The two historical rows remain untouched because destructive cleanup is owner-gated.
+Current safe follow-up:
 
-### Production auth email plan
+1. Add bounded scheduling/delivery for the already-private classification/digest outputs.
+2. Add regression for cross-day aging persistence and escalation behavior.
+3. Keep privacy/P0/P1 cases human-gated; never auto-close or auto-fix them.
+4. Optional screenshot/storage support remains later and requires explicit privacy/storage controls.
 
-`docs/LAUNCH-AUTH-EMAIL-READINESS.md` documents the proposed production design.
+Live shared-dev preflight on 2026-09-11 found neither `pg_cron` nor `pg_net` currently enabled. Do not assume scheduled delivery exists. Any scheduler introduction must be repository-backed, tested and least-privilege rather than an ad-hoc production-only change.
 
-- Supabase built-in SMTP remains development/testing only.
-- Microsoft 365 remains the human/business mailbox system rather than an application SMTP dependency.
-- Preferred MVP transactional provider is Resend using `auth.shelterpawtners.com` and `no-reply@auth.shelterpawtners.com`.
-- No paid tier is currently recommended for controlled MVP traffic.
-- Provider account creation, credentials, production DNS, final Supabase Site URL/redirect configuration, and real external-email testing remain owner-gated.
-
-## Deterministic acceptance result
-
-Accepted application/database code SHA: `08e0924aa1ed532f72b0c37be8d9f35dedd07d5e`.
-
-All required lanes passed:
-
-- CI — lint, shell lint, unit tests, build, CI Gate.
-- Database QA — local Supabase reset/seed, full pgTAP/RLS suite, Database QA Gate.
-- Hosted QA — LOCAL_HEAD golden paths, design QA, Issue #5 browser audit, Hosted QA Gate.
-- Persona QA — Guardian/Shelter/PetBiz/RAVE registration, auth recovery, access isolation, Partner offer creation, Guardian claim, Partner redemption, manual/camera fallback, local Admin QA security regression, Persona QA Gate.
-- Dependency Review.
-- Merge Gate.
-
-A deterministic Persona failure caused by an ambiguous Playwright organization locator was fixed by narrowing the test locator; application behavior and coverage were not weakened. The full suite then passed.
-
-## Advisor state
-
-Security and performance advisors were rerun after the final DDL migration.
-
-Security:
-
-- no new security regression introduced;
-- two private RLS/no-policy INFO notices remain for intentionally locked private tables;
-- four anonymous SECURITY DEFINER warnings remain for intentional read-only discovery RPCs;
-- authenticated application RPC warnings remain;
-- leaked-password protection remains disabled and should be enabled before public traffic if available.
-
-Performance remains optimization work rather than a demonstrated launch blocker: 20 unindexed-foreign-key notices, 18 multiple-permissive-policy warnings, and many unused-index notices in the low-traffic dev database.
-
-## Owner-controlled blockers
-
-### Terms and Privacy Notice
-
-Registration requires agreement to Terms and acknowledgement of a Privacy Notice, but there are no owner-approved policy pages/links in the repository.
-
-Before public signup is enabled, owner-approved Terms of Service and Privacy Notice content must be supplied and linked. Automation must not invent material legal terms.
-
-### Production auth/email/domain configuration
-
-Final public launch requires owner authorization for:
-
-- transactional-email provider account and credentials;
-- transactional sending-subdomain DNS records;
-- final Supabase Site URL, redirect allowlist, and email configuration;
-- real confirmation/recovery tests to external addresses;
-- Vercel custom-domain attachment;
-- production web DNS cutover;
-- merge of PR #33.
-
-## Vercel/domain state
+## Hosted/Vercel state
 
 - `main` remains the Vercel Production Branch.
-- `shelterpawtners.com` / `www.shelterpawtners.com` have not been attached or rerouted by this workstream.
-- No production DNS changes were made.
+- newest visible Vercel deployment is a READY PR #21 preview for commit `69d292b0ec6046029e6192d2aeefc996a91157c4`.
+- current merged `main` is `cfe94db48b5b80435adb9f78e413a208971d6f83`.
+- latest visible READY **production-target** deployment remains older (`8606424b7a655c68b9e25737eb063db7ad86af7e`).
+- recent `main` production attempts were skipped/canceled by the configured Ignored Build Step; production freshness remains a launch-readiness item, not a reason to purchase an upgrade.
+- final `shelterpawtners.com` custom-domain/DNS cutover remains owner-gated.
+
+## Remaining external launch gate
+
+1. Execute real password-recovery acceptance: delivery, `/reset-password`, password update, new-password sign-in, invalid/expired/reused-link behavior.
+2. Verify Microsoft 365 human mailbox send/receive remains normal after transactional-email DNS additions.
+3. Configure/live-test Google OAuth when provider-console access/tooling is available.
+4. Configure/live-test supported Facebook Login when Meta console access/tooling is available.
+5. Verify OAuth/email flows do not create duplicate profiles/organizations and preserve persona continuity.
+6. Re-run integrated desktop/mobile/browser acceptance on the final configured release.
+7. Present draft Terms/Privacy and owner checklist for owner/legal review; do not publish as final without approval.
+8. Prepare but do not perform final production web-domain/custom-domain cutover without separate authorization.
+
+Current connected tooling does not expose hosted Google/Meta provider configuration. Meta phone/provider interaction must not block independent repository, database, QA or launch-readiness work.
 
 ## Current next sequence
 
-Autonomous implementation for Issue #32 is complete. The next step is an owner decision, not additional feature work.
-
-1. Review/approve Terms of Service and Privacy Notice content.
-2. Approve transactional-email provider setup and required DNS.
-3. Approve final Supabase production auth/email configuration and external validation.
-4. Approve PR #33 merge and Vercel/custom-domain production cutover when ready.
-5. Authorize Phase 3 separately after launch/cutover decisions.
+1. Continue Issue #53 photo-forward Guardian UX using existing private avatar/pet media state.
+2. Continue Issue #56 only with privacy-safe bounded scheduling/delivery and aging/escalation regression.
+3. Reconcile Vercel production freshness and obtain a current READY hosted candidate without purchasing/upgrading or performing final domain cutover.
+4. Re-check password-recovery/Google/Meta provider tooling each run and act immediately if an authorized prerequisite becomes actionable.
+5. Keep legal publication, Phase 3 and final production-domain cutover owner-gated.
 
 ## Guardrails still in force
 
-Still owner-gated/deferred:
+Never:
 
-- PR #33 merge;
-- production-domain/DNS/custom-domain routing;
-- Microsoft 365 mail DNS changes;
-- transactional-email provider account/credential/DNS activation;
-- owner-approved Terms and Privacy Notice content;
-- Phase 3 feature development;
-- `OD-003` verified-savings customer-facing rules/totals;
-- `OD-004` giving provider/settlement decisions;
-- paid infrastructure unless separately justified and approved;
-- destructive cleanup or material privacy/security/financial/legal changes.
+- purchase/upgrade paid services without owner approval;
+- make destructive production-data changes;
+- alter Microsoft 365 mail DNS;
+- decide OD-003 or OD-004;
+- weaken tests or RLS;
+- publish unapproved final Terms/Privacy;
+- expose secrets;
+- perform the final `shelterpawtners.com` production web-domain DNS/custom-domain cutover without separate authorization;
+- begin separately owner-gated Phase 3 work merely because launch-readiness engineering is otherwise complete.
