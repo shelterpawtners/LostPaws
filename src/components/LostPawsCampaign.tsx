@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import "./LostPawsCampaign.css";
 
 export function LostPawsCampaign() {
   const heroSrc = `${import.meta.env.BASE_URL}brand/lostpaws-hero-16x9.png`;
@@ -6,12 +7,7 @@ export function LostPawsCampaign() {
   return (
     <div className="lpCampaign">
       <section className="lpHero" aria-label="LostPaws">
-        <img
-          src={heroSrc}
-          alt="LostPaws"
-          width={1672}
-          height={941}
-        />
+        <img src={heroSrc} alt="LostPaws" width={1672} height={941} />
       </section>
 
       <section className="lpIntro">
