@@ -115,6 +115,18 @@ test.describe("Persona registration and onboarding", () => {
     await qa.auth.signOut();
   });
 
+  test("Guardian Pet Basics uses the account email and has no pet contact fields", async ({
+    page,
+  }) => {
+    test.skip(hostedQa, hostedSignupReason);
+    await register(page, "guardian");
+
+    await expect(page.getByLabel("Contact email")).toHaveCount(0);
+    await expect(page.getByLabel("Instagram profile")).toHaveCount(0);
+    await expect(page.getByLabel("Pet name")).toBeVisible();
+    await expect(page.getByLabel("Species")).toBeVisible();
+  });
+
   test("Guardian pet save failure is visible and retryable", async ({
     page,
   }) => {
@@ -168,6 +180,15 @@ test.describe("Persona registration and onboarding", () => {
       await expect(page.getByText(/setup/i).first()).toBeVisible();
     });
   }
+
+  test("Shelter onboarding retains organization contact fields", async ({
+    page,
+  }) => {
+    test.skip(hostedQa, hostedSignupReason);
+    await register(page, "shelter");
+    await expect(page.getByLabel("Contact email")).toBeVisible();
+    await expect(page.getByLabel("Instagram profile")).toBeVisible();
+  });
 
   test("ordinary registration does not promote adding another role", async ({
     page,
