@@ -353,7 +353,7 @@ jobs:
         run: |
           git config user.name "ShelterPawtners Automation"
           git config user.email "shelterpawtners@gmail.com"
-          git rm .github/workflows/apply-launch-ux.yml
+          git rm .github/workflows/apply-launch-ux.yml .github/launch-ux-trigger.txt
           git add src/main.tsx src/styles.css
           git commit -m "Apply launch navigation and LostPaws home feature"
           git push origin HEAD:ux/global-nav-lostpaws-home
