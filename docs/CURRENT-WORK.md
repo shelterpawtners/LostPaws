@@ -61,6 +61,13 @@ Completed hosted prerequisites:
 
 Do not redo Resend/domain/SMTP/Guardian-confirmation work without regression evidence.
 
+Password recovery source/test readiness is complete: recovery requests return to
+the correct root or GitHub Pages `/LostPaws/` reset route, the update form is
+limited to a browser-scoped `PASSWORD_RECOVERY` session, auth errors are
+non-enumerating, and a successful password update signs out before returning to
+sign-in. This does not replace the remaining real hosted email lifecycle
+acceptance.
+
 ## Active Issue #56 — Support OS
 
 Supabase remains the operational support source of truth. Raw support content/PII must never auto-mirror to GitHub.
@@ -106,7 +113,7 @@ Remaining #56 work:
 
 ## Remaining external launch gate
 
-1. Execute real password-recovery acceptance: delivery, `/reset-password`, password update, new-password sign-in, invalid/expired/reused-link behavior.
+1. Execute remaining real password-recovery acceptance: delivery, `/reset-password`, password update, new-password sign-in, invalid/expired/reused-link behavior, and Guardian persona/profile continuity.
 2. Verify Microsoft 365 human mailbox send/receive remains normal after transactional-email DNS additions.
 3. Configure/live-test Google OAuth when provider-console access/tooling is available.
 4. Configure/live-test supported Facebook Login when Meta console access/tooling is available.
