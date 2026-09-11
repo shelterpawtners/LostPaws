@@ -1,13 +1,13 @@
 # AI Handoff
 
-STATUS: EXTERNAL_LAUNCH_GATES_WITH_VERIFIED_GITHUB_PAGES_RELEASE_CANDIDATE
+STATUS: EXTERNAL_LAUNCH_GATES_WITH_VERIFIED_GITHUB_PAGES_AND_VERCEL_RELEASE_CANDIDATE
 CURRENT_PHASE: Lost Lands MVP launch readiness
-CURRENT_CHECKPOINT: Unified LostPaws/RAVE mission + password recovery source readiness + Google/Facebook OAuth source readiness accepted on main
+CURRENT_CHECKPOINT: Unified LostPaws/RAVE mission + password recovery source readiness + Google/Facebook OAuth source readiness accepted on main; Vercel production current
 NEXT_CHECKPOINT: Real auth/provider acceptance, Support OS privileged delivery deployment, owner legal review, final cutover prep
 OWNER_DECISION_REQUIRED: YES_FOR_PROVIDER_CREDENTIALS_SUPPORT_DESTINATION_LEGAL_AND_FINAL_CUTOVER
 SAFE_TO_CONTINUE: YES
 ACCEPTED_PRODUCT_SHA: 45a87c3ff1bac1d3f35172386e8a4c3f5fb54d06
-ACCEPTANCE_RUNTIME: GITHUB_PAGES_PUBLIC_RELEASE_MATRIX_GREEN
+ACCEPTANCE_RUNTIME: GITHUB_PAGES_PUBLIC_RELEASE_MATRIX_GREEN_AND_VERCEL_PRODUCTION_READY
 
 ## Read first
 
@@ -116,13 +116,25 @@ Do not deploy the Support OS delivery Edge Function until an approved owner-aler
 
 ## Hosted acceptance
 
-GitHub Pages is the primary low-cost release-candidate environment:
+### GitHub Pages
+
+Primary low-cost release-candidate acceptance environment:
 
 `https://shelterpawtners.github.io/LostPaws/`
 
 The public release matrix is green across the unified RAVE/LostPaws flow and the latest auth source changes.
 
-Vercel Hobby remains capacity/rate constrained. Do not purchase or upgrade merely to bypass the limit. Final production freshness can be rechecked when free capacity returns.
+### Vercel
+
+The earlier Hobby-capacity freshness blocker is cleared. Vercel production is READY on the accepted product SHA.
+
+- Accepted SHA: `45a87c3ff1bac1d3f35172386e8a4c3f5fb54d06`
+- Deployment: `dpl_B4uVrWYcdc9vDpRYwa1unyzzUgxw`
+- State: READY
+- Target: production
+- Stable alias: `https://lost-paws-one.vercel.app`
+
+Continue minimizing unnecessary preview deployments. Do not upgrade solely for capacity.
 
 ## Remaining launch gates
 
@@ -132,9 +144,8 @@ Vercel Hobby remains capacity/rate constrained. Do not purchase or upgrade merel
 4. Google provider-console setup + live login/signup/persona acceptance.
 5. Facebook/Meta provider-console setup + live login/signup/persona acceptance.
 6. Verify social/email auth does not create duplicate profiles/organizations and preserves persona continuity.
-7. Recheck Vercel production freshness when free capacity permits.
-8. Owner/legal review of draft Terms/Privacy.
-9. Final `shelterpawtners.com` production web-domain/custom-domain cutover only after separate owner authorization.
+7. Owner/legal review of draft Terms/Privacy.
+8. Final `shelterpawtners.com` production web-domain/custom-domain cutover only after separate owner authorization.
 
 ## Operating guidance
 
