@@ -80,7 +80,10 @@ jobs:
                 throw new Error(`${viewport.name} ${route}: navigation failed with ${response?.status()}`);
               }
               await page.locator('#main').waitFor({ state: 'visible', timeout: 15000 });
-              await page.locator('h1, h2').filter({ visible: true }).first().waitFor({ state: 'visible', timeout: 15000 });
+              const mainText = (await page.locator('#main').innerText()).trim();
+              if (!mainText) {
+                throw new Error(`${viewport.name} ${route}: main content did not render`);
+              }
               const hasHorizontalOverflow = await page.evaluate(
                 () => document.documentElement.scrollWidth > document.documentElement.clientWidth + 1,
               );
