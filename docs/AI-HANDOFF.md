@@ -1,22 +1,28 @@
 # AI Handoff
 
-STATUS: EXTERNAL_LAUNCH_GATE_WITH_ACTIVE_UX_AND_LOSTPAWS_CAMPAIGN_WORK
+STATUS: EXTERNAL_LAUNCH_GATE_WITH_ACTIVE_UX_AND_SUPPORT_WORK
 CURRENT_PHASE: Lost Lands MVP launch readiness
-CURRENT_CHECKPOINT: Password-recovery acceptance + launch UX polish + support intake UI + bounded LostPaws/RAVE campaign slice
+CURRENT_CHECKPOINT: Guardian launch UX + support intake UI + auth acceptance
 NEXT_CHECKPOINT: Google OAuth, Facebook auth, integrated acceptance, legal owner review, cutover prep
 OWNER_DECISION_REQUIRED: YES_FOR_PROVIDER_CONSOLES_AND_FINAL_CUTOVER_ONLY
 SAFE_TO_CONTINUE: YES
-ACCEPTED_CODE_SHA: fae7a4cf7a24117868558f7cc4b65987e6e40928
-ACCEPTANCE_RUNTIME: VERCEL_PRODUCTION
+ACCEPTED_CODE_SHA: 84a9786f5a25716b053614b3729a765a374f0baf
+ACCEPTANCE_RUNTIME: REPOSITORY_GATES_GREEN_WITH_VERCEL_FREE_TIER_DEPLOY_LIMIT
 
 ## Completed engineering
 
 LL-1 through LL-6 remain accepted. Do not reopen them without regression evidence.
 
 - Issue #49 / PR #50 — multi-photo Pet Passport + Guardian activity timeline — complete and merged.
-- Issue #51 / PR #52 — Guardian Deal Moments — complete and merged to `main` at `fae7a4cf7a24117868558f7cc4b65987e6e40928`.
-- PR #57 — MVP Support OS foundation and guardrails — all six required gates green and merged to `main` at `4e7d0397503192e22e1175eacb732e9e5051d709`.
-- Support migration `20260911002000_mvp_support_os_foundation.sql` is live in shared dev with reporter ownership/read boundaries, append-only reporter messages, and privileged internal triage policies.
+- Issue #51 / PR #52 — Guardian Deal Moments — complete and merged.
+- PR #57 — MVP Support OS foundation and guardrails — all six required gates green and merged; support migration `20260911002000_mvp_support_os_foundation.sql` is live in shared dev.
+- Issue #53 Marketplace density slice — PR #59 merged to `main` at `50f328f0d50f30b3bd78dc70064a094dea451da7` after all six required gates passed.
+- Issue #58 LostPaws campaign landing page — PR #60 passed CI, Hosted QA, Database QA, Persona QA, Dependency Review and Merge Gate, then squash-merged to `main` at `d67d6b072ef258e64aa166edfdf16592d078ba75`.
+  - Exact owner-supplied LostPaws banner is now stored at `public/brand/lostpaws-hero-16x9.png` and referenced locally by `/lostpaws`.
+  - The prior binary-ingestion blocker is resolved. Do not recreate, compress, resize or generatively alter the locked artwork.
+  - Hosted PR preview returned HTTP 200 and rendered the expected RAVE Shelter / raver / vendor / Pet Passport CTA structure before merge.
+- Issue #54 RAVE Shelter vendor acquisition page — stacked PR #61 became non-mergeable after PR #60 was squash-merged, so it was closed without force/history rewrite. Clean PR #62 was rebuilt from current `main`, passed all six required repository gates, and squash-merged to `main` at `84a9786f5a25716b053614b3729a765a374f0baf`.
+  - `/rave-vendors` is a standalone fast-conversion vendor page using existing RAVE brand assets, existing `rave_vendor` onboarding, truthful participation language and explicit non-affiliation wording.
 
 ## Auth/email progress complete
 
@@ -49,35 +55,31 @@ Do not reopen Resend/domain/SMTP/Guardian-confirmation work unless regression ev
 
 Owner direction remains hybrid consumer/dashboard leaning consumer-app, no Figma prerequisite.
 
-Priority order:
+Completed: Marketplace density/grid-list presentation via PR #59.
+
+Active order:
 
 1. Remove misleading Guardian pet `Contact email` / `Instagram profile` fields; `save_guardian_onboarding_pet` persists neither and communications belong to the responsible Guardian/Shelter contact.
 2. Compact Guardian shell + avatar/account menu.
 3. Add authenticated `Help & feedback` entry and then bounded support-ticket submission/status UI against live Support OS tables.
 4. Photo-forward Guardian dashboard / Pet Passport density.
-5. Marketplace density/grid-list presentation refactor while preserving RPC/search/filter/source/claim behavior and truthful eligibility.
 
-The old `ux/guardian-marketplace-launch-polish` branch remains one documentation commit ahead and several main commits behind. Do not force-reset or rewrite history. A fresh `ux/marketplace-density-slice` branch was created from current `main` on 2026-09-10 for low-conflict Marketplace work; it currently contains no code changes and may be used or discarded through normal PR flow.
+Issue #53 has now been assigned to GitHub Copilot cloud agent after the bounded pet-contact-field instructions were posted. Do not start an overlapping edit on the same files while that agent task is active. Review its resulting PR against the existing guardrails and merge only after the required gates are green.
 
 ## LostPaws / RAVE Shelter campaign work
 
-Issue #58 is now the source for the bounded `/lostpaws` campaign landing page. Owner direction is locked in `docs/LOSTPAWS-RAVE-LANDING-DIRECTION.md` (main commit `828072c92f1ba4ac1bf1edc12f47a63aaeecb443`).
+Issue #58 repository implementation is integrated. The canonical planned public QR destination remains `https://shelterpawtners.com/lostpaws`; final custom-domain/DNS cutover remains owner-gated.
 
-Locked direction:
+Locked direction remains:
 
-- canonical QR destination: `https://shelterpawtners.com/lostpaws`;
-- owner-supplied 16:9 LostPaws artwork is the exact top banner/hero and must not be generatively redrawn;
-- `/lostpaws` must not use the normal ShelterPawtners global header/navigation;
-- visual language may borrow premium bass/festival pacing and dark/neon editorial energy but must not copy Lost Lands assets/layout/code or imply official collaboration;
-- avoid generic AI-generated festival imagery; prefer locked brand art, hand-built CSS/graphics, real vendor marks where rights permit, real pet/shelter photography and real product UI;
-- RAVE Shelter — Rescue and Adoption Vendor Ecosystem — is the product/story priority immediately after the banner;
-- primary raver path: current RAVE/community offers; secondary Guardian/Pet Passport path;
-- visible vendor CTA: `Join RAVE Shelter for the festival`, initially routing to existing `rave_vendor` onboarding;
-- footer must explicitly state independent/non-affiliated status with Lost Lands, Excision and affiliates.
+- exact owner artwork; no generative redraw or alteration;
+- no normal ShelterPawtners global header/navigation on `/lostpaws`;
+- premium dark/festival-aware pacing without copying Lost Lands assets/layout/code or implying official collaboration;
+- RAVE Shelter — Rescue and Adoption Vendor Ecosystem — immediately after the banner;
+- clear raver, vendor and Guardian/Pet Passport paths;
+- explicit Lost Lands/Excision non-affiliation wording.
 
-Issue #54 now carries the separate RAVE Shelter vendor acquisition page plus lightweight stories/announcements roadmap. Do not add a paid/full CMS as an MVP prerequisite.
-
-Binary asset constraint: GitHub text/content connector cannot safely ingest the owner-supplied PNG through the current text-file write path. Do not substitute an AI recreation. Continue route/layout/code around an explicit asset path only when exact binary ingestion is available through an authorized path.
+Issue #54 vendor acquisition implementation is integrated via PR #62. Lightweight stories/announcements remains roadmap work and must not add a paid/full CMS MVP dependency.
 
 ## Support OS
 
@@ -89,13 +91,14 @@ Issue #56 remains open for UI/intake/automation slices. Foundation is live in sh
 - privileged internal event/admin triage;
 - raw support content/PII must never auto-mirror to GitHub.
 
-## Connected tooling recheck — 2026-09-10
+Coordinate the authenticated avatar/user-menu work in Issue #53 with the `Help & feedback` entry for Issue #56 so the shell is built once.
 
-- GitHub: connected and authoritative.
-- Vercel: connected; project `lost-paws` is linked to `shelterpawtners/LostPaws` on Hobby. Runtime-error check for the latest 24h returned **no runtime errors**.
-- Vercel deployments after accepted release continue to show `CANCELED` under the existing capacity/build-rate-limit pattern; accepted production deployment at `fae7a4cf...` remains the last READY production candidate in the returned deployment set. Do not purchase/upgrade.
-- Plugin directory re-check for Resend, Supabase, Vercel, Google OAuth, Meta/Facebook, DNS and browser automation returned no newly actionable provider plugin. Do not install unrelated plugins automatically.
-- Supabase remains connected from prior runs; hosted Auth provider/Site-URL console writes are still not exposed through the current connector surface.
+## Connected tooling recheck — 2026-09-11
+
+- GitHub: connected and authoritative; repository mutations, CI inspection and Copilot cloud-agent issue assignment are actionable.
+- Vercel: connected. PR #60 obtained a READY hosted preview and `/lostpaws` returned HTTP 200. Subsequent PR #62 preview creation hit the Hobby/free-tier daily deployment limit (`api-deployments-free-per-day`, more than 100). Do not purchase/upgrade. Treat this as a transient external deployment blocker only; continue independent engineering and repository QA.
+- Supabase remains connected from prior runs; hosted Auth provider-console writes are not currently exposed through the available connector surface.
+- Google OAuth and Meta/Facebook live configuration still require authorized provider-console access/credentials.
 - Figma remains unnecessary by owner direction.
 
 ## Protected restrictions
@@ -104,9 +107,9 @@ Never purchase/upgrade paid services, make destructive production-data changes, 
 
 ## Next safe action
 
-1. Continue Issue #53 through a low-conflict engineering slice from current `main`: misleading Guardian pet contact/social field removal or Marketplace density presentation work.
-2. Coordinate the authenticated avatar/user-menu shell with Issue #56 `Help & feedback` intake so shell work is not duplicated.
-3. Begin Issue #58 route/layout implementation as soon as exact approved LostPaws binary artwork can be placed in the repository through an authorized binary-capable path; do not recreate the image.
-4. Continue Issue #54 vendor-page copy/IA and route planning independently of the binary asset blocker.
-5. Re-check password-recovery/Google/Meta/provider tooling each run; act immediately if an authorized provider prerequisite becomes actionable.
+1. Monitor the active Issue #53 Copilot task and review its focused Guardian pet-contact-field PR when created; fix only evidenced bounded defects and merge when required gates are green.
+2. After that slice lands, continue the compact Guardian avatar/account-menu shell and coordinate `Help & feedback` with Issue #56 without duplicating UI infrastructure.
+3. Continue Issue #56 support intake/status UI against the already-live Support OS tables, preserving RLS and no-PII-to-GitHub rules.
+4. Re-check Vercel availability each run; when free-tier capacity resets, verify `/lostpaws` and `/rave-vendors` visually on desktop/mobile without purchasing an upgrade.
+5. Re-check password-recovery/Google/Meta provider tooling each run and act immediately if an authorized prerequisite becomes actionable.
 6. Keep final production-domain cutover and final legal publication owner-gated.
