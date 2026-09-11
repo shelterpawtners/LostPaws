@@ -71,6 +71,27 @@ Owner completed and accepted:
 
 Do not reopen Resend/domain/SMTP/Guardian-confirmation work without regression evidence.
 
+## Password recovery source readiness
+
+The release candidate has a complete source-level recovery flow: public entry, a
+base-aware Supabase recovery redirect, `/reset-password`, recovery-session
+gating, password update, sign-out, and return to sign-in. It deliberately keeps
+Supabase request/update errors non-enumerating and non-sensitive.
+
+- The redirect is covered for both a root-hosted app and the GitHub Pages
+  `/LostPaws/` base path.
+- A normal authenticated session alone cannot show the recovery update form;
+  the form requires the browser-scoped Supabase `PASSWORD_RECOVERY` session.
+- A successful update signs out locally before returning to sign-in. It does not
+  create users, Guardian profiles, organizations, or persona records.
+- The invalid, expired, reused, and missing-session state uses one safe recovery
+  message and offers a new recovery request.
+
+This is source/test readiness, not a claim of live mail acceptance. The remaining
+hosted acceptance must send a real recovery email, open it on the configured
+redirect, set a new password, sign in with that password, then verify invalid,
+expired, and reused-link behavior plus Guardian persona/profile continuity.
+
 ## Active Issue #56 — Support OS
 
 Supabase remains the operational support source of truth. Raw support content/PII must never auto-mirror to GitHub.
@@ -127,7 +148,7 @@ Final `shelterpawtners.com` custom-domain/DNS cutover remains separately owner-g
 
 ## Remaining external launch gate
 
-1. Execute real password-recovery acceptance: delivery, `/reset-password`, update, new-password sign-in, invalid/expired/reused-link behavior.
+1. Execute the remaining real password-recovery acceptance: delivery, `/reset-password`, update, new-password sign-in, invalid/expired/reused-link behavior, and Guardian persona/profile continuity.
 2. Verify Microsoft 365 human mailbox send/receive still behaves normally after transactional-email DNS additions.
 3. Configure/live-test Google OAuth when provider-console credentials/tooling are available.
 4. Configure/live-test supported Facebook Login when Meta console access/tooling is available.

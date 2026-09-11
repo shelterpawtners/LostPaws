@@ -34,6 +34,11 @@ import {
 import type { Session } from "@supabase/supabase-js";
 import { accountRegistrationPath, legacyRegistrationTarget } from "./domain";
 import {
+  passwordRecoveryRedirectUrl,
+  passwordUpdateStatus,
+  recoveryRequestStatus,
+} from "./lib/auth-recovery";
+import {
   adminSupabase,
   getActingSupabase,
   googleAuthEnabled,
@@ -93,16 +98,35 @@ const icons = {
   petbiz: Store,
   rave_vendor: Music2,
 };
-type AuthState = { session: Session | null; loading: boolean };
-const AuthContext = createContext<AuthState>({ session: null, loading: true });
+const recoverySessionStorageKey = "shelterpawtners-password-recovery-user";
+type AuthState = {
+  session: Session | null;
+  loading: boolean;
+  recoverySession: boolean;
+};
+const AuthContext = createContext<AuthState>({
+  session: null,
+  loading: true,
+  recoverySession: false,
+});
+function hasRecoverySession(session: Session | null) {
+  return (
+    !!session &&
+    window.sessionStorage.getItem(recoverySessionStorageKey) === session.user.id
+  );
+}
+function clearRecoverySession() {
+  window.sessionStorage.removeItem(recoverySessionStorageKey);
+}
 function AuthProvider({ children }: { children: React.ReactNode }) {
   const [state, setState] = useState<AuthState>({
     session: null,
     loading: true,
+    recoverySession: false,
   });
   useEffect(() => {
     if (!adminSupabase) {
-      setState({ session: null, loading: false });
+      setState({ session: null, loading: false, recoverySession: false });
       return;
     }
     const persistedClient = adminSupabase;
@@ -111,13 +135,26 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
       const { data } = await (
         getActingSupabase() || persistedClient
       ).auth.getSession();
-      setState({ session: data.session, loading: false });
+      setState({
+        session: data.session,
+        loading: false,
+        recoverySession: hasRecoverySession(data.session),
+      });
     };
     void refresh();
     window.addEventListener("sp-qa-changed", refresh);
-    const { data } = persistedClient.auth.onAuthStateChange(() => {
-      if (!getActingSupabase()) refresh();
-    });
+    const { data } = persistedClient.auth.onAuthStateChange(
+      (event, session) => {
+        if (event === "PASSWORD_RECOVERY" && session) {
+          window.sessionStorage.setItem(
+            recoverySessionStorageKey,
+            session.user.id,
+          );
+        }
+        if (event === "SIGNED_OUT") clearRecoverySession();
+        if (!getActingSupabase()) refresh();
+      },
+    );
     return () => {
       window.removeEventListener("sp-qa-changed", refresh);
       data.subscription.unsubscribe();
@@ -1580,13 +1617,12 @@ function ForgotPassword() {
     if (!db) return setStatus("Development connection is unavailable.");
     const email = String(new FormData(e.currentTarget).get("email"));
     const { error } = await db.auth.resetPasswordForEmail(email, {
-      redirectTo: `${location.origin}/reset-password`,
+      redirectTo: passwordRecoveryRedirectUrl(
+        location.origin,
+        import.meta.env.BASE_URL,
+      ),
     });
-    setStatus(
-      error
-        ? error.message
-        : "If that address has an account, a recovery email is on its way.",
-    );
+    setStatus(recoveryRequestStatus(!!error));
   }
   return (
     <Page>
@@ -1612,15 +1648,17 @@ function ForgotPassword() {
 function ResetPassword() {
   const [status, setStatus] = useState("");
   const navigate = useNavigate();
-  const { session, loading } = useAuth();
+  const { session, loading, recoverySession } = useAuth();
   async function submit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (!db) return setStatus("Development connection is unavailable.");
     const password = String(new FormData(e.currentTarget).get("password"));
     const { error } = await db.auth.updateUser({ password });
-    if (error) return setStatus(error.message);
-    setStatus("Password updated.");
-    window.setTimeout(() => navigate("/dashboard", { replace: true }), 700);
+    if (error) return setStatus(passwordUpdateStatus(true));
+    clearRecoverySession();
+    setStatus(passwordUpdateStatus(false));
+    await db.auth.signOut();
+    window.setTimeout(() => navigate("/login", { replace: true }), 700);
   }
   if (loading)
     return (
@@ -1632,7 +1670,7 @@ function ResetPassword() {
         </section>
       </Page>
     );
-  if (!session)
+  if (!session || !recoverySession)
     return (
       <Page>
         <section className="section shell formPage">
