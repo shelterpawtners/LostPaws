@@ -88,7 +88,6 @@ jobs:
           cache_bust="${GITHUB_SHA}-${GITHUB_RUN_ATTEMPT}"
           html=""
 
-          # Pages/CDN can take a short period to expose the just-deployed release.
           for attempt in {1..12}; do
             html="$(curl -fsSL --retry 2 --retry-delay 2 "${SITE_URL}?release=${cache_bust}" || true)"
             if printf '%s' "$html" | grep -q '/LostPaws/assets/.*\.js' && \
@@ -117,14 +116,52 @@ jobs:
             exit 1
           fi
 
-          curl -fsSI "https://shelterpawtners.github.io${js_path}?release=${cache_bust}" | head -20
-          curl -fsSI "https://shelterpawtners.github.io${css_path}?release=${cache_bust}" | head -20
           curl -fsSL "https://shelterpawtners.github.io${js_path}?release=${cache_bust}" -o /tmp/app.js
           curl -fsSL "https://shelterpawtners.github.io${css_path}?release=${cache_bust}" -o /tmp/app.css
-
           test -s /tmp/app.js
           test -s /tmp/app.css
           grep -q 'basename:`/LostPaws`' /tmp/app.js
           grep -q '\.skip' /tmp/app.css
 
-          echo 'GitHub Pages live acceptance passed: compiled app, router base, JS, and CSS are publicly available.'
+      - name: Checkout for browser verification
+        uses: actions/checkout@v4
+
+      - name: Setup Node for browser verification
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install browser test dependencies
+        run: |
+          npm ci
+          npx playwright install --with-deps chromium
+
+      - name: Execute live app in Chromium
+        shell: bash
+        env:
+          SITE_URL: https://shelterpawtners.github.io/LostPaws/
+        run: |
+          node --input-type=module <<'EOF'
+          import { chromium } from '@playwright/test';
+          const browser = await chromium.launch({ headless: true });
+          const page = await browser.newPage();
+          const errors = [];
+          page.on('pageerror', error => errors.push(`pageerror: ${error.message}`));
+          page.on('console', msg => {
+            if (msg.type() === 'error') errors.push(`console: ${msg.text()}`);
+          });
+          const url = `${process.env.SITE_URL}?browser=${process.env.GITHUB_SHA || Date.now()}`;
+          const response = await page.goto(url, { waitUntil: 'networkidle' });
+          if (!response || !response.ok()) throw new Error(`Navigation failed: ${response?.status()}`);
+          await page.getByRole('heading', { name: 'Better pet care starts with a connected community.' }).waitFor({ timeout: 15000 });
+          const bodyText = await page.locator('body').innerText();
+          if (!bodyText.includes('LostPaws is launching the RAVE Shelter mission')) {
+            throw new Error('Expected LostPaws homepage feature did not render.');
+          }
+          const skipTransform = await page.locator('.skip').evaluate(el => getComputedStyle(el).transform);
+          if (skipTransform === 'none') throw new Error('Skip link is visibly rendered instead of visually hidden.');
+          if (errors.length) throw new Error(`Browser runtime errors:\n${errors.join('\n')}`);
+          console.log('Chromium rendered the GitHub Pages app successfully.');
+          await browser.close();
+          EOF
