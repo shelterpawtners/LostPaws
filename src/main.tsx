@@ -1222,14 +1222,18 @@ function StandardOnboard({ kind: k }: { kind: "guardian" | "shelter" }) {
                   )}
                 </select>
               </label>
-              <label>
-                Contact email
-                <input name="email" type="email" />
-              </label>
-              <label>
-                Instagram profile
-                <input name="instagram" placeholder="@username" />
-              </label>
+              {k !== "guardian" && (
+                <>
+                  <label>
+                    Contact email
+                    <input name="email" type="email" />
+                  </label>
+                  <label>
+                    Instagram profile
+                    <input name="instagram" placeholder="@username" />
+                  </label>
+                </>
+              )}
             </div>
           </div>
           {k === "guardian" && (
