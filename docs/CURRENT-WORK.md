@@ -10,7 +10,7 @@ Lost Lands MVP LL-1 through LL-6 are **accepted** and must not be reopened witho
 
 `main` is the only release-candidate source of truth. Do not wholesale-merge historical branches.
 
-Current source baseline after the latest accepted auth/UI work:
+Current accepted product/auth/UI baseline:
 
 `45a87c3ff1bac1d3f35172386e8a4c3f5fb54d06`
 
@@ -18,7 +18,9 @@ Current verified public acceptance surface:
 
 `https://shelterpawtners.github.io/LostPaws/`
 
-Vercel remains constrained by the Hobby/free-tier deployment limit. Do not purchase or upgrade Vercel to bypass it. Final `shelterpawtners.com` web-domain cutover remains separately owner-gated.
+Current Vercel production deployment is also READY on the same accepted product SHA at deployment `dpl_B4uVrWYcdc9vDpRYwa1unyzzUgxw`, with stable alias `https://lost-paws-one.vercel.app`. The earlier Hobby-capacity freshness blocker is therefore cleared. Do not purchase or upgrade Vercel merely for capacity.
+
+Final `shelterpawtners.com` web-domain cutover remains separately owner-gated.
 
 ## Recent accepted launch work
 
@@ -112,7 +114,14 @@ GitHub Pages is the primary low-cost release-candidate acceptance environment. P
 
 ### Vercel
 
-Vercel Hobby remains capacity/rate constrained. The older READY production deployment may lag `main`. This does not invalidate the GitHub Pages acceptance result. Recheck production freshness when free capacity becomes available; do not upgrade solely to bypass the limit.
+Vercel production is current with accepted product SHA `45a87c3ff1bac1d3f35172386e8a4c3f5fb54d06`.
+
+- Deployment: `dpl_B4uVrWYcdc9vDpRYwa1unyzzUgxw`
+- State: READY
+- Target: production
+- Stable alias: `https://lost-paws-one.vercel.app`
+
+The prior Hobby capacity/freshness blocker is cleared. Continue to avoid unnecessary preview deployments and do not upgrade solely for capacity.
 
 ## Remaining external launch gates
 
@@ -122,9 +131,8 @@ Vercel Hobby remains capacity/rate constrained. The older READY production deplo
 4. Configure Google OAuth provider credentials/settings and perform real hosted acceptance.
 5. Configure Meta/Facebook provider credentials/settings and perform real hosted acceptance.
 6. Verify social/email auth flows preserve persona continuity and do not create duplicate profiles/organizations.
-7. Recheck Vercel production freshness when free capacity permits.
-8. Complete owner/legal review of draft Terms/Privacy. Do not publish final versions without approval.
-9. Prepare but do not perform final `shelterpawtners.com` web-domain/custom-domain cutover without separate owner authorization.
+7. Complete owner/legal review of draft Terms/Privacy. Do not publish final versions without approval.
+8. Prepare but do not perform final `shelterpawtners.com` web-domain/custom-domain cutover without separate owner authorization.
 
 Supabase project callback used by external OAuth providers:
 
@@ -136,7 +144,7 @@ Supabase project callback used by external OAuth providers:
 2. Perform real password-recovery acceptance when a safe account/inbox is available.
 3. Complete Google and Facebook provider-console setup only when authorized credentials/tooling are available; source readiness is already complete.
 4. Advance Support OS only when its legitimate transport/secret prerequisites exist.
-5. Keep Vercel upgrade, legal publication, and final production-domain cutover owner-gated.
+5. Keep legal publication and final production-domain cutover owner-gated.
 6. If external lanes remain blocked, continue useful non-destructive QA, messaging/UI polish, issue reconciliation, and launch documentation rather than inventing privileged production mechanisms.
 
 ## Guardrails still in force
