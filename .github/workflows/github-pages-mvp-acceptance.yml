@@ -93,6 +93,8 @@ jobs:
           const appRoutes = [
             '/',
             '/lostpaws',
+            '/rave',
+            '/rave-shelter',
             '/passport',
             '/marketplace',
             '/register',
@@ -146,6 +148,33 @@ jobs:
               page.off('pageerror', onPageError);
               page.off('response', onResponse);
             }
+
+            await page.goto(`${process.env.SITE_URL}/`, { waitUntil: 'networkidle' });
+            const homeMissionLink = page.getByRole('link', { name: /See the RAVE Shelter mission/ });
+            await homeMissionLink.waitFor({ state: 'visible', timeout: 10000 });
+            await homeMissionLink.click();
+            await page.waitForURL(url => url.pathname.endsWith('/rave'), { timeout: 10000 });
+            await page.getByRole('heading', { name: /Music\. Community\. Shelter pets\./i }).waitFor({ state: 'visible', timeout: 10000 });
+
+            for (const route of ['/rave', '/lostpaws']) {
+              await page.goto(`${process.env.SITE_URL}${route}`, { waitUntil: 'networkidle' });
+              await page.getByRole('heading', { name: /Music\. Community\. Shelter pets\./i }).waitFor({ state: 'visible', timeout: 10000 });
+              const expectedLinks = [
+                ['Shop RAVE Shelter offers', '/marketplace?channel=rave'],
+                ['Join as a vendor', '/register?type=rave_vendor'],
+                ['Create a Guardian account', '/register?type=guardian'],
+                ['Register a shelter', '/register?type=shelter'],
+              ];
+              for (const [name, suffix] of expectedLinks) {
+                const href = await page.getByRole('link', { name, exact: true }).first().getAttribute('href');
+                if (!href || !href.endsWith(suffix)) {
+                  throw new Error(`${viewport.name} ${route}: ${name} points to ${href}, expected suffix ${suffix}`);
+                }
+              }
+            }
+
+            await page.goto(`${process.env.SITE_URL}/rave-shelter`, { waitUntil: 'networkidle' });
+            await page.waitForURL(url => url.pathname.endsWith('/rave'), { timeout: 10000 });
 
             await page.goto(`${process.env.SITE_URL}/marketplace`, { waitUntil: 'networkidle' });
             await page.locator('[data-marketplace-concept="flagship"]').waitFor({ state: 'visible', timeout: 30000 });
