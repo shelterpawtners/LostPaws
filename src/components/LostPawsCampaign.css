@@ -1,0 +1,62 @@
+.lpCampaign {
+  color-scheme: dark;
+  background: #050507;
+  color: #fff;
+  --lp-cyan: #35e9ff;
+  --lp-pink: #ff46bb;
+  --lp-yellow: #ffe24a;
+  --lp-muted: #bdb7c6;
+  --lp-panel: #0d0c11;
+}
+
+.lpCampaign * { box-sizing: border-box; }
+.lpCampaign img { display: block; max-width: 100%; }
+.lpWrap { width: min(1120px, calc(100% - 2rem)); margin: 0 auto; }
+.lpHero { position: relative; background: #030305; overflow: hidden; }
+.lpHero img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+.lpHero::after { content: ""; position: absolute; inset: auto 0 0; height: 22%; pointer-events: none; background: linear-gradient(transparent, #050507); }
+.lpIntro { padding: 1.6rem 0 2.4rem; text-align: center; }
+.lpKicker { margin: 0 0 .55rem; color: var(--lp-cyan); font-size: .72rem; font-weight: 900; letter-spacing: .14em; text-transform: uppercase; }
+.lpCampaign h1,
+.lpCampaign h2,
+.lpCampaign h3,
+.lpCampaign p { margin-top: 0; }
+.lpCampaign h1 { margin: 0 auto .7rem; max-width: 760px; font-size: clamp(2rem, 5vw, 4.2rem); line-height: .95; letter-spacing: -.045em; text-transform: uppercase; }
+.lpCampaign h1 span { color: var(--lp-yellow); }
+.lpLede { max-width: 660px; margin: 0 auto 1.35rem; color: var(--lp-muted); font-size: clamp(.94rem, 1.6vw, 1.08rem); line-height: 1.45; }
+.lpActions { display: flex; flex-wrap: wrap; justify-content: center; gap: .65rem; }
+.lpButton { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: .72rem 1rem; border: 1px solid rgba(255,255,255,.24); border-radius: 4px; background: #fff; color: #050507; text-decoration: none; font-size: .8rem; font-weight: 900; letter-spacing: .06em; text-transform: uppercase; }
+.lpButton.lpAlt { background: transparent; color: #fff; }
+.lpButton.lpCyan { background: var(--lp-cyan); border-color: var(--lp-cyan); }
+.lpButton.lpPink { background: var(--lp-pink); border-color: var(--lp-pink); color: #080409; }
+.lpButton:focus-visible { outline: 3px solid var(--lp-yellow); outline-offset: 3px; }
+.lpChooser { padding: 2.6rem 0 3.3rem; border-top: 1px solid rgba(255,255,255,.1); background: radial-gradient(circle at 10% 20%, rgba(53,233,255,.09), transparent 30%), radial-gradient(circle at 90% 80%, rgba(255,70,187,.08), transparent 34%); }
+.lpSectionHead { text-align: center; margin-bottom: 1.2rem; }
+.lpSectionHead h2 { margin: .25rem 0 .3rem; font-size: clamp(1.8rem, 4vw, 3.2rem); letter-spacing: -.035em; text-transform: uppercase; }
+.lpSectionHead p { margin: 0; color: var(--lp-muted); font-size: .92rem; }
+.lpGrid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: .8rem; }
+.lpCard { min-height: 230px; padding: 1.25rem; border: 1px solid rgba(255,255,255,.13); border-radius: 8px; background: rgba(13,12,17,.9); display: flex; flex-direction: column; }
+.lpTag { display: inline-block; align-self: flex-start; margin-bottom: .8rem; padding: .26rem .45rem; border: 1px solid currentColor; font-size: .64rem; font-weight: 900; letter-spacing: .1em; text-transform: uppercase; color: var(--lp-cyan); }
+.lpVendor .lpTag { color: var(--lp-pink); }
+.lpPet .lpTag { color: var(--lp-yellow); }
+.lpCard h3 { margin: 0 0 .45rem; font-size: 1.45rem; line-height: 1.05; letter-spacing: -.025em; text-transform: uppercase; }
+.lpCard p { margin: 0 0 1rem; color: var(--lp-muted); font-size: .9rem; line-height: 1.45; }
+.lpCard .lpButton { margin-top: auto; align-self: flex-start; }
+.lpStrip { padding: 1.2rem 0; border-top: 1px solid rgba(255,255,255,.1); border-bottom: 1px solid rgba(255,255,255,.1); background: #0a090d; }
+.lpStripInner { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+.lpStrip strong { font-size: .86rem; letter-spacing: .06em; text-transform: uppercase; }
+.lpStrip span { color: var(--lp-muted); font-size: .82rem; }
+.lpLegal { padding: 1.5rem 0 2.5rem; color: #817b89; font-size: .74rem; line-height: 1.5; text-align: center; }
+.lpLegal p { margin: .25rem auto; max-width: 900px; }
+
+@media (max-width: 760px) {
+  .lpWrap { width: min(100% - 1.2rem, 1120px); }
+  .lpIntro { padding-top: 1rem; }
+  .lpGrid { grid-template-columns: 1fr; }
+  .lpCard { min-height: 0; }
+  .lpStripInner { align-items: flex-start; flex-direction: column; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lpCampaign { scroll-behavior: auto; }
+}
