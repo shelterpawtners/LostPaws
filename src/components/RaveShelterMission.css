@@ -1,0 +1,519 @@
+.rsmPage {
+  --rsm-bg: #050507;
+  --rsm-panel: #0d0c11;
+  --rsm-panel-2: #111017;
+  --rsm-line: rgba(255, 255, 255, 0.12);
+  --rsm-copy: #f7f5fa;
+  --rsm-muted: #b8b1c1;
+  --rsm-cyan: #35e9ff;
+  --rsm-pink: #ff46bb;
+  --rsm-yellow: #ffe24a;
+  color-scheme: dark;
+  background: var(--rsm-bg);
+  color: var(--rsm-copy);
+}
+
+.rsmPage *,
+.rsmPage *::before,
+.rsmPage *::after {
+  box-sizing: border-box;
+}
+
+.rsmPage img {
+  display: block;
+  max-width: 100%;
+}
+
+.rsmPage h1,
+.rsmPage h2,
+.rsmPage h3,
+.rsmPage p {
+  margin-top: 0;
+}
+
+.rsmWrap {
+  width: min(1160px, calc(100% - 2rem));
+  margin: 0 auto;
+}
+
+.rsmEyebrow {
+  margin-bottom: 0.65rem;
+  color: var(--rsm-cyan);
+  font-size: 0.73rem;
+  font-weight: 900;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+.rsmHero {
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 20% 80%, rgba(53, 233, 255, 0.1), transparent 32%),
+    radial-gradient(circle at 80% 85%, rgba(255, 70, 187, 0.11), transparent 34%),
+    #030305;
+}
+
+.rsmHeroArt {
+  position: relative;
+  min-height: 320px;
+  max-height: 670px;
+  overflow: hidden;
+}
+
+.rsmHeroArt img {
+  width: 100%;
+  min-height: 320px;
+  max-height: 670px;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  object-position: center;
+}
+
+.rsmHeroFade {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(5, 5, 7, 0.03) 35%, rgba(5, 5, 7, 0.7) 78%, var(--rsm-bg) 100%),
+    linear-gradient(90deg, rgba(5, 5, 7, 0.18), transparent 35%, transparent 65%, rgba(5, 5, 7, 0.18));
+  pointer-events: none;
+}
+
+.rsmHeroCopy {
+  position: relative;
+  z-index: 2;
+  margin-top: clamp(-8rem, -10vw, -4.5rem);
+  padding-bottom: clamp(2.75rem, 6vw, 5rem);
+  text-align: center;
+}
+
+.rsmHero h1 {
+  max-width: 900px;
+  margin: 0 auto 1rem;
+  font-size: clamp(2.5rem, 6.8vw, 5.8rem);
+  line-height: 0.92;
+  letter-spacing: -0.055em;
+  text-transform: uppercase;
+}
+
+.rsmHero h1 span {
+  color: var(--rsm-yellow);
+}
+
+.rsmLead {
+  max-width: 760px;
+  margin: 0 auto 1.5rem;
+  color: #d4ceda;
+  font-size: clamp(1rem, 2vw, 1.28rem);
+  line-height: 1.5;
+}
+
+.rsmActions,
+.rsmCardActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+}
+
+.rsmActions {
+  justify-content: center;
+}
+
+.rsmButton {
+  display: inline-flex;
+  min-height: 46px;
+  align-items: center;
+  justify-content: center;
+  padding: 0.78rem 1.08rem;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 5px;
+  color: #050507;
+  font-size: 0.78rem;
+  font-weight: 900;
+  letter-spacing: 0.065em;
+  line-height: 1.1;
+  text-align: center;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+
+.rsmButton:hover {
+  transform: translateY(-1px);
+}
+
+.rsmButton:focus-visible,
+.rsmTextLink:focus-visible {
+  outline: 3px solid var(--rsm-yellow);
+  outline-offset: 3px;
+}
+
+.rsmPrimary {
+  border-color: var(--rsm-cyan);
+  background: var(--rsm-cyan);
+}
+
+.rsmSecondary {
+  background: rgba(5, 5, 7, 0.72);
+  color: #fff;
+  backdrop-filter: blur(10px);
+}
+
+.rsmPink {
+  border-color: var(--rsm-pink);
+  background: var(--rsm-pink);
+}
+
+.rsmYellow {
+  border-color: var(--rsm-yellow);
+  background: var(--rsm-yellow);
+}
+
+.rsmMission {
+  padding: clamp(3rem, 7vw, 6.3rem) 0;
+  border-top: 1px solid var(--rsm-line);
+  background:
+    radial-gradient(circle at 8% 20%, rgba(53, 233, 255, 0.08), transparent 25%),
+    var(--rsm-bg);
+}
+
+.rsmMissionGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: clamp(2rem, 6vw, 5.5rem);
+  align-items: start;
+}
+
+.rsmMission h2,
+.rsmSectionHead h2,
+.rsmImpact h2,
+.rsmFinalCta h2 {
+  margin-bottom: 0;
+  font-size: clamp(2rem, 4.8vw, 4rem);
+  line-height: 0.98;
+  letter-spacing: -0.045em;
+  text-transform: uppercase;
+}
+
+.rsmMissionCopy p,
+.rsmImpact p,
+.rsmFinalCta p,
+.rsmSectionHead > p:last-child {
+  color: var(--rsm-muted);
+  font-size: clamp(0.98rem, 1.6vw, 1.12rem);
+  line-height: 1.62;
+}
+
+.rsmMissionPunch {
+  margin-top: 1.4rem;
+  color: var(--rsm-yellow) !important;
+  font-weight: 900;
+}
+
+.rsmHow {
+  padding: clamp(3rem, 7vw, 6rem) 0;
+  border-top: 1px solid var(--rsm-line);
+  border-bottom: 1px solid var(--rsm-line);
+  background:
+    radial-gradient(circle at 92% 12%, rgba(255, 70, 187, 0.08), transparent 28%),
+    #09080c;
+}
+
+.rsmSectionHead {
+  max-width: 760px;
+  margin-bottom: 2rem;
+}
+
+.rsmSectionHead h2 {
+  margin-bottom: 0.7rem;
+}
+
+.rsmSteps {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.9rem;
+}
+
+.rsmStep {
+  position: relative;
+  min-height: 310px;
+  padding: 1.5rem;
+  overflow: hidden;
+  border: 1px solid var(--rsm-line);
+  border-radius: 10px;
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.025), transparent), var(--rsm-panel);
+}
+
+.rsmStep::after {
+  position: absolute;
+  right: -28px;
+  bottom: -58px;
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  background: rgba(53, 233, 255, 0.08);
+  content: "";
+}
+
+.rsmStep:nth-child(2)::after {
+  background: rgba(255, 70, 187, 0.08);
+}
+
+.rsmStepGive::after {
+  background: rgba(255, 226, 74, 0.09);
+}
+
+.rsmStepNumber {
+  display: block;
+  margin-bottom: 2.2rem;
+  color: var(--rsm-cyan);
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+}
+
+.rsmStep:nth-child(2) .rsmStepNumber {
+  color: var(--rsm-pink);
+}
+
+.rsmStepGive .rsmStepNumber {
+  color: var(--rsm-yellow);
+}
+
+.rsmStep h3,
+.rsmPathCard h3 {
+  margin-bottom: 0.65rem;
+  font-size: clamp(1.4rem, 2.4vw, 2rem);
+  line-height: 1.02;
+  letter-spacing: -0.035em;
+  text-transform: uppercase;
+}
+
+.rsmStep p,
+.rsmPathCard p {
+  position: relative;
+  z-index: 1;
+  margin-bottom: 0;
+  color: var(--rsm-muted);
+  font-size: 0.94rem;
+  line-height: 1.55;
+}
+
+.rsmComingSoon {
+  display: inline-flex;
+  margin-bottom: 0.85rem;
+  padding: 0.28rem 0.48rem;
+  border: 1px solid rgba(255, 226, 74, 0.5);
+  color: var(--rsm-yellow);
+  font-size: 0.62rem;
+  font-weight: 900;
+  letter-spacing: 0.095em;
+  text-transform: uppercase;
+}
+
+.rsmImpact {
+  padding: clamp(3rem, 7vw, 6rem) 0;
+  background:
+    radial-gradient(circle at 20% 50%, rgba(53, 233, 255, 0.07), transparent 32%),
+    radial-gradient(circle at 78% 35%, rgba(255, 70, 187, 0.07), transparent 32%),
+    var(--rsm-bg);
+}
+
+.rsmImpactGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.75fr) minmax(0, 1.25fr);
+  gap: clamp(2rem, 7vw, 6rem);
+  align-items: center;
+}
+
+.rsmLogoPanel {
+  padding: clamp(1.5rem, 4vw, 2.6rem);
+  border: 1px solid var(--rsm-line);
+  border-radius: 14px;
+  background: rgba(13, 12, 17, 0.86);
+  box-shadow: 0 26px 90px rgba(0, 0, 0, 0.32);
+}
+
+.rsmLogoPanel img {
+  width: min(100%, 430px);
+  margin: 0 auto 0.8rem;
+}
+
+.rsmLogoPanel p {
+  margin-bottom: 0;
+  color: #8f8799;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.rsmImpact h2 {
+  margin-bottom: 1rem;
+}
+
+.rsmChoose {
+  padding: clamp(3rem, 7vw, 6rem) 0;
+  border-top: 1px solid var(--rsm-line);
+  background: #09080c;
+}
+
+.rsmPathGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.9rem;
+}
+
+.rsmPathCard {
+  display: flex;
+  min-height: 360px;
+  flex-direction: column;
+  padding: 1.5rem;
+  border: 1px solid var(--rsm-line);
+  border-radius: 10px;
+  background: var(--rsm-panel-2);
+}
+
+.rsmPathCard > span {
+  margin-bottom: 1.2rem;
+  color: var(--rsm-cyan);
+  font-size: 0.68rem;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.rsmVendorCard > span {
+  color: var(--rsm-pink);
+}
+
+.rsmShelterCard > span {
+  color: var(--rsm-yellow);
+}
+
+.rsmCardActions {
+  margin-top: auto;
+  padding-top: 1.4rem;
+  align-items: center;
+}
+
+.rsmTextLink {
+  color: #fff;
+  font-size: 0.77rem;
+  font-weight: 800;
+  text-underline-offset: 0.22em;
+}
+
+.rsmFinalCta {
+  padding: clamp(3rem, 7vw, 5.5rem) 0;
+  border-top: 1px solid var(--rsm-line);
+  background:
+    linear-gradient(110deg, rgba(53, 233, 255, 0.08), transparent 34%),
+    linear-gradient(290deg, rgba(255, 70, 187, 0.09), transparent 34%),
+    #050507;
+}
+
+.rsmFinalInner {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 2rem;
+  align-items: end;
+}
+
+.rsmFinalInner > div {
+  max-width: 800px;
+}
+
+.rsmFinalCta h2 {
+  margin-bottom: 0.75rem;
+}
+
+.rsmFinalCta p {
+  margin-bottom: 0;
+}
+
+.rsmLegal {
+  padding: 1.6rem 0 2.4rem;
+  border-top: 1px solid var(--rsm-line);
+  background: #030305;
+  color: #827b8b;
+  font-size: 0.73rem;
+  line-height: 1.55;
+  text-align: center;
+}
+
+.rsmLegal p {
+  max-width: 930px;
+  margin: 0.25rem auto;
+}
+
+@media (max-width: 900px) {
+  .rsmMissionGrid,
+  .rsmImpactGrid,
+  .rsmFinalInner {
+    grid-template-columns: 1fr;
+  }
+
+  .rsmSteps,
+  .rsmPathGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .rsmStep,
+  .rsmPathCard {
+    min-height: 0;
+  }
+
+  .rsmFinalInner {
+    align-items: start;
+  }
+
+  .rsmFinalInner .rsmButton {
+    justify-self: start;
+  }
+}
+
+@media (max-width: 640px) {
+  .rsmWrap {
+    width: min(100% - 1.15rem, 1160px);
+  }
+
+  .rsmHeroArt,
+  .rsmHeroArt img {
+    min-height: 260px;
+  }
+
+  .rsmHeroArt img {
+    object-position: center top;
+  }
+
+  .rsmHeroCopy {
+    margin-top: -3.2rem;
+    padding-bottom: 2.7rem;
+  }
+
+  .rsmHero h1 {
+    font-size: clamp(2.25rem, 14vw, 3.8rem);
+  }
+
+  .rsmActions,
+  .rsmCardActions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .rsmButton {
+    width: 100%;
+  }
+
+  .rsmTextLink {
+    padding: 0.4rem 0;
+    text-align: center;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rsmButton:hover {
+    transform: none;
+  }
+}
