@@ -6,7 +6,7 @@ CURRENT_CHECKPOINT: Guardian launch UX + password-recovery/provider acceptance
 NEXT_CHECKPOINT: Google OAuth, Facebook auth, integrated browser/mobile acceptance, owner legal review, cutover prep
 OWNER_DECISION_REQUIRED: YES_FOR_PROVIDER_CONSOLES_AND_FINAL_CUTOVER_ONLY
 SAFE_TO_CONTINUE: YES
-ACCEPTED_CODE_SHA: af32593c8abd2727b8c9b5c844a32e17425cd680
+ACCEPTED_CODE_SHA: 6b4794c38e42e64ce020482cda3868d4d1df1f38
 ACCEPTANCE_RUNTIME: REPOSITORY_GATES_GREEN; VERCEL_DAILY_FREE_TIER_LIMIT_FOR_NEW_DEPLOYS
 
 ## Completed engineering
@@ -42,6 +42,11 @@ Post-MVP launch-readiness slices integrated:
   - owner-folder Storage policies gate read/insert/update/delete to the authenticated user;
   - Guardian private profile now uploads and previews the avatar through signed URLs;
   - pgTAP and Playwright cover Storage boundaries plus avatar upload/reload persistence.
+- Issue #56 support fingerprint search-path hardening — PR #74, all six required gates plus CodeQL green and squash-merged at `6b4794c38e42e64ce020482cda3868d4d1df1f38`.
+  - `private.support_ticket_fingerprint(text,text,text)` now pins `search_path = pg_catalog` without changing deterministic grouping behavior;
+  - exact migration is applied to shared dev;
+  - fresh Supabase security-advisor output no longer reports this helper for mutable search path;
+  - pgTAP verifies both the pinned search path and unchanged normalization behavior.
 - Launch legal-review checklist — PR #65. Draft Terms/Privacy remain unapproved and must not be published as final.
 
 ## Auth/email progress complete
@@ -103,11 +108,8 @@ Completed:
 - sanitized engineering-handoff contract;
 - reporter duplicate-group hardening;
 - privacy-safe duplicate-candidate and daily-digest aggregate database plumbing;
-- privacy-safe advisory triage queue for unresolved work; it retains human escalation for privacy/safety/account cases and never mutates or resolves tickets.
-
-Current bounded hardening:
-
-- PR #73 pins `private.support_ticket_fingerprint(text,text,text)` to `search_path = pg_catalog` and adds a regression proving normalization behavior is unchanged. The exact migration is already applied to shared dev, and the Supabase security advisor no longer reports this helper for mutable search path. Merge only if current-head repository gates are green.
+- privacy-safe advisory triage queue for unresolved work; it retains human escalation for privacy/safety/account cases and never mutates or resolves tickets;
+- deterministic fingerprint helper now uses a pinned `pg_catalog` search path, with shared-dev advisor evidence and pgTAP regression coverage.
 
 Remaining Issue #56 focus:
 
@@ -128,7 +130,7 @@ Do not decide legal entity/contact identity, minimum age, governing law, arbitra
 ## Connected tooling recheck — 2026-09-11
 
 - GitHub: connected and authoritative for repository operations/CI. GitHub AI coding credits remain unavailable.
-- Supabase: connected and actionable for SQL/migrations. Shared dev is reconciled through the accepted Support OS triage queue plus Guardian avatar storage; hosted Auth provider-console writes are still not exposed by the current connector surface.
+- Supabase: connected and actionable for SQL/migrations. Shared dev is reconciled through the accepted Support OS triage queue, fingerprint hardening and Guardian avatar storage; hosted Auth provider-console writes are still not exposed by the current connector surface.
 - Vercel: connected, but recent preview creation continues to hit the Hobby/free-tier daily deployment limit. Do not purchase/upgrade; treat as transient only.
 - No currently available provider-console plugin exposes Google OAuth, Meta/Facebook, DNS or Resend console configuration in this automation runtime.
 - Browser automation in an interactive ChatGPT Work session remains preferred for provider consoles, real password-recovery acceptance, visual QA and multi-step hosted acceptance.
@@ -139,9 +141,8 @@ Never purchase/upgrade paid services, make destructive production-data changes, 
 
 ## Next safe action
 
-1. Finish/review PR #73 only on final-head green repository evidence; if merged, record the accepted SHA here.
-2. Continue Issue #53 with account-menu real-avatar rendering and primary-pet-media thumbnails in a focused photo-forward follow-up, preserving private signed-media semantics and existing Passport/Deal Moments/RLS coverage.
-3. Continue Issue #56 classification/digest automation only through privacy-minimized aggregate sources and explicit human escalation boundaries.
-4. Re-check Vercel capacity each run; after capacity resets, perform integrated hosted desktop/mobile visual acceptance for `/lostpaws`, `/rave-vendors`, Guardian onboarding, Marketplace, Passport, shelter verification and Help & feedback without purchasing an upgrade.
-5. Re-check password-recovery/Google/Meta provider tooling each run and act immediately if an authorized prerequisite becomes actionable.
-6. Keep legal publication and final production-domain cutover owner-gated.
+1. Continue Issue #53 with account-menu real-avatar rendering and primary-pet-media thumbnails in a focused photo-forward follow-up, preserving private signed-media semantics and existing Passport/Deal Moments/RLS coverage.
+2. Continue Issue #56 classification/digest automation only through privacy-minimized aggregate sources and explicit human escalation boundaries.
+3. Re-check Vercel capacity each run; after capacity resets, perform integrated hosted desktop/mobile visual acceptance for `/lostpaws`, `/rave-vendors`, Guardian onboarding, Marketplace, Passport, shelter verification and Help & feedback without purchasing an upgrade.
+4. Re-check password-recovery/Google/Meta provider tooling each run and act immediately if an authorized prerequisite becomes actionable.
+5. Keep legal publication and final production-domain cutover owner-gated.
