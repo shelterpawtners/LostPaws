@@ -116,8 +116,8 @@ export function HelpFeedback({ session }: { session: Session | null }) {
       <span className="eyebrow">Support</span>
       <h3 id="help-feedback-heading">Help & feedback</h3>
       <p>
-        Report a problem or share feedback. Do not include passwords, auth codes,
-        payment details, or private medical information.
+        Report a problem or share feedback. Do not include passwords, auth
+        codes, payment details, or private medical information.
       </p>
       <button
         className="btn quiet"
