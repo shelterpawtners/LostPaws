@@ -110,14 +110,55 @@ done
 
 # package.json contains both deploy-impacting inputs and test/tooling scripts.
 # Only dependencies/runtime/build configuration should force a Vercel build.
+# Vercel's Ignored Build Step environment does not guarantee jq is installed,
+# so use Node when available and otherwise build conservatively instead of
+# failing the deployment decision.
 if [[ "${package_json_changed}" == "true" ]]; then
   before=$(mktemp)
   after=$(mktemp)
   trap 'rm -f "$before" "$after"' EXIT
   if git show "${BASE_SHA}:package.json" > "$before" 2>/dev/null && git show "${HEAD_SHA}:package.json" > "$after" 2>/dev/null; then
-    before_sig=$(jq -Sc '{dependencies,devDependencies,peerDependencies,optionalDependencies,engines,packageManager,buildScript:(.scripts.build // null)}' "$before")
-    after_sig=$(jq -Sc '{dependencies,devDependencies,peerDependencies,optionalDependencies,engines,packageManager,buildScript:(.scripts.build // null)}' "$after")
-    if [[ "${before_sig}" != "${after_sig}" ]]; then
+    package_signature() {
+      local package_file="$1"
+      node - "$package_file" <<'NODE'
+const fs = require("fs");
+const packageFile = process.argv[2];
+const pkg = JSON.parse(fs.readFileSync(packageFile, "utf8"));
+const sortValue = (value) => {
+  if (Array.isArray(value)) return value.map(sortValue);
+  if (value && typeof value === "object") {
+    return Object.fromEntries(
+      Object.keys(value)
+        .sort()
+        .map((key) => [key, sortValue(value[key])]),
+    );
+  }
+  return value;
+};
+const signature = {
+  dependencies: pkg.dependencies ?? null,
+  devDependencies: pkg.devDependencies ?? null,
+  peerDependencies: pkg.peerDependencies ?? null,
+  optionalDependencies: pkg.optionalDependencies ?? null,
+  engines: pkg.engines ?? null,
+  packageManager: pkg.packageManager ?? null,
+  buildScript: pkg.scripts?.build ?? null,
+};
+process.stdout.write(JSON.stringify(sortValue(signature)));
+NODE
+    }
+
+    if command -v node >/dev/null 2>&1; then
+      if before_sig=$(package_signature "$before") && after_sig=$(package_signature "$after"); then
+        if [[ "${before_sig}" != "${after_sig}" ]]; then
+          frontend_artifact=true
+        fi
+      else
+        echo "Unable to compare package.json build inputs; build conservatively." >&2
+        frontend_artifact=true
+      fi
+    else
+      echo "Node is unavailable for package.json comparison; build conservatively." >&2
       frontend_artifact=true
     fi
   else
