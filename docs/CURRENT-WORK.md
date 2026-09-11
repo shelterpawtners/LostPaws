@@ -8,7 +8,9 @@ Phase 2 — Partner Marketplace MVP is **complete**.
 
 Lost Lands MVP LL-1 through LL-6 are **accepted** and must not be reopened without regression evidence.
 
-**Current state: launch readiness with accepted launch-UX changes awaiting the free-tier Vercel deployment window, one remaining Support OS delivery-runtime gap, and external provider acceptance gates.**
+**Current state: one reconciled MVP release candidate on `main`, with the GitHub Pages public-release matrix in review, a remaining Support OS delivery-runtime gap, and external provider acceptance gates.**
+
+Issue #87 reconciliation treats `main` at `a55a1de8575adbc3f28d40de8f4d11261444b358` as the sole release candidate. Historical branches were classified by tree/functionality rather than ancestry; no accepted product feature requires a wholesale historical merge. See `docs/MVP-RECONCILIATION.md`.
 
 Current accepted frontend/source baseline: `fbb5a02e081d4bd634034a9fadd8bb17c3744e4a` (PR #81).
 
