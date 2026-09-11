@@ -2,7 +2,7 @@ begin;
 select plan(3);
 
 -- The seeded QA Partner is intentionally published but demo-only. Anonymous
--- callers must not be able to retrieve it through any direct public profile RPC.
+-- callers must not retrieve it through any direct public profile RPC.
 set local role anon;
 
 select is(
