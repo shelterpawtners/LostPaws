@@ -4,7 +4,9 @@ const registrationKinds = ["guardian", "shelter", "petbiz", "rave_vendor"];
 
 test.describe("Social auth launch UI", () => {
   for (const kind of registrationKinds) {
-    test(`shows a feature-gated Facebook action for ${kind} signup`, async ({ page }) => {
+    test(`shows a feature-gated Facebook action for ${kind} signup`, async ({
+      page,
+    }) => {
       await page.goto(`/register?type=${kind}`);
 
       const facebook = page.getByRole("button", { name: /Facebook/ });
@@ -20,7 +22,9 @@ test.describe("Social auth launch UI", () => {
     });
   }
 
-  test("shows the same feature-gated Facebook action on sign in", async ({ page }) => {
+  test("shows the same feature-gated Facebook action on sign in", async ({
+    page,
+  }) => {
     await page.goto("/login");
 
     const facebook = page.getByRole("button", { name: /Facebook/ });
