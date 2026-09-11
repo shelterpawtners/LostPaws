@@ -6,8 +6,8 @@ CURRENT_CHECKPOINT: Guardian launch UX + password-recovery/provider acceptance
 NEXT_CHECKPOINT: Google OAuth, Facebook auth, integrated browser/mobile acceptance, owner legal review, cutover prep
 OWNER_DECISION_REQUIRED: YES_FOR_PROVIDER_CONSOLES_AND_FINAL_CUTOVER_ONLY
 SAFE_TO_CONTINUE: YES
-ACCEPTED_CODE_SHA: 6b4794c38e42e64ce020482cda3868d4d1df1f38
-ACCEPTANCE_RUNTIME: REPOSITORY_GATES_GREEN; VERCEL_DAILY_FREE_TIER_LIMIT_FOR_NEW_DEPLOYS
+ACCEPTED_CODE_SHA: 74b7cb75e777d3296fb22a3c93398371cf05f85f
+ACCEPTANCE_RUNTIME: REPOSITORY_GATES_GREEN; CURRENT_VERCEL_MAIN_DEPLOYMENTS_SKIPPED_BY_IGNORED_BUILD_STEP; LAST_READY_PRODUCTION_IS_OLDER_THAN_MAIN
 
 ## Completed engineering
 
@@ -47,6 +47,12 @@ Post-MVP launch-readiness slices integrated:
   - exact migration is applied to shared dev;
   - fresh Supabase security-advisor output no longer reports this helper for mutable search path;
   - pgTAP verifies both the pinned search path and unchanged normalization behavior.
+- Issue #56 privacy-safe classification/owner digest — PR #75, all six required gates green and squash-merged at `74b7cb75e777d3296fb22a3c93398371cf05f85f`.
+  - shared-dev migration `support_classification_owner_digest` is applied;
+  - `private.support_triage_classification` deterministically routes privacy/P0 to immediate owner attention, P1 to urgent owner review, bugs to engineering triage, workflow cases to workflow triage, and suggestions/UI feedback to product review using only the existing private triage metadata;
+  - `private.support_owner_digest` provides aggregate exception/digest counts without reporter identity or raw ticket content;
+  - both views revoke browser-role access and perform no ticket mutation, auto-close or auto-fix;
+  - the first Database QA run caught a pgTAP plan-count mismatch; the test plan was corrected without removing assertions and the final Database QA plus all five other required gates passed.
 - Launch legal-review checklist — PR #65. Draft Terms/Privacy remain unapproved and must not be published as final.
 
 ## Auth/email progress complete
@@ -109,12 +115,13 @@ Completed:
 - reporter duplicate-group hardening;
 - privacy-safe duplicate-candidate and daily-digest aggregate database plumbing;
 - privacy-safe advisory triage queue for unresolved work; it retains human escalation for privacy/safety/account cases and never mutates or resolves tickets;
-- deterministic fingerprint helper now uses a pinned `pg_catalog` search path, with shared-dev advisor evidence and pgTAP regression coverage.
+- deterministic fingerprint helper now uses a pinned `pg_catalog` search path, with shared-dev advisor evidence and pgTAP regression coverage;
+- privacy-safe deterministic classification plus owner exception/digest aggregation via PR #75, with immediate lanes reserved for privacy/P0/P1 and routine/suggestion work retained in the daily-digest lane.
 
 Remaining Issue #56 focus:
 
-1. bounded classification/digest automation consuming the private aggregate sources;
-2. regression for classification/digest scheduling and aging behavior;
+1. bounded scheduling/delivery for the private classification/digest outputs without broad service-role exposure or raw PII transport;
+2. regression for scheduling, aging persistence and escalation behavior across days;
 3. optional screenshot/storage support only later, after explicit privacy/storage controls.
 
 AI must not auto-implement arbitrary suggestions, auto-close potential security/privacy issues, mutate destructive production data, or treat a fingerprint/duplicate signal as sufficient resolution evidence.
@@ -130,10 +137,10 @@ Do not decide legal entity/contact identity, minimum age, governing law, arbitra
 ## Connected tooling recheck — 2026-09-11
 
 - GitHub: connected and authoritative for repository operations/CI. GitHub AI coding credits remain unavailable.
-- Supabase: connected and actionable for SQL/migrations. Shared dev is reconciled through the accepted Support OS triage queue, fingerprint hardening and Guardian avatar storage; hosted Auth provider-console writes are still not exposed by the current connector surface.
-- Vercel: connected, but recent preview creation continues to hit the Hobby/free-tier daily deployment limit. Do not purchase/upgrade; treat as transient only.
-- No currently available provider-console plugin exposes Google OAuth, Meta/Facebook, DNS or Resend console configuration in this automation runtime.
-- Browser automation in an interactive ChatGPT Work session remains preferred for provider consoles, real password-recovery acceptance, visual QA and multi-step hosted acceptance.
+- Supabase: connected and actionable for SQL/migrations. Shared dev is reconciled through the accepted Support OS triage/classification/digest views, fingerprint hardening and Guardian avatar storage; hosted Auth provider-console writes are still not exposed by the current connector surface. Fresh security-advisor output after PR #75 introduced no finding attributable to the new private views; broader pre-existing advisor findings remain outside that slice.
+- Vercel: connected. Re-checking deployments shows the newest `main` production attempts are being canceled by the configured Ignored Build Step, not by a paid-tier requirement. The latest READY production deployment visible is still the PR #69 Guardian contact-field build (`8606424b7a655c68b9e25737eb063db7ad86af7e`), so production freshness is now a launch-readiness item. `/lostpaws` returns HTTP 200 and Vercel reports no runtime errors or warning/error/fatal production logs in the last 24 hours. Do not purchase/upgrade merely to address this.
+- No currently installed provider-console plugin exposes Google OAuth, Meta/Facebook, DNS or Resend configuration. Plugin discovery did not surface a directly appropriate installed provider tool.
+- A browser-automation skill is discoverable, but its `agent-browser` executable is not available in this runtime. Provider-console interaction, real password-recovery acceptance and full visual/mobile acceptance therefore remain better suited to an interactive Work/browser-capable session.
 
 ## Protected restrictions
 
@@ -142,7 +149,7 @@ Never purchase/upgrade paid services, make destructive production-data changes, 
 ## Next safe action
 
 1. Continue Issue #53 with account-menu real-avatar rendering and primary-pet-media thumbnails in a focused photo-forward follow-up, preserving private signed-media semantics and existing Passport/Deal Moments/RLS coverage.
-2. Continue Issue #56 classification/digest automation only through privacy-minimized aggregate sources and explicit human escalation boundaries.
-3. Re-check Vercel capacity each run; after capacity resets, perform integrated hosted desktop/mobile visual acceptance for `/lostpaws`, `/rave-vendors`, Guardian onboarding, Marketplace, Passport, shelter verification and Help & feedback without purchasing an upgrade.
+2. Continue Issue #56 only with bounded scheduling/delivery for the already-private classification/digest outputs plus aging/escalation regression coverage; do not expose raw ticket content or add autonomous resolution behavior.
+3. Reconcile Vercel production freshness: inspect the project Ignored Build Step and produce a current READY hosted candidate without purchasing/upgrading or performing final domain cutover; then perform integrated desktop/mobile visual acceptance for `/lostpaws`, `/rave-vendors`, Guardian onboarding, Marketplace, Passport, shelter verification and Help & feedback.
 4. Re-check password-recovery/Google/Meta provider tooling each run and act immediately if an authorized prerequisite becomes actionable.
 5. Keep legal publication and final production-domain cutover owner-gated.
