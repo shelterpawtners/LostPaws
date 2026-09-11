@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import type { Session } from "@supabase/supabase-js";
 import { supabase as db } from "../lib/supabase";
 import { GuardianActivityTimeline } from "./GuardianActivityTimeline";
+import { HelpFeedback } from "./HelpFeedback";
 
 type ProfileLite = {
   full_name: string;
@@ -132,6 +133,7 @@ export function GuardianProfileLite({ session }: { session: Session | null }) {
           </form>
         )}
       </section>
+      <HelpFeedback session={session} />
       <GuardianActivityTimeline session={session} />
     </>
   );
