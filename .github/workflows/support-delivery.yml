@@ -1,0 +1,45 @@
+name: Support OS Delivery
+
+on:
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: "Why this reviewed delivery run is being started"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: support-os-delivery
+  cancel-in-progress: false
+
+jobs:
+  deliver:
+    runs-on: ubuntu-latest
+    env:
+      SUPPORT_DELIVERY_FUNCTION_URL: ${{ vars.SUPPORT_DELIVERY_FUNCTION_URL }}
+      SUPPORT_DELIVERY_INVOKE_SECRET: ${{ secrets.SUPPORT_DELIVERY_INVOKE_SECRET }}
+    steps:
+      - name: Require approved delivery configuration
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ -n "${SUPPORT_DELIVERY_FUNCTION_URL}" ]] || {
+            echo 'Missing SUPPORT_DELIVERY_FUNCTION_URL repository variable.' >&2
+            exit 1
+          }
+          [[ -n "${SUPPORT_DELIVERY_INVOKE_SECRET}" ]] || {
+            echo 'Missing SUPPORT_DELIVERY_INVOKE_SECRET repository secret.' >&2
+            exit 1
+          }
+
+      - name: Invoke privacy-minimized delivery worker
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail-with-body --silent --show-error --max-time 30 \
+            -X POST \
+            -H "x-support-delivery-secret: ${SUPPORT_DELIVERY_INVOKE_SECRET}" \
+            "${SUPPORT_DELIVERY_FUNCTION_URL}"
