@@ -32,6 +32,7 @@ The owner supplied two approved LostPaws logo/artwork keepers on 2026-09-10.
 Aim for a human-designed, premium bass-music/festival campaign experience rather than generic generated festival art.
 
 Use:
+
 - dark canvas and deliberate neon accents derived from the LostPaws artwork;
 - bold editorial typography and irregular but controlled vertical rhythm;
 - restrained distressed/tactile treatments built in CSS or approved graphic assets;
@@ -39,6 +40,7 @@ Use:
 - mobile-first spacing and large tap targets for QR-entry traffic.
 
 Avoid:
+
 - generic AI fantasy scenes, fake festival crowds, fake dinosaurs, generic laser backgrounds, or synthetic pet photography;
 - copying Lost Lands code, assets, layout or protected visual identity;
 - any treatment that implies the page was produced by the Lost Lands/Excision organization.
@@ -49,7 +51,7 @@ The page exists to connect LostPaws traffic to **RAVE Shelter — Rescue and Ado
 
 Recommended first content block after the banner:
 
-**RAVE Shelter**  
+**RAVE Shelter**\
 Rescue and Adoption Vendor Ecosystem
 
 **Rave. Save. Help shelter pets.**
@@ -79,6 +81,7 @@ Suggested CTA: **Join RAVE Shelter for the festival**
 Initial route: existing `rave_vendor` / PetBiz onboarding flow.
 
 Truthful value language may describe the currently supported ability to:
+
 - create a free business/vendor profile;
 - publish current offers;
 - become discoverable in the RAVE Shelter community/Marketplace;
