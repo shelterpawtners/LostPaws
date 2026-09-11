@@ -39,7 +39,7 @@ jobs:
           GITHUB_PAGES: "true"
           VITE_SUPABASE_URL: ${{ vars.QA_SUPABASE_URL }}
           VITE_SUPABASE_PUBLISHABLE_KEY: ${{ vars.QA_SUPABASE_PUBLISHABLE_KEY }}
-          VITE_GOOGLE_AUTH_ENABLED: "false"
+          VITE_GOOGLE_AUTH_ENABLED: "true"
           VITE_FACEBOOK_AUTH_ENABLED: "false"
           VITE_ADMIN_QA_MODE_ENABLED: "false"
         shell: bash
