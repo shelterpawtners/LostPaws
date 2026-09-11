@@ -28,10 +28,16 @@ export function RaveShelterMission() {
             together so the things our community already buys can do more.
           </p>
           <div className="rsmActions">
-            <Link className="rsmButton rsmPrimary" to="/marketplace?channel=rave">
+            <Link
+              className="rsmButton rsmPrimary"
+              to="/marketplace?channel=rave"
+            >
               Shop RAVE Shelter offers
             </Link>
-            <Link className="rsmButton rsmSecondary" to="/register?type=rave_vendor">
+            <Link
+              className="rsmButton rsmSecondary"
+              to="/register?type=rave_vendor"
+            >
               Join as a vendor
             </Link>
           </div>
@@ -42,7 +48,9 @@ export function RaveShelterMission() {
         <div className="rsmWrap rsmMissionGrid">
           <div>
             <p className="rsmEyebrow">The mission is simple</p>
-            <h2 id="rsm-mission-title">Turn everyday purchases into more help for shelter pets.</h2>
+            <h2 id="rsm-mission-title">
+              Turn everyday purchases into more help for shelter pets.
+            </h2>
           </div>
           <div className="rsmMissionCopy">
             <p>
@@ -70,7 +78,8 @@ export function RaveShelterMission() {
             <h2 id="rsm-how-title">Shop. Save. Give more.</h2>
             <p>
               No complicated program to understand. The community already shops.
-              We connect that activity to businesses willing to help shelter pets.
+              We connect that activity to businesses willing to help shelter
+              pets.
             </p>
           </div>
           <div className="rsmSteps">
@@ -112,7 +121,10 @@ export function RaveShelterMission() {
           </div>
           <div>
             <p className="rsmEyebrow">Why RAVE Shelter exists</p>
-            <h2 id="rsm-impact-title">A lot of small choices can become a much bigger resource for shelters.</h2>
+            <h2 id="rsm-impact-title">
+              A lot of small choices can become a much bigger resource for
+              shelters.
+            </h2>
             <p>
               One vendor offer is helpful. One shopper choosing to give back is
               meaningful. Thousands of purchases, participating businesses, and
@@ -143,7 +155,10 @@ export function RaveShelterMission() {
                 partners and see how the community can turn value into impact.
               </p>
               <div className="rsmCardActions">
-                <Link className="rsmButton rsmPrimary" to="/marketplace?channel=rave">
+                <Link
+                  className="rsmButton rsmPrimary"
+                  to="/marketplace?channel=rave"
+                >
                   Browse RAVE offers
                 </Link>
                 <Link className="rsmTextLink" to="/register?type=guardian">
@@ -161,7 +176,10 @@ export function RaveShelterMission() {
                 support.
               </p>
               <div className="rsmCardActions">
-                <Link className="rsmButton rsmPink" to="/register?type=rave_vendor">
+                <Link
+                  className="rsmButton rsmPink"
+                  to="/register?type=rave_vendor"
+                >
                   Join RAVE Shelter
                 </Link>
               </div>
@@ -175,7 +193,10 @@ export function RaveShelterMission() {
                 community, and future support forward.
               </p>
               <div className="rsmCardActions">
-                <Link className="rsmButton rsmYellow" to="/register?type=shelter">
+                <Link
+                  className="rsmButton rsmYellow"
+                  to="/register?type=shelter"
+                >
                   Register a shelter
                 </Link>
               </div>
@@ -188,7 +209,9 @@ export function RaveShelterMission() {
         <div className="rsmWrap rsmFinalInner">
           <div>
             <p className="rsmEyebrow">Start where you are</p>
-            <h2 id="rsm-final-title">Buy something useful. Save some money. Help shelter pets.</h2>
+            <h2 id="rsm-final-title">
+              Buy something useful. Save some money. Help shelter pets.
+            </h2>
             <p>
               That is the RAVE Shelter idea. LostPaws is where the music
               community starts putting it into motion.
@@ -200,7 +223,10 @@ export function RaveShelterMission() {
         </div>
       </section>
 
-      <section className="rsmLegal" aria-label="RAVE Shelter independence statement">
+      <section
+        className="rsmLegal"
+        aria-label="RAVE Shelter independence statement"
+      >
         <div className="rsmWrap">
           <p>
             LostPaws is an independent ShelterPawtners / RAVE Shelter initiative
