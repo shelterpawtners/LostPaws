@@ -84,12 +84,12 @@ alter table public.support_ticket_messages enable row level security;
 alter table public.support_ticket_events enable row level security;
 
 -- Reporter can create a ticket only as themselves. Privileged/internal triage fields are constrained
--- to safe initial values so a client cannot self-declare P0/admin state or inject an engineering link.
+-- to safe initial values so a client cannot self-declare severity/admin state or inject an engineering link.
 create policy support_ticket_reporter_insert
 on public.support_tickets for insert to authenticated
 with check (
   reporter_id = (select auth.uid())
-  and severity in ('p2','p3')
+  and severity = 'p3'
   and status = 'new'
   and human_review_required = false
   and github_issue_number is null
@@ -153,8 +153,6 @@ revoke all on table public.support_tickets from anon;
 revoke all on table public.support_ticket_messages from anon;
 revoke all on table public.support_ticket_events from anon;
 
-grant select, insert on table public.support_tickets to authenticated;
-grant select, insert on table public.support_ticket_messages to authenticated;
 grant select, insert, update, delete on table public.support_tickets to authenticated;
 grant select, insert, update, delete on table public.support_ticket_messages to authenticated;
 grant select, insert, update, delete on table public.support_ticket_events to authenticated;
