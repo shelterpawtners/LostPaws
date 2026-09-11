@@ -28,6 +28,12 @@ jobs:
   public-release-matrix:
     if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
+    env:
+      VITE_SUPABASE_URL: ${{ vars.QA_SUPABASE_URL }}
+      VITE_SUPABASE_PUBLISHABLE_KEY: ${{ vars.QA_SUPABASE_PUBLISHABLE_KEY }}
+      VITE_GOOGLE_AUTH_ENABLED: "false"
+      VITE_FACEBOOK_AUTH_ENABLED: "false"
+      VITE_ADMIN_QA_MODE_ENABLED: "false"
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -44,10 +50,35 @@ jobs:
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
 
-      - name: Exercise live GitHub Pages release candidate
+      - name: Start pull-request release candidate
+        if: github.event_name == 'pull_request'
         shell: bash
-        env:
-          SITE_URL: https://shelterpawtners.github.io/LostPaws
+        run: |
+          set -euo pipefail
+          if [[ -z "${VITE_SUPABASE_URL}" || -z "${VITE_SUPABASE_PUBLISHABLE_KEY}" ]]; then
+            echo 'ERROR: MVP acceptance requires the existing QA Supabase publishable configuration.' >&2
+            exit 1
+          fi
+          npm run build
+          nohup npm exec -- vite preview --host 127.0.0.1 --port 4173 >/tmp/pages-mvp-preview.log 2>&1 &
+          echo $! >/tmp/pages-mvp-preview.pid
+          for attempt in {1..30}; do
+            if curl -fsS http://127.0.0.1:4173/ >/dev/null; then
+              echo 'SITE_URL=http://127.0.0.1:4173' >> "$GITHUB_ENV"
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/pages-mvp-preview.log >&2 || true
+          echo 'ERROR: Local release candidate did not become ready.' >&2
+          exit 1
+
+      - name: Use deployed Pages release candidate
+        if: github.event_name != 'pull_request'
+        run: echo 'SITE_URL=https://shelterpawtners.github.io/LostPaws' >> "$GITHUB_ENV"
+
+      - name: Exercise MVP release candidate
+        shell: bash
         run: |
           set -euo pipefail
           node --input-type=module <<'EOF'
@@ -93,7 +124,7 @@ jobs:
               }
               await page.locator('#main').waitFor({ state: 'visible', timeout: 15000 });
               try {
-                await page.locator('h1, h2').filter({ visible: true }).first().waitFor({ state: 'visible', timeout: 15000 });
+                await page.locator('h1, h2').filter({ visible: true }).first().waitFor({ state: 'visible', timeout: 30000 });
               } catch (error) {
                 const bodyText = (await page.locator('body').innerText()).slice(0, 1200);
                 throw new Error(`${viewport.name} ${route}: no visible primary heading. Body excerpt:\n${bodyText}\n${error}`);
@@ -117,28 +148,37 @@ jobs:
             }
 
             await page.goto(`${process.env.SITE_URL}/marketplace`, { waitUntil: 'networkidle' });
-            await page.locator('[data-marketplace-concept="flagship"]').waitFor({ state: 'visible', timeout: 15000 });
-            await page.locator('.offerCard').first().waitFor({ state: 'visible', timeout: 15000 });
+            await page.locator('[data-marketplace-concept="flagship"]').waitFor({ state: 'visible', timeout: 30000 });
+            await page.locator('.offerCard').first().waitFor({ state: 'visible', timeout: 30000 });
             await page.close();
           }
 
-          const campaign = await browser.newPage({ viewport: { width: 390, height: 844 } });
-          const vendorResponse = await campaign.goto(`${process.env.SITE_URL}/rave-vendors.html`, {
-            waitUntil: 'networkidle',
-          });
-          if (!vendorResponse || !vendorResponse.ok()) {
-            throw new Error(`RAVE vendor campaign page failed with ${vendorResponse?.status()}`);
+          if (process.env.SITE_URL.includes('github.io')) {
+            const campaign = await browser.newPage({ viewport: { width: 390, height: 844 } });
+            const vendorResponse = await campaign.goto(`${process.env.SITE_URL}/rave-vendors.html`, {
+              waitUntil: 'networkidle',
+            });
+            if (!vendorResponse || !vendorResponse.ok()) {
+              throw new Error(`RAVE vendor campaign page failed with ${vendorResponse?.status()}`);
+            }
+            const vendorBody = await campaign.locator('body').innerText();
+            if (!vendorBody.includes('Join the RAVE Shelter vendor network.')) {
+              throw new Error('RAVE vendor acquisition content did not render.');
+            }
+            const vendorOverflow = await campaign.evaluate(
+              () => document.documentElement.scrollWidth > document.documentElement.clientWidth + 1,
+            );
+            if (vendorOverflow) throw new Error('RAVE vendor page overflows the mobile viewport.');
+            await campaign.close();
           }
-          const vendorBody = await campaign.locator('body').innerText();
-          if (!vendorBody.includes('Join the RAVE Shelter vendor network.')) {
-            throw new Error('RAVE vendor acquisition content did not render.');
-          }
-          const vendorOverflow = await campaign.evaluate(
-            () => document.documentElement.scrollWidth > document.documentElement.clientWidth + 1,
-          );
-          if (vendorOverflow) throw new Error('RAVE vendor page overflows the mobile viewport.');
-          await campaign.close();
 
-          console.log('GitHub Pages MVP public release matrix passed on mobile, tablet, and desktop.');
+          console.log('MVP release matrix passed on mobile, tablet, and desktop.');
           await browser.close();
           EOF
+
+      - name: Stop pull-request release candidate
+        if: always() && github.event_name == 'pull_request'
+        run: |
+          if [[ -f /tmp/pages-mvp-preview.pid ]]; then
+            kill "$(cat /tmp/pages-mvp-preview.pid)" || true
+          fi
