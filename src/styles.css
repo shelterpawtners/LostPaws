@@ -867,22 +867,56 @@ select:focus {
 }
 .guardianPets {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 15px;
   margin-bottom: 18px;
 }
 .petTile {
   display: grid;
-  grid-template-columns: auto 1fr auto;
+  grid-template-columns: auto minmax(0, 1fr);
   gap: 14px;
   align-items: center;
-  padding: 20px;
+  padding: 15px;
   border: 1px solid #b9a5e7;
   border-radius: 18px;
   background: linear-gradient(145deg, #f6f2ff, #ecfbf8);
+  box-shadow: 0 14px 30px #25134a10;
+  transition:
+    transform 160ms ease,
+    box-shadow 160ms ease;
 }
-.petTile > svg {
+.petTile:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 18px 36px #25134a18;
+}
+.petTileVisual {
+  display: inline-flex;
+  width: 58px;
+  height: 58px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 16px;
+  background: linear-gradient(135deg, var(--purple), var(--teal));
+  color: #fff;
+}
+.petTileVisual svg {
+  width: 29px;
+  height: 29px;
+}
+.petTileOpen {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding-top: 11px;
+  border-top: 1px solid #b9a5e7;
   color: var(--purple);
+  font-size: 0.88rem;
+  font-weight: 800;
+}
+.petTileOpen svg {
+  width: 16px;
+  height: 16px;
 }
 .petTile b {
   font-family: Outfit;
@@ -897,6 +931,47 @@ select:focus {
   font-family: Outfit;
   font-size: clamp(2.4rem, 5vw, 4rem);
   margin: 8px 0 24px;
+}
+.passportLead {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(235px, 0.48fr);
+  gap: 28px;
+  align-items: end;
+  overflow: hidden;
+  border-color: #c7b8ec;
+  background:
+    radial-gradient(circle at 88% 8%, #b4f0df 0, transparent 31%),
+    linear-gradient(135deg, #f8f5ff, #edfbf7);
+}
+.passportLeadCopy > p {
+  max-width: 620px;
+  margin-bottom: 0;
+  font-size: 1.04rem;
+  line-height: 1.6;
+}
+.passportLeadMeta {
+  border: 1px solid #b9a5e7;
+  border-radius: 16px;
+  padding: 17px;
+  background: #ffffffc9;
+}
+.passportLeadMeta > div {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  color: var(--navy);
+  font-weight: 850;
+}
+.passportLeadMeta svg {
+  color: var(--teal);
+}
+.passportLeadMeta p {
+  margin: 10px 0 0;
+  color: var(--muted);
+  line-height: 1.5;
+}
+.passportBasicsPanel {
+  margin-top: 22px;
 }
 .petDetail dl div {
   padding: 12px 0;
@@ -1018,6 +1093,10 @@ footer {
   .dashboardTitle {
     align-items: flex-start;
     flex-direction: column;
+  }
+  .passportLead {
+    grid-template-columns: 1fr;
+    gap: 18px;
   }
   .dashboardAccountActions {
     width: 100%;
