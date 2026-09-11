@@ -39,12 +39,24 @@ jobs:
           GITHUB_PAGES: "true"
         run: npm run build
 
+      - name: Rewrite root-relative public assets for project Pages
+        shell: bash
+        run: |
+          set -euo pipefail
+          while IFS= read -r file; do
+            sed -i 's#/brand/#/LostPaws/brand/#g' "$file"
+          done < <(grep -RIl '/brand/' dist || true)
+
       - name: Verify compiled artifact
         shell: bash
         run: |
           set -euo pipefail
           grep -q '/LostPaws/assets/.*\.js' dist/index.html
           grep -q '/LostPaws/assets/.*\.css' dist/index.html
+          if grep -RIl '/brand/' dist | xargs -r grep -nE '(^|["'"'(=: ])/brand/'; then
+            echo 'ERROR: project Pages artifact still contains root-relative brand assets.' >&2
+            exit 1
+          fi
           if grep -q '/src/main.tsx' dist/index.html; then
             echo 'ERROR: dist/index.html still references source TypeScript.' >&2
             exit 1
@@ -147,9 +159,13 @@ jobs:
           const browser = await chromium.launch({ headless: true });
           const page = await browser.newPage();
           const errors = [];
+          const failedResponses = [];
           page.on('pageerror', error => errors.push(`pageerror: ${error.message}`));
           page.on('console', msg => {
             if (msg.type() === 'error') errors.push(`console: ${msg.text()}`);
+          });
+          page.on('response', response => {
+            if (response.status() >= 400) failedResponses.push(`${response.status()} ${response.url()}`);
           });
           const url = `${process.env.SITE_URL}?browser=${process.env.GITHUB_SHA || Date.now()}`;
           const response = await page.goto(url, { waitUntil: 'networkidle' });
@@ -161,7 +177,8 @@ jobs:
           }
           const skipTransform = await page.locator('.skip').evaluate(el => getComputedStyle(el).transform);
           if (skipTransform === 'none') throw new Error('Skip link is visibly rendered instead of visually hidden.');
+          if (failedResponses.length) throw new Error(`Failed browser responses:\n${failedResponses.join('\n')}`);
           if (errors.length) throw new Error(`Browser runtime errors:\n${errors.join('\n')}`);
-          console.log('Chromium rendered the GitHub Pages app successfully.');
+          console.log('Chromium rendered the GitHub Pages app successfully with no failed resources.');
           await browser.close();
           EOF
