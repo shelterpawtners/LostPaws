@@ -37,7 +37,19 @@ jobs:
       - name: Build GitHub Pages staging
         env:
           GITHUB_PAGES: "true"
-        run: npm run build
+          VITE_SUPABASE_URL: ${{ vars.QA_SUPABASE_URL }}
+          VITE_SUPABASE_PUBLISHABLE_KEY: ${{ vars.QA_SUPABASE_PUBLISHABLE_KEY }}
+          VITE_GOOGLE_AUTH_ENABLED: "false"
+          VITE_FACEBOOK_AUTH_ENABLED: "false"
+          VITE_ADMIN_QA_MODE_ENABLED: "false"
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ -z "${VITE_SUPABASE_URL}" || -z "${VITE_SUPABASE_PUBLISHABLE_KEY}" ]]; then
+            echo 'ERROR: GitHub Pages staging requires the existing QA Supabase publishable configuration.' >&2
+            exit 1
+          fi
+          npm run build
 
       - name: Rewrite root-relative public assets for project Pages
         shell: bash
