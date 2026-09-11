@@ -132,6 +132,7 @@ Do not decide legal entity/contact identity, minimum age, governing law, arbitra
 - No schema, storage-policy, RLS, organization-contact, or authentication changes are planned; existing signed image URLs and `PetMediaGallery` are reused.
 - `npm run check` passed after declaring the already-imported `@axe-core/playwright` dev dependency that had been missing from `package.json`/lockfile.
 - Focused Playwright regression loads successfully now, but local execution remains blocked because this fresh runner lacks the Chromium binary. `npx playwright install chromium` began but did not complete in the runner; do not classify that as an application failure or repeatedly retry it in this environment. Re-run in CI or a runner with Playwright browsers available.
+
 ## Protected restrictions
 
 Never purchase/upgrade paid services, make destructive production-data changes, alter Microsoft 365 mail DNS, decide OD-003 or OD-004, weaken tests/RLS, publish unapproved final Terms/Privacy, expose secrets, or perform the final `shelterpawtners.com` production web-domain DNS/custom-domain cutover without separate owner authorization.
