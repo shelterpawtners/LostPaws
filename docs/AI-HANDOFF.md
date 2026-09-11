@@ -117,6 +117,22 @@ Prepared but owner/legal-gated:
 
 Do not decide legal entity/contact identity, minimum age, governing law, arbitration/class-action approach, retention/deletion policy, jurisdictional privacy obligations, OD-003 or OD-004 through automation.
 
+## Vercel deployment hygiene — 2026-09-11
+
+- Confirmed there is one Vercel project: `lost-paws`; the apparent proliferation was historical Git preview deployments, not multiple applications.
+- Deleted the 15 owner-approved obsolete/canceled previews from prior completed branches. This removed only deployment records and preview URLs; no Git branch, source code, production data, or current production deployment was removed.
+- Preserved the active Production deployment and rollback capability. The currently accepted production SHA is `54628c2b5ab831d203ffc8413920b4431e78b979`.
+- Fresh `feat/support-release-context` previews visible after cleanup are active current work and were intentionally not included in that deletion authorization.
+
+## Current focused branch — photo-forward Guardian Passport
+
+- This is an explicit owner-directed follow-up, not a reopening of accepted Issue #53.
+- Branch: `ux/guardian-passport-photo-forward` (implementation in progress; not yet proposed for merge).
+- Scope: make the existing RLS-protected Passport photo gallery the visual lead, improve the private Passport summary, and make Guardian pet cards read as compact Passport cards.
+- No schema, storage-policy, RLS, organization-contact, or authentication changes are planned; existing signed image URLs and `PetMediaGallery` are reused.
+- `npm run check` passed after declaring the already-imported `@axe-core/playwright` dev dependency that had been missing from `package.json`/lockfile.
+- Focused Playwright regression loads successfully now, but local execution remains blocked because this fresh runner lacks the Chromium binary. `npx playwright install chromium` began but did not complete in the runner; do not classify that as an application failure or repeatedly retry it in this environment. Re-run in CI or a runner with Playwright browsers available.
+
 ## Protected restrictions
 
 Never purchase/upgrade paid services, make destructive production-data changes, alter Microsoft 365 mail DNS, decide OD-003 or OD-004, weaken tests/RLS, publish unapproved final Terms/Privacy, expose secrets, or perform the final `shelterpawtners.com` production web-domain DNS/custom-domain cutover without separate owner authorization.

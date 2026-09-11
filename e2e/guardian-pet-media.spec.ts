@@ -20,6 +20,8 @@ test("Guardian manages a five-photo Passport gallery", async ({ page }) => {
   await expect(
     page.getByRole("heading", { name: "Passport gallery" }),
   ).toBeVisible();
+  await expect(page.locator(".petMediaPanel")).toBeVisible();
+  await expect(page.locator(".passportBasicsPanel")).toBeVisible();
 
   const fileInput = page.locator('input[type="file"]');
   await fileInput.setInputFiles([
