@@ -34,9 +34,8 @@ const categoryLabels: Record<SupportCategory, string> = {
 
 function deviceClass() {
   if (typeof window === "undefined") return "unknown";
-  return window.matchMedia("(max-width: 640px)").matches
-    ? "mobile"
-    : "desktop";
+  const mobile = window.matchMedia("(max-width: 640px)").matches;
+  return mobile ? "mobile" : "desktop";
 }
 
 function browserFamily() {
@@ -182,8 +181,9 @@ export function HelpFeedback({ session }: { session: Session | null }) {
           <ul>
             {tickets.map((ticket) => (
               <li key={ticket.id}>
-                <strong>{ticket.reference_code}</strong> — {ticket.subject} —{" "}
-                {ticket.status.replaceAll("_", " ")}
+                <strong>{ticket.reference_code}</strong>
+                <span> — {ticket.subject}</span>
+                <span> — {ticket.status.replaceAll("_", " ")}</span>
               </li>
             ))}
           </ul>
