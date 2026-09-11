@@ -6,7 +6,7 @@ CURRENT_CHECKPOINT: Guardian launch UX + password-recovery/provider acceptance
 NEXT_CHECKPOINT: Google OAuth, Facebook auth, integrated browser/mobile acceptance, owner legal review, cutover prep
 OWNER_DECISION_REQUIRED: YES_FOR_PROVIDER_CONSOLES_AND_FINAL_CUTOVER_ONLY
 SAFE_TO_CONTINUE: YES
-ACCEPTED_CODE_SHA: 748fefec56fe49b4300b5a9e3f03e6beb4911a72
+ACCEPTED_CODE_SHA: 045a592449441b398e7732d4a206cd77ab2ffc7f
 ACCEPTANCE_RUNTIME: REPOSITORY_GATES_GREEN; VERCEL_DAILY_FREE_TIER_LIMIT_FOR_NEW_DEPLOYS
 
 ## Completed engineering
@@ -30,6 +30,11 @@ Post-MVP launch-readiness slices integrated:
   - `private.support_daily_digest` exposes aggregate counts/aging without reporter identity or raw ticket text;
   - `anon` and `authenticated` browser roles cannot read those private views;
   - direct shared-dev verification and pgTAP Database QA passed.
+- Issue #56 privacy-safe advisory triage queue — PR #68, all six required gates green and squash-merged at `045a592449441b398e7732d4a206cd77ab2ffc7f`.
+  - shared-dev migration `20260911072000_support_triage_queue` is applied;
+  - `private.support_triage_queue` ranks unresolved work using only safe metadata, duplicate evidence, aging and required-human-review signals;
+  - privacy/safety cases always recommend human escalation, and the queue performs no ticket mutation, auto-close or auto-fix;
+  - `anon` and `authenticated` browser roles cannot read the queue, and pgTAP coverage verifies its privacy, duplicate and aging boundaries.
 - Launch legal-review checklist — PR #65. Draft Terms/Privacy remain unapproved and must not be published as final.
 
 ## Auth/email progress complete
@@ -62,31 +67,36 @@ Do not reopen Resend/domain/SMTP/Guardian-confirmation work without regression e
 Owner direction remains hybrid consumer/dashboard leaning consumer-app; no Figma prerequisite.
 
 Completed:
+
 - Marketplace density/grid-list via PR #59.
 - Reusable Support intake/status component plus Guardian-profile Help & feedback entry via PR #66.
 
 Active order:
-1. Remove misleading Guardian pet `Contact email` / `Instagram profile` fields. `save_guardian_onboarding_pet` persists neither; preserve normal Auth email and Shelter/PetBiz/RAVE organization contact fields. No pet-contact schema migration.
-2. Compact Guardian shell + avatar/account menu; reuse the existing `HelpFeedback` component as the primary Support entry.
+
+1. PR #69 is open for the bounded Guardian pet-contact correction: Guardian Pet Basics no longer renders `Contact email` / `Instagram profile`; the save RPC, authenticated account email, and organization-contact inputs remain unchanged. CI must be repaired and all gates green before merge.
+2. Compact Guardian shell + avatar/account menu; reuse the existing `HelpFeedback` component as the primary Support entry after PR #69 merges.
 3. Photo-forward Guardian dashboard / Pet Passport density.
 
 GitHub Copilot cloud-agent execution is blocked by insufficient GitHub AI Credits. Do not repeatedly retry it. The Work handoff remains `docs/prompts/ISSUE-53-GUARDIAN-PET-CONTACT-WORK.md`.
 
-Current automation-runtime limitation: the connected GitHub write API can safely create branches/new files but replacing the large existing `src/main.tsx` requires a whole-file rewrite. Do not risk a destructive source overwrite for this two-field correction. Use ChatGPT Work/browser-capable coding execution or another safe patch-capable surface for this slice, then review/merge only after required gates are green.
+Current execution note: PR #69 was created through the connected GitHub repository API after a local patch-based edit. The first CI run found `docs/AI-HANDOFF.md` was not formatted according to the repository Prettier gate; formatting has been repaired on the PR branch and all required gates must rerun before merge.
 
 ## Support OS
 
 Operational source of truth remains Supabase. Raw support content/PII must never auto-mirror to GitHub.
 
 Completed:
+
 - `support_tickets`, `support_ticket_messages`, `support_ticket_events` under RLS;
 - Guardian categorized intake/status UI;
 - support operating model, severity, AI guardrails, human escalation, notification policy and domain/persona runbooks;
 - sanitized engineering-handoff contract;
 - reporter duplicate-group hardening;
 - privacy-safe duplicate-candidate and daily-digest aggregate database plumbing.
+- privacy-safe advisory triage queue for unresolved work; it retains human escalation for privacy/safety/account cases and never mutates or resolves tickets.
 
 Remaining Issue #56 focus:
+
 1. primary avatar/user-menu Help & feedback entry during Issue #53 shell work;
 2. bounded classification/digest automation consuming the private aggregate sources;
 3. regression for classification/digest scheduling and aging behavior;
