@@ -8,32 +8,32 @@ Phase 2 — Partner Marketplace MVP is **complete**.
 
 Lost Lands MVP LL-1 through LL-6 are **accepted** and must not be reopened without regression evidence.
 
-**Current state: launch readiness with active Support OS follow-up plus external provider acceptance gates.**
+**Current state: launch readiness with one remaining Support OS delivery-runtime gap plus external provider acceptance gates.**
 
-Production web-domain cutover and Phase 3 remain explicitly owner-gated.
+Current accepted repository baseline: `1443d7138d923033bb4e9c20ab8971a49647eefb` (PR #79).
 
-Current accepted application baseline: `54628c2b5ab831d203ffc8413920b4431e78b979`.
+Current deployed frontend baseline: `5bf64450a598fa19126fc9069632dea2d3cf4601` (PR #78), READY on Vercel production.
+
+Production web-domain cutover remains explicitly owner-gated.
 
 ## Accepted launch-readiness engineering
 
-The authoritative detailed history remains in `docs/AI-HANDOFF.md` and the relevant GitHub issues/PRs. Current accepted post-MVP work includes:
+The authoritative detailed history remains in `docs/AI-HANDOFF.md` and the relevant GitHub issues/PRs.
 
-- Pet Passport multi-photo/activity improvements.
-- Guardian Deal Moments.
+Recent accepted work includes:
+
+- Pet Passport multi-photo/activity improvements and Guardian Deal Moments.
 - denser Marketplace presentation.
-- LostPaws campaign landing.
-- RAVE Shelter vendor acquisition surface.
-- Support OS foundation, runbooks, Help & feedback intake/status, duplicate/digest plumbing, privacy-safe triage queue, fingerprint hardening and private classification/owner digest.
-- Guardian pet-contact correction.
-- compact Guardian account/avatar menu with Help & feedback reuse.
-- private Guardian profile avatar upload/persistence.
-- Support OS release-context capture via PR #77: Help & feedback submissions now populate the existing `support_tickets.app_release` field from the deployed build commit identifier.
+- LostPaws campaign landing and RAVE Shelter vendor acquisition surface.
+- Support OS foundation/runbooks, Help & feedback intake/status, duplicate/digest plumbing, privacy-safe triage/classification/owner-digest views and release context.
+- Guardian pet-contact correction, compact account/avatar menu and private Guardian profile avatar persistence.
+- PR #78: photo-first Guardian Passport + compact Passport cards; all six required gates passed; merged at `5bf64450a598fa19126fc9069632dea2d3cf4601`.
+- PR #79: private provider-neutral support delivery contract plus cross-day aging/escalation regression; all six required gates passed; merged at `1443d7138d923033bb4e9c20ab8971a49647eefb`.
 - launch legal-review checklist; draft Terms/Privacy remain unapproved and must not be published as final.
-- current frontend-core dependency update from PR #21; all repository gates passed before merge.
 
-Issue #53 is **closed/completed** in GitHub. Do not reopen or extend it without regression evidence or a new explicit follow-up issue.
+Issue #53 remains **closed/completed**. PR #78 was a separate owner-directed follow-up and does not reopen that issue.
 
-Do not reopen any other accepted slice without evidence of a regression.
+Do not reopen accepted slices without regression evidence.
 
 ## Auth/email status
 
@@ -52,31 +52,39 @@ Do not redo Resend/domain/SMTP/Guardian-confirmation work without regression evi
 
 Supabase remains the operational source of truth. Raw support content/PII must never auto-mirror to GitHub.
 
-Completed through PR #77:
+Completed through PR #79:
 
 1. authenticated Help & feedback intake/status under RLS;
-2. privacy-safe duplicate, aging, triage, classification and owner-digest views;
+2. privacy-safe duplicate, triage, classification, owner-digest and delivery-candidate views;
 3. bounded human-escalation policy with no autonomous closure/fix behavior;
-4. release/version context now captured in the existing `app_release` field for new support reports.
+4. deployed release/version captured in `support_tickets.app_release`;
+5. immediate vs daily-digest delivery boundaries;
+6. persistent 24h / 48h / 7d aging and escalation regression coverage.
 
-Current safe follow-up:
+Shared-dev verification after PR #79:
 
-1. Add repository-backed, least-privilege scheduling/delivery for the already-private classification/digest outputs.
-2. Add regression for cross-day aging persistence and escalation behavior.
-3. Keep privacy/P0/P1 cases human-gated; never auto-close or auto-fix them.
+- migration `support_delivery_contract_aging` applied successfully;
+- `private.support_delivery_candidates` exists;
+- neither `anon` nor `authenticated` can SELECT it;
+- no raw reporter/text/AI payload columns are exposed;
+- current live delivery-candidate count is 0;
+- fresh security advisor shows no new Support OS-specific finding.
+
+Remaining #56 work:
+
+1. Implement the actual repository-backed, least-privilege scheduler/delivery worker when a supported scheduler runtime is available.
+2. Consume only the privacy-minimized accepted delivery contract; do not transport raw ticket content/PII.
+3. Do not enable `pg_cron`/`pg_net` ad hoc or create a shared-dev-only scheduler outside repository review/tests.
 4. Optional screenshot/storage support remains later and requires explicit privacy/storage controls.
-
-Live shared-dev preflight on 2026-09-11 found neither `pg_cron` nor `pg_net` currently enabled and no existing support-digest Edge Function to reuse. Do not assume scheduled delivery exists. Any scheduler introduction must be repository-backed, generated through the normal migration workflow, tested and least-privilege rather than an ad-hoc shared-dev-only change.
 
 ## Hosted/Vercel state
 
 - `main` remains the Vercel Production Branch.
-- PR #77 passed all six required repository gates and squash-merged at `54628c2b5ab831d203ffc8413920b4431e78b979`.
-- Vercel production deployment `dpl_79DAvPwJRAsycmdxBJVWzLLAK8Fd` is READY for that exact merge SHA.
-- `lost-paws-one.vercel.app` now points to the current accepted production deployment.
-- hosted checks on the current production alias return HTTP 200 for `/lostpaws` and `/rave-vendors`.
+- PR #78 production deployment `dpl_FZDtqShf29yDPz5nWQ1d8YGRuR5b` is READY at frontend SHA `5bf64450a598fa19126fc9069632dea2d3cf4601`.
+- `lost-paws-one.vercel.app/lostpaws` returns HTTP 200.
+- `lost-paws-one.vercel.app/rave-vendors` returns HTTP 200.
 - Vercel reports no runtime errors in the last 24 hours.
-- the prior production-freshness gap is therefore resolved; later docs-only `main` commits may still be intentionally skipped by the Ignored Build Step.
+- PR #79 changes only Supabase migration/test files; ignored/canceled Vercel previews for those commits are not application failures.
 - final `shelterpawtners.com` custom-domain/DNS cutover remains owner-gated.
 
 ## Remaining external launch gate
@@ -94,11 +102,11 @@ Current connected Supabase tooling still does not expose hosted Google/Meta prov
 
 ## Current next sequence
 
-1. Continue Issue #56 only with repository-backed, privacy-safe scheduling/delivery and cross-day aging/escalation regression. Do not improvise shared-dev-only scheduler DDL.
+1. Implement Issue #56's actual scheduler/delivery worker only through a repository-backed, least-privilege mechanism when a supported runtime is available.
 2. Use the current READY production candidate for integrated desktop/mobile/browser acceptance when an executable browser-capable surface is available.
 3. Re-check password-recovery/Google/Meta provider tooling each run and act immediately if an authorized prerequisite becomes actionable.
-4. Keep legal publication, Phase 3 and final production-domain cutover owner-gated.
-5. If additional Guardian photo-forward UX is desired after completed Issue #53, create a new explicit follow-up issue rather than silently reopening #53.
+4. Keep legal publication and final production-domain cutover owner-gated.
+5. If scheduler/provider work remains externally blocked, continue useful non-destructive launch verification/documentation rather than improvising privileged production mechanisms.
 
 ## Guardrails still in force
 
@@ -111,5 +119,4 @@ Never:
 - weaken tests or RLS;
 - publish unapproved final Terms/Privacy;
 - expose secrets;
-- perform the final `shelterpawtners.com` production web-domain DNS/custom-domain cutover without separate authorization;
-- begin separately owner-gated Phase 3 work merely because launch-readiness engineering is otherwise complete.
+- perform the final `shelterpawtners.com` production web-domain DNS/custom-domain cutover without separate authorization.
