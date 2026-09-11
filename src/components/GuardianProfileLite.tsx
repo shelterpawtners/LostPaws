@@ -35,12 +35,13 @@ export function GuardianProfileLite({ session }: { session: Session | null }) {
   const [status, setStatus] = useState("");
 
   useEffect(() => {
-    if (!db || !session) {
+    const client = db;
+    if (!client || !session) {
       setLoading(false);
       return;
     }
     setLoading(true);
-    void db
+    void client
       .from("profiles")
       .select("full_name,phone,instagram_handle,avatar_path")
       .eq("id", session.user.id)
@@ -62,7 +63,7 @@ export function GuardianProfileLite({ session }: { session: Session | null }) {
           setAvatarUrl("");
           return;
         }
-        const { data: signed, error: signedError } = await db.storage
+        const { data: signed, error: signedError } = await client.storage
           .from("profile-avatars")
           .createSignedUrl(nextProfile.avatar_path, 3600);
         setAvatarUrl(signedError ? "" : signed?.signedUrl || "");
