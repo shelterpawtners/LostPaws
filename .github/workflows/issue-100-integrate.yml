@@ -39,16 +39,16 @@ jobs:
       - name: Build application
         run: npm run build
 
-      - name: Commit verified integration
+      - name: Commit verified source integration
         shell: bash
         run: |
           set -euo pipefail
-          if git diff --quiet; then
-            echo "Issue #100 integration is already applied and verified."
+          if git diff --quiet -- src/main.tsx src/components/RaveShelterMission.tsx src/components/RaveShelterMission.css; then
+            echo "Issue #100 source integration is already applied and verified."
             exit 0
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add src/main.tsx src/components/RaveShelterMission.tsx src/components/RaveShelterMission.css .github/workflows/github-pages-mvp-acceptance.yml
+          git add src/main.tsx src/components/RaveShelterMission.tsx src/components/RaveShelterMission.css
           git commit -m "Issue #100: integrate unified RAVE Shelter mission flow"
           git push origin HEAD:ux/issue-100-unified-rave-mission
