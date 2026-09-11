@@ -99,6 +99,7 @@ export function HelpFeedback({
         description: cleanDescription,
         persona_code: "guardian",
         app_route: window.location.pathname + window.location.search,
+        app_release: __APP_RELEASE__,
         device_class: deviceClass(),
         browser_family: browserFamily(),
       })
