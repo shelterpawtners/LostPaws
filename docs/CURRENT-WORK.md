@@ -8,129 +8,136 @@ Phase 2 — Partner Marketplace MVP is **complete**.
 
 Lost Lands MVP LL-1 through LL-6 are **accepted** and must not be reopened without regression evidence.
 
-**Current state: release-candidate source reconciliation is complete on `main`; final GitHub Pages integrated acceptance is green. Remaining work is limited to explicit external/owner gates and the Support OS delivery-runtime gap.**
+`main` is the only release-candidate source of truth. Do not wholesale-merge historical branches.
 
-Current accepted release-candidate/source baseline: `53978542abae1e40b253e79cc82dcc2354b08406`.
+Current source baseline after the latest accepted auth/UI work:
 
-Current verified browser acceptance surface: GitHub Pages at `https://shelterpawtners.github.io/LostPaws`.
+`45a87c3ff1bac1d3f35172386e8a4c3f5fb54d06`
 
-Current Vercel production frontend remains the older READY PR #78 deployment at SHA `5bf64450a598fa19126fc9069632dea2d3cf4601`; newer branch/production attempts are still constrained by the Hobby deployment limit. Do not purchase or upgrade Vercel to bypass this.
+Current verified public acceptance surface:
 
-Production `shelterpawtners.com` web-domain cutover remains explicitly owner-gated.
+`https://shelterpawtners.github.io/LostPaws/`
 
-## Final source reconciliation / Issue #87
+Vercel remains constrained by the Hobby/free-tier deployment limit. Do not purchase or upgrade Vercel to bypass it. Final `shelterpawtners.com` web-domain cutover remains separately owner-gated.
 
-Issue #87 established `main` as the only release-candidate source of truth. Historical branches were audited by tree/functionality rather than blindly merged. No known accepted MVP product delta remains stranded solely on an old branch.
+## Recent accepted launch work
 
-Accepted final acceptance work includes:
+### Unified LostPaws + RAVE Shelter mission
 
-- PR #88 — final GitHub Pages MVP release matrix across mobile/tablet/desktop and critical public routes/workflows.
-- PR #90 — non-destructive authenticated Guardian live smoke.
-- `main` commit `53978542abae1e40b253e79cc82dcc2354b08406` — mobile Guardian responsive navigation fix for the authenticated live smoke.
-- GitHub Pages MVP Acceptance run #12 passed on that exact SHA, including signed-in Guardian Account/Help & feedback, protected Passport navigation, sign-out, and protected-route redirect.
-- PR #92 became conflict-stale after the same mobile navigation fix landed on `main`; it was closed unmerged rather than force-merging duplicate/superseded QA code.
+Issue #100 / PR #102 replaced the competing LostPaws experiences with one coherent mission flow.
 
-Do not merge historical branches wholesale merely to make ancestry look clean.
+- `/rave` renders the unified RAVE Shelter mission experience.
+- `/lostpaws` renders the same mission experience with LostPaws as the music-community activation.
+- `/rave-shelter` canonicalizes to `/rave`.
+- The old generic LostPaws FoundationPage entry is removed.
+- `public/lostpaws.html` and the Vercel LostPaws static rewrites are retired.
+- The normal ShelterPawtners global header/footer remain present.
+- Home now tells one LostPaws × RAVE Shelter story and links into the mission page and RAVE Marketplace.
+- Raver/Guardian, RAVE Vendor/PetBiz, and Shelter/Rescue paths route to their intended destinations.
+- Guardian give-back is described as a future giving capability, not as an already-settled charitable donation flow.
+- Strong non-affiliation wording remains in place.
 
-## Accepted launch-readiness engineering
+PR #103 updated the live GitHub Pages assertion to the new mission copy after #102 merged.
 
-Recent accepted work includes:
+Issue #58, Issue #96, and PR #97 are superseded and must not be revived absent regression evidence.
 
-- multi-photo Pet Passport + Guardian activity improvements and Guardian Deal Moments;
-- denser Marketplace presentation;
-- LostPaws campaign landing and RAVE Shelter vendor acquisition surface;
-- Guardian pet-contact correction, compact account/avatar menu, private Guardian profile avatars, and photo-first Guardian Passport;
-- global launch navigation cleanup and homepage LostPaws/RAVE feature;
-- Support OS foundation/runbooks, Help & feedback intake/status, duplicate/digest plumbing, privacy-safe triage/classification/owner-digest views, deployed release context, delivery contract, and cross-day aging/escalation regression;
-- launch legal-review checklist; draft Terms/Privacy remain unapproved and must not be published as final.
+### OAuth deployment-base readiness
 
-Issue #53 remains **closed/completed**.
+Issue #99 / PR #104 added `src/lib/auth-oauth.ts` and moved Google OAuth app returns to a deployment-base-aware helper.
 
-Issue #80 remains **closed/completed in source**.
+- Root hosting returns inside `https://shelterpawtners.com/`.
+- GitHub Pages returns remain inside `/LostPaws/`.
+- Persona onboarding paths remain deterministic after Google signup.
+- No deployment hostname is hardcoded in frontend return logic.
+- The Supabase provider callback remains separate and unchanged.
+
+Issue #98 / PR #106 added Facebook source readiness:
+
+- existing `VITE_FACEBOOK_AUTH_ENABLED` flag controls the UI;
+- Facebook is offered beside Google on Guardian, Shelter, PetBiz, RAVE Vendor signup and sign-in;
+- provider is `facebook`;
+- signup preserves `sp_kind` and returns to the selected persona onboarding path through the same base-aware helper;
+- login returns to the current application base;
+- Facebook initiation failures use a generic user-safe message;
+- no universal Instagram login is advertised;
+- no Meta credentials, secrets, DNS, or provider-console configuration are committed.
+
+Live Google and Facebook provider acceptance remains external and must not be represented as complete until provider-console credentials/settings and real account flows are tested.
 
 ## Auth/email status
 
 Completed hosted prerequisites:
 
-- Resend free-tier setup is complete.
-- `auth.shelterpawtners.com` transactional-email-only DNS is verified.
-- Microsoft 365 inbound/human-mail DNS remains intentionally unchanged.
-- Supabase custom SMTP is enabled with `ShelterPawtners <noreply@auth.shelterpawtners.com>`.
-- Hosted Supabase Site URL is configured.
-- Real Guardian signup/confirmation through Supabase + Resend was accepted.
+- Resend free-tier setup;
+- `auth.shelterpawtners.com` transactional-email DNS;
+- Microsoft 365 inbound/human-mail DNS intentionally unchanged;
+- Supabase custom SMTP using `ShelterPawtners <noreply@auth.shelterpawtners.com>`;
+- hosted Supabase Site URL;
+- real Guardian signup/confirmation through Supabase + Resend.
 
-Do not redo Resend/domain/SMTP/Guardian-confirmation work without regression evidence.
+Password-recovery source/test readiness is complete through PR #94:
 
-Password recovery source/test readiness is complete: recovery requests return to
-the correct root or GitHub Pages `/LostPaws/` reset route, the update form is
-limited to a browser-scoped `PASSWORD_RECOVERY` session, auth errors are
-non-enumerating, and a successful password update signs out before returning to
-sign-in. This does not replace the remaining real hosted email lifecycle
-acceptance.
+- base-aware recovery redirect;
+- `/reset-password` route;
+- browser-scoped `PASSWORD_RECOVERY` session gating;
+- password update and forced sign-out;
+- safe generic invalid/expired/reused-link messaging.
+
+Still required: one real hosted password-recovery lifecycle covering delivery, reset link, password update, new-password login, invalid/expired/reused behavior, and Guardian persona/profile continuity.
 
 ## Active Issue #56 — Support OS
 
 Supabase remains the operational support source of truth. Raw support content/PII must never auto-mirror to GitHub.
 
-Accepted capabilities include:
+Accepted source/runtime foundation includes:
 
-1. authenticated Help & feedback intake/status under RLS;
-2. privacy-safe duplicate, triage, classification, owner-digest and delivery-candidate views;
-3. bounded human-escalation policy with no autonomous closure/fix behavior;
-4. deployed release/version captured in `support_tickets.app_release`;
-5. immediate vs daily-digest delivery boundaries;
-6. persistent 24h / 48h / 7d aging and escalation regression coverage.
+- authenticated Help & feedback under RLS;
+- privacy-safe duplicate/triage/classification/digest/delivery contract;
+- human escalation for privacy/safety/P0/P1/human-review-required cases;
+- release context on tickets;
+- immediate vs daily-digest boundaries;
+- 24h/48h/7d aging/escalation regression;
+- reviewed private delivery ledger and service-role-only claim/complete RPCs;
+- provider-neutral server-side delivery worker source.
 
-Shared-dev verification remains valid:
+The already-reviewed PR #95 database migration has been applied to shared dev. Verification confirmed anon/authenticated cannot execute the privileged delivery RPCs and `service_role` can.
 
-- `private.support_delivery_candidates` exists;
-- neither `anon` nor `authenticated` can SELECT it;
-- no raw reporter/text/AI payload columns are exposed;
-- no new Support OS-specific security-advisor finding was introduced.
-
-Remaining #56 work:
-
-1. A reviewed dormant delivery runtime is ready in source: a private idempotency/retry ledger, service-role-only claim/complete interfaces, server-only Edge Function, and manually dispatched GitHub runner. It consumes only the accepted privacy-minimized contract.
-2. It transports no raw ticket content, reporter identity, AI payload, or ticket ID. Human escalation remains mandatory for privacy/safety, P0/P1, and `human_review_required` cases; it cannot change ticket state, close a case, fix a problem, or implement a suggestion.
-3. The exact remaining external blocker is an approved owner-alert webhook destination with idempotency support, plus managed `SUPPORT_DELIVERY_WEBHOOK_URL` and `SUPPORT_DELIVERY_INVOKE_SECRET` values and reviewed hosted deployment. Its server-to-server invocation uses that dedicated secret rather than a browser/user JWT. Do not enable `pg_cron`/`pg_net` ad hoc.
-4. Optional screenshot/storage support remains later and requires explicit privacy/storage controls.
+Do **not** deploy the delivery Edge Function until an approved owner-alert destination and managed `SUPPORT_DELIVERY_WEBHOOK_URL` / `SUPPORT_DELIVERY_INVOKE_SECRET` values exist. Do not invent a webhook, hardcode secrets, or enable ad hoc `pg_cron` / `pg_net` scheduling.
 
 ## Hosted runtime state
 
 ### GitHub Pages
 
-- Current release-candidate SHA: `53978542abae1e40b253e79cc82dcc2354b08406`.
-- Final public mobile/tablet/desktop matrix is green.
-- Authenticated Guardian mobile + desktop smoke is green on the live Pages release candidate.
-- GitHub Pages is therefore the current verified acceptance surface.
+GitHub Pages is the primary low-cost release-candidate acceptance environment. Public desktop/tablet/mobile acceptance is green for the unified mission flow and the latest auth source changes.
 
 ### Vercel
 
-- Project `lost-paws` is connected on Hobby.
-- Current READY production deployment remains PR #78 at SHA `5bf64450a598fa19126fc9069632dea2d3cf4601`.
-- Recent newer deployments are canceled/rate-limited; do not purchase or upgrade to bypass the limit.
-- Vercel staleness does not invalidate the GitHub Pages acceptance result, but final Vercel production freshness should be rechecked when free-tier capacity becomes available.
+Vercel Hobby remains capacity/rate constrained. The older READY production deployment may lag `main`. This does not invalidate the GitHub Pages acceptance result. Recheck production freshness when free capacity becomes available; do not upgrade solely to bypass the limit.
 
-## Remaining external launch gate
+## Remaining external launch gates
 
-1. Execute remaining real password-recovery acceptance: delivery, `/reset-password`, password update, new-password sign-in, invalid/expired/reused-link behavior, and Guardian persona/profile continuity.
-2. Verify Microsoft 365 human mailbox send/receive remains normal after transactional-email DNS additions.
-3. Configure/live-test Google OAuth when provider-console access/tooling is available.
-4. Configure/live-test supported Facebook Login when Meta console access/tooling is available.
-5. Verify OAuth/email flows do not create duplicate profiles/organizations and preserve persona continuity.
-6. Recheck Vercel production freshness when the free-tier deployment window is available; do not upgrade the plan.
-7. Present draft Terms/Privacy and owner checklist for owner/legal review; do not publish as final without approval.
-8. Prepare but do not perform final production web-domain/custom-domain cutover without separate authorization.
+1. Complete real password-recovery lifecycle acceptance.
+2. Verify Microsoft 365 human mailbox send/receive.
+3. Supply an approved Support OS owner-alert destination and managed secrets, then review/deploy the privileged delivery runtime.
+4. Configure Google OAuth provider credentials/settings and perform real hosted acceptance.
+5. Configure Meta/Facebook provider credentials/settings and perform real hosted acceptance.
+6. Verify social/email auth flows preserve persona continuity and do not create duplicate profiles/organizations.
+7. Recheck Vercel production freshness when free capacity permits.
+8. Complete owner/legal review of draft Terms/Privacy. Do not publish final versions without approval.
+9. Prepare but do not perform final `shelterpawtners.com` web-domain/custom-domain cutover without separate owner authorization.
 
-Current connected Supabase tooling still does not expose hosted Google/Meta provider configuration. Meta phone/provider interaction must not block independent repository, database, QA or launch-readiness work.
+Supabase project callback used by external OAuth providers:
+
+`https://jukmlmryykcnjtpblbja.supabase.co/auth/v1/callback`
 
 ## Current next sequence
 
-1. Treat `main` as the locked release-candidate source of truth; do not merge stale historical branches without regression evidence.
-2. Continue Issue #56 only through a repository-backed, least-privilege delivery mechanism once its legitimate secret/transport/runtime prerequisites exist.
-3. Re-check password-recovery/Google/Meta/Vercel tooling each run and act immediately if an authorized prerequisite becomes actionable.
-4. Keep legal publication and final production-domain cutover owner-gated.
-5. If all external lanes remain blocked, continue only useful non-destructive launch verification/documentation; do not invent privileged production mechanisms.
+1. Treat `main` as locked release-candidate source of truth.
+2. Perform real password-recovery acceptance when a safe account/inbox is available.
+3. Complete Google and Facebook provider-console setup only when authorized credentials/tooling are available; source readiness is already complete.
+4. Advance Support OS only when its legitimate transport/secret prerequisites exist.
+5. Keep Vercel upgrade, legal publication, and final production-domain cutover owner-gated.
+6. If external lanes remain blocked, continue useful non-destructive QA, messaging/UI polish, issue reconciliation, and launch documentation rather than inventing privileged production mechanisms.
 
 ## Guardrails still in force
 
@@ -143,4 +150,5 @@ Never:
 - weaken tests or RLS;
 - publish unapproved final Terms/Privacy;
 - expose secrets;
-- perform the final `shelterpawtners.com` production web-domain DNS/custom-domain cutover without separate authorization.
+- perform the final `shelterpawtners.com` production web-domain DNS/custom-domain cutover without separate authorization;
+- reopen completed Lost Lands slices or superseded LostPaws architecture without regression evidence.
