@@ -50,6 +50,7 @@ Do not reopen Resend/domain/SMTP/Guardian-confirmation work unless regression ev
 Owner direction remains hybrid consumer/dashboard leaning consumer-app, no Figma prerequisite.
 
 Priority order:
+
 1. Remove misleading Guardian pet `Contact email` / `Instagram profile` fields; `save_guardian_onboarding_pet` persists neither and communications belong to the responsible Guardian/Shelter contact.
 2. Compact Guardian shell + avatar/account menu.
 3. Add authenticated `Help & feedback` entry and then bounded support-ticket submission/status UI against live Support OS tables.
@@ -63,6 +64,7 @@ The old `ux/guardian-marketplace-launch-polish` branch remains one documentation
 Issue #58 is now the source for the bounded `/lostpaws` campaign landing page. Owner direction is locked in `docs/LOSTPAWS-RAVE-LANDING-DIRECTION.md` (main commit `828072c92f1ba4ac1bf1edc12f47a63aaeecb443`).
 
 Locked direction:
+
 - canonical QR destination: `https://shelterpawtners.com/lostpaws`;
 - owner-supplied 16:9 LostPaws artwork is the exact top banner/hero and must not be generatively redrawn;
 - `/lostpaws` must not use the normal ShelterPawtners global header/navigation;
@@ -80,6 +82,7 @@ Binary asset constraint: GitHub text/content connector cannot safely ingest the 
 ## Support OS
 
 Issue #56 remains open for UI/intake/automation slices. Foundation is live in shared dev:
+
 - `support_tickets`, `support_ticket_messages`, `support_ticket_events`;
 - reporter-owned ticket creation/read boundaries;
 - reporter-visible append-only messages;
@@ -97,7 +100,7 @@ Issue #56 remains open for UI/intake/automation slices. Foundation is live in sh
 
 ## Protected restrictions
 
-Never purchase/upgrade paid services, make destructive production-data changes, alter Microsoft 365 mail DNS, decide OD-003 or OD-004, weaken tests/RLS, publish unapproved final Terms/Privacy, expose secrets, or perform final `shelterpawtners.com` production web-domain DNS/custom-domain cutover without separate owner authorization.
+Never purchase/upgrade paid services, make destructive production-data changes, alter Microsoft 365 mail DNS, decide OD-003 or OD-004, weaken tests/RLS, publish unapproved final Terms/Privacy, expose secrets, or perform the final `shelterpawtners.com` production web-domain DNS/custom-domain cutover without separate owner authorization.
 
 ## Next safe action
 
