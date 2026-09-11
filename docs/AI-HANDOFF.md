@@ -2,12 +2,12 @@
 
 STATUS: EXTERNAL_LAUNCH_GATE_WITH_ACTIVE_SUPPORT_OS_DELIVERY_RUNTIME_GAP
 CURRENT_PHASE: Lost Lands MVP launch readiness
-CURRENT_CHECKPOINT: Support OS delivery runtime + password-recovery/provider acceptance
-NEXT_CHECKPOINT: Google OAuth, Facebook auth, integrated browser/mobile acceptance, owner legal review, cutover prep
+CURRENT_CHECKPOINT: Deploy accepted PR #81 frontend when free-tier Vercel build window reopens; Support OS delivery runtime + password-recovery/provider acceptance
+NEXT_CHECKPOINT: Integrated browser/mobile acceptance, Google OAuth, Facebook auth, owner legal review, cutover prep
 OWNER_DECISION_REQUIRED: YES_FOR_OWNER_ONLY_PROVIDER_ACTIONS_LEGAL_AND_FINAL_CUTOVER
 SAFE_TO_CONTINUE: YES
-ACCEPTED_CODE_SHA: 1443d7138d923033bb4e9c20ab8971a49647eefb
-ACCEPTANCE_RUNTIME: REPOSITORY_GATES_GREEN; SHARED_DEV_MIGRATION_APPLIED; VERCEL_PRODUCTION_READY_AT_FRONTEND_SHA_5BF64450
+ACCEPTED_CODE_SHA: fbb5a02e081d4bd634034a9fadd8bb17c3744e4a
+ACCEPTANCE_RUNTIME: REPOSITORY_GATES_GREEN; SHARED_DEV_SUPPORT_MIGRATION_APPLIED; VERCEL_PRODUCTION_TEMPORARILY_BEHIND_ACCEPTED_FRONTEND_DUE_FREE_TIER_RATE_LIMIT
 
 ## Accepted product boundary
 
@@ -34,7 +34,10 @@ Current accepted post-MVP launch-readiness engineering includes:
 - PR #77 — deployed release context captured in `support_tickets.app_release`; merged at `54628c2b5ab831d203ffc8413920b4431e78b979`.
 - PR #78 — photo-first Guardian Passport and compact Passport cards; all six required gates passed; squash-merged at `5bf64450a598fa19126fc9069632dea2d3cf4601`.
 - PR #79 — privacy-safe provider-neutral support delivery contract plus cross-day aging/escalation regression; all six required gates passed; squash-merged at `1443d7138d923033bb4e9c20ab8971a49647eefb`.
+- PR #81 / Issue #80 — global launch navigation cleanup and home launch feature; authenticated Dashboard/Account/Help/Sign out controls moved into the global header, LostPaws and RAVE Shelter added to primary navigation, and the home page now features the September 2026 LostPaws activation plus the broader end-of-2026 RAVE Shelter roadmap. All required PR gates passed; squash-merged at `fbb5a02e081d4bd634034a9fadd8bb17c3744e4a`.
 - PR #65 — launch legal-review checklist. Draft Terms/Privacy remain unapproved and must not be published as final.
+
+Do not reopen Issue #80 without regression evidence. The source implementation is accepted; only deployment/hosted acceptance remains blocked by the free-tier Vercel rate limit described below.
 
 ## Auth/email prerequisites already complete
 
@@ -87,30 +90,31 @@ Remaining #56 focus:
 ## Hosted/Vercel state
 
 - `main` is the Vercel Production Branch.
-- PR #78 frontend merge SHA `5bf64450a598fa19126fc9069632dea2d3cf4601` has READY production deployment `dpl_FZDtqShf29yDPz5nWQ1d8YGRuR5b`.
-- `https://lost-paws-one.vercel.app/lostpaws` returns HTTP 200.
-- `https://lost-paws-one.vercel.app/rave-vendors` returns HTTP 200.
-- Vercel reports no runtime errors in the last 24 hours.
-- PR #79 changes only Supabase migration/test files; canceled/ignored preview builds for those commits are not application runtime failures.
+- PR #81 accepted frontend merge SHA is `fbb5a02e081d4bd634034a9fadd8bb17c3744e4a`.
+- All repository and hosted PR checks for PR #81 passed before merge.
+- Vercel rejected the post-merge production deployment because the Hobby/free-tier build rate limit was reached. GitHub/Vercel status on the merge reports: `Deployment rate limited — retry in 24 hours.`
+- Never purchase/upgrade Vercel to bypass this limit. Retry only when the free-tier deployment window is available again.
+- Until that retry succeeds, the current READY production frontend remains PR #78 deployment `dpl_FZDtqShf29yDPz5nWQ1d8YGRuR5b` at SHA `5bf64450a598fa19126fc9069632dea2d3cf4601`.
+- `https://lost-paws-one.vercel.app/lostpaws` and `/rave-vendors` remain available from that prior READY frontend, but they do not yet include PR #81's new global-nav/homepage changes.
 - Final `shelterpawtners.com` custom-domain/DNS cutover remains separately owner-gated.
 
 ## Remaining external launch gate
 
-1. Execute real password-recovery acceptance: delivery, `/reset-password`, update, new-password sign-in, invalid/expired/reused-link behavior.
-2. Verify Microsoft 365 human mailbox send/receive still behaves normally after transactional-email DNS additions.
-3. Configure/live-test Google OAuth when provider-console credentials/tooling are available.
-4. Configure/live-test supported Facebook Login when Meta console access/tooling is available.
-5. Verify OAuth/email flows do not create duplicate profiles/organizations and preserve persona continuity.
-6. Re-run integrated desktop/mobile/browser acceptance on the final configured release.
-7. Present draft Terms/Privacy plus owner checklist for owner/legal review; do not publish as final without approval.
-8. Prepare but do not perform final `shelterpawtners.com` web-domain DNS/custom-domain cutover without separate authorization.
+1. When the free-tier Vercel build window reopens, deploy/verify accepted PR #81 SHA `fbb5a02e...` and confirm `lost-paws-one.vercel.app` points to it.
+2. Execute real password-recovery acceptance: delivery, `/reset-password`, update, new-password sign-in, invalid/expired/reused-link behavior.
+3. Verify Microsoft 365 human mailbox send/receive still behaves normally after transactional-email DNS additions.
+4. Configure/live-test Google OAuth when provider-console credentials/tooling are available.
+5. Configure/live-test supported Facebook Login when Meta console access/tooling is available.
+6. Verify OAuth/email flows do not create duplicate profiles/organizations and preserve persona continuity.
+7. Re-run integrated desktop/mobile/browser acceptance on the final configured release, including PR #81 global navigation and home feature at desktop/tablet/mobile widths.
+8. Present draft Terms/Privacy plus owner checklist for owner/legal review; do not publish as final without approval.
+9. Prepare but do not perform final `shelterpawtners.com` web-domain DNS/custom-domain cutover without separate authorization.
 
 ## Connected tooling recheck — 2026-09-11
 
 - GitHub: connected and authoritative for repository operations/CI. Direct repository work remains preferred over burning Copilot credits.
 - Supabase: connected for database/migration/Edge Function operations; current exposed tooling still does not provide hosted Google/Meta provider-console configuration.
-- Vercel: connected; current frontend production deployment is READY and runtime error check is clean.
-- Fresh plugin search did not surface a usable Meta/Facebook, Google OAuth, Resend or DNS/domain-management provider plugin.
+- Vercel: connected. PR #81 post-merge deployment is currently blocked specifically by the Hobby/free-tier deployment rate limit; no upgrade is authorized.
 - Browser/provider-console interaction remains an external/interactive lane when an executable browser-capable Work surface is available. Do not repeatedly retry the owner's Meta phone gate.
 
 ## Legal review readiness
@@ -129,8 +133,9 @@ Never purchase/upgrade paid services, make destructive production-data changes, 
 
 ## Next safe action
 
-1. Continue Issue #56 with an actual repository-backed least-privilege scheduler/delivery worker only when a supported scheduler runtime is available; consume only `private.support_delivery_candidates` and do not transport raw ticket content/PII.
-2. Use the READY production candidate for integrated desktop/mobile/browser acceptance when an executable browser-capable surface is available.
-3. Re-check password-recovery/Google/Meta provider tooling each run and act immediately if an authorized prerequisite becomes actionable.
-4. Keep legal publication and final production-domain cutover owner-gated.
-5. If the scheduler/provider lanes remain blocked, continue only useful non-destructive launch verification/documentation rather than inventing privileged production mechanisms.
+1. Treat PR #81 source as accepted and closed. Retry its production deployment only after the free-tier Vercel rate-limit window clears; do not purchase an upgrade and do not rewrite accepted code merely to force a build.
+2. Continue Issue #56 with an actual repository-backed least-privilege scheduler/delivery worker only when a supported scheduler runtime is available; consume only `private.support_delivery_candidates` and do not transport raw ticket content/PII.
+3. Once PR #81 is hosted, run integrated desktop/tablet/mobile/browser acceptance with special attention to global nav density, signed-in Account/Help/Sign out behavior, LostPaws/RAVE links, and the new homepage launch feature.
+4. Re-check password-recovery/Google/Meta provider tooling each run and act immediately if an authorized prerequisite becomes actionable.
+5. Keep legal publication and final production-domain cutover owner-gated.
+6. If deployment/scheduler/provider lanes remain externally blocked, continue useful non-destructive launch verification/documentation rather than inventing privileged production mechanisms.
