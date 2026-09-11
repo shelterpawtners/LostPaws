@@ -187,14 +187,12 @@ jobs:
           const response = await page.goto(url, { waitUntil: 'networkidle' });
           if (!response || !response.ok()) throw new Error(`Navigation failed: ${response?.status()}`);
           await page.getByRole('heading', { name: 'Better pet care starts with a connected community.' }).waitFor({ timeout: 15000 });
-          const bodyText = await page.locator('body').innerText();
-          if (!bodyText.includes('LostPaws is launching the RAVE Shelter mission')) {
-            throw new Error('Expected LostPaws homepage feature did not render.');
-          }
+          await page.getByRole('heading', { name: 'Music. Community. More resources for shelter pets.' }).waitFor({ timeout: 15000 });
+          await page.getByRole('link', { name: 'See the RAVE Shelter mission' }).waitFor({ timeout: 15000 });
           const skipTransform = await page.locator('.skip').evaluate(el => getComputedStyle(el).transform);
           if (skipTransform === 'none') throw new Error('Skip link is visibly rendered instead of visually hidden.');
           if (failedResponses.length) throw new Error(`Failed browser responses:\n${failedResponses.join('\n')}`);
           if (errors.length) throw new Error(`Browser runtime errors:\n${errors.join('\n')}`);
-          console.log('Chromium rendered the GitHub Pages app successfully with no failed resources.');
+          console.log('Chromium rendered the GitHub Pages app successfully with the unified RAVE mission and no failed resources.');
           await browser.close();
           EOF
