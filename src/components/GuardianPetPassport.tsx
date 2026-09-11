@@ -120,24 +120,30 @@ export function GuardianPetPassport({
         <p role="status">Loading pet Passport…</p>
       ) : pet ? (
         <>
-          <div className="panel">
-            <span className="eyebrow">Digital Pet Passport</span>
-            <h1>{pet.name}</h1>
-            <div className="notice">
-              <ShieldCheck />
+          <div className="panel passportLead">
+            <div className="passportLeadCopy">
+              <span className="eyebrow">Digital Pet Passport</span>
+              <h1>{pet.name}</h1>
               <p>
-                Private by default. This page is available through your active
-                guardianship and is not a public pet profile.
+                Keep {pet.name}'s recognizable photos, essentials, and adoption
+                story together in one private place.
               </p>
             </div>
-            <p>
-              Keep the core identity details current here. Verified shelter
-              history can now be requested without making the rest of the
-              Passport public.
-            </p>
+            <div className="passportLeadMeta" aria-label="Passport status">
+              <div>
+                <ShieldCheck aria-hidden="true" />
+                <span>Private by default</span>
+              </div>
+              <p>
+                Available only through your active guardianship. Nothing here
+                makes {pet.name}'s Passport public.
+              </p>
+            </div>
           </div>
 
-          <form className="panel detail" onSubmit={save}>
+          <PetMediaGallery session={session} petId={pet.id} canEdit={canEdit} />
+
+          <form className="panel detail passportBasicsPanel" onSubmit={save}>
             <h2>Passport basics</h2>
             <div className="fields">
               <label>
@@ -240,8 +246,6 @@ export function GuardianPetPassport({
               {status}
             </p>
           </form>
-
-          <PetMediaGallery session={session} petId={pet.id} canEdit={canEdit} />
 
           <GuardianAdoptionVerification
             session={session}
