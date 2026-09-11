@@ -104,7 +104,7 @@ begin
       null,
       now()
     from candidates c
-    on conflict on constraint support_delivery_attempts_ticket_id_notification_lane_first_due_at_key do update
+    on conflict (ticket_id, notification_lane, first_due_at) do update
       set lease_token = excluded.lease_token,
           lease_expires_at = excluded.lease_expires_at,
           attempt_count = private.support_delivery_attempts.attempt_count + 1,
