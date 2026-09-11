@@ -241,6 +241,9 @@ jobs:
             await page.waitForURL(/\/LostPaws\/dashboard$/, { timeout: 20000 });
             await page.locator('#main').waitFor({ state: 'visible', timeout: 15000 });
 
+            if (viewport.name === 'mobile') {
+              await page.getByRole('button', { name: 'Open menu' }).click();
+            }
             const accountMenu = page.locator('.guardianAccountMenu');
             await accountMenu.locator('summary').click();
             const helpButton = accountMenu.getByRole('button', { name: 'Help & feedback' });
@@ -254,6 +257,9 @@ jobs:
               throw new Error(`${viewport.name}: Guardian Passport navigation did not remain on the protected route.`);
             }
 
+            if (viewport.name === 'mobile') {
+              await page.getByRole('button', { name: 'Open menu' }).click();
+            }
             await page.getByRole('button', { name: 'Sign out' }).click();
             await page.waitForURL(/\/LostPaws\/?$/, { timeout: 15000 });
             await page.goto(`${process.env.SITE_URL}/dashboard`, { waitUntil: 'networkidle' });
