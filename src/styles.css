@@ -1125,3 +1125,122 @@ footer {
     content: url("/brand/rave-shelter-logo-static-v2.png");
   }
 }
+
+/* launch-nav-lostpaws-home */
+header .guardianAccountMenu {
+  min-width: auto;
+}
+header .guardianAccountMenu summary {
+  color: #f5f7ff;
+  white-space: nowrap;
+}
+header .guardianAccountPanel {
+  color: var(--navy);
+}
+.navSignOut {
+  min-height: 40px;
+  padding: 9px 13px;
+  border: 1px solid #53627c;
+  border-radius: 11px;
+  background: transparent;
+  color: #f5f7ff;
+  font-weight: 800;
+}
+.navSignOut:hover {
+  border-color: #75e3d4;
+  color: #75e3d4;
+}
+.lostPawsFeature {
+  padding: 42px 0;
+  background:
+    radial-gradient(circle at 8% 20%, #8b26c91f, transparent 28%),
+    radial-gradient(circle at 92% 75%, #0e9f9a24, transparent 30%), #0d172b;
+  color: #fff;
+}
+.lostPawsFeatureCard {
+  display: grid;
+  grid-template-columns: minmax(0, 1.45fr) minmax(280px, 0.72fr);
+  gap: 34px;
+  align-items: stretch;
+}
+.lostPawsFeature h2 {
+  max-width: 820px;
+  margin: 12px 0;
+  font-family: Outfit;
+  font-size: clamp(2rem, 4vw, 3.45rem);
+  line-height: 1.08;
+  letter-spacing: -0.035em;
+}
+.lostPawsFeature .lead {
+  color: #c7cedb;
+}
+.lostPawsFeature small {
+  color: #a9b2c4;
+}
+.lostPawsRoadmap {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 26px;
+  border: 1px solid #42516d;
+  border-radius: 22px;
+  background: #15223bd9;
+  box-shadow: 0 22px 60px #050a143d;
+}
+.lostPawsRoadmap > svg {
+  width: 34px;
+  height: 34px;
+  margin-bottom: 18px;
+  color: #75e3d4;
+}
+.lostPawsRoadmap h3 {
+  margin: 8px 0;
+  font-family: Outfit;
+  font-size: 1.55rem;
+}
+.lostPawsRoadmap p {
+  color: #c7cedb;
+  line-height: 1.65;
+}
+.lostPawsRoadmap a {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: 8px;
+  color: #75e3d4;
+  font-weight: 800;
+}
+.lostPawsRoadmap a svg {
+  width: 17px;
+}
+@media (max-width: 1040px) and (min-width: 701px) {
+  nav {
+    gap: 13px;
+    font-size: 0.82rem;
+  }
+  .brand {
+    font-size: 1.05rem;
+  }
+}
+@media (max-width: 700px) {
+  .lostPawsFeatureCard {
+    grid-template-columns: 1fr;
+  }
+  header .guardianAccountMenu {
+    width: 100%;
+  }
+  header .guardianAccountMenu summary {
+    min-height: 44px;
+    justify-content: flex-start;
+  }
+  header .guardianAccountPanel {
+    position: static;
+    width: 100%;
+    margin-top: 8px;
+  }
+  .navSignOut {
+    width: 100%;
+    min-height: 44px;
+    text-align: left;
+  }
+}
