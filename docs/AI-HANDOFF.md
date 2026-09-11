@@ -6,7 +6,7 @@ CURRENT_CHECKPOINT: Guardian launch UX + password-recovery/provider acceptance
 NEXT_CHECKPOINT: Google OAuth, Facebook auth, integrated browser/mobile acceptance, owner legal review, cutover prep
 OWNER_DECISION_REQUIRED: YES_FOR_PROVIDER_CONSOLES_AND_FINAL_CUTOVER_ONLY
 SAFE_TO_CONTINUE: YES
-ACCEPTED_CODE_SHA: 045a592449441b398e7732d4a206cd77ab2ffc7f
+ACCEPTED_CODE_SHA: 8606424b7a655c68b9e25737eb063db7ad86af7e
 ACCEPTANCE_RUNTIME: REPOSITORY_GATES_GREEN; VERCEL_DAILY_FREE_TIER_LIMIT_FOR_NEW_DEPLOYS
 
 ## Completed engineering
@@ -73,13 +73,13 @@ Completed:
 
 Active order:
 
-1. PR #69 is open for the bounded Guardian pet-contact correction: Guardian Pet Basics no longer renders `Contact email` / `Instagram profile`; the save RPC, authenticated account email, and organization-contact inputs remain unchanged. CI must be repaired and all gates green before merge.
-2. Compact Guardian shell + avatar/account menu; reuse the existing `HelpFeedback` component as the primary Support entry after PR #69 merges.
+1. Guardian pet-contact correction — PR #69 passed all six required gates and squash-merged at `8606424b7a655c68b9e25737eb063db7ad86af7e`. Guardian Pet Basics no longer renders pet-level contact email/social fields; the save RPC, authenticated account email, and organization-contact inputs remain unchanged.
+2. PR #70 is in progress for the compact Guardian shell/account menu. It reuses `HelpFeedback` as the primary Support entry and adds targeted regression coverage; all required gates must be green before merge.
 3. Photo-forward Guardian dashboard / Pet Passport density.
 
 GitHub Copilot cloud-agent execution is blocked by insufficient GitHub AI Credits. Do not repeatedly retry it. The Work handoff remains `docs/prompts/ISSUE-53-GUARDIAN-PET-CONTACT-WORK.md`.
 
-Current execution note: PR #69 was created through the connected GitHub repository API after a local patch-based edit. The first CI run found `docs/AI-HANDOFF.md` was not formatted according to the repository Prettier gate; formatting has been repaired on the PR branch and all required gates must rerun before merge.
+Current execution note: PR #69's initial CI found `docs/AI-HANDOFF.md` was not formatted according to the repository Prettier gate. Canonical formatting was applied, then all six required gates passed before merge. Preserve that formatting gate for all subsequent work.
 
 ## Support OS
 
@@ -126,8 +126,8 @@ Never purchase/upgrade paid services, make destructive production-data changes, 
 
 ## Next safe action
 
-1. Execute the Issue #53 Guardian pet-contact correction in a safe patch-capable Work/coding surface; review and merge only after required gates are green.
-2. Continue compact Guardian avatar/account-menu shell and reuse `HelpFeedback` as the primary Support entry.
+1. Complete PR #70 for the compact Guardian avatar/account-menu shell and reuse `HelpFeedback` as the primary Support entry only after all gates are green.
+2. Continue photo-forward Guardian dashboard / Pet Passport density in a focused follow-up PR.
 3. Continue Issue #56 classification/digest automation only if it can be implemented without unsafe whole-file rewrites or raw PII exposure.
 4. Re-check Vercel availability each run; after capacity resets, perform hosted desktop/mobile visual acceptance for `/lostpaws`, `/rave-vendors` and final golden paths without purchasing an upgrade.
 5. Re-check password-recovery/Google/Meta provider tooling each run and act immediately if an authorized prerequisite becomes actionable.
