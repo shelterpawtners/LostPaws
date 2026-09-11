@@ -38,6 +38,7 @@ import {
   passwordUpdateStatus,
   recoveryRequestStatus,
 } from "./lib/auth-recovery";
+import { oauthReturnUrl } from "./lib/auth-oauth";
 import {
   adminSupabase,
   getActingSupabase,
@@ -478,7 +479,13 @@ function Signup({ c }: { c: (typeof choices)[number] }) {
     localStorage.setItem("sp_kind", c.kind);
     const { error } = await db.auth.signInWithOAuth({
       provider: "google",
-      options: { redirectTo: `${location.origin}/onboarding/${c.kind}` },
+      options: {
+        redirectTo: oauthReturnUrl(
+          location.origin,
+          import.meta.env.BASE_URL,
+          `onboarding/${c.kind}`,
+        ),
+      },
     });
     if (error) setStatus(error.message);
   }
@@ -1515,7 +1522,9 @@ function Login() {
     if (!db) return setStatus("Development connection is unavailable.");
     const { error } = await db.auth.signInWithOAuth({
       provider: "google",
-      options: { redirectTo: location.origin },
+      options: {
+        redirectTo: oauthReturnUrl(location.origin, import.meta.env.BASE_URL),
+      },
     });
     if (error) setStatus(error.message);
   }

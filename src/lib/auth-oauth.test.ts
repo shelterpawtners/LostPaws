@@ -31,8 +31,6 @@ describe("OAuth return URL helper", () => {
         "/LostPaws/",
         "onboarding/rave_vendor",
       ),
-    ).toBe(
-      "https://shelterpawtners.github.io/LostPaws/onboarding/rave_vendor",
-    );
+    ).toBe("https://shelterpawtners.github.io/LostPaws/onboarding/rave_vendor");
   });
 });
