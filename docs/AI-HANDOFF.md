@@ -1,13 +1,13 @@
 # AI Handoff
 
-STATUS: EXTERNAL_LAUNCH_GATE_WITH_ACTIVE_SUPPORT_OS_DELIVERY_RUNTIME_GAP
+STATUS: READY_FOR_ACCEPTANCE
 CURRENT_PHASE: Lost Lands MVP launch readiness
-CURRENT_CHECKPOINT: Deploy accepted PR #81 frontend when free-tier Vercel build window reopens; Support OS delivery runtime + password-recovery/provider acceptance
-NEXT_CHECKPOINT: Integrated browser/mobile acceptance, Google OAuth, Facebook auth, owner legal review, cutover prep
+CURRENT_CHECKPOINT: Issue #87 final MVP reconciliation and GitHub Pages public-release matrix
+NEXT_CHECKPOINT: Merge the focused Issue #87 acceptance-matrix PR after required gates, then run live Pages matrix and pursue only external/provider acceptance
 OWNER_DECISION_REQUIRED: YES_FOR_OWNER_ONLY_PROVIDER_ACTIONS_LEGAL_AND_FINAL_CUTOVER
 SAFE_TO_CONTINUE: YES
-ACCEPTED_CODE_SHA: fbb5a02e081d4bd634034a9fadd8bb17c3744e4a
-ACCEPTANCE_RUNTIME: REPOSITORY_GATES_GREEN; SHARED_DEV_SUPPORT_MIGRATION_APPLIED; VERCEL_PRODUCTION_TEMPORARILY_BEHIND_ACCEPTED_FRONTEND_DUE_FREE_TIER_RATE_LIMIT
+ACCEPTED_CODE_SHA: a55a1de8575adbc3f28d40de8f4d11261444b358
+ACCEPTANCE_RUNTIME: MAIN_ONLY_RELEASE_CANDIDATE; REPOSITORY_GATES_GREEN_FOR_ACCEPTED_PRS; SHARED_DEV_SUPPORT_MIGRATION_APPLIED; VERCEL_PRODUCTION_TEMPORARILY_BEHIND_MAIN_DUE_FREE_TIER_RATE_LIMIT
 
 ## Accepted product boundary
 
@@ -35,7 +35,14 @@ Current accepted post-MVP launch-readiness engineering includes:
 - PR #78 — photo-first Guardian Passport and compact Passport cards; all six required gates passed; squash-merged at `5bf64450a598fa19126fc9069632dea2d3cf4601`.
 - PR #79 — privacy-safe provider-neutral support delivery contract plus cross-day aging/escalation regression; all six required gates passed; squash-merged at `1443d7138d923033bb4e9c20ab8971a49647eefb`.
 - PR #81 / Issue #80 — global launch navigation cleanup and home launch feature; authenticated Dashboard/Account/Help/Sign out controls moved into the global header, LostPaws and RAVE Shelter added to primary navigation, and the home page now features the September 2026 LostPaws activation plus the broader end-of-2026 RAVE Shelter roadmap. All required PR gates passed; squash-merged at `fbb5a02e081d4bd634034a9fadd8bb17c3744e4a`.
+- PR #82 — GitHub Pages staging from `main`, followed by the accepted live-artifact, Chromium, brand-path, and verifier quoting fixes through current `main` SHA `a55a1de8575adbc3f28d40de8f4d11261444b358`.
 - PR #65 — launch legal-review checklist. Draft Terms/Privacy remain unapproved and must not be published as final.
+
+## Issue #87 final reconciliation
+
+`main` at `a55a1de8575adbc3f28d40de8f4d11261444b358` is the only MVP release candidate. Historical branches were audited by functionality/tree state, not commit ancestry. No accepted MVP product implementation is stranded on an old branch; none may be wholesale-merged. The detailed per-branch classification is in `docs/MVP-RECONCILIATION.md`.
+
+The only selective port is a new one-file GitHub Pages public-release matrix from a fresh `main` branch. It checks desktop/tablet/mobile critical public routes, overflow, browser errors, 5xx responses, Marketplace rendering, and the RAVE vendor campaign. It deliberately does not expose private support data or simulate provider state.
 
 Do not reopen Issue #80 without regression evidence. The source implementation is accepted; only deployment/hosted acceptance remains blocked by the free-tier Vercel rate limit described below.
 
