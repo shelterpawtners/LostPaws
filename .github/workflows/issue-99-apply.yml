@@ -24,6 +24,8 @@ jobs:
         run: python scripts/issue99_integrate.py
       - name: Install dependencies
         run: npm ci
+      - name: Format new test
+        run: npx prettier --write src/lib/auth-oauth.test.ts
       - name: Check source
         run: npm run check
       - name: Build app
@@ -36,6 +38,6 @@ jobs:
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add src/main.tsx
+          git add src/main.tsx src/lib/auth-oauth.test.ts
           git commit -m "Issue #99: wire base-aware Google OAuth returns"
           git push origin HEAD:fix/issue-99-oauth-base-aware
