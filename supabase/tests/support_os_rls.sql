@@ -1,6 +1,6 @@
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(7);
+select plan(8);
 
 set local role anon;
 select throws_ok(
@@ -40,6 +40,13 @@ select lives_ok(
     where reporter_id='10000000-0000-0000-0000-000000000003'
     limit 1$q$,
   'reporter can append a reporter-visible message to their own ticket'
+);
+
+select set_config('request.jwt.claim.sub','10000000-0000-0000-0000-000000000004',true);
+select is(
+  (select count(*)::bigint from public.support_tickets where reporter_id='10000000-0000-0000-0000-000000000003'),
+  0::bigint,
+  'another authenticated user cannot read the reporter ticket'
 );
 
 select set_config('request.jwt.claim.sub','10000000-0000-0000-0000-000000000005',true);
