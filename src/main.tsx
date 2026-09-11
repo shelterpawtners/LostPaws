@@ -1823,7 +1823,9 @@ function Dashboard() {
                   key={pet.id}
                   aria-label={`Open ${pet.name}`}
                 >
-                  <PawPrint />
+                  <span className="petTileVisual" aria-hidden="true">
+                    <PawPrint />
+                  </span>
                   <div>
                     <b>{pet.name}</b>
                     <p>
@@ -1831,7 +1833,9 @@ function Dashboard() {
                       {pet.breed ? ` · ${pet.breed}` : ""}
                     </p>
                   </div>
-                  <ArrowRight />
+                  <span className="petTileOpen">
+                    Open Passport <ArrowRight aria-hidden="true" />
+                  </span>
                 </Link>
               ))}
             </div>
