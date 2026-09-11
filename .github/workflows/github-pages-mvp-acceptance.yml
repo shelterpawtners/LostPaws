@@ -182,3 +182,89 @@ jobs:
           if [[ -f /tmp/pages-mvp-preview.pid ]]; then
             kill "$(cat /tmp/pages-mvp-preview.pid)" || true
           fi
+
+  authenticated-guardian-smoke:
+    name: Authenticated Guardian live smoke
+    if: github.event_name != 'pull_request' && (github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success')
+    runs-on: ubuntu-latest
+    env:
+      SITE_URL: https://shelterpawtners.github.io/LostPaws
+      QA_GUARDIAN_EMAIL: ${{ secrets.QA_GUARDIAN_EMAIL }}
+      QA_GUARDIAN_PASSWORD: ${{ secrets.QA_GUARDIAN_PASSWORD }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Require Guardian QA credentials
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ -n "${QA_GUARDIAN_EMAIL}" ]] || { echo 'Missing QA_GUARDIAN_EMAIL secret.' >&2; exit 1; }
+          [[ -n "${QA_GUARDIAN_PASSWORD}" ]] || { echo 'Missing QA_GUARDIAN_PASSWORD secret.' >&2; exit 1; }
+
+      - name: Verify signed-in Guardian shell without mutating data
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --input-type=module <<'EOF'
+          import { chromium } from '@playwright/test';
+
+          const browser = await chromium.launch({ headless: true });
+          const viewports = [
+            { name: 'mobile', width: 390, height: 844 },
+            { name: 'desktop', width: 1440, height: 1000 },
+          ];
+
+          for (const viewport of viewports) {
+            console.log(`Checking authenticated Guardian shell on ${viewport.name}`);
+            const context = await browser.newContext({ viewport });
+            const page = await context.newPage();
+            const pageErrors = [];
+            page.on('pageerror', error => pageErrors.push(error.message));
+
+            await page.goto(`${process.env.SITE_URL}/login`, { waitUntil: 'networkidle' });
+            await page.getByLabel('Email address').fill(process.env.QA_GUARDIAN_EMAIL);
+            await page.getByLabel('Password').fill(process.env.QA_GUARDIAN_PASSWORD);
+            await page.getByRole('button', { name: 'Sign in' }).click();
+            await page.waitForURL(/\/LostPaws\/dashboard$/, { timeout: 20000 });
+            await page.locator('#main').waitFor({ state: 'visible', timeout: 15000 });
+
+            const accountMenu = page.locator('.guardianAccountMenu');
+            await accountMenu.locator('summary').click();
+            const helpButton = accountMenu.getByRole('button', { name: 'Help & feedback' });
+            await helpButton.waitFor({ state: 'visible', timeout: 10000 });
+            await helpButton.click();
+            await accountMenu.getByRole('heading', { name: 'Help & feedback' }).waitFor({ state: 'visible', timeout: 10000 });
+            await accountMenu.getByRole('button', { name: 'Close help form' }).click();
+
+            await page.goto(`${process.env.SITE_URL}/passport`, { waitUntil: 'networkidle' });
+            if (!page.url().includes('/LostPaws/passport')) {
+              throw new Error(`${viewport.name}: Guardian Passport navigation did not remain on the protected route.`);
+            }
+
+            await page.getByRole('button', { name: 'Sign out' }).click();
+            await page.waitForURL(/\/LostPaws\/?$/, { timeout: 15000 });
+            await page.goto(`${process.env.SITE_URL}/dashboard`, { waitUntil: 'networkidle' });
+            await page.waitForURL(/\/LostPaws\/login$/, { timeout: 15000 });
+
+            if (pageErrors.length) {
+              throw new Error(`${viewport.name}: page errors:\n${pageErrors.join('\n')}`);
+            }
+            await context.close();
+          }
+
+          console.log('Authenticated Guardian live smoke passed without creating or changing application data.');
+          await browser.close();
+          EOF
