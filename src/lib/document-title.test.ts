@@ -6,6 +6,7 @@ describe("per-route document titles", () => {
     expect(titleForPath("/")).toMatch(/^ShelterPawtners —/);
     expect(titleForPath("/rave")).toContain("RAVE Shelter");
     expect(titleForPath("/lostpaws")).toContain("LostPaws");
+    expect(titleForPath("/sevenstars")).toContain("Seven Star Shelters");
     expect(titleForPath("/faq")).toBe(
       "Frequently asked questions | ShelterPawtners",
     );
