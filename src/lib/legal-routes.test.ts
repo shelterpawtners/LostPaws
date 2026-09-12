@@ -19,9 +19,9 @@ describe("legal route contract", () => {
   });
 
   it("builds final production URLs without changing route paths", () => {
-    expect(legalRouteUrl("https://shelterpawtners.com", legalRoutes.privacy)).toBe(
-      "https://shelterpawtners.com/privacy",
-    );
+    expect(
+      legalRouteUrl("https://shelterpawtners.com", legalRoutes.privacy),
+    ).toBe("https://shelterpawtners.com/privacy");
     expect(
       legalRouteUrl("https://shelterpawtners.com/", legalRoutes.dataDeletion),
     ).toBe("https://shelterpawtners.com/data-deletion");
