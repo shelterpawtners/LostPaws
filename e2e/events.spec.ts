@@ -4,7 +4,10 @@ import { expect, test } from "@playwright/test";
  * Events had schema, RLS, and pgTAP coverage but no interface, so the feature
  * was invisible. These guard the browse surface a reviewer actually sees.
  *
- * Runs against the seeded demo events in supabase/seed.sql.
+ * Runs against the seeded demo events in supabase/seed.sql, so this suite
+ * needs a database and belongs with Persona QA rather than the
+ * credential-free test:e2e:public suite. Credential-free coverage of /events
+ * (overflow, title, heading order, touch targets) lives in site-hygiene.
  */
 test.describe("Events", () => {
   test("lists published events with their date and place", async ({ page }) => {

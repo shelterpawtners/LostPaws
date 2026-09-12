@@ -10,7 +10,7 @@
     "test": "vitest run --exclude=\"e2e/**\"",
     "test:e2e": "playwright test",
     "test:e2e:hosted": "playwright test e2e/hosted-qa-smoke.spec.ts e2e/hosted-qa-marketplace-golden.spec.ts e2e/marketplace-premium.spec.ts",
-    "test:e2e:public": "playwright test e2e/rave-shelter-mission.spec.ts e2e/issue-125-rave-lostpaws-mobile.spec.ts e2e/track3-learn-hero-vendor.spec.ts e2e/site-hygiene.spec.ts e2e/events.spec.ts",
+    "test:e2e:public": "playwright test e2e/rave-shelter-mission.spec.ts e2e/issue-125-rave-lostpaws-mobile.spec.ts e2e/track3-learn-hero-vendor.spec.ts e2e/site-hygiene.spec.ts",
     "test:e2e:admin-qa": "playwright test e2e/admin-qa-mode.spec.ts",
     "lint": "prettier --check src docs README.md AGENTS.md CLAUDE.md '.github/**/*.{md,yml,yaml}'",
     "lint:shell": "bash -n scripts/*.sh",
