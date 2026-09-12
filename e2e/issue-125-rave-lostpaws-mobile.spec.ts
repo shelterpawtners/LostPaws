@@ -36,7 +36,7 @@ test.describe("Issue #125 RAVE Shelter and LostPaws launch surfaces", () => {
     }) => {
       await page.setViewportSize({ width, height: width < 500 ? 900 : 1024 });
 
-      for (const route of ["/rave", "/lostpaws"]) {
+      for (const route of ["/", "/rave", "/lostpaws"]) {
         await page.goto(route);
         const sizes = await page.evaluate(() => ({
           client: document.documentElement.clientWidth,
