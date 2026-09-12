@@ -2,11 +2,11 @@
 
 ## Approved RAVE Shelter identity
 
-**RAVE Shelter** means **Rescue and Adoption Vendor Ecosystem**.
+**RAVE Shelter** means **Rewarding Adoption with Vendor Exclusives**.
 
-Approved tagline:
+Approved tagline (2026-09-12 owner direction, supersedes the earlier "Deals for ravers" tagline):
 
-> Deals for ravers. Support for shelter pets.
+> Rave with purpose. Shop with impact.
 
 ## Purpose and deadline
 

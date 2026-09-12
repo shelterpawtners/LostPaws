@@ -51,14 +51,14 @@ Avoid:
 
 ## Product story priority
 
-The page exists to connect LostPaws traffic to **RAVE Shelter — Rescue and Adoption Vendor Ecosystem**.
+The page exists to connect LostPaws traffic to **RAVE Shelter — Rewarding Adoption with Vendor Exclusives**.
 
 Recommended first content block after the banner:
 
 **RAVE Shelter**\
-Rescue and Adoption Vendor Ecosystem
+Rewarding Adoption with Vendor Exclusives
 
-**Rave. Save. Help shelter pets.**
+**Rave with purpose. Shop with impact.**
 
 Explain in concise, factual language that LostPaws connects the festival community with participating vendors and current offers while supporting the broader ShelterPawtners shelter/adoption mission. Do not invent donation percentages, savings totals or OD-003 terms.
 

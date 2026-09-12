@@ -1,6 +1,8 @@
 # RAVE Shelter + LostPaws Mission Flow
 
-Status: OWNER-DIRECTION-LOCKED / ISSUE #100
+Status: SUPERSEDED — see `docs/product/DUAL-MARKETPLACE-RAVE-SHELTER-EXECUTION-PLAN.md` (2026-09-12). LostPaws is no longer the generic music-community activation brand; it is reserved for Lost Lands / Excision-family campaigns. RAVE Shelter is now Rewarding Adoption with Vendor Exclusives, not Rescue and Adoption Vendor Ecosystem. Kept below for history only.
+
+Prior status: OWNER-DIRECTION-LOCKED / ISSUE #100
 
 ## One mission
 

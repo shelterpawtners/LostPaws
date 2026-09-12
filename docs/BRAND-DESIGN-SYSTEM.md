@@ -41,11 +41,11 @@ Do not jump from requirements directly to finished pages. A compiling page is no
 
 ## RAVE Shelter brand
 
-RAVE Shelter means **Rescue and Adoption Vendor Ecosystem**.
+RAVE Shelter means **Rewarding Adoption with Vendor Exclusives**.
 
-Approved tagline:
+Approved tagline (2026-09-12 owner direction, supersedes the earlier "Deals for ravers" tagline):
 
-> Deals for ravers. Support for shelter pets.
+> Rave with purpose. Shop with impact.
 
 RAVE Shelter should bridge the ShelterPawtners iridescent purple, blue, and teal palette with the bolder music-community energy of LostPaws. It should feel mature, premium, energetic, and credible. Use original sound, connection, heart, shelter, exchange, or event geometry rather than cartoon animals or generic paw-print clip art.
 
