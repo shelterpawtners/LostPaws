@@ -16,7 +16,9 @@ test.describe("Launch auth recovery", () => {
     });
 
     await page.goto("/forgot-password");
-    await page.getByLabel("Email address").fill("recovery-check@example.invalid");
+    await page
+      .getByLabel("Email address")
+      .fill("recovery-check@example.invalid");
     await page.getByRole("button", { name: "Send recovery email" }).click();
 
     await expect(page.getByRole("status")).toContainText(

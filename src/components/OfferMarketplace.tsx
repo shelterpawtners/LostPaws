@@ -62,6 +62,8 @@ export function OfferMarketplace({
   const [query, setQuery] = useState("");
   const [classification, setClassification] = useState("all");
   const [viewMode, setViewMode] = useState<MarketplaceViewMode>("grid");
+  const [channelFilterUnavailable, setChannelFilterUnavailable] =
+    useState(false);
   const [claim, setClaim] = useState<{
     redeem_code: string;
     expires_at: string;
@@ -69,22 +71,40 @@ export function OfferMarketplace({
 
   useEffect(() => {
     if (!db) return;
+    const client = db;
     setLoading(true);
     setLoadError("");
     setStatus("");
+    setChannelFilterUnavailable(false);
     void (async () => {
       try {
-        const { data, error } = await db.rpc("public_active_offers", {
+        const channel = channelParamFromAudience(audience);
+        let response = await client.rpc("public_active_offers", {
           p_organization_id: organizationId || null,
-          p_channel: channelParamFromAudience(audience),
+          p_channel: channel,
         });
-        if (error) {
+
+        // A deployment whose database has not yet applied the migration that
+        // added p_channel rejects the call outright. Fall back to the
+        // unfiltered signature so the marketplace still works, and say so
+        // rather than implying the results were filtered.
+        if (response.error && channel) {
+          const fallback = await client.rpc("public_active_offers", {
+            p_organization_id: organizationId || null,
+          });
+          if (!fallback.error) {
+            setChannelFilterUnavailable(true);
+            response = fallback;
+          }
+        }
+
+        if (response.error) {
           setLoadError("Unable to load current offers. Please try again.");
           setOffers([]);
           return;
         }
         setOffers(
-          ((data || []) as PublicOffer[]).filter(
+          ((response.data || []) as PublicOffer[]).filter(
             (item) => !offerId || item.offer_id === offerId,
           ),
         );
@@ -374,6 +394,12 @@ export function OfferMarketplace({
               RAVE Offers
             </button>
           </div>
+          {channelFilterUnavailable && (
+            <p className="marketplaceFilterNotice" role="status">
+              Audience filtering is not available on this deployment yet, so
+              every current offer is shown.
+            </p>
+          )}
         </div>
 
         <div className="marketplaceFilterArea">

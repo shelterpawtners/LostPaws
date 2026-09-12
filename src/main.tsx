@@ -62,6 +62,12 @@ import { PublicPartnerProfile } from "./components/PublicPartnerProfile";
 import { OfferManager } from "./components/OfferManager";
 import { OfferMarketplace } from "./components/OfferMarketplace";
 import { MarketplaceAudienceModal } from "./components/marketplace/MarketplaceAudienceModal";
+import { ExplainerTiles } from "./components/learn/ExplainerTiles";
+import { LearnHub } from "./components/learn/LearnHub";
+import { LearnArticlePage } from "./components/learn/LearnArticlePage";
+import { FaqPage } from "./components/learn/FaqPage";
+import { SavingsExplorer } from "./components/learn/SavingsExplorer";
+import { HeroVendorProgram } from "./components/learn/HeroVendorProgram";
 import { RedemptionFlow } from "./components/RedemptionFlow";
 import { GuardianProfileLite } from "./components/GuardianProfileLite";
 import { GuardianPetPassport } from "./components/GuardianPetPassport";
@@ -203,6 +209,7 @@ function Header() {
           <Link to="/marketplace">Marketplace</Link>
           <Link to="/lostpaws">LostPaws</Link>
           <Link to="/rave">RAVE Shelter</Link>
+          <Link to="/learn">Learn</Link>
           {!session && <Link to="/register">Join</Link>}
           {session && <AdminQaNavLink />}
           {session ? (
@@ -230,6 +237,12 @@ function Footer() {
         <div>
           <b>ShelterPawtners</b>
           <p>Care, savings, and community supporting shelter adoption.</p>
+        </div>
+        <div>
+          <Link to="/learn">Learn how it works</Link>
+          <Link to="/faq">FAQ</Link>
+          <Link to="/learn/savings-explorer">Savings explorer</Link>
+          <Link to="/hero-vendor">Hero Vendor program</Link>
         </div>
         <div>
           <a href="mailto:contact@shelterpawtners.com">General questions</a>
@@ -361,6 +374,7 @@ function Home() {
           </aside>
         </div>
       </section>
+      <ExplainerTiles heading="How it works, start to finish" />
       <section className="section shell">
         <span className="eyebrow">Choose your path</span>
         <h2>One mission. A place for everyone.</h2>
@@ -369,6 +383,12 @@ function Home() {
           same login.
         </p>
         <Cards />
+        <p className="homeLearnLink">
+          <Link to="/learn">
+            Learn how the Passport, marketplaces, and shelter support work{" "}
+            <ArrowRight />
+          </Link>
+        </p>
       </section>
       <section className="dark section">
         <div className="shell">
@@ -2109,6 +2129,50 @@ function App() {
         }
       />
       <Route path="/marketplace" element={<Marketplace />} />
+      <Route
+        path="/learn"
+        element={
+          <Page>
+            <LearnHub />
+          </Page>
+        }
+      />
+      <Route
+        path="/learn/savings-explorer"
+        element={
+          <Page>
+            <SavingsExplorer />
+          </Page>
+        }
+      />
+      <Route
+        path="/learn/:slug"
+        element={
+          <Page>
+            <LearnArticlePage />
+          </Page>
+        }
+      />
+      <Route
+        path="/faq"
+        element={
+          <Page>
+            <FaqPage />
+          </Page>
+        }
+      />
+      <Route
+        path="/hero-vendor"
+        element={
+          <Page>
+            <HeroVendorProgram />
+          </Page>
+        }
+      />
+      <Route
+        path="/hero-vendors"
+        element={<Navigate to="/hero-vendor" replace />}
+      />
       <Route
         path="/offers/:offerId"
         element={

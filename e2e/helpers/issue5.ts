@@ -1,5 +1,10 @@
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
-import { expect, type Browser, type BrowserContext, type Page } from "@playwright/test";
+import {
+  expect,
+  type Browser,
+  type BrowserContext,
+  type Page,
+} from "@playwright/test";
 
 export const issue5Hosted = process.env.PLAYWRIGHT_HOSTED_QA === "true";
 export const issue5BaseUrl =
@@ -11,11 +16,7 @@ export function requiredSetting(name: string) {
   return value;
 }
 
-export async function signInPage(
-  page: Page,
-  email: string,
-  password: string,
-) {
+export async function signInPage(page: Page, email: string, password: string) {
   await page.goto("/login");
   await page.getByLabel("Email address").fill(email);
   await page.getByLabel("Password").fill(password);
@@ -38,7 +39,10 @@ export async function signedInClient(
   const client = createClient(url, key, {
     auth: { persistSession: false, autoRefreshToken: false },
   });
-  const { data, error } = await client.auth.signInWithPassword({ email, password });
+  const { data, error } = await client.auth.signInWithPassword({
+    email,
+    password,
+  });
   expect(error, `${email} direct database session should sign in`).toBeNull();
   expect(data.user?.email).toBe(email);
   return client;
@@ -65,7 +69,9 @@ export function watchRuntime(page: Page) {
     const reason = request.failure()?.errorText || "request failed";
     if (/ERR_ABORTED|NS_BINDING_ABORTED/i.test(reason)) return;
     if (/favicon/i.test(request.url())) return;
-    failures.push(`requestfailed: ${request.method()} ${request.url()} ${reason}`);
+    failures.push(
+      `requestfailed: ${request.method()} ${request.url()} ${reason}`,
+    );
   });
   page.on("response", (response) => {
     if (response.status() >= 500)

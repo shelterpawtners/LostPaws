@@ -11,11 +11,12 @@ async function clearPriorCandidateDismissals() {
   const qa = createClient(supabaseUrl, publishableKey, {
     auth: { persistSession: false, autoRefreshToken: false },
   });
-  const { data: signIn, error: signInError } =
-    await qa.auth.signInWithPassword({
+  const { data: signIn, error: signInError } = await qa.auth.signInWithPassword(
+    {
       email: "partner-b@example.invalid",
       password: "Demo-only-Partner-B!",
-    });
+    },
+  );
   expect(signInError).toBeNull();
   expect(signIn.user?.id).toBeTruthy();
 

@@ -1,0 +1,572 @@
+.learnPage {
+  --learn-ink: #17213a;
+  --learn-muted: #5f6b82;
+  --learn-line: #dfe5ee;
+  --learn-surface: #ffffff;
+  --learn-tint: #f6f4fd;
+  --learn-primary: #654ab7;
+  --learn-accent: #d94fa8;
+  color: var(--learn-ink);
+}
+
+.learnPage * {
+  box-sizing: border-box;
+}
+
+.learnWrap {
+  width: min(1100px, calc(100% - 2rem));
+  margin: 0 auto;
+}
+
+.learnEyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+  color: var(--learn-primary);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.learnEyebrow svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+.learnHero {
+  padding: clamp(2.5rem, 6vw, 4.5rem) 0 clamp(2rem, 4vw, 3rem);
+  background:
+    radial-gradient(
+      circle at 12% 20%,
+      rgba(101, 74, 183, 0.1),
+      transparent 40%
+    ),
+    radial-gradient(
+      circle at 88% 10%,
+      rgba(217, 79, 168, 0.09),
+      transparent 42%
+    ),
+    #fbfcff;
+}
+
+.learnHero h1 {
+  max-width: 20ch;
+  margin: 0 0 1rem;
+  font-size: clamp(1.9rem, 5vw, 3.1rem);
+  line-height: 1.08;
+  letter-spacing: -0.03em;
+}
+
+.learnLead {
+  max-width: 62ch;
+  margin: 0 0 1.5rem;
+  color: var(--learn-muted);
+  font-size: clamp(1rem, 1.9vw, 1.18rem);
+  line-height: 1.6;
+}
+
+.learnButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 46px;
+  padding: 0.7rem 1.2rem;
+  border-radius: 999px;
+  background: var(--learn-primary);
+  color: #fff;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.learnButton svg {
+  width: 1.05rem;
+  height: 1.05rem;
+}
+
+.learnButton:hover {
+  background: #543c9d;
+}
+
+.learnButton:focus-visible,
+.learnBack:focus-visible,
+.learnIndexCard:focus-visible {
+  outline: 3px solid #14b8a6;
+  outline-offset: 3px;
+}
+
+/* Explainer tiles */
+
+.learnTilesSection {
+  padding: clamp(2.5rem, 5vw, 4rem) 0;
+  background: var(--learn-surface);
+}
+
+.learnTilesTitle {
+  margin: 0 0 1.5rem;
+  font-size: clamp(1.4rem, 3.2vw, 2rem);
+  letter-spacing: -0.02em;
+}
+
+.learnTiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: learn-tile;
+}
+
+.learnTile {
+  padding: 1.25rem;
+  border: 1px solid var(--learn-line);
+  border-radius: 18px;
+  background: var(--learn-tint);
+}
+
+.learnTileIcon {
+  display: inline-grid;
+  place-items: center;
+  width: 2.6rem;
+  height: 2.6rem;
+  margin-bottom: 0.75rem;
+  border-radius: 12px;
+  background: #fff;
+  color: var(--learn-primary);
+}
+
+.learnTileIcon svg {
+  width: 1.35rem;
+  height: 1.35rem;
+}
+
+.learnTileStep {
+  display: block;
+  margin-bottom: 0.35rem;
+  color: var(--learn-muted);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.learnTile h3 {
+  margin: 0 0 0.4rem;
+  font-size: 1.05rem;
+  line-height: 1.25;
+}
+
+.learnTile p {
+  margin: 0;
+  color: var(--learn-muted);
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+
+/* Topic index */
+
+.learnIndexSection {
+  padding: clamp(2.5rem, 5vw, 4rem) 0;
+}
+
+.learnIndexSection h2 {
+  margin: 0 0 1.25rem;
+  font-size: clamp(1.4rem, 3.2vw, 2rem);
+  letter-spacing: -0.02em;
+}
+
+.learnIndexGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1rem;
+}
+
+.learnIndexCard {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1.3rem;
+  border: 1px solid var(--learn-line);
+  border-radius: 18px;
+  background: var(--learn-surface);
+  color: inherit;
+  text-decoration: none;
+}
+
+.learnIndexCard:hover {
+  border-color: var(--learn-primary);
+}
+
+.learnIndexCard h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  line-height: 1.25;
+}
+
+.learnIndexCard p {
+  margin: 0;
+  color: var(--learn-muted);
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+
+.learnIndexMore {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-top: auto;
+  color: var(--learn-primary);
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.learnIndexMore svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+.learnAudienceTag {
+  align-self: flex-start;
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+  background: var(--learn-tint);
+  color: var(--learn-primary);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* Article */
+
+.learnArticle {
+  padding: clamp(2rem, 5vw, 3.5rem) 0;
+}
+
+.learnBack {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 1.25rem;
+  color: var(--learn-primary);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.learnBack svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+.learnArticle h1 {
+  max-width: 24ch;
+  margin: 0.75rem 0 1rem;
+  font-size: clamp(1.8rem, 4.4vw, 2.7rem);
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+}
+
+.learnSteps {
+  display: grid;
+  gap: 1rem;
+  margin: 0 0 2rem;
+  padding: 0;
+  list-style: none;
+  counter-reset: learn-step;
+}
+
+.learnSteps li {
+  position: relative;
+  padding: 1.25rem 1.25rem 1.25rem 3.5rem;
+  border: 1px solid var(--learn-line);
+  border-radius: 18px;
+  background: var(--learn-surface);
+  counter-increment: learn-step;
+}
+
+.learnSteps li::before {
+  content: counter(learn-step);
+  position: absolute;
+  top: 1.25rem;
+  left: 1.25rem;
+  display: grid;
+  place-items: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 50%;
+  background: var(--learn-tint);
+  color: var(--learn-primary);
+  font-size: 0.85rem;
+  font-weight: 800;
+}
+
+.learnSteps h2 {
+  margin: 0 0 0.4rem;
+  font-size: 1.1rem;
+  line-height: 1.3;
+}
+
+.learnSteps p {
+  margin: 0;
+  color: var(--learn-muted);
+  line-height: 1.6;
+}
+
+.learnRelated {
+  margin-top: 2.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--learn-line);
+}
+
+.learnRelated h2 {
+  margin: 0 0 0.75rem;
+  font-size: 1.05rem;
+}
+
+.learnRelated ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.learnRelated a {
+  display: inline-block;
+  min-height: 44px;
+  padding: 0.65rem 1rem;
+  border: 1px solid var(--learn-line);
+  border-radius: 999px;
+  color: var(--learn-primary);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.learnUpdated {
+  margin-top: 1.75rem;
+  color: var(--learn-muted);
+  font-size: 0.85rem;
+}
+
+/* FAQ */
+
+.learnFaqSection {
+  padding: clamp(2rem, 4vw, 3rem) 0;
+}
+
+.learnFaqFilters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.learnFaqFilters button {
+  min-height: 44px;
+  padding: 0.55rem 1rem;
+  border: 1px solid var(--learn-line);
+  border-radius: 999px;
+  background: var(--learn-surface);
+  color: var(--learn-ink);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.learnFaqFilters button.active {
+  border-color: var(--learn-primary);
+  background: var(--learn-primary);
+  color: #fff;
+}
+
+.learnFaqList {
+  display: grid;
+  gap: 0.75rem;
+  margin: 0;
+}
+
+.learnFaqItem {
+  padding: 1.15rem 1.25rem;
+  border: 1px solid var(--learn-line);
+  border-radius: 16px;
+  background: var(--learn-surface);
+}
+
+.learnFaqItem dt {
+  margin-bottom: 0.45rem;
+  font-size: 1.02rem;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.learnFaqItem dd {
+  margin: 0;
+  color: var(--learn-muted);
+  line-height: 1.6;
+}
+
+.learnFaqEmpty {
+  color: var(--learn-muted);
+}
+
+.learnFaqTeaser,
+.learnCalcFooterSection {
+  padding: clamp(2rem, 4vw, 3.5rem) 0;
+  background: var(--learn-tint);
+}
+
+.learnFaqTeaserInner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+}
+
+.learnFaqTeaserInner h2 {
+  max-width: 24ch;
+  margin: 0 0 0.6rem;
+  font-size: clamp(1.3rem, 3vw, 1.9rem);
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+
+.learnFaqTeaserInner p {
+  max-width: 52ch;
+  margin: 0;
+  color: var(--learn-muted);
+  line-height: 1.6;
+}
+
+/* Savings explorer */
+
+.learnCalcSection {
+  padding: clamp(2rem, 4vw, 3rem) 0;
+}
+
+.learnCalcLayout {
+  display: grid;
+  grid-template-columns: minmax(240px, 0.8fr) minmax(0, 1.2fr);
+  gap: 1.5rem;
+  align-items: start;
+}
+
+.learnCalcForm {
+  display: grid;
+  gap: 1rem;
+  padding: 1.4rem;
+  border: 1px solid var(--learn-line);
+  border-radius: 18px;
+  background: var(--learn-surface);
+}
+
+.learnCalcForm label {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.learnCalcForm span {
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.learnCalcForm input {
+  min-height: 46px;
+  padding: 0.6rem 0.8rem;
+  border: 1px solid var(--learn-line);
+  border-radius: 12px;
+  font: inherit;
+}
+
+.learnCalcForm input:focus-visible {
+  outline: 3px solid #14b8a6;
+  outline-offset: 1px;
+}
+
+.learnCalcResults {
+  padding: 1.4rem;
+  border: 1px solid var(--learn-line);
+  border-radius: 18px;
+  background: var(--learn-surface);
+}
+
+.learnCalcPlaceholder {
+  margin: 0;
+  color: var(--learn-muted);
+  line-height: 1.6;
+}
+
+.learnCalcTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.learnCalcTable caption {
+  margin-bottom: 0.75rem;
+  color: var(--learn-muted);
+  font-size: 0.85rem;
+  text-align: left;
+}
+
+.learnCalcTable th,
+.learnCalcTable td {
+  padding: 0.6rem 0.5rem;
+  border-bottom: 1px solid var(--learn-line);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.learnCalcTable thead th {
+  color: var(--learn-muted);
+  font-size: 0.78rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.learnCalcTable tbody th {
+  text-align: left;
+  font-weight: 700;
+}
+
+.learnCalcTable tbody th small {
+  display: block;
+  color: var(--learn-muted);
+  font-size: 0.76rem;
+  font-weight: 500;
+}
+
+.learnCalcTable .learnCalcBase {
+  background: var(--learn-tint);
+}
+
+.learnCalcNote {
+  display: flex;
+  gap: 0.6rem;
+  margin: 1.25rem 0 0;
+  color: var(--learn-muted);
+  font-size: 0.88rem;
+  line-height: 1.55;
+}
+
+.learnCalcNote svg {
+  flex: none;
+  width: 1.1rem;
+  height: 1.1rem;
+  margin-top: 0.15rem;
+}
+
+@media (max-width: 780px) {
+  .learnCalcLayout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 560px) {
+  .learnCalcTable {
+    display: block;
+    overflow-x: auto;
+  }
+}

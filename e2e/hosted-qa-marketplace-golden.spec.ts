@@ -21,7 +21,8 @@ async function signOut(page: Page) {
   await expect(page).toHaveURL(/\/$/);
 }
 
-test.describe.serial("Hosted demo-partner persistence and public isolation", () => {
+test.describe
+  .serial("Hosted demo-partner persistence and public isolation", () => {
   test.skip(!hosted, "Set PLAYWRIGHT_HOSTED_QA=true for hosted QA runs.");
   test.describe.configure({ timeout: 120_000 });
 
@@ -36,7 +37,10 @@ test.describe.serial("Hosted demo-partner persistence and public isolation", () 
 
     await signIn(
       page,
-      settingOrDefault("PLAYWRIGHT_PARTNER_EMAIL", "partner-admin@example.invalid"),
+      settingOrDefault(
+        "PLAYWRIGHT_PARTNER_EMAIL",
+        "partner-admin@example.invalid",
+      ),
       settingOrDefault("PLAYWRIGHT_PARTNER_PASSWORD", "Demo-only-Partner!"),
     );
     await page.goto("/business");
@@ -96,7 +100,10 @@ test.describe.serial("Hosted demo-partner persistence and public isolation", () 
     await signOut(page);
     await signIn(
       page,
-      settingOrDefault("PLAYWRIGHT_GUARDIAN_EMAIL", "guardian-a@example.invalid"),
+      settingOrDefault(
+        "PLAYWRIGHT_GUARDIAN_EMAIL",
+        "guardian-a@example.invalid",
+      ),
       settingOrDefault("PLAYWRIGHT_GUARDIAN_PASSWORD", "Demo-only-Guardian-A!"),
     );
     await page.goto("/marketplace");

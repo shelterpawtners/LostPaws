@@ -124,7 +124,7 @@ select is(
   'public Marketplace exposes the listing verification timestamp'
 );
 select ok(
-  has_function_privilege('anon','public.public_active_offers(uuid)','EXECUTE'),
+  has_function_privilege('anon','public.public_active_offers(uuid,public.market_channel)','EXECUTE'),
   'anonymous users retain read access to the public Marketplace RPC'
 );
 

@@ -1244,3 +1244,22 @@ header .guardianAccountPanel {
     text-align: left;
   }
 }
+.homeLearnLink {
+  margin-top: 22px;
+}
+.homeLearnLink a {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  color: var(--primary);
+  font-weight: 700;
+}
+.homeLearnLink svg {
+  width: 18px;
+  height: 18px;
+}
+.foot a {
+  display: block;
+  min-height: 32px;
+}

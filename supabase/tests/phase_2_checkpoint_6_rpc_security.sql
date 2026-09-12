@@ -56,7 +56,7 @@ select ok(
 );
 
 select ok(
-  has_function_privilege('anon','public.public_active_offers(uuid)','EXECUTE')
+  has_function_privilege('anon','public.public_active_offers(uuid,public.market_channel)','EXECUTE')
   and has_function_privilege('anon','public.public_partner_directory(text,text,text,text,text)','EXECUTE')
   and has_function_privilege('anon','public.public_partner_profile(uuid)','EXECUTE')
   and has_function_privilege('anon','public.public_partner_profile_details(uuid)','EXECUTE'),

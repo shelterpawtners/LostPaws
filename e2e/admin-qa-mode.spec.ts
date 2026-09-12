@@ -3,9 +3,9 @@ import { expect, test, type Page } from "@playwright/test";
 const hosted = process.env.PLAYWRIGHT_HOSTED_QA === "true";
 const adminCredentialsConfigured = Boolean(
   process.env.PLAYWRIGHT_ADMIN_EMAIL &&
-    process.env.PLAYWRIGHT_ADMIN_PASSWORD &&
-    process.env.PLAYWRIGHT_GUARDIAN_EMAIL &&
-    process.env.PLAYWRIGHT_GUARDIAN_PASSWORD,
+  process.env.PLAYWRIGHT_ADMIN_PASSWORD &&
+  process.env.PLAYWRIGHT_GUARDIAN_EMAIL &&
+  process.env.PLAYWRIGHT_GUARDIAN_PASSWORD,
 );
 
 function requiredSetting(name: string) {
@@ -143,9 +143,7 @@ test.describe.serial("Admin QA mode hosted regression", () => {
   }) => {
     await signInAsAdmin(page);
     await openAdminQa(page);
-    await page
-      .getByRole("button", { name: "Create fresh Guardian" })
-      .click();
+    await page.getByRole("button", { name: "Create fresh Guardian" }).click();
     await expect(page).toHaveURL(/\/onboarding\/guardian$/);
     await expect(adminQaBanner(page)).toContainText("ADMIN QA MODE");
     await expect(page.getByLabel("Pet name")).toBeVisible();

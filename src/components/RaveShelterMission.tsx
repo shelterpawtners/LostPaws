@@ -196,6 +196,9 @@ export function RaveShelterMission() {
                 >
                   Join RAVE Shelter
                 </Link>
+                <Link className="rsmTextLink" to="/hero-vendor">
+                  Hero Vendor program
+                </Link>
               </div>
             </article>
 
