@@ -56,6 +56,14 @@ Track 3 was built to work without any of these being resolved, but the Hero Vend
 
 `origin` carries 87 branches; 46 have had no commit in over a day, and spot checks show several are behind `main` rather than ahead of it (they predate current tests). Issue #107 already covers retiring historical branches. I have not deleted any, because branch deletion is destructive and several may hold work I cannot evaluate. Recommendation: you confirm a cutoff date and I retire everything merged or superseded before it in one pass.
 
+### 3.2a A gated spec had also silently drifted from the app
+
+Separately from the orphaned specs below, `e2e/phase-3-guardian-passport.spec.ts` **is** wired into Persona QA and had been failing since 2026-09-11: PR #78 restructured the passport lead panel and moved "Private by default" into a sibling of the pet heading's parent, while the spec still scoped to that parent. The spec was last touched by the earlier PR #72. Fixed by scoping to the shared `.passportLead` panel.
+
+The wider lesson is that a failing gate was tolerated for a day, which trains everyone to read red as normal. Worth deciding whether Persona QA should block merges outright.
+
+There is also now a **local way to run these**: the credentials in the persona specs are the seeded demo accounts from `supabase/seed.sql`, so `supabase start`, `supabase db reset`, then pointing `PLAYWRIGHT_SUPABASE_URL` at `http://127.0.0.1:54321` runs the real persona suite offline. All 37 tests pass that way. This is much faster than waiting on CI and needs no hosted credentials.
+
 ### 3.2 CI's browser tests are an allow-list, and two specs had fallen out of it
 
 Every Playwright invocation in `.github/workflows` names specific spec files. Two specs — `rave-shelter-mission.spec.ts` and `issue-125-rave-lostpaws-mobile.spec.ts` — were referenced by no workflow at all, so they silently rotted out of sync with the app and gave false confidence. Both now run through `npm run test:e2e:public` in CI's `web` job, alongside the new Track 3 and site-hygiene specs. **Any new spec file must be added to a script or it will never run.**
