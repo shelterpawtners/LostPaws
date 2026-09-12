@@ -4,6 +4,9 @@ const publicRoutes = [
   "/learn",
   "/learn/passport",
   "/learn/vendors",
+  "/learn/listing-an-offer",
+  "/learn/redemption",
+  "/learn/giving",
   "/learn/savings-explorer",
   "/faq",
   "/hero-vendor",
@@ -59,6 +62,47 @@ test.describe("Track 3 Learn, FAQ, Hero Vendor, and savings explorer", () => {
     await page.getByRole("button", { name: "Guardians", exact: true }).click();
     await expect(guardianQuestion).toBeVisible();
     await expect(vendorQuestion).toHaveCount(0);
+  });
+
+  test("listing-an-offer article covers the link-preview helper", async ({
+    page,
+  }) => {
+    await page.goto("/learn/listing-an-offer");
+    await expect(
+      page.getByRole("heading", {
+        level: 1,
+        name: "Listing an offer, step by step",
+      }),
+    ).toBeVisible();
+    await expect(
+      page.getByText(/Nothing is used until you confirm you have the right/),
+    ).toBeVisible();
+  });
+
+  test("redemption article explains claim versus redeem", async ({ page }) => {
+    await page.goto("/learn/redemption");
+    await expect(
+      page.getByRole("heading", { level: 1, name: "How redemption works" }),
+    ).toBeVisible();
+    await expect(
+      page.getByText(/Claiming is not the same as redeeming/),
+    ).toBeVisible();
+  });
+
+  // Guards the tax-advice guardrail: we must never assert a specific tax
+  // outcome, only point to a processor and the visitor's own advisor.
+  test("giving article and FAQ refuse to promise a tax outcome", async ({
+    page,
+  }) => {
+    await page.goto("/learn/giving");
+    await expect(page.getByText(/We are not a tax authority/)).toBeVisible();
+    await expect(page.getByText(/third-party giving processor/)).toBeVisible();
+
+    await page.goto("/faq");
+    await expect(
+      page.getByText("Will my business's giving be tax deductible?"),
+    ).toBeVisible();
+    await expect(page.getByText(/we are not a tax authority/)).toBeVisible();
   });
 
   test("faq refuses to state a savings average", async ({ page }) => {

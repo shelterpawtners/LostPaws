@@ -1,0 +1,215 @@
+.givingPanel {
+  --gv-ink: #17213a;
+  --gv-muted: #5f6b82;
+  --gv-line: #dfe5ee;
+  --gv-surface: #ffffff;
+  --gv-tint: #f6f4fd;
+  --gv-primary: #654ab7;
+  margin-top: 20px;
+  padding: 20px;
+  border: 1px solid var(--gv-line);
+  border-radius: 18px;
+  background: var(--gv-surface);
+  color: var(--gv-ink);
+}
+
+.givingPanel * {
+  box-sizing: border-box;
+}
+
+.givingPanel h2 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 8px;
+  font-size: 1.15rem;
+}
+
+.givingPanel h2 svg {
+  width: 1.1rem;
+  height: 1.1rem;
+  color: var(--gv-primary);
+}
+
+.givingPanelLead {
+  margin: 0 0 14px;
+  color: var(--gv-muted);
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+
+.givingSummary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  margin-bottom: 14px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: var(--gv-tint);
+  font-size: 0.88rem;
+}
+
+.givingSummaryTier {
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: var(--gv-primary);
+  color: #fff;
+  font-weight: 800;
+  font-size: 0.78rem;
+}
+
+.givingNotice {
+  display: flex;
+  gap: 8px;
+  margin: 0 0 16px;
+  padding: 10px 12px;
+  border: 1px solid var(--gv-line);
+  border-radius: 12px;
+  color: var(--gv-muted);
+  font-size: 0.86rem;
+  line-height: 1.5;
+}
+
+.givingNotice svg {
+  flex: none;
+  width: 1rem;
+  height: 1rem;
+  margin-top: 0.15rem;
+  color: var(--gv-primary);
+}
+
+.givingNotice a {
+  color: var(--gv-primary);
+  font-weight: 600;
+}
+
+.givingEmpty {
+  color: var(--gv-muted);
+  font-size: 0.92rem;
+  line-height: 1.6;
+}
+
+.givingEmpty a {
+  color: var(--gv-primary);
+  font-weight: 600;
+}
+
+.givingCommitmentList {
+  display: grid;
+  gap: 8px;
+  margin: 0 0 16px;
+  padding: 0;
+  list-style: none;
+}
+
+.givingCommitmentList li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--gv-line);
+  border-radius: 12px;
+  font-size: 0.9rem;
+}
+
+.givingCommitmentList small {
+  margin-left: auto;
+  color: var(--gv-muted);
+}
+
+.givingStatus {
+  padding: 2px 9px;
+  border-radius: 999px;
+  background: var(--gv-tint);
+  color: var(--gv-primary);
+  font-size: 0.74rem;
+  font-style: normal;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.givingStatus-active {
+  background: #10302f;
+  color: #8fe3da;
+}
+
+.givingCommitmentList button {
+  min-height: 36px;
+  padding: 0 12px;
+  border: 1px solid var(--gv-primary);
+  border-radius: 999px;
+  background: none;
+  color: var(--gv-primary);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.givingForm {
+  padding-top: 14px;
+  border-top: 1px solid var(--gv-line);
+}
+
+.givingForm h3 {
+  margin: 0 0 10px;
+  font-size: 1rem;
+}
+
+.givingFormGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.givingForm label {
+  display: grid;
+  gap: 5px;
+}
+
+.givingForm label span {
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+
+.givingForm input,
+.givingForm select {
+  min-height: 44px;
+  padding: 0 10px;
+  border: 1px solid var(--gv-line);
+  border-radius: 10px;
+  font: inherit;
+}
+
+.givingSubmit {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 18px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--gv-primary);
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.givingSubmit:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+.givingStatusLine {
+  min-height: 1.2rem;
+  margin: 8px 0 0;
+  color: var(--gv-muted);
+  font-size: 0.88rem;
+}
+
+.givingForm input:focus-visible,
+.givingForm select:focus-visible,
+.givingSubmit:focus-visible,
+.givingCommitmentList button:focus-visible {
+  outline: 3px solid #14b8a6;
+  outline-offset: 2px;
+}

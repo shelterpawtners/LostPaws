@@ -92,7 +92,7 @@ export const learnArticles: LearnArticle[] = [
         body: "Businesses that commit a share of eligible participating sales to shelter support can qualify for RAVE Shelter Hero Vendor recognition. Standard vendors are welcome and lose nothing by not participating.",
       },
     ],
-    related: ["hero-vendor", "events"],
+    related: ["listing-an-offer", "hero-vendor", "events"],
     cta: { label: "Join as a vendor", to: "/register?type=rave_vendor" },
     lastUpdated: "2026-09-12",
   },
@@ -172,22 +172,89 @@ export const learnArticles: LearnArticle[] = [
     title: "Where support goes",
     audience: "Everyone",
     summary:
-      "How business-funded shelter support is meant to work, and what is not built yet.",
+      "How business-funded shelter support is meant to work, why a third party will handle the money, and what is not built yet.",
     steps: [
       {
-        heading: "Business-funded support",
-        body: "The model asks participating businesses, not Guardians, to direct a share of eligible sales to shelter support. Guardian accounts are free and stay free.",
+        heading: "Business-funded support, by default",
+        body: "The model asks participating businesses, not Guardians, to direct a share of eligible sales to shelter support. Guardian accounts are free and stay free. Guardians and businesses can also choose to add an extra gift on top of a transaction — that is optional on both sides, never required.",
+      },
+      {
+        heading: "We do not hold or move the money ourselves",
+        body: "ShelterPawtners is planning to route every actual donation through a qualified third-party giving processor rather than taking custody of funds directly. That processor, not ShelterPawtners, will be the one confirming a recipient's nonprofit status and issuing any tax receipt. Which processor, and the exact mechanics, is a decision still being finalized before any real money moves.",
       },
       {
         heading: "Pledged is not the same as delivered",
-        body: "A commitment a business has made is shown as a commitment. Money that has actually moved is shown separately, once the financial workflow supports reporting it.",
+        body: "A commitment a business has made is shown as a commitment. Money that has actually moved through the processor is shown separately, once that integration exists. We will never describe a pledge as a completed donation.",
+      },
+      {
+        heading: "Tax treatment is between you and your advisor",
+        body: "We are not a tax authority, and this platform does not give tax advice. Whether a contribution is deductible depends on the recipient's status, who the legal donor is, and current tax law. We will surface whatever documentation the processor provides, and nothing more, until that design is reviewed.",
       },
       {
         heading: "What is not built yet",
-        body: "Automated money movement, Guardian-directed giving, and annual reporting are planned, not live. We will not show a donation total until there is a real transaction behind it.",
+        body: "Automated money movement, Guardian-directed giving, per-account giving totals, and annual reporting are planned, not live. We will not show a donation total until there is a real, processor-confirmed transaction behind it.",
       },
     ],
-    related: ["hero-vendor", "savings"],
+    related: ["hero-vendor", "savings", "redemption"],
+    lastUpdated: "2026-09-12",
+  },
+  {
+    slug: "listing-an-offer",
+    title: "Listing an offer, step by step",
+    audience: "Vendors and businesses",
+    summary:
+      "What to have ready, what each field means, and why we ask before using an image from your site.",
+    steps: [
+      {
+        heading: "Have your details ready",
+        body: "A clear title, a one-sentence summary, the terms (what a customer actually gets), and how long the offer runs. Vague terms get flagged before publishing, not after a customer complains.",
+      },
+      {
+        heading: "Paste a link, and we will try to save you typing",
+        body: "If you give us a link to the offer on your own site, we can propose a title, description, and photo pulled from that page's public preview information — the same data Slack or iMessage use to show a link preview. Nothing is used until you confirm you have the right to use that image; if you say no, or the page has none, you upload your own.",
+      },
+      {
+        heading: "Pick a category and an audience",
+        body: "Category is a real tag shown on your listing, not decoration — use one that actually describes what you sell. Audience is Pet, Human (RAVE), or Both, and controls which storefront shows your offer.",
+      },
+      {
+        heading: "Decide on Hero Vendor now or later",
+        body: "Committing 5% or more of eligible sales to a shelter is optional and can be added at any time — it is not required to publish a standard offer.",
+      },
+      {
+        heading: "Publish, then keep it current",
+        body: "You can edit or unpublish at any time. An offer with stale terms or an expired end date is what erodes trust fastest, for you and for the marketplace.",
+      },
+    ],
+    related: ["vendors", "hero-vendor", "redemption"],
+    cta: { label: "Create a business profile", to: "/register?type=petbiz" },
+    lastUpdated: "2026-09-12",
+  },
+  {
+    slug: "redemption",
+    title: "How redemption works",
+    audience: "Everyone",
+    summary:
+      "What happens between a Guardian claiming an offer and a business confirming it, for both sides.",
+    steps: [
+      {
+        heading: "Claiming reserves it, it does not use it",
+        body: "A Guardian claims an offer and gets a private code. Claiming is not the same as redeeming — for a limited-inventory offer, claiming holds a spot; the business still confirms the actual redemption.",
+      },
+      {
+        heading: "The business confirms at the point of service",
+        body: "The business enters or scans the Guardian's code to confirm redemption. Confirmation is final; a business can reverse one with a stated reason, which is recorded, not silently erased.",
+      },
+      {
+        heading: "Both sides can see the same status",
+        body: "Claimed, redeemed, or reversed is visible to the Guardian and the business, so neither side is guessing what happened.",
+      },
+      {
+        heading: "Cross-account access is denied, not just hidden",
+        body: "A different business cannot validate or confirm another business's redemption codes, and this is enforced at the database level, not only in what the screen shows.",
+      },
+    ],
+    related: ["listing-an-offer", "giving"],
     lastUpdated: "2026-09-12",
   },
   {
@@ -304,5 +371,35 @@ export const faqEntries: FaqEntry[] = [
     question: "Does it cost shelters anything?",
     answer: "No. ShelterPawtners is free for shelters and rescues.",
     audience: "Shelters and rescues",
+  },
+  {
+    question: "Who actually handles donated money?",
+    answer:
+      "Not ShelterPawtners directly. The plan is to route real donations through a qualified third-party giving processor, so a specialist confirms recipient nonprofit status and issues receipts rather than us doing that ourselves. Which processor, and the exact integration, has not been finalized, and no automated money movement is live yet.",
+    audience: "Vendors and businesses",
+  },
+  {
+    question: "Will my business's giving be tax deductible?",
+    answer:
+      "We cannot tell you that — it depends on the recipient's status, who the legal donor is, and current tax law, and we are not a tax authority. Once the processor is selected, we will pass along whatever documentation it issues; for now, treat any tax-savings claim you see elsewhere about this program as unconfirmed and talk to your own accountant before counting on a deduction.",
+    audience: "Vendors and businesses",
+  },
+  {
+    question: "Can a Guardian or a business give more than the offer requires?",
+    answer:
+      "That is the intent — both sides should be able to add a discretionary gift on top of a normal transaction, separate from any Hero Vendor commitment. This is planned and not live yet; it depends on the same processor integration as the rest of real money movement.",
+    audience: "Everyone",
+  },
+  {
+    question: "How will I know how much I've actually given or received?",
+    answer:
+      "The goal is an account-level giving history for Guardians and businesses alike, showing pledged versus processor-confirmed amounts separately. That reporting does not exist yet; it is planned alongside the money-movement integration, not before it.",
+    audience: "Everyone",
+  },
+  {
+    question: "What is the difference between claiming and redeeming an offer?",
+    answer:
+      "Claiming reserves your spot on a limited offer and gives you a private code; it is not the same as using it. The business confirms the actual redemption when you show up, and that confirmation is what's final — a claim by itself can still expire or go unused.",
+    audience: "Guardians",
   },
 ];
