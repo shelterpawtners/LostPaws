@@ -87,9 +87,11 @@ test.describe.serial("Phase 3 Guardian Passport foundation", () => {
     await signIn(page, guardianA.email, guardianA.password);
     await page.goto(`/pets/${petAId}`);
 
-    const passportIntro = page
-      .getByRole("heading", { name: "Demo Pet A" })
-      .locator("..");
+    // The heading's immediate parent is .passportLeadCopy, while "Private by
+    // default" sits in its sibling .passportLeadMeta, so scope to the shared
+    // .passportLead panel. PR #78 ("photo-first experience") introduced that
+    // split and this assertion had been failing ever since.
+    const passportIntro = page.locator(".passportLead");
     const passportForm = page
       .getByRole("heading", { name: "Passport basics" })
       .locator("..");
