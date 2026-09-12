@@ -1,17 +1,19 @@
 # ShelterPawtners.com MVP Cutover
 
-Status: owner-authorized soft-launch cutover. Legal/privacy routes remain unpublished until separately approved.
+Status: domain/auth configuration complete; real Google and signed-in browser acceptance remains. Legal/privacy routes remain unpublished until separately approved.
 
-## Cutover attempt — 2026-09-12
+## Cutover completion — 2026-09-12
 
-Verified before any production configuration change:
+Completed by the owner after release verification:
 
-- `origin/main` is `cf6475db44a1f005369c9657b3ebd21b46b53774`.
-- The most recent successful Vercel **production** deployment is `dpl_F3dLB7Fd6jUWv582xjbL1fCqWSd6`, `READY`, from main SHA `7de02351227f793de7ad7fcc0b4e5361f5844cdc`.
-- The commits after that deployment change only GitHub Pages workflow flags and this runbook; the deployed application bundle is unchanged.
-- The Vercel project currently has only its two Vercel-owned domains. No custom-domain, DNS, Supabase Auth, Google OAuth, or SiteGround change was made in this attempt.
+- Vercel validates both production domains, with the apex canonical.
+- SiteGround web DNS uses Vercel's exact apex A record and `www` CNAME; Microsoft 365 and Auth/Resend records were preserved.
+- Supabase Auth Site URL and redirect allowlist include the apex while GitHub Pages remains temporarily allowed.
+- Google OAuth has the apex JavaScript origin and retains the Supabase callback.
+- Vercel redeploy `dpl_EZhNzZRjfKamY8FyeTnM3njnH7JN` is READY.
+- Facebook/Instagram remains disabled; Privacy, Terms, and Data Deletion are still unpublished.
 
-Current blocker: the connected Vercel integration is read/deployment-only and the local Vercel CLI has no authenticated account, so it cannot attach custom domains or display this project's authoritative DNS challenge. The connected Supabase integration does not expose hosted Auth URL Configuration writes, and no connected Google Cloud or SiteGround administrator is available. These are account-security/console actions, not an application defect.
+Vercel confirms the apex application shell with HTTP 200. A short-lived certificate hostname-routing mismatch in this controller's cloud browser prevents its interactive Google test; this does not affect Vercel's valid-domain status. Complete the Google login/logout, Guardian registration, mobile navigation, and direct-route-refresh smoke in an ordinary browser.
 
 When authenticated console access is available, perform the remaining configuration in the order in this runbook, then complete the production smoke checklist. Keep all Microsoft 365 mail records and the Meta/legal publication gates unchanged.
 
