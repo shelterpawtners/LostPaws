@@ -74,6 +74,7 @@ import { RedemptionFlow } from "./components/RedemptionFlow";
 import { GuardianProfileLite } from "./components/GuardianProfileLite";
 import { GuardianPetPassport } from "./components/GuardianPetPassport";
 import { SupportPage } from "./components/SupportPage";
+import { EventsPage } from "./components/events/EventsPage";
 import { AdoptionVerificationResponder } from "./components/AdoptionVerificationResponder";
 import { RaveShelterMission } from "./components/RaveShelterMission";
 import {
@@ -211,6 +212,7 @@ function Header() {
           <Link to="/marketplace">Marketplace</Link>
           <Link to="/lostpaws">LostPaws</Link>
           <Link to="/rave">RAVE Shelter</Link>
+          <Link to="/events">Events</Link>
           <Link to="/learn">Learn</Link>
           {!session && <Link to="/register">Join</Link>}
           {session && <AdminQaNavLink />}
@@ -241,6 +243,7 @@ function Footer() {
           <p>Care, savings, and community supporting shelter adoption.</p>
         </div>
         <div>
+          <Link to="/events">Events</Link>
           <Link to="/learn">Learn how it works</Link>
           <Link to="/faq">FAQ</Link>
           <Link to="/support">Help &amp; support</Link>
@@ -1787,6 +1790,14 @@ type GuardianPet = {
 };
 // Reachable signed in or out: signed-out visitors get the email routes and a
 // sign-in prompt rather than a dead end.
+function EventsRoute() {
+  const { session } = useAuth();
+  return (
+    <Page>
+      <EventsPage session={session} />
+    </Page>
+  );
+}
 function SupportRoute() {
   const { session } = useAuth();
   return (
@@ -2186,6 +2197,7 @@ function App() {
           }
         />
         <Route path="/support" element={<SupportRoute />} />
+        <Route path="/events" element={<EventsRoute />} />
         <Route
           path="/hero-vendor"
           element={

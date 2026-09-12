@@ -27,6 +27,7 @@ const exactTitles: Record<string, string> = {
   "/reset-password": "Choose a new password",
   "/directory": "Partner directory",
   "/support": "Help and support",
+  "/events": "Events",
   "/dashboard": "My dashboard",
 };
 

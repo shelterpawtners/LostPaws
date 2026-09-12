@@ -1239,10 +1239,40 @@ header .guardianAccountPanel {
 .lostPawsRoadmap a svg {
   width: 17px;
 }
-@media (max-width: 1040px) and (min-width: 701px) {
+/* Six nav links plus the sign-in button no longer fit a tablet: the row
+   measured 786px inside a 768px viewport. Collapse to the hamburger from
+   900px down. The phone block below keeps its own narrower offsets. */
+@media (max-width: 900px) {
+  .menu {
+    display: block;
+  }
   nav {
-    gap: 13px;
-    font-size: 0.82rem;
+    display: none;
+    position: absolute;
+    top: 78px;
+    left: 20px;
+    right: 20px;
+    padding: 16px;
+    border: 1px solid #2a3b5c;
+    border-radius: 15px;
+    background: #101d34;
+    box-shadow: var(--shadow);
+    z-index: 21;
+  }
+  nav.open {
+    display: grid;
+  }
+  nav > a:not(.btn) {
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+  }
+}
+
+@media (max-width: 1040px) and (min-width: 901px) {
+  nav {
+    gap: 12px;
+    font-size: 0.8rem;
   }
   .brand {
     font-size: 1.05rem;
