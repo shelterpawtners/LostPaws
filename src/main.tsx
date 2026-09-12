@@ -92,7 +92,7 @@ const choices: { kind: Kind; title: string; copy: string }[] = [
   {
     kind: "rave_vendor",
     title: "RAVE Shelter Vendor",
-    copy: "Share products and deals through the Rescue and Adoption Vendor Ecosystem.",
+    copy: "Share products and deals through RAVE Shelter — Rewarding Adoption with Vendor Exclusives.",
   },
 ];
 const icons = {
@@ -319,12 +319,14 @@ function Home() {
         <div className="shell lostPawsFeatureCard">
           <div>
             <span className="eyebrow">LostPaws × RAVE Shelter</span>
-            <h2>Music. Community. More resources for shelter pets.</h2>
+            <h2>Rave with purpose. Shop with impact.</h2>
             <p className="lead">
-              LostPaws is the music-community activation of RAVE Shelter — the
-              Rescue and Adoption Vendor Ecosystem. Shop participating partners,
-              save on useful products and merch, and help turn everyday spending
-              into more support for shelter pets.
+              RAVE Shelter — Rewarding Adoption with Vendor Exclusives —
+              connects ravers, festival vendors, and shelter supporters.
+              LostPaws is the RAVE Shelter community initiative built
+              specifically for Lost Lands and the Excision festival family. Shop
+              participating partners, save on useful products and merch, and
+              help turn everyday spending into more support for shelter pets.
             </p>
             <div className="actions">
               <Link className="btn" to="/rave">

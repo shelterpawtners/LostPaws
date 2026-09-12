@@ -1,29 +1,53 @@
 # AI Handoff
 
-STATUS: PAUSED_BY_OWNER
-CURRENT_PHASE: Lost Lands MVP launch readiness
-CURRENT_CHECKPOINT: Owner-requested pause after Issue #125 / PR #126 acceptance and launch-doc cleanup
-NEXT_CHECKPOINT: Resume only on explicit owner instruction, then re-read `docs/CURRENT-WORK.md`, this handoff, and current open issues before taking any action
-OWNER_DECISION_REQUIRED: YES_TO_RESUME
-SAFE_TO_CONTINUE: NO
+STATUS: READY_FOR_ACCEPTANCE
+CURRENT_PHASE: RAVE Shelter / LostPaws dual-marketplace sprint — Track 1 (mobile conversion + brand correction)
+CURRENT_CHECKPOINT: Track 1 implemented and CI-green on PR #130 (`feature/mobile-rave-lostpaws-claude` -> `main`), including a live-rendered visual check; ready for owner merge decision
+NEXT_CHECKPOINT: Owner reviews/merges PR #130; Track 2 (dual marketplace + Events, schema-first) does not start until Track 1 is merged
+OWNER_DECISION_REQUIRED: YES_TO_MERGE
+SAFE_TO_CONTINUE: YES
 ACCEPTED_PRODUCT_SHA: bc14a3f6b839f4421781903c41d3c867f4bba848
-ACCEPTANCE_RUNTIME: OWNER_PAUSED_2026_09_12
+ACCEPTANCE_RUNTIME: OWNER_RESUMED_2026_09_12
 
-## Owner pause — 2026-09-12
+## Track 1 status — 2026-09-12
 
-The owner explicitly paused autonomous work and asked to stop further automated tasks.
+Branch: `feature/mobile-rave-lostpaws-claude`. Agent: Claude Code (sole active coding agent this sprint).
 
-Until the owner explicitly resumes work:
+Implemented:
 
-- do not start new coding, QA, deployment, provider-console, DNS, legal-publication, or launch tasks;
-- do not create or delegate Copilot/Codex/Work coding sessions;
-- do not auto-merge or create new implementation branches/PRs;
-- do not change production configuration;
-- scheduled ChatGPT controllers/briefs are disabled;
-- the GitHub `AI Ops Status` hourly schedule is disabled and remains manual-dispatch only;
-- event-driven CI/QA safety workflows may remain configured, but they should have nothing to execute unless a human explicitly changes the repository.
+- RAVE Shelter renamed from "Rescue and Adoption Vendor Ecosystem" to **Rewarding Adoption with Vendor Exclusives**, with the tagline **"Rave with purpose. Shop with impact."** made prominent on `/rave`, `/lostpaws`, `/rave-vendors`, and home.
+- LostPaws corrected from a generic, reusable "music-community activation" (Issue #100/#125 framing, still present in the shipped copy despite being marked accepted) to a RAVE Shelter initiative reserved specifically for the Lost Lands / Excision festival family, in `RaveShelterMission.tsx`, `LostPawsActivation.tsx`, and home.
+- Soft-launch demand messaging ("right now, we need you to sign up and show demand...") added to the `/rave`, `/lostpaws`, and `/rave-vendors` heroes.
+- Updated the authoritative brand/content docs that still stated the old acronym/hierarchy (`BRAND-DESIGN-SYSTEM.md`, `CONTENT-STANDARDS.md`, `FESTIVAL-MVP-AND-VERIFICATION.md`, `PRODUCT-VISION.md`, `LOSTPAWS-RAVE-LANDING-DIRECTION.md`) so a future agent reading them won't reintroduce the superseded framing; marked `RAVE-SHELTER-LOSTPAWS-MISSION.md` superseded.
+- Non-affiliation language preserved verbatim; no schema/migration changes; no founding-business-promise wording added (owner has not finalized that commercial language yet, per `docs/product/OWNER-DECISIONS-NEXT-SPRINT.md`).
 
-At the time of pause there were no open pull requests and no queued or in-progress GitHub Actions runs.
+Not done / explicitly deferred:
+
+- Founding-business free-account-before-2027 message — waiting on final commercial wording confirmation.
+- Track 3 (Hero Vendor, Learn/FAQ, savings calculator) — not started, by design.
+
+Tests run: `npm run typecheck`, `npm run build`, `npm test` (23 passed), `npx playwright test e2e/issue-125-rave-lostpaws-mobile.spec.ts` (9 passed, including mobile overflow at 320–768px on `/`, `/rave`, `/lostpaws`, and ≥44px touch targets) — all green.
+
+Also fixed `.github/workflows/github-pages-mvp-acceptance.yml`'s `public-release-matrix` job, which asserted the old "A RAVE Shelter activation" / "Bring the mission into the music community." / "Explore the LostPaws activation" copy this PR replaced; updated its assertions to match and confirmed the full PR #130 check suite is green (Persona QA Gate, Hosted QA Gate, Database QA Gate, CodeQL, public-release-matrix, etc.).
+
+Ran a live visual pass: built `dist/`, served it with `vite preview`, and screenshotted `/`, `/rave`, `/lostpaws`, and `/rave-vendors` at 390px width with Playwright. Copy, layout, and CTAs render correctly with no overflow. One finding, not fixed (approved brand asset, out of scope per the execution plan's "do not redraw logos" rule): `public/brand/rave-shelter-logo-static-v2.png` (used on `/rave`, `/lostpaws`, and reused as `rave-shelter-logo-animated-v2.gif` on `/rave-vendors`) has the superseded tagline **"Deals for ravers. Support for shelter pets."** baked into the image pixels, next to text that now correctly says "Rave with purpose. Shop with impact." Whoever owns brand assets should regenerate this logo lockup with the new tagline; recorded here rather than worked around.
+
+## Owner resume — 2026-09-12
+
+The owner reviewed the plan under `docs/product/` and lifted the pause below. Current operating rules for this sprint:
+
+- **Claude Code is the only active coding agent.** Codex is paused/out of scope for now; do not create or delegate Codex sessions until the owner explicitly re-authorizes Codex.
+- Work **Track 1 first, then Track 2**, sequentially, not in parallel — Track 1 must merge and be verified live before Track 2 starts, since both tracks touch the same RAVE/LostPaws presentation components.
+- **Doc creation is capped.** Update `docs/AI-HANDOFF.md`, `docs/CURRENT-WORK.md`, and the existing `docs/product/` files rather than creating new planning documents. Do not add another `docs/product/*.md` file without an explicit owner request.
+- **Branch policy: fewer, longer-lived branches.** Reuse `feature/mobile-rave-lostpaws-claude` for the full Track 1 scope rather than opening a new branch per sub-task. Do not create a new branch for Track 2 until Track 1 has merged; when Track 2 starts, prefer continuing on one Track 2 branch rather than spawning several.
+- Reduce duplicated/redundant QA: do not add new parallel QA workflows or test suites that overlap existing Persona QA / Hosted QA / CI coverage; extend existing suites instead.
+- Automate routine execution; work around non-blocking obstacles and keep making progress on other in-scope Track 1 items rather than stopping to ask, but still respect the guardrails below (financial/legal claims, production config, secrets).
+
+## Prior owner pause — 2026-09-12 (superseded)
+
+The owner previously paused autonomous work after Issue #125 / PR #126 acceptance while the `docs/product/` plan was reviewed. That pause is now lifted by the resume above; this section is kept for history only.
+
+At the time of the original pause there were no open pull requests and no queued or in-progress GitHub Actions runs.
 
 ## Stable product / hosting state at pause
 
