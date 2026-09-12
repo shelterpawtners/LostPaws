@@ -456,6 +456,9 @@
 }
 
 .rsmTextLink {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
   color: #fff;
   font-size: 0.77rem;
   font-weight: 800;

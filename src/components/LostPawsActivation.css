@@ -264,6 +264,9 @@
 
 .lpCard a,
 .lpTextLink {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
   margin-top: auto;
   color: #fff;
   font-weight: 800;

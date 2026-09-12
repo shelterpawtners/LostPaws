@@ -127,6 +127,7 @@ header {
 .brand {
   display: flex;
   align-items: center;
+  min-height: 44px;
   gap: 10px;
   font-family: Outfit;
   font-weight: 700;
@@ -147,6 +148,12 @@ nav {
   font-weight: 700;
   font-size: 0.9rem;
   color: #f5f7ff;
+}
+/* Nav links measured 42px, just under the 44px touch-target floor. */
+nav > a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
 }
 nav > a:not(.btn):hover {
   color: #75e3d4;
@@ -498,7 +505,12 @@ nav > a:not(.btn):hover {
   display: grid;
   gap: 16px;
 }
+/* Standalone form links ("Forgot your password?", "Choose an account type")
+   measured 18px tall; they are navigation, not inline prose. */
 .signup form > a {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
   color: #654ab7;
   font-size: 0.8rem;
   font-weight: 700;
@@ -670,7 +682,20 @@ select:focus {
 }
 .filters {
   display: flex;
+  flex-wrap: wrap;
   gap: 8px;
+}
+/* The partner directory puts five filter fields in this row; without a
+   min-width floor and wrapping they forced ~938px of horizontal scroll at
+   390px wide. */
+.filters label {
+  flex: 1 1 160px;
+  min-width: 0;
+}
+.filters label input,
+.filters label select {
+  width: 100%;
+  min-width: 0;
 }
 .filters button {
   border: 1px solid var(--line);
@@ -1205,6 +1230,7 @@ header .guardianAccountPanel {
 .lostPawsRoadmap a {
   display: inline-flex;
   align-items: center;
+  min-height: 44px;
   gap: 7px;
   margin-top: 8px;
   color: #75e3d4;
@@ -1259,7 +1285,17 @@ header .guardianAccountPanel {
   width: 18px;
   height: 18px;
 }
+/* Footer links are standalone navigation, not inline prose, so they get a
+   full 44px touch target rather than the 32px they had. */
 .foot a {
-  display: block;
-  min-height: 32px;
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+}
+/* Standalone navigation links inside a panel form (e.g. "Back to sign in")
+   were 22px tall; they are controls, not inline prose. */
+.formPage form.panel > a {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
 }

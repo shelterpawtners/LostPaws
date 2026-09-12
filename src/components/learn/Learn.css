@@ -250,6 +250,7 @@
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
+  min-height: 44px;
   margin-bottom: 1.25rem;
   color: var(--learn-primary);
   font-weight: 700;
