@@ -1,10 +1,10 @@
 # AI Handoff
 
-STATUS: IN_PROGRESS
+STATUS: READY_FOR_ACCEPTANCE
 CURRENT_PHASE: RAVE Shelter / LostPaws dual-marketplace sprint — Track 2 (dual marketplace + Events)
-CURRENT_CHECKPOINT: Track 1 merged to `main` (PR #130, squash commit `07ba8f1`, owner-authorized 2026-09-12). Track 2 schema-review proposal open on PR #131 (`feature/dual-marketplace-events`), now rebased onto post-merge `main`; awaiting owner answers to 3 open schema questions before migrations are written
-NEXT_CHECKPOINT: Owner answers the 3 open questions in PR #131 / plan section 18a; implementation then proceeds on the same branch
-OWNER_DECISION_REQUIRED: YES_SCHEMA_QUESTIONS
+CURRENT_CHECKPOINT: Track 1 merged to `main` (PR #130, squash commit `07ba8f1`). Track 2 implemented on PR #131 (`feature/dual-marketplace-events`): Events schema + RLS + pgTAP, and real `?channel=` audience filtering through `public_active_offers`
+NEXT_CHECKPOINT: CI Database QA verification of the two new migrations, then owner merge of PR #131
+OWNER_DECISION_REQUIRED: NO
 SAFE_TO_CONTINUE: YES
 ACCEPTED_PRODUCT_SHA: 07ba8f17d2956957947470ce90b0b676268fe0fc
 ACCEPTANCE_RUNTIME: OWNER_RESUMED_2026_09_12
@@ -44,6 +44,26 @@ The owner reviewed the plan under `docs/product/` and lifted the pause below. Cu
 - **Branch policy: fewer, longer-lived branches.** Reuse `feature/mobile-rave-lostpaws-claude` for the full Track 1 scope rather than opening a new branch per sub-task. Do not create a new branch for Track 2 until Track 1 has merged; when Track 2 starts, prefer continuing on one Track 2 branch rather than spawning several.
 - Reduce duplicated/redundant QA: do not add new parallel QA workflows or test suites that overlap existing Persona QA / Hosted QA / CI coverage; extend existing suites instead.
 - Automate routine execution; work around non-blocking obstacles and keep making progress on other in-scope Track 1 items rather than stopping to ask, but still respect the guardrails below (financial/legal claims, production config, secrets).
+
+## Track 2 status — 2026-09-12
+
+Branch: `feature/dual-marketplace-events` (PR #131). Owner-confirmed design decisions: nullable `events.organization_id`, four participation roles (`attending`/`vending`/`hosting`/`for_hire`), `pet`/`human`/`both` audience values, selector modal built now.
+
+Implemented:
+
+- `public.events` + `public.event_participants` (additive only; no existing table altered), modeled on the existing `offers`/`organization_connections` shapes. RLS mirrors the `offer_read` public-vs-manager boundary, with insert and update as **separate** policies following `organizations.org_edit` — copying `offer_versions_manage`'s `created_by = auth.uid()` with-check would have prevented a co-manager who is not the original creator from editing an event, which is correct for immutable version rows but wrong for a mutable record.
+- Participation rows can only be inserted by the _participating_ organization's managers, so an event host cannot list another business as vending without that business acting.
+- `supabase/tests/track2_events_foundation.sql`: 16 pgTAP assertions covering the golden path, cross-org write denial, participant impersonation denial, unique/check constraints, and anon visibility gated on publish status.
+- **Real audience filtering.** `public_active_offers` never returned or filtered `offers.channel`, so `/marketplace?channel=rave` only re-themed the page and served an identical offer list — the dual marketplace was cosmetic. The RPC now exposes `channel` and accepts an optional `p_channel` filter (`shared` always included), `src/lib/marketplace-audience.ts` maps the URL param to that filter, and `OfferMarketplace` refetches per audience.
+- `MarketplaceAudienceModal` (plan section 6) plus a persistent in-page Audience filter row. The older static `.filters` buttons in `main.tsx` remain `display:none` by existing design (OfferMarketplace owns filtering), so nothing was duplicated into a hidden control.
+- Rescued `e2e/rave-shelter-mission.spec.ts`, which **no CI workflow ran** (every Playwright call in `.github/workflows` is an explicit allow-list) and had gone stale before this branch. Fixed its assertions, removed a check duplicating `issue-125-rave-lostpaws-mobile.spec.ts`, fixed a pre-existing strict-mode locator ambiguity, and added it to `npm run test:e2e:hosted`.
+
+Deferred, by design:
+
+- Onboarding changes to hide RAVE content from existing pet businesses unless opted in.
+- A dedicated `/events` browsing page — schema is ready; presentation is follow-up work.
+
+Tests run: `typecheck`, `build`, `lint`, `npm test` (27 passed), and the marketplace/campaign e2e set (12 passed, 5 credential-gated skips). **The migrations have not been executed anywhere yet** — this workstation has no Docker daemon, so `supabase db reset` + pgTAP could not run locally. CI's Database QA job is their first real execution; do not treat the schema as verified until it passes.
 
 ## Prior owner pause — 2026-09-12 (superseded)
 
