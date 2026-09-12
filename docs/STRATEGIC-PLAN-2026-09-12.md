@@ -18,7 +18,7 @@ The MVP is not short of code. Phases 1 and 2 are complete, Track 1 is merged, an
 
 Ordered by value to a human validator, highest first.
 
-1. **`/events` browsing and creation UI.** The schema, RLS, and 16 pgTAP assertions exist and pass, but there is no interface, so the entire Events feature is invisible. This is the largest gap between what is built and what can be seen, which makes it the most valuable thing to finish before a human review.
+1. ~~**`/events` browsing and creation UI.**~~ **Done.** `/events` browses published events with audience filters, and signed-in organizers can add one from the same page. Three demo events are seeded so the surface is reviewable, and four e2e specs run in CI. Building it surfaced two real regressions, both fixed: a sixth nav link pushed the header to 786px inside a 768px viewport, and the footnote link was a 19px target.
 2. **Fill the four thin placeholder pages.** `/passport`, `/partners`, `/shelters`, and `/about` each render one paragraph from a shared component while the new `/learn/*` articles cover the same subjects properly. Either redirect them or give them real content; leaving them is the most obvious rough edge a validator will hit.
 3. **Marketplace empty state.** With no published offers, the most important page for a demand-proving launch shows an error-ish void. A deliberate "nothing here yet, here is what is coming" state serves the soft launch far better.
 4. **Onboarding audience opt-in.** Pet businesses should not see festival concepts unless they choose them. The data model supports it; the onboarding flow does not implement it.

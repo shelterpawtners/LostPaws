@@ -81,7 +81,7 @@ There are now over 100 files in `docs/`. The doc-creation cap you set is in `AI-
 These are known and intentional, not oversights:
 
 - **Onboarding does not yet hide RAVE content from pet businesses** unless they opt in. Planned in Track 2's scope; the data model supports it, the onboarding flow does not implement it.
-- **No `/events` browsing page.** Schema, RLS, and tests exist; there is no UI to create or browse an event yet, so the Events feature is currently invisible to users.
+- ~~**No `/events` browsing page.**~~ Built: `/events` browses published events with audience filters and lets signed-in organizers add one. Publishing controls are still to come, so new events save as drafts and say so.
 - **Thin placeholder pages.** `/passport`, `/partners`, `/shelters`, `/about` each render one paragraph from a shared component while the new `/learn/*` articles cover the same subjects properly. See recommendation 5 in the site review.
 - **No savings figures published anywhere**, by design, until OD-003 and the research in `PASSPORT-SAVINGS-IMPACT-MODEL.md` are done.
 - **Annual impact reporting** is described as planned, not built, everywhere it appears.
