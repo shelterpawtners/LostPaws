@@ -229,23 +229,23 @@ Prefer small recoverable checkpoints over one long autonomous job.
 
 ## LATEST AGENT UPDATE
 
-AGENT: CHATGPT_ADVISOR
-TIME: 2026-09-12
+AGENT: WORK
+TIME: 2026-09-12 17:30 EDT
 STATUS: PASS
-CHECKPOINT: Remove manual Vercel deployment bottleneck
+CHECKPOINT: Google OAuth production acceptance
 PROVEN:
-- The repo already had automatic docs-only build skipping via `scripts/vercel-ignore-build.sh`.
-- The missing case was environment-variable-only changes, which cannot be inferred from a Git file diff.
+- Forced deployment `dpl_4x32sTRgy9f1Knvt7xcNEqD9967P` is READY at `5baee666d3e6084a6f01494a85305db6648bb448` and serves the apex.
+- Live `/login` shows enabled `Continue with Google`; Facebook remains disabled.
+- Google authorization, Supabase callback, HTTPS apex return, sign-out, and Google re-login all passed.
+- Before and after re-login, the tested account had exactly one auth user, one profile, and one Google identity; no organization, membership, or guardianship record was created.
 CHANGED:
-- Added `[deploy]` and `[skip deploy]` commit-message controls to `scripts/vercel-ignore-build.sh`.
-- Commit `5baee666d3e6084a6f01494a85305db6648bb448` was created with `[deploy]` so Vercel should build it using the already-set Production Google flag.
-- Updated controller rules so future environment-only rebuilds use a Git trigger instead of owner dashboard toggles.
+- none
 BLOCKERS:
-- none unless Vercel fails to honor the repo-controlled ignore command or requires a new owner-only permission action.
+- none for Google OAuth.
 RISKS_OR_UNCERTAINTY:
-- Google live acceptance still depends on the new production deployment becoming READY.
+- Meta/Facebook acceptance remains untested and stays publicly disabled.
 NEXT_RECOMMENDED_ACTION:
-- Work verifies the forced deployment and continues through Google OAuth acceptance without another routine owner handoff.
+- Continue read-only Meta/Facebook configuration discovery while preserving the disabled public UI.
 ADVISOR_REVIEW_REQUIRED: NO
 ADVISOR_QUESTION:
 - none
