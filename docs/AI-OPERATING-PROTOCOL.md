@@ -99,6 +99,25 @@ The desired behavior is:
 
 Instruction files govern behavior after an agent is invoked; they do not themselves schedule or launch the next independent agent session.
 
+## Authentication / connector handoff failsafe
+
+A provider sign-in or connector authorization handoff is a narrow dependency, not permission to stall an entire Work session.
+
+When GitHub, Vercel, Supabase, Meta, or another connected system requires interactive authentication:
+
+1. Open the secure handoff only when a concrete write/action requires it.
+2. Never request that the owner paste credentials, OAuth tokens, secrets, recovery codes, or 2FA values into chat.
+3. If the handoff is unavailable, does not expose the needed sign-in method, or remains unresolved for roughly 2–3 minutes, classify it as a failed handoff and stop waiting.
+4. Continue in read-only mode using GitHub `main` and any already-authorized provider surfaces as the source of truth.
+5. Complete every independent verification, analysis, test review, and planning task that remains safe.
+6. Record exactly one bounded pending action: target system, intended write/action, and why it could not be completed.
+7. Do not reopen the same authorization handoff repeatedly in the same run.
+8. Do not report the whole workstream as blocked when only one write is blocked.
+9. If the only blocked write is an `AI-HANDOFF.md` or `AI-CONTROLLER.md` update, preserve the checkpoint in the run's final response and allow the next authorized agent to publish it.
+10. A spinning authentication UI is never considered productive progress.
+
+This rule overrides any older prompt wording that would otherwise cause an agent to wait indefinitely for authentication.
+
 ## Standard task lifecycle
 
 1. ChatGPT reads `CURRENT-WORK.md`, `AI-HANDOFF.md`, relevant Issue/PR, owner-decision backlog, and CI state.
