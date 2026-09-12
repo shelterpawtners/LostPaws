@@ -20,61 +20,93 @@ Updated 2026-09-12.
 
 ### Production/runtime
 
-- Hosted Supabase is current for the two already-merged PR #131 Track 2 migrations:
-  - `track2_events_foundation`
-  - `track2_marketplace_channel_filter`
+- Hosted Supabase is current for the two already-merged PR #131 Track 2 migrations.
 - `public.events` and `public.event_participants` exist with RLS enabled.
 - Channel-aware `public_active_offers(uuid, public.market_channel)` exists.
 - Live production is `https://shelterpawtners.com`.
 - HTTPS/TLS is healthy.
-- Accepted live runtime product SHA before the current forced deployment: `9c114eada2018664e96ce37b002e901523129722`.
-- Production `VITE_GOOGLE_AUTH_ENABLED=true` has been set by the owner.
+- Production `VITE_GOOGLE_AUTH_ENABLED=true` is live.
 
-### Deployment automation improvement
+### Deployment automation
 
 The prior manual Vercel ignored-build toggle is retired as the normal operating pattern.
 
-`scripts/vercel-ignore-build.sh` now supports explicit commit-message controls:
+`scripts/vercel-ignore-build.sh` supports explicit commit-message controls:
 
-- `[deploy]` => force a Vercel build.
-- `[skip deploy]` => force a Vercel skip when intentionally safe.
-- Otherwise the existing change-impact classifier decides automatically.
+- `[deploy]` => force a Vercel build;
+- `[skip deploy]` => explicitly skip when intentionally safe;
+- otherwise the existing change-impact classifier decides automatically.
 
-This allows agents to trigger rebuilds for environment-variable-only changes without requiring the owner to toggle Vercel settings manually.
-
-Commit `5baee666d3e6084a6f01494a85305db6648bb448` added this behavior with `[deploy]`, so that commit itself should force a production build using the already-set Google environment flag.
+Agents should use the Git-driven trigger rather than asking the owner to repeatedly change Vercel settings.
 
 ### Google OAuth
 
-Status: **WAITING FOR FORCED PRODUCTION BUILD / THEN LIVE ACCEPTANCE**.
+Status: **PASS**.
 
-Once the deployment is READY, verify:
+Work verified live production Google OAuth end to end:
 
-- usable Google sign-in on `/login`;
+- enabled live entry;
 - Google authorization;
 - Supabase callback;
-- return to apex;
-- logout/re-login;
-- Guardian/persona continuity;
-- no duplicate profile/role/organization/persona behavior.
+- HTTPS apex return;
+- sign-out;
+- re-login;
+- stable one-user / one-profile / one-Google-identity counts;
+- no duplicate identity/profile/persona behavior observed.
 
 ### Meta/Facebook
 
-Public Facebook login remains disabled. Do not enable it until Google is accepted and Meta callback/account-continuity checks are completed.
+Status: **EXTERNALLY BLOCKED / CORRECTLY DISABLED**.
+
+- Source integration uses provider `facebook` and the same deployment-base-aware OAuth return helper.
+- Production keeps Facebook disabled through `VITE_FACEBOOK_AUTH_ENABLED !== "true"`.
+- Live UI remains `Facebook sign-in coming soon`.
+- Real provider-console callback and identity-continuity acceptance require authorized Meta/provider access.
+- Do not enable Facebook publicly until callback + account-continuity acceptance passes.
+
+### Public smoke
+
+Work passed `/`, `/marketplace`, `/lostpaws`, `/rave`, and `/events` with expected headings and no application console errors.
+
+### Seven Star Shelters — new parallel product lane
+
+Owner approved a second RAVE Shelter festival activation:
+
+**Seven Star Shelters — Spread Shelter Love**
+
+Authoritative brief:
+
+`docs/SEVEN-STAR-SHELTERS-LANDING-BRIEF.md`
+
+This should be built as a normal React route in the existing Vite app, not a standalone unmanaged HTML page.
+
+Recommended route:
+
+`/sevenstars`
+
+The brief includes:
+
+- mission/copy;
+- Seven Stars / GRiZ / GRiZMAS research-grounded links;
+- no-affiliation guardrails;
+- early engagement CTAs;
+- vendor + marketplace reuse;
+- design direction based on the approved Seven Star Shelters visual concept;
+- explicit direction to reduce obvious AI-generated visual artifacts.
 
 ### Historical branches
 
-Retained historical branches still require reconciliation. They must be reviewed in small batches from current `main`; do not wholesale merge them.
+Retained historical branches still require reconciliation. Do not wholesale merge them.
 
 ### Claude ownership
 
-Claude resumes its own paused current-development/design work when available. Codex must not continue or overwrite that work.
+Claude resumes its own paused current-development/design work when available. Codex must not overwrite Claude-owned work.
 
 ---
 
-## NEXT ACTION
+## NEXT ACTIONS
 
-### Active lane: Codex Work
+### Lane A — Codex Work: launch readiness
 
 Stay in the existing **Launch Readiness Work tab**.
 
@@ -84,132 +116,92 @@ Recommended setting:
 - Reasoning: Medium
 - Fast: OFF
 
-Goal:
+On next sync:
 
-1. Verify Vercel receives and builds commit `5baee666d3e6084a6f01494a85305db6648bb448` rather than skipping it.
-2. Wait for the production deployment to become READY.
-3. Verify `https://shelterpawtners.com/login` presents usable Google sign-in.
-4. Continue immediately into full Google OAuth live acceptance.
-5. If Google passes cleanly, continue into Meta/Facebook configuration discovery while keeping Facebook publicly disabled.
-6. If Meta becomes externally blocked, run a quick live production smoke and update this controller.
+1. Treat Google OAuth as accepted and do not retest unless production changes touch auth.
+2. Treat Meta as externally blocked and leave Facebook disabled.
+3. Do not wait on Meta. Move to the next independent launch-readiness work.
+4. Run the remaining final production acceptance from `docs/AI-EXECUTION-PLAN-2026-09-12.md` that is still relevant after the already-passed public smoke.
+5. Specifically verify the currently deployed production SHA, whether any newer `main` delta is product-affecting, and whether Vercel is now following the Git-driven deployment policy normally.
+6. Record any remaining true release blockers, owner/provider gates, or production-affecting source changes.
+7. Update this controller and continue autonomously through routine PASS checkpoints.
 
-Do not ask the owner to manually toggle Vercel Ignored Build Step for ordinary future environment-only rebuilds. Use an explicit `[deploy]` commit instead.
+Do not stop merely because Meta provider access is unavailable.
+
+### Lane B — Seven Star Shelters: parallel repository build
+
+This is independent of the launch-provider lane and can proceed in parallel on a separate branch.
+
+Owner-approved goal:
+
+Create an early production-capable `/sevenstars` page so promotion, vendor recruitment, and community engagement can begin before the festival.
+
+Read first:
+
+- `docs/SEVEN-STAR-SHELTERS-LANDING-BRIEF.md`
+- `docs/AI-CONTROLLER.md`
+- current `/lostpaws` and `/rave` implementations
+
+Implementation guidance:
+
+- normal React/Vite route, not standalone HTML;
+- reuse existing RAVE registration and `?channel=rave` marketplace flows;
+- original Seven Star Shelters design system, informed by the approved visual concept;
+- use clean intentional visual assets, not faux festival photography or AI-looking crowds/signage;
+- link outward to verified GRiZ / Seven Stars / GRiZMAS resources;
+- prominently retain independent/no-affiliation disclosure;
+- do not invent partnerships, donation mechanics, or endorsement;
+- ship useful early-engagement MVP before perfect visual polish.
+
+Recommended branch if Codex owns this lane:
+
+`feat/seven-star-shelters-landing`
+
+Do not mix this work into the historical branch-reconciliation branch.
+
+Before merge, require targeted route/responsive/accessibility tests and confirm no regression to `/lostpaws`, `/rave`, or the shared marketplace.
 
 ---
 
-## AUTONOMOUS CONTINUATION RULES FOR WORK
+## AUTONOMOUS CONTINUATION RULES
 
-Codex Work should not stop after every successful sub-step.
+Agents should not stop after routine successful substeps.
 
-It is authorized to continue through the following sequence without another owner prompt when the prior checkpoint passes cleanly:
+Stop for advisor/owner review only when one of these occurs:
 
-1. Forced Vercel production deployment.
-2. Full Google OAuth acceptance.
-3. Meta/Facebook configuration discovery only, keeping Facebook publicly disabled.
-4. Quick live production smoke if Meta becomes externally blocked.
-
-Stop and request advisor/owner review only when one of these occurs:
-
-- destructive DB/data change would be required;
-- OAuth shows possible duplicate identity/profile/persona behavior;
+- destructive DB/data change is proposed;
+- OAuth shows duplicate identity/profile/persona behavior;
 - auth/RLS/security behavior is ambiguous;
 - Microsoft 365 DNS would be touched;
 - legal publication is required;
 - paid upgrade/purchase is proposed;
-- Work would overlap Claude's active source files;
-- Work cannot proceed without an owner login/2FA action;
-- a provider/account restriction makes the intended action unsafe or unclear.
+- an agent would overlap another agent's active source files;
+- owner login/2FA is genuinely required;
+- an external provider restriction makes an action unsafe or unclear;
+- a new product claim implies sponsorship, official festival affiliation, charitable partnership, tax treatment, or guaranteed funding.
 
-Otherwise, keep moving and update this controller after each material checkpoint.
-
----
-
-## REQUIRED CONTROLLER UPDATE FORMAT
-
-After every material checkpoint, Codex Work / Codex VS Code / Claude should update this file's `LATEST AGENT UPDATE` section with a compact entry using this format:
-
-```text
-AGENT: WORK | CODEX_VSCODE | CLAUDE
-TIME: <local timestamp if known>
-STATUS: PASS | PARTIAL | BLOCKED | COMPLETE
-CHECKPOINT: <short name>
-PROVEN:
-- <facts only>
-CHANGED:
-- <exact changes; "none" if none>
-BLOCKERS:
-- <exact blocker; "none" if none>
-RISKS_OR_UNCERTAINTY:
-- <only unresolved uncertainty>
-NEXT_RECOMMENDED_ACTION:
-- <one smallest next action>
-ADVISOR_REVIEW_REQUIRED: YES | NO
-ADVISOR_QUESTION:
-- <specific question, or "none">
-```
-
-Keep only the latest few updates here; durable detail belongs in existing handoff/open-items docs.
+Otherwise keep moving and update this controller after material checkpoints.
 
 ---
 
-## CHATGPT ADVISOR SYNC PROTOCOL
+## CHATGPT ADVISOR ROLE / PROCESS IMPROVEMENT RULE
 
-Important limitation: updating GitHub does **not automatically wake or message the existing ChatGPT conversation**.
+ChatGPT advisor is the project-management/control-tower role.
 
-The owner can trigger advisor review with a very short message in the project chat:
+On every sync it should:
+
+1. read this controller;
+2. inspect only the additional evidence needed;
+3. challenge inefficient process and repeated manual handoffs;
+4. prefer durable automation and parallelization over owner babysitting;
+5. protect product direction, release safety, and agent ownership boundaries;
+6. update this controller when next-action logic materially changes.
+
+The owner can trigger advisor review with:
 
 > `Sync AI controller and continue.`
 
-When the owner sends that phrase, ChatGPT should:
-
-1. read `docs/AI-CONTROLLER.md` from GitHub;
-2. read only the additional referenced file/issue/PR needed for the current blocker;
-3. evaluate the latest agent update;
-4. proactively look for process improvements and bottlenecks, not merely answer the immediate blocker;
-5. prefer durable automation over repeated manual owner handoffs;
-6. provide the smallest next decision or prompt;
-7. update this controller if the operating plan/next action materially changes.
-
-The advisor should treat repeated manual handoffs as a process smell and actively replace them with safe automation whenever practical.
-
----
-
-## VS CODE CODEX TRIGGER
-
-Switch to **Codex in VS Code** when:
-
-- live-provider work is complete or externally blocked; and
-- the next useful work is repository-native; or
-- Claude is available and can resume its own lane while Codex separately reconciles historical branches.
-
-VS Code Codex should read:
-
-- `docs/AI-CONTROLLER.md`
-- `docs/AI-EXECUTION-PLAN-2026-09-12.md`
-- `docs/BRANCH-RETIREMENT-2026-09-12.md`
-
-Use branch from latest `main` only if changes are required:
-
-`release/branch-reconciliation-codex`
-
-Process retained historical branches in batches of 3 under the existing reconciliation rules.
-
-After each batch:
-
-- update `LATEST AGENT UPDATE` here;
-- stop for `OWNER_REVIEW` / `CLAUDE_REVIEW` / non-trivial auth-RLS-architecture conflicts;
-- otherwise continue the next small batch if the owner has authorized continued autonomous reconciliation.
-
----
-
-## CLAUDE RESUME TRIGGER
-
-When Claude becomes available:
-
-1. Claude reads `docs/AI-CONTROLLER.md` first.
-2. Claude resumes only its own paused/current-development lane.
-3. Claude does not take over historical branch reconciliation unless explicitly reassigned.
-4. Claude records any overlap/conflict in `LATEST AGENT UPDATE` rather than silently editing Codex-owned reconciliation work.
+Repeated manual handoffs are a process smell and should be removed when safe automation is available.
 
 ---
 
@@ -223,30 +215,32 @@ Use Terra Low for mechanical verification.
 Use Terra High only for a specific difficult problem.
 Use Sol only as targeted escalation when Terra is demonstrably insufficient for a high-value ambiguity such as auth identity continuity, RLS/security, migration failure, or non-trivial merge conflict.
 
-Prefer small recoverable checkpoints over one long autonomous job.
+Prefer small recoverable checkpoints and parallel independent lanes over one giant autonomous job.
 
 ---
 
 ## LATEST AGENT UPDATE
 
-AGENT: WORK
-TIME: 2026-09-12 17:40 EDT
-STATUS: PARTIAL
-CHECKPOINT: Meta discovery and production smoke
+AGENT: CHATGPT_ADVISOR
+TIME: 2026-09-12 18:xx EDT
+STATUS: COMPLETE
+CHECKPOINT: Controller sync + parallelization
 PROVEN:
-- Google OAuth production acceptance passed: enabled live entry, Google authorization, Supabase callback, HTTPS apex return, sign-out, re-login, and stable one-user/one-profile/one-Google-identity counts.
-- Facebook source integration uses provider `facebook` and the same deployment-base-aware OAuth return helper.
-- Production keeps Facebook disabled through `VITE_FACEBOOK_AUTH_ENABLED !== "true"`; live UI remains `Facebook sign-in coming soon`.
-- The tested account and the project both have zero Facebook identity records.
-- Public smoke passed for `/`, `/marketplace`, `/lostpaws`, `/rave`, and `/events`; each rendered its expected heading with no application console errors.
+- Google OAuth is accepted in production.
+- Meta is externally blocked and correctly disabled; it should not hold up independent launch work.
+- Public smoke already passed the main public routes.
+- Seven Star Shelters is owner-approved as a parallel RAVE Shelter activation.
 CHANGED:
-- none
+- Added `docs/SEVEN-STAR-SHELTERS-LANDING-BRIEF.md`.
+- Advanced Work to remaining final launch-readiness acceptance rather than waiting on Meta.
+- Added independent `/sevenstars` build lane with route, content, design, integration, and testing guardrails.
 BLOCKERS:
-- Facebook provider-console/Supabase provider configuration and real-account callback acceptance cannot be verified without authorized provider access. Facebook remains correctly disabled.
+- Meta provider-console access remains external and non-blocking for current independent work.
 RISKS_OR_UNCERTAINTY:
-- Meta callback, account linking, and duplicate-persona continuity are untested.
+- Seven Star Shelters final imagery must avoid implying official GRiZ / Seven Stars affiliation and should favor original artwork unless approved/licensed imagery is available.
 NEXT_RECOMMENDED_ACTION:
-- Owner/provider completes the supported Meta configuration/access step; then invoke Work for a contained Facebook callback and identity-continuity acceptance test. Keep Facebook disabled until that passes.
-ADVISOR_REVIEW_REQUIRED: YES
+- Work tab: sync controller and continue Lane A.
+- Separate repo agent: begin Lane B from `docs/SEVEN-STAR-SHELTERS-LANDING-BRIEF.md` on `feat/seven-star-shelters-landing`.
+ADVISOR_REVIEW_REQUIRED: NO
 ADVISOR_QUESTION:
-- Is authorized Meta/Facebook provider-console access available for the next acceptance checkpoint?
+- none
