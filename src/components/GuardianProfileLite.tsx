@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import type { Session } from "@supabase/supabase-js";
 import { Camera, UserRound } from "lucide-react";
 import { supabase as db } from "../lib/supabase";
 import { GuardianActivityTimeline } from "./GuardianActivityTimeline";
-import { HelpFeedback } from "./HelpFeedback";
 import "../guardian-profile-lite.css";
 
 type ProfileLite = {
@@ -227,7 +227,17 @@ export function GuardianProfileLite({ session }: { session: Session | null }) {
           </form>
         )}
       </section>
-      <HelpFeedback session={session} />
+      <section className="panel">
+        <span className="eyebrow">Support</span>
+        <h3>Need help with something?</h3>
+        <p>
+          Report a problem, ask a question, or send an idea. Your requests are
+          tracked with a reference code.
+        </p>
+        <Link className="btn quiet" to="/support">
+          Go to Help &amp; support
+        </Link>
+      </section>
       <GuardianActivityTimeline session={session} />
     </>
   );

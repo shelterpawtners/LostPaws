@@ -74,22 +74,70 @@ test.describe("Phase 1 authenticated and protected routes", () => {
     await expect(page).toHaveURL(/\/login$/);
   });
 
-  test("Guardian account menu makes Help & feedback a primary entry", async ({
+  // Owner direction (2026-09-12): the support form must not live inside the
+  // account dropdown. The menu links to a page where the form is immediately
+  // usable, rather than revealing a form behind a second toggle in a panel.
+  test("account menu links to a support page where the form is ready to use", async ({
     page,
   }) => {
     await signIn(page, "guardian-a@example.invalid", "Demo-only-Guardian-A!");
     const accountMenu = page.locator(".guardianAccountMenu");
 
     await accountMenu.locator("summary").click();
+    const supportLink = accountMenu.getByRole("link", {
+      name: "Help & support",
+    });
+    await expect(supportLink).toBeVisible();
+    await supportLink.click();
+
+    await expect(page).toHaveURL(/\/support$/);
     await expect(
-      accountMenu.getByRole("button", { name: "Help & feedback" }),
+      page.getByRole("heading", { level: 1, name: "How can we help?" }),
     ).toBeVisible();
-    await accountMenu.getByRole("button", { name: "Help & feedback" }).click();
+
+    // No further clicks: the fields are present on arrival.
+    await expect(page.getByLabel("Subject")).toBeVisible();
+    await expect(page.getByLabel("What happened?")).toBeVisible();
     await expect(
-      accountMenu.getByRole("heading", { name: "Help & feedback" }),
+      page.getByRole("button", { name: "Send request" }),
+    ).toBeVisible();
+    await expect(accountMenu).toHaveCount(1);
+  });
+
+  test("a signed-in Guardian can submit a support request and gets a reference", async ({
+    page,
+  }) => {
+    await signIn(page, "guardian-a@example.invalid", "Demo-only-Guardian-A!");
+    await page.goto("/support");
+
+    const subject = `Playwright support check ${Date.now()}`;
+    await page.getByLabel("Subject").fill(subject);
+    await page
+      .getByLabel("What happened?")
+      .fill("Submitted by the support page regression test.");
+    await page.getByRole("button", { name: "Send request" }).click();
+
+    await expect(page.getByText(/Your reference is/)).toBeVisible();
+    // The request appears in the Guardian's own history, which exercises the
+    // reporter-scoped read path as well as the insert.
+    await expect(
+      page.getByRole("heading", { name: "Your recent requests" }),
+    ).toBeVisible();
+    await expect(page.getByText(subject)).toBeVisible();
+  });
+
+  test("support page gives signed-out visitors a route instead of a dead end", async ({
+    page,
+  }) => {
+    await page.goto("/support");
+    await expect(
+      page.getByRole("heading", { level: 1, name: "How can we help?" }),
     ).toBeVisible();
     await expect(
-      accountMenu.getByRole("button", { name: "Close help form" }),
+      page.getByRole("link", { name: "Sign in to send a request" }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("link", { name: /Email contact@shelterpawtners\.com/ }),
     ).toBeVisible();
   });
 

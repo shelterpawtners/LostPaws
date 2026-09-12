@@ -73,7 +73,7 @@ import { HeroVendorProgram } from "./components/learn/HeroVendorProgram";
 import { RedemptionFlow } from "./components/RedemptionFlow";
 import { GuardianProfileLite } from "./components/GuardianProfileLite";
 import { GuardianPetPassport } from "./components/GuardianPetPassport";
-import { HelpFeedback } from "./components/HelpFeedback";
+import { SupportPage } from "./components/SupportPage";
 import { AdoptionVerificationResponder } from "./components/AdoptionVerificationResponder";
 import { RaveShelterMission } from "./components/RaveShelterMission";
 import {
@@ -243,6 +243,7 @@ function Footer() {
         <div>
           <Link to="/learn">Learn how it works</Link>
           <Link to="/faq">FAQ</Link>
+          <Link to="/support">Help &amp; support</Link>
           <Link to="/learn/savings-explorer">Savings explorer</Link>
           <Link to="/hero-vendor">Hero Vendor program</Link>
         </div>
@@ -1784,8 +1785,17 @@ type GuardianPet = {
   breed: string | null;
   adopted_self_reported: boolean | null;
 };
+// Reachable signed in or out: signed-out visitors get the email routes and a
+// sign-in prompt rather than a dead end.
+function SupportRoute() {
+  const { session } = useAuth();
+  return (
+    <Page>
+      <SupportPage session={session} />
+    </Page>
+  );
+}
 function GuardianAccountMenu({ session }: { session: Session | null }) {
-  const [showHelp, setShowHelp] = useState(false);
   const name =
     session?.user.user_metadata.full_name ||
     session?.user.email?.split("@")[0] ||
@@ -1806,10 +1816,7 @@ function GuardianAccountMenu({ session }: { session: Session | null }) {
           <p>ShelterPawtners account</p>
         </div>
         <Link to="/dashboard">My dashboard</Link>
-        <button type="button" onClick={() => setShowHelp(true)}>
-          Help &amp; feedback
-        </button>
-        {showHelp && <HelpFeedback session={session} initiallyOpen />}
+        <Link to="/support">Help &amp; support</Link>
       </div>
     </details>
   );
@@ -2178,6 +2185,7 @@ function App() {
             </Page>
           }
         />
+        <Route path="/support" element={<SupportRoute />} />
         <Route
           path="/hero-vendor"
           element={

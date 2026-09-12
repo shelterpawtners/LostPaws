@@ -16,6 +16,7 @@ const routes = [
   "/learn/passport",
   "/learn/savings-explorer",
   "/faq",
+  "/support",
   "/hero-vendor",
   "/passport",
   "/partners",
