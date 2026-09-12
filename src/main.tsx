@@ -61,6 +61,7 @@ import { PartnerProfileEditor } from "./components/PartnerProfileEditor";
 import { PublicPartnerProfile } from "./components/PublicPartnerProfile";
 import { OfferManager } from "./components/OfferManager";
 import { OfferMarketplace } from "./components/OfferMarketplace";
+import { MarketplaceAudienceModal } from "./components/marketplace/MarketplaceAudienceModal";
 import { RedemptionFlow } from "./components/RedemptionFlow";
 import { GuardianProfileLite } from "./components/GuardianProfileLite";
 import { GuardianPetPassport } from "./components/GuardianPetPassport";
@@ -1422,6 +1423,7 @@ function Marketplace() {
     new URLSearchParams(useLocation().search).get("channel") === "rave";
   return (
     <Page>
+      <MarketplaceAudienceModal />
       <section className="market">
         <div className="shell">
           <span className="eyebrow">ShelterPawtners marketplace</span>
@@ -1436,6 +1438,9 @@ function Marketplace() {
         </div>
       </section>
       <section className="section shell">
+        {/* Issue #27 owns the functional search/filter experience inside
+            OfferMarketplace; these static buttons stay hidden (see
+            marketplace.css) so they are not duplicated here. */}
         <div className="filters">
           <button>All offers</button>
           <button>Pet savings</button>
