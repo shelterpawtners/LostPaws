@@ -1,8 +1,6 @@
 name: AI Ops Status
 
 on:
-  schedule:
-    - cron: "0 * * * *"
   workflow_dispatch:
 
 concurrency:
