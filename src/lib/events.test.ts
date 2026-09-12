@@ -27,6 +27,11 @@ describe("event date formatting", () => {
     expect(out).not.toContain("—");
   });
 
+  it("keeps a UTC calendar day stable when the viewer is east of UTC", () => {
+    const out = formatEventWhen("2026-10-02T23:30:00Z", "2026-10-02T23:45:00Z");
+    expect(out).not.toContain("—");
+  });
+
   it("renders a multi-day event as a range", () => {
     const out = formatEventWhen("2026-10-02T17:00:00Z", "2026-10-04T23:00:00Z");
     expect(out).toContain("—");
