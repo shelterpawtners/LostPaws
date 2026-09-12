@@ -1,15 +1,6 @@
 name: AI Ops Status
 
 on:
-  workflow_run:
-    workflows:
-      - CI
-      - Database QA
-      - Persona QA
-      - Hosted QA
-      - Merge Gate
-      - Dependency Review
-    types: [completed]
   schedule:
     - cron: "0 * * * *"
   workflow_dispatch:

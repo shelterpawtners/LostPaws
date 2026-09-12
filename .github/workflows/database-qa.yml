@@ -38,8 +38,10 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - name: Start local Supabase
-        run: bash scripts/supabase-cli.sh start
+      - name: Start database-only Supabase stack
+        run: >-
+          bash scripts/supabase-cli.sh start
+          -x gotrue,realtime,storage-api,imgproxy,kong,mailpit,postgrest,postgres-meta,studio,edge-runtime,logflare,vector,supavisor
       - name: Reset and seed local database
         run: bash scripts/supabase-cli.sh db reset
       - name: Run pgTAP database and RLS tests
