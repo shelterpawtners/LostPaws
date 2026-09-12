@@ -224,23 +224,21 @@ Prefer small recoverable checkpoints over one long autonomous job.
 ## LATEST AGENT UPDATE
 
 AGENT: WORK
-TIME: 2026-09-12 17:10 EDT
+TIME: 2026-09-12 17:15 EDT
 STATUS: BLOCKED
-CHECKPOINT: Ignored-build script diagnosis
+CHECKPOINT: Google Production flag confirmation
 PROVEN:
-- Ran `bash scripts/vercel-ignore-build.sh` successfully.
-- It exited `0` with: `No deployed frontend artifact change detected; skip Vercel build.`
-- In Vercel ignored-build semantics, exit `0` intentionally cancels/skips the build.
-- This explains the recent canceled redeploys for documentation-only commits.
+- Owner confirmed `VITE_GOOGLE_AUTH_ENABLED=true` is saved for Vercel Production.
+- The newest Vercel production deployment (`dpl_74tNZ7FejhkqsWyqjACYAnYHcLW1`) is still `CANCELED`.
+- An environment-variable edit alone does not rebuild the static Vite bundle.
 CHANGED:
 - none
 BLOCKERS:
-- The approved Google Production environment-variable change requires a build, but the current commit-diff script has no signal that an environment value changed and therefore skips it.
+- The ignored-build script must be bypassed for one production build before the confirmed Google flag can become live.
 RISKS_OR_UNCERTAINTY:
-- It is not yet verified that `VITE_GOOGLE_AUTH_ENABLED=true` is saved in Vercel Production; the connected API cannot read environment values.
-- Google OAuth lifecycle and identity continuity remain untested.
+- OAuth initiation, callback, return, logout/re-login, and identity continuity remain untested.
 NEXT_RECOMMENDED_ACTION:
-- Owner temporarily changes Vercel’s Ignored Build Step behavior to Always build (or otherwise bypasses this script once), confirms Production `VITE_GOOGLE_AUTH_ENABLED=true`, saves, and performs one redeploy; then Work verifies the live Google button and OAuth flow.
+- Owner changes the Vercel Ignored Build Step behavior from Run my Bash script to Always build, saves, and requests one redeploy; then Work verifies the current deployment timestamp, status, and Google OAuth.
 ADVISOR_REVIEW_REQUIRED: YES
 ADVISOR_QUESTION:
-- Can the owner confirm the Production flag is saved, then use the Vercel dropdown to choose Always build for one deployment?
+- Can the owner switch the Ignored Build Step dropdown to Always build for this one deployment?
