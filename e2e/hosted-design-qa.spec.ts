@@ -42,9 +42,7 @@ function watchRuntimeFailures(page: Page): RuntimeFailures {
       return;
     }
 
-    failures.networkFailures.push(
-      `${request.method()} ${url} — ${errorText}`,
-    );
+    failures.networkFailures.push(`${request.method()} ${url} — ${errorText}`);
   });
 
   page.on("response", (response) => {
@@ -130,12 +128,7 @@ test.describe("Hosted public and branded-surface design QA", () => {
 
     await page.goto("/marketplace");
     await waitForStableMarketplace(page);
-    await attachAxe(
-      page,
-      testInfo,
-      "axe-marketplace-flagship",
-      "/marketplace",
-    );
+    await attachAxe(page, testInfo, "axe-marketplace-flagship", "/marketplace");
 
     expectNoRuntimeFailures(failures, "public shell / flagship Marketplace");
   });
@@ -187,15 +180,19 @@ test.describe("Hosted public and branded-surface design QA", () => {
         "PLAYWRIGHT_GUARDIAN_EMAIL",
         "guardian-a@example.invalid",
       ),
-      settingOrDefault(
-        "PLAYWRIGHT_GUARDIAN_PASSWORD",
-        "Demo-only-Guardian-A!",
-      ),
+      settingOrDefault("PLAYWRIGHT_GUARDIAN_PASSWORD", "Demo-only-Guardian-A!"),
     );
     await expect(
-      page.getByRole("heading", { name: /Your pets|Your pet journey starts here/ }),
+      page.getByRole("heading", {
+        name: /Your pets|Your pet journey starts here/,
+      }),
     ).toBeVisible();
-    await attachAxe(page, testInfo, "axe-guardian-dashboard", "/dashboard Guardian");
+    await attachAxe(
+      page,
+      testInfo,
+      "axe-guardian-dashboard",
+      "/dashboard Guardian",
+    );
 
     for (const viewport of viewports) {
       await page.setViewportSize(viewport);
@@ -205,7 +202,10 @@ test.describe("Hosted public and branded-surface design QA", () => {
       await waitForFonts(page);
 
       if (viewport.name === "phone") {
-        await expect(page.locator(".rolePanel")).toHaveCSS("position", "static");
+        await expect(page.locator(".rolePanel")).toHaveCSS(
+          "position",
+          "static",
+        );
         await page.getByRole("button", { name: "Open menu" }).click();
         await expect(
           page.getByRole("navigation", { name: "Primary navigation" }),
@@ -238,13 +238,20 @@ test.describe("Hosted public and branded-surface design QA", () => {
     await expect(
       page.getByRole("heading", { name: "Manage your organization" }),
     ).toBeVisible();
-    await attachAxe(page, testInfo, "axe-petbiz-dashboard", "/dashboard PetBiz");
+    await attachAxe(
+      page,
+      testInfo,
+      "axe-petbiz-dashboard",
+      "/dashboard PetBiz",
+    );
 
     for (const viewport of viewports) {
       await page.setViewportSize(viewport);
       await page.goto("/dashboard");
       await expect(page.locator(".dashboardHero")).toBeVisible();
-      await expect(page.getByRole("link", { name: /Manage offers/ })).toBeVisible();
+      await expect(
+        page.getByRole("link", { name: /Manage offers/ }),
+      ).toBeVisible();
       await waitForFonts(page);
       await page.screenshot({
         path: testInfo.outputPath(`petbiz-dashboard-${viewport.name}.png`),
@@ -256,12 +263,12 @@ test.describe("Hosted public and branded-surface design QA", () => {
     await page.setViewportSize({ width: 1440, height: 1000 });
     await page.goto("/business");
     await expect(
-      page.getByRole("heading", { name: "Make your business easy to understand." }),
+      page.getByRole("heading", {
+        name: "Make your business easy to understand.",
+      }),
     ).toBeVisible();
     await expect(page.locator(".panel").first()).toBeVisible();
-    await expect(
-      page.getByText("Loading saved profile details…"),
-    ).toBeHidden();
+    await expect(page.getByText("Loading saved profile details…")).toBeHidden();
     await waitForFonts(page);
     await attachAxe(page, testInfo, "axe-partner-profile", "/business");
     await page.screenshot({
@@ -289,9 +296,9 @@ test.describe("Hosted public and branded-surface design QA", () => {
     await expect(
       page.getByRole("heading", { name: "Reset your password" }),
     ).toBeVisible();
-    const unrelatedFormWidth = await page.locator(".formPage").evaluate((element) =>
-      Math.round(element.getBoundingClientRect().width),
-    );
+    const unrelatedFormWidth = await page
+      .locator(".formPage")
+      .evaluate((element) => Math.round(element.getBoundingClientRect().width));
     expect(
       unrelatedFormWidth,
       "brand propagation must not widen unrelated generic form pages",

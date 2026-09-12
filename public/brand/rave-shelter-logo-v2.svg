@@ -23,6 +23,35 @@
   <path d="M92 340 L600 42 L1108 340" fill="none" stroke="url(#brand)" stroke-width="48" stroke-linecap="square" stroke-linejoin="round"/>
   <path d="M126 320 V432 M1074 320 V432" fill="none" stroke="url(#brand)" stroke-width="38" stroke-linecap="round"/>
 
+  <style>
+    /* The equalizer bars pulse from the shared y=432 baseline. This replaces a
+       1.5 MB animated GIF of the same lockup; motion is disabled for visitors
+       who ask for reduced motion. */
+    #equalizer .bar {
+      transform-box: fill-box;
+      transform-origin: bottom center;
+      animation: rsEq 1400ms ease-in-out infinite alternate;
+    }
+    #equalizer .bar:nth-of-type(2) { animation-delay: -1150ms; }
+    #equalizer .bar:nth-of-type(3) { animation-delay: -250ms; }
+    #equalizer .bar:nth-of-type(4) { animation-delay: -800ms; }
+    #equalizer .bar:nth-of-type(5) { animation-delay: -450ms; }
+    #equalizer .bar:nth-of-type(6) { animation-delay: -1000ms; }
+    #equalizer .bar:nth-of-type(7) { animation-delay: -150ms; }
+    #equalizer .bar:nth-of-type(8) { animation-delay: -900ms; }
+    #equalizer .bar:nth-of-type(9) { animation-delay: -600ms; }
+    #equalizer .bar:nth-of-type(10) { animation-delay: -1250ms; }
+    #equalizer .bar:nth-of-type(11) { animation-delay: -350ms; }
+    #equalizer .bar:nth-of-type(12) { animation-delay: -700ms; }
+    @keyframes rsEq {
+      from { transform: scaleY(0.62); }
+      to { transform: scaleY(1.12); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      #equalizer .bar { animation: none; }
+    }
+  </style>
+
   <!-- Twelve subdued background equalizer bars; all share y=432 baseline -->
   <g id="equalizer" stroke-width="0" opacity="0.88">
     <g class="bar" data-x="176"><rect x="176" y="398" width="30" height="34" rx="9" fill="#188a55"/></g>
@@ -47,5 +76,5 @@
 
   <!-- Bright integrated tagline -->
   <rect x="105" y="650" width="990" height="112" rx="56" fill="url(#tag)" stroke="#67f4ff" stroke-width="5" filter="url(#glow)"/>
-  <text x="600" y="721" text-anchor="middle" font-family="DejaVu Sans,Arial,sans-serif" font-weight="700" font-size="37" fill="#fff">Deals for ravers. Support for shelter pets.</text>
+  <text x="600" y="721" text-anchor="middle" font-family="DejaVu Sans,Arial,sans-serif" font-weight="700" font-size="40" fill="#fff">Rave with purpose. Shop with impact.</text>
 </svg>

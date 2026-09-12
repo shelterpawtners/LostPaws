@@ -61,10 +61,20 @@ import { PartnerProfileEditor } from "./components/PartnerProfileEditor";
 import { PublicPartnerProfile } from "./components/PublicPartnerProfile";
 import { OfferManager } from "./components/OfferManager";
 import { OfferMarketplace } from "./components/OfferMarketplace";
+import { MarketplaceAudiencePrompt } from "./components/marketplace/MarketplaceAudiencePrompt";
+import { titleForPath } from "./lib/document-title";
+import { findLearnArticle } from "./lib/learn-content";
+import { ExplainerTiles } from "./components/learn/ExplainerTiles";
+import { LearnHub } from "./components/learn/LearnHub";
+import { LearnArticlePage } from "./components/learn/LearnArticlePage";
+import { FaqPage } from "./components/learn/FaqPage";
+import { SavingsExplorer } from "./components/learn/SavingsExplorer";
+import { HeroVendorProgram } from "./components/learn/HeroVendorProgram";
 import { RedemptionFlow } from "./components/RedemptionFlow";
 import { GuardianProfileLite } from "./components/GuardianProfileLite";
 import { GuardianPetPassport } from "./components/GuardianPetPassport";
-import { HelpFeedback } from "./components/HelpFeedback";
+import { SupportPage } from "./components/SupportPage";
+import { EventsPage } from "./components/events/EventsPage";
 import { AdoptionVerificationResponder } from "./components/AdoptionVerificationResponder";
 import { RaveShelterMission } from "./components/RaveShelterMission";
 import {
@@ -202,6 +212,8 @@ function Header() {
           <Link to="/marketplace">Marketplace</Link>
           <Link to="/lostpaws">LostPaws</Link>
           <Link to="/rave">RAVE Shelter</Link>
+          <Link to="/events">Events</Link>
+          <Link to="/learn">Learn</Link>
           {!session && <Link to="/register">Join</Link>}
           {session && <AdminQaNavLink />}
           {session ? (
@@ -231,6 +243,14 @@ function Footer() {
           <p>Care, savings, and community supporting shelter adoption.</p>
         </div>
         <div>
+          <Link to="/events">Events</Link>
+          <Link to="/learn">Learn how it works</Link>
+          <Link to="/faq">FAQ</Link>
+          <Link to="/support">Help &amp; support</Link>
+          <Link to="/learn/savings-explorer">Savings explorer</Link>
+          <Link to="/hero-vendor">Hero Vendor program</Link>
+        </div>
+        <div>
           <a href="mailto:contact@shelterpawtners.com">General questions</a>
           <a href="mailto:adoptions@shelterpawtners.com">Adoption support</a>
           <a href="mailto:petbiz@shelterpawtners.com">PetBiz and vendors</a>
@@ -251,7 +271,10 @@ function Page({ children }: { children: React.ReactNode }) {
     </>
   );
 }
-function Cards() {
+// headingLevel keeps the document outline sequential: the cards sit under an
+// h2 on home but directly under the h1 on /register.
+function Cards({ headingLevel = 3 }: { headingLevel?: 2 | 3 }) {
+  const CardHeading = headingLevel === 2 ? "h2" : "h3";
   return (
     <div className="cards">
       {choices.map((c) => {
@@ -263,7 +286,7 @@ function Cards() {
             to={accountRegistrationPath(c.kind)}
           >
             <I />
-            <h3>{c.title}</h3>
+            <CardHeading>{c.title}</CardHeading>
             <p>{c.copy}</p>
             <b>
               Get started <ArrowRight />
@@ -360,6 +383,7 @@ function Home() {
           </aside>
         </div>
       </section>
+      <ExplainerTiles heading="How it works, start to finish" />
       <section className="section shell">
         <span className="eyebrow">Choose your path</span>
         <h2>One mission. A place for everyone.</h2>
@@ -368,6 +392,12 @@ function Home() {
           same login.
         </p>
         <Cards />
+        <p className="homeLearnLink">
+          <Link to="/learn">
+            Learn how the Passport, marketplaces, and shelter support work{" "}
+            <ArrowRight />
+          </Link>
+        </p>
       </section>
       <section className="dark section">
         <div className="shell">
@@ -443,7 +473,7 @@ function Register() {
               <h1>How would you like to participate?</h1>
               <p>Choose a starting point. You can add another role later.</p>
             </div>
-            <Cards />
+            <Cards headingLevel={2} />
           </>
         ) : (
           <Signup c={c} />
@@ -1436,6 +1466,10 @@ function Marketplace() {
         </div>
       </section>
       <section className="section shell">
+        <MarketplaceAudiencePrompt />
+        {/* Issue #27 owns the functional search/filter experience inside
+            OfferMarketplace; these static buttons stay hidden (see
+            marketplace.css) so they are not duplicated here. */}
         <div className="filters">
           <button>All offers</button>
           <button>Pet savings</button>
@@ -1456,27 +1490,68 @@ function Marketplace() {
 }
 const publicFoundations: Record<
   string,
-  { eyebrow: string; title: string; copy: string }
+  {
+    eyebrow: string;
+    title: string;
+    copy: string;
+    points: string[];
+    learn: { label: string; to: string };
+    primary: { label: string; to: string };
+  }
 > = {
   passport: {
     eyebrow: "Digital Pet Passport",
     title: "A private record that can grow with your pet.",
     copy: "Identity, guardianship, adoption history, and future care records stay connected without making private information public.",
+    points: [
+      "Private by default. Following an organization never grants access to Passport information.",
+      "A shelter confirms the adoption; until it does, the pet is shown as self-reported rather than shelter-confirmed.",
+      "Verified shelter adoption is what some participating offers use to decide eligibility.",
+    ],
+    learn: { label: "How the Passport works", to: "/learn/passport" },
+    primary: {
+      label: "Start your pet's Passport",
+      to: "/register?type=guardian",
+    },
   },
   partners: {
     eyebrow: "PetBiz and community partners",
     title: "Give guardians practical value after adoption.",
     copy: "Create an organization profile, locations, and offers using one account that can support multiple team members.",
+    points: [
+      "Registration and publishing offers are free.",
+      "You write your own terms, eligibility, and timing, and can unpublish at any time.",
+      "Pet businesses are not shown festival concepts unless they choose that audience.",
+    ],
+    learn: { label: "How vendor accounts work", to: "/learn/vendors" },
+    primary: {
+      label: "Create a business profile",
+      to: "/register?type=petbiz",
+    },
   },
   shelters: {
     eyebrow: "Shelters and rescues",
     title: "Help each adoption carry trusted history forward.",
     copy: "ShelterPawtners is free for shelters. The foundation supports adoption confirmation, report cards, transfers, and future imports.",
+    points: [
+      "Free for shelters and rescues, with no subscription.",
+      "Confirmation requests arrive as a secure, single-purpose link that opens only that request.",
+      "Registered is shown as registered, never as verified.",
+    ],
+    learn: { label: "How confirmation works", to: "/learn/shelters" },
+    primary: { label: "Register a shelter", to: "/register?type=shelter" },
   },
   about: {
     eyebrow: "Care. Savings. Community.",
     title: "Built to support the full life after adoption.",
     copy: "ShelterPawtners connects guardians, shelters, providers, and businesses around better continuity of care and measurable support.",
+    points: [
+      "Guardian accounts are free, and always will be. The point is to lower the cost of owning a pet.",
+      "Participating businesses, not Guardians, are asked to fund shelter support.",
+      "We say plainly what is live and what is still planned, and publish no savings figure we have not researched.",
+    ],
+    learn: { label: "Read how it all works", to: "/learn" },
+    primary: { label: "Choose how to participate", to: "/register" },
   },
 };
 function FoundationPage({ name }: { name: keyof typeof publicFoundations }) {
@@ -1487,12 +1562,17 @@ function FoundationPage({ name }: { name: keyof typeof publicFoundations }) {
         <span className="eyebrow">{page.eyebrow}</span>
         <h1>{page.title}</h1>
         <p className="lead">{page.copy}</p>
+        <ul className="foundationPoints">
+          {page.points.map((point) => (
+            <li key={point}>{point}</li>
+          ))}
+        </ul>
         <div className="actions">
-          <Link className="btn" to="/register">
-            Choose how to participate
+          <Link className="btn" to={page.primary.to}>
+            {page.primary.label}
           </Link>
-          <Link className="btn quiet" to="/marketplace">
-            Preview savings
+          <Link className="btn quiet" to={page.learn.to}>
+            {page.learn.label}
           </Link>
         </div>
       </section>
@@ -1754,8 +1834,25 @@ type GuardianPet = {
   breed: string | null;
   adopted_self_reported: boolean | null;
 };
+// Reachable signed in or out: signed-out visitors get the email routes and a
+// sign-in prompt rather than a dead end.
+function EventsRoute() {
+  const { session } = useAuth();
+  return (
+    <Page>
+      <EventsPage session={session} />
+    </Page>
+  );
+}
+function SupportRoute() {
+  const { session } = useAuth();
+  return (
+    <Page>
+      <SupportPage session={session} />
+    </Page>
+  );
+}
 function GuardianAccountMenu({ session }: { session: Session | null }) {
-  const [showHelp, setShowHelp] = useState(false);
   const name =
     session?.user.user_metadata.full_name ||
     session?.user.email?.split("@")[0] ||
@@ -1776,10 +1873,7 @@ function GuardianAccountMenu({ session }: { session: Session | null }) {
           <p>ShelterPawtners account</p>
         </div>
         <Link to="/dashboard">My dashboard</Link>
-        <button type="button" onClick={() => setShowHelp(true)}>
-          Help &amp; feedback
-        </button>
-        {showHelp && <HelpFeedback session={session} initiallyOpen />}
+        <Link to="/support">Help &amp; support</Link>
       </div>
     </details>
   );
@@ -2024,197 +2118,256 @@ function PartnerOffersRoute() {
     </Page>
   );
 }
+function DocumentTitle() {
+  const { pathname } = useLocation();
+  useEffect(() => {
+    const slug = pathname.startsWith("/learn/")
+      ? pathname.slice("/learn/".length)
+      : undefined;
+    document.title = titleForPath(pathname, findLearnArticle(slug)?.title);
+  }, [pathname]);
+  return null;
+}
 function App() {
   return (
-    <Routes>
-      <Route path="/" element={<Home />} />
-      <Route path="/rave" element={<RaveMissionPage />} />
-      <Route path="/rave-shelter" element={<Navigate to="/rave" replace />} />
-      <Route path="/passport" element={<FoundationPage name="passport" />} />
-      <Route path="/partners" element={<FoundationPage name="partners" />} />
-      <Route
-        path="/partners/:id"
-        element={
-          <Page>
-            <PublicPartnerProfile />
-          </Page>
-        }
-      />
-      <Route path="/shelters" element={<FoundationPage name="shelters" />} />
-      <Route path="/lostpaws" element={<RaveMissionPage />} />
-      <Route path="/about" element={<FoundationPage name="about" />} />
-      <Route path="/register" element={<Register />} />
-      <Route
-        path="/register.html"
-        element={<Navigate to={legacyRegistrationTarget} replace />}
-      />
-      <Route path="/login" element={<Login />} />
-      <Route path="/sign-in" element={<Navigate to="/login" replace />} />
-      <Route path="/sign-up" element={<Navigate to="/register" replace />} />
-      <Route path="/forgot-password" element={<ForgotPassword />} />
-      <Route path="/reset-password" element={<ResetPassword />} />
-      <Route
-        path="/verify/adoption/:token"
-        element={
-          <Page>
-            <AdoptionVerificationResponder />
-          </Page>
-        }
-      />
-      <Route
-        path="/dashboard"
-        element={
-          <Protected>
-            <Dashboard />
-          </Protected>
-        }
-      />
-      <Route
-        path="/admin-qa"
-        element={
-          <Protected>
-            <Page>
-              <AdminQaMode />
-            </Page>
-          </Protected>
-        }
-      />
-      <Route
-        path="/onboarding/:type"
-        element={
-          <Protected>
-            <Onboard />
-          </Protected>
-        }
-      />
-      <Route
-        path="/pets/new"
-        element={
-          <Protected>
-            <Navigate to="/onboarding/guardian" />
-          </Protected>
-        }
-      />
-      <Route
-        path="/pets/:petId"
-        element={
-          <Protected>
-            <GuardianPetDetail />
-          </Protected>
-        }
-      />
-      <Route path="/marketplace" element={<Marketplace />} />
-      <Route
-        path="/offers/:offerId"
-        element={
-          <Page>
-            <OfferMarketplace />
-          </Page>
-        }
-      />
-      <Route
-        path="/partner/offers"
-        element={
-          <Protected>
-            <PartnerOffersRoute />
-          </Protected>
-        }
-      />
-      <Route
-        path="/redeem"
-        element={
-          <Protected>
-            <Page>
-              <RedemptionFlow />
-            </Page>
-          </Protected>
-        }
-      />
-      <Route
-        path="/redeem/:code"
-        element={
-          <Protected>
-            <Page>
-              <RedemptionFlow />
-            </Page>
-          </Protected>
-        }
-      />
-      <Route
-        path="/business"
-        element={
-          <Protected>
-            <PartnerProfileRoute />
-          </Protected>
-        }
-      />
-      <Route
-        path="/directory"
-        element={
-          <Page>
-            <PartnerDirectory />
-          </Page>
-        }
-      />
-      {[
-        [
-          "/my-pets",
-          "My Pets",
-          "Manage pet identity and guardianship foundations.",
-        ],
-        [
-          "/savings",
-          "Savings",
-          "Review future claims, redemptions, and tracked value.",
-        ],
-        [
-          "/community",
-          "Community",
-          "Connect without granting access to private Passport data.",
-        ],
-        [
-          "/business",
-          "Business",
-          "Manage organization details and memberships.",
-        ],
-        [
-          "/offers",
-          "Offers",
-          "Prepare campaigns with immutable published versions.",
-        ],
-        [
-          "/locations",
-          "Locations",
-          "Manage physical, online, service-area, regional, and national reach.",
-        ],
-        [
-          "/adoptions",
-          "Adoptions",
-          "Prepare shelter-confirmed adoption workflows.",
-        ],
-        [
-          "/transfers",
-          "Transfers",
-          "Prepare secure, expiring shelter transfer flows.",
-        ],
-        [
-          "/administration",
-          "Administration",
-          "Restricted platform oversight foundation.",
-        ],
-      ].map(([path, title, copy]) => (
+    <>
+      <DocumentTitle />
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/rave" element={<RaveMissionPage />} />
+        <Route path="/rave-shelter" element={<Navigate to="/rave" replace />} />
+        <Route path="/passport" element={<FoundationPage name="passport" />} />
+        <Route path="/partners" element={<FoundationPage name="partners" />} />
         <Route
-          key={path}
-          path={path}
+          path="/partners/:id"
+          element={
+            <Page>
+              <PublicPartnerProfile />
+            </Page>
+          }
+        />
+        <Route path="/shelters" element={<FoundationPage name="shelters" />} />
+        <Route path="/lostpaws" element={<RaveMissionPage />} />
+        <Route path="/about" element={<FoundationPage name="about" />} />
+        <Route path="/register" element={<Register />} />
+        <Route
+          path="/register.html"
+          element={<Navigate to={legacyRegistrationTarget} replace />}
+        />
+        <Route path="/login" element={<Login />} />
+        <Route path="/sign-in" element={<Navigate to="/login" replace />} />
+        <Route path="/sign-up" element={<Navigate to="/register" replace />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
+        <Route
+          path="/verify/adoption/:token"
+          element={
+            <Page>
+              <AdoptionVerificationResponder />
+            </Page>
+          }
+        />
+        <Route
+          path="/dashboard"
           element={
             <Protected>
-              <AppFoundation title={title} copy={copy} />
+              <Dashboard />
             </Protected>
           }
         />
-      ))}
-      <Route path="*" element={<Navigate to="/" />} />
-    </Routes>
+        <Route
+          path="/admin-qa"
+          element={
+            <Protected>
+              <Page>
+                <AdminQaMode />
+              </Page>
+            </Protected>
+          }
+        />
+        <Route
+          path="/onboarding/:type"
+          element={
+            <Protected>
+              <Onboard />
+            </Protected>
+          }
+        />
+        <Route
+          path="/pets/new"
+          element={
+            <Protected>
+              <Navigate to="/onboarding/guardian" />
+            </Protected>
+          }
+        />
+        <Route
+          path="/pets/:petId"
+          element={
+            <Protected>
+              <GuardianPetDetail />
+            </Protected>
+          }
+        />
+        <Route path="/marketplace" element={<Marketplace />} />
+        <Route
+          path="/learn"
+          element={
+            <Page>
+              <LearnHub />
+            </Page>
+          }
+        />
+        <Route
+          path="/learn/savings-explorer"
+          element={
+            <Page>
+              <SavingsExplorer />
+            </Page>
+          }
+        />
+        <Route
+          path="/learn/:slug"
+          element={
+            <Page>
+              <LearnArticlePage />
+            </Page>
+          }
+        />
+        <Route
+          path="/faq"
+          element={
+            <Page>
+              <FaqPage />
+            </Page>
+          }
+        />
+        <Route path="/support" element={<SupportRoute />} />
+        <Route path="/events" element={<EventsRoute />} />
+        <Route
+          path="/hero-vendor"
+          element={
+            <Page>
+              <HeroVendorProgram />
+            </Page>
+          }
+        />
+        <Route
+          path="/hero-vendors"
+          element={<Navigate to="/hero-vendor" replace />}
+        />
+        <Route
+          path="/offers/:offerId"
+          element={
+            <Page>
+              <OfferMarketplace />
+            </Page>
+          }
+        />
+        <Route
+          path="/partner/offers"
+          element={
+            <Protected>
+              <PartnerOffersRoute />
+            </Protected>
+          }
+        />
+        <Route
+          path="/redeem"
+          element={
+            <Protected>
+              <Page>
+                <RedemptionFlow />
+              </Page>
+            </Protected>
+          }
+        />
+        <Route
+          path="/redeem/:code"
+          element={
+            <Protected>
+              <Page>
+                <RedemptionFlow />
+              </Page>
+            </Protected>
+          }
+        />
+        <Route
+          path="/business"
+          element={
+            <Protected>
+              <PartnerProfileRoute />
+            </Protected>
+          }
+        />
+        <Route
+          path="/directory"
+          element={
+            <Page>
+              <PartnerDirectory />
+            </Page>
+          }
+        />
+        {[
+          [
+            "/my-pets",
+            "My Pets",
+            "Manage pet identity and guardianship foundations.",
+          ],
+          [
+            "/savings",
+            "Savings",
+            "Review future claims, redemptions, and tracked value.",
+          ],
+          [
+            "/community",
+            "Community",
+            "Connect without granting access to private Passport data.",
+          ],
+          [
+            "/business",
+            "Business",
+            "Manage organization details and memberships.",
+          ],
+          [
+            "/offers",
+            "Offers",
+            "Prepare campaigns with immutable published versions.",
+          ],
+          [
+            "/locations",
+            "Locations",
+            "Manage physical, online, service-area, regional, and national reach.",
+          ],
+          [
+            "/adoptions",
+            "Adoptions",
+            "Prepare shelter-confirmed adoption workflows.",
+          ],
+          [
+            "/transfers",
+            "Transfers",
+            "Prepare secure, expiring shelter transfer flows.",
+          ],
+          [
+            "/administration",
+            "Administration",
+            "Restricted platform oversight foundation.",
+          ],
+        ].map(([path, title, copy]) => (
+          <Route
+            key={path}
+            path={path}
+            element={
+              <Protected>
+                <AppFoundation title={title} copy={copy} />
+              </Protected>
+            }
+          />
+        ))}
+        <Route path="*" element={<Navigate to="/" />} />
+      </Routes>
+    </>
   );
 }
 createRoot(document.getElementById("root")!).render(

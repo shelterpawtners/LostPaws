@@ -19,6 +19,7 @@ export type PublicOffer = {
   details: string | null;
   terms: string;
   classification: string;
+  channel: "pet" | "rave" | "shared";
   destination_url: string | null;
   eligibility: string | null;
   last_verified_at: string | null;

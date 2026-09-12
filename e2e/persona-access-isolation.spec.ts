@@ -5,7 +5,8 @@ const url = process.env.PLAYWRIGHT_SUPABASE_URL || "";
 const key = process.env.PLAYWRIGHT_SUPABASE_PUBLISHABLE_KEY || "";
 
 function client() {
-  if (!url || !key) throw new Error("Local Supabase test settings are missing.");
+  if (!url || !key)
+    throw new Error("Local Supabase test settings are missing.");
   return createClient(url, key, {
     auth: { persistSession: false, autoRefreshToken: false },
   });
@@ -113,10 +114,13 @@ test.describe("Seeded persona access and isolation", () => {
     expect(createError).toBeNull();
     expect(typeof offerId).toBe("string");
 
-    const { error: publishError } = await partnerA.rpc("set_partner_offer_state", {
-      p_offer_id: offerId,
-      p_action: "publish",
-    });
+    const { error: publishError } = await partnerA.rpc(
+      "set_partner_offer_state",
+      {
+        p_offer_id: offerId,
+        p_action: "publish",
+      },
+    );
     expect(publishError).toBeNull();
 
     const { error: reviseError } = await partnerB.rpc("revise_partner_offer", {

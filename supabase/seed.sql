@@ -53,3 +53,29 @@ insert into public.guardianships(pet_id,guardian_id,relationship,status) values
  ('30000000-0000-0000-0000-000000000001','10000000-0000-0000-0000-000000000001','primary','active'),
  ('30000000-0000-0000-0000-000000000002','10000000-0000-0000-0000-000000000002','primary','active')
 on conflict do nothing;
+
+-- Demo events so the /events surface is reviewable locally. is_demo is false
+-- because these are the seeded review fixtures the QA personas expect to see;
+-- the demo-isolation rules that hide seeded data apply to offers and partner
+-- profiles, not events.
+insert into public.events(
+  id,organization_id,created_by,audience,category,title,summary,service_area,is_online,starts_at,ends_at,status,published_at
+) values
+ ('40000000-0000-0000-0000-0000000000f1','20000000-0000-0000-0000-000000000002','10000000-0000-0000-0000-000000000004',
+  'pet','Adoption Event','Demo Saturday Adoption Day',
+  'Meet adoptable dogs and cats, and ask the shelter team anything.',
+  'Detroit, MI',false,now()+interval '9 days',now()+interval '9 days 6 hours','active',now()),
+ ('40000000-0000-0000-0000-0000000000f2','20000000-0000-0000-0000-000000000003','10000000-0000-0000-0000-000000000006',
+  'human','Art / Maker Market','Demo Makers Market',
+  'Independent artists and makers, with part of each sale going to a shelter.',
+  'Columbus, OH',false,now()+interval '16 days',now()+interval '17 days','active',now()),
+ ('40000000-0000-0000-0000-0000000000f3',null,'10000000-0000-0000-0000-000000000001',
+  'both','Pet-Friendly Community Event','Demo Community Dog Walk',
+  'A relaxed walk open to everyone, dogs very welcome.',
+  'Online sign-up, walk in Ann Arbor, MI',false,now()+interval '23 days',null,'active',now())
+on conflict(id) do nothing;
+
+insert into public.event_participants(event_id,organization_id,role,created_by) values
+ ('40000000-0000-0000-0000-0000000000f1','20000000-0000-0000-0000-000000000002','hosting','10000000-0000-0000-0000-000000000004'),
+ ('40000000-0000-0000-0000-0000000000f2','20000000-0000-0000-0000-000000000003','vending','10000000-0000-0000-0000-000000000006')
+on conflict do nothing;

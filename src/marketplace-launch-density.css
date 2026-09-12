@@ -18,7 +18,8 @@
 }
 
 .marketplaceViewControls button {
-  min-height: 36px;
+  /* 36px was below the 44px touch-target floor on mobile. */
+  min-height: 44px;
   display: inline-flex;
   align-items: center;
   gap: 7px;
@@ -59,7 +60,7 @@
   top: 13px;
   left: 14px;
   min-height: 24px;
-  font-size: 0.58rem;
+  font-size: 0.72rem;
 }
 
 .marketplacePremium .marketplaceCardGrid-grid .marketOfferMonogram {
@@ -135,7 +136,7 @@
   width: fit-content;
   max-width: calc(100% - 24px);
   min-height: 23px;
-  font-size: 0.54rem;
+  font-size: 0.72rem;
 }
 
 .marketplacePremium .marketplaceCardGrid-list .marketOfferMonogram {

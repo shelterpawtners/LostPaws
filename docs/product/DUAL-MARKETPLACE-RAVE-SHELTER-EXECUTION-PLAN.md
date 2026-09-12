@@ -651,6 +651,39 @@ These remain mandatory:
 - no automatic money movement until the financial model is reviewed;
 - no paid service upgrades without owner approval.
 
+## 18a. Track 2 schema review (2026-09-12, pre-implementation deliverable)
+
+Written per section 15/17's requirement that Track 2 starts with a schema review before any migration. No migration or code has been written yet; this is the proposal for owner review before implementation begins, and implementation is intentionally sequenced after Track 1 (PR #130) merges.
+
+### What already exists (do not duplicate)
+
+- `public.market_channel` enum already is `('pet','rave','shared')` (`supabase/migrations/20260906025003_festival_mvp_foundation.sql`). This already covers the plan's `pet` / `human_rave` / `both` audience dimension semantically — `rave` = `human_rave`, `shared` = `both`. **No new audience column or enum is needed on `offers`.** The only work is a thin UI mapping layer: "Pet Offers" -> `channel in ('pet','shared')`, "RAVE Offers" -> `channel in ('rave','shared')`, "Show Everything" -> no filter. `/marketplace?channel=rave` already exercises this today.
+- `public.organizations` already carries `organization_type` (`shelter`, `rescue`, `pet_business`, `rave_vendor`) and `public.organization_connections` already models one-organization-to-another relationships with a typed, status-gated join row — the same shape needed for business-to-event participation roles.
+- `private.can_manage_org(organization_id, roles[])` is the established security-definer helper for RLS; new tables should reuse it rather than inventing a parallel membership check.
+- The `offer_read` policy pattern (`status='active' and published_at is not null and (expires_at is null or expires_at>now())` for public rows, `private.is_org_member`/`can_manage_org` for the owning organization) is the established public-vs-management visibility split and should be mirrored for Events rather than designing a new visibility model.
+
+### What does not exist (genuinely new for Track 2)
+
+- There is no real-world "Events" concept anywhere in the schema. `lifecycle_event_types`/`pet_lifecycle_events` (pet history), `economic_events` (ledger), and `support_ticket_events` (support audit trail) are unrelated concepts that happen to share the word "event" — none of them can be reused or extended for Adoption Events / Music Festivals / vendor markets.
+
+### Minimum proposed design (for review, not yet implemented)
+
+- `public.events`: `id`, `organization_id` (nullable — an event isn't always owned by one organization), `created_by`, `audience` (`pet` | `human` | `both`, mirroring the `market_channel` pattern), `category` (text, same free-form-with-suggested-values approach `offers.category` already uses), `title`, `summary`, `details`, `location`/`service_area` or `is_online`, `starts_at`, `ends_at`, `status public.record_status`, `published_at`, timestamps — modeled directly on the existing `offers` column shape and `record_status` lifecycle rather than a new status vocabulary.
+- `public.event_participants`: `event_id`, `organization_id`, `role` (`attending` | `vending` | `for_hire` | `hosting`, `check`-constrained the same way `organization_connections.connection_type` is), `status`, timestamps — same join-row shape as `organization_connections`.
+- RLS: `events_read` mirrors `offer_read` (public rows visible to `anon,authenticated` when active/published; owning-organization members see their own drafts via `can_manage_org`); `event_participants` visibility follows the same pattern keyed off either side's organization membership.
+- No changes proposed to `offers`, `organizations`, or any existing table — this is additive only.
+
+### Frontend integration points identified (not yet built)
+
+- A new `/events` route and marketplace-selector modal (`src/components/marketplace/*` per the collaboration protocol's suggested path) reading the `audience` filter the same way `/marketplace?channel=` already does.
+- `RaveShelterMission.tsx` and `LostPawsActivation.tsx` (Track 1 files) are not touched by this proposal — Track 2 implementation should add new event-listing components rather than editing those two files, keeping the two tracks' file ownership separate even after Track 1 merges.
+
+### Open questions for owner review before implementation
+
+1. Should `events.organization_id` be nullable (community-run events with no single owning business) or required?
+2. Does `event_participants.role` need a `for_hire` distinct from `vending` for the MVP, or can they collapse to one `participating` role initially?
+3. Confirm `audience` values should be `pet`/`human`/`both` (matching the plan) rather than reusing `market_channel`'s `pet`/`rave`/`shared` spelling for consistency with offers.
+
 ## 19. Immediate next actions
 
 1. Owner reviews this plan.

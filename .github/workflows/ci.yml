@@ -60,6 +60,13 @@ jobs:
       - run: npm run lint:shell
       - run: npm test
       - run: npm run build
+      # Credential-free browser regressions. These previously existed as spec
+      # files that no workflow ever invoked, so they silently rotted out of
+      # sync with the app; run them here on every web change instead.
+      - name: Install Chromium
+        run: bash scripts/install-playwright-chromium.sh
+      - name: Run public browser regressions
+        run: npm run test:e2e:public
 
   ci-gate:
     name: CI Gate

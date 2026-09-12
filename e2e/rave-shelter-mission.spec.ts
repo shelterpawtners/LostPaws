@@ -1,40 +1,36 @@
 import { expect, test } from "@playwright/test";
 
 test.describe("LostPaws and RAVE Shelter mission flow", () => {
-  test("home sends visitors into the unified RAVE Shelter mission", async ({
+  test("home sends visitors into the RAVE Shelter mission", async ({
     page,
   }) => {
     await page.goto("/");
 
     await expect(
       page.getByRole("heading", {
-        name: "Music. Community. More resources for shelter pets.",
+        name: "Rave with purpose. Shop with impact.",
       }),
     ).toBeVisible();
 
-    await page.getByRole("link", { name: "See the RAVE Shelter mission" }).click();
+    await page
+      .getByRole("link", { name: "See the RAVE Shelter mission" })
+      .click();
 
     await expect(page).toHaveURL(/\/rave$/);
     await expect(
-      page.getByRole("heading", { name: /Music\. Community\. Shelter pets\./ }),
+      page.getByRole("heading", {
+        level: 1,
+        name: /Rave with purpose\. Shop with impact\./,
+      }),
     ).toBeVisible();
   });
 
-  test("direct LostPaws traffic lands in the same mission experience", async ({
+  // Direct /lostpaws landing (distinct LostPaws page vs /rave) is covered by
+  // e2e/issue-125-rave-lostpaws-mobile.spec.ts; not duplicated here.
+
+  test("mission routes each audience to the intended next step", async ({
     page,
   }) => {
-    await page.goto("/lostpaws");
-
-    await expect(
-      page.getByRole("heading", { name: /Music\. Community\. Shelter pets\./ }),
-    ).toBeVisible();
-    await expect(page.getByText("LostPaws × RAVE Shelter").first()).toBeVisible();
-    await expect(
-      page.getByText("Music community energy for shelter pets."),
-    ).toHaveCount(0);
-  });
-
-  test("mission routes each audience to the intended next step", async ({ page }) => {
     await page.goto("/rave");
 
     await expect(
@@ -61,6 +57,8 @@ test.describe("LostPaws and RAVE Shelter mission flow", () => {
     await menu.click();
     await expect(page.getByRole("link", { name: "Marketplace" })).toBeVisible();
     await expect(page.getByRole("link", { name: "LostPaws" })).toBeVisible();
-    await expect(page.getByRole("link", { name: "RAVE Shelter" })).toBeVisible();
+    await expect(
+      page.getByRole("link", { name: "RAVE Shelter", exact: true }),
+    ).toBeVisible();
   });
 });

@@ -74,10 +74,13 @@ test("Guardian Deal Moment survives claim to redemption, supports replace, and r
   expect(offerError).toBeNull();
   expect(offerId).toBeTruthy();
 
-  const { error: publishError } = await partnerDb.rpc("set_partner_offer_state", {
-    p_offer_id: offerId,
-    p_action: "publish",
-  });
+  const { error: publishError } = await partnerDb.rpc(
+    "set_partner_offer_state",
+    {
+      p_offer_id: offerId,
+      p_action: "publish",
+    },
+  );
   expect(publishError).toBeNull();
 
   const { data: claimRows, error: claimError } = await guardianDb.rpc(
@@ -94,7 +97,9 @@ test("Guardian Deal Moment survives claim to redemption, supports replace, and r
     hasText: offerTitle,
   });
   await expect(timelineItem).toBeVisible();
-  await expect(timelineItem.getByText("Pending", { exact: true })).toBeVisible();
+  await expect(
+    timelineItem.getByText("Pending", { exact: true }),
+  ).toBeVisible();
 
   const dealMoment = timelineItem.locator(".dealMoment");
   await expect(
@@ -112,7 +117,9 @@ test("Guardian Deal Moment survives claim to redemption, supports replace, and r
   );
   await expect(dealMoment.locator(".dealMomentImage")).toHaveCount(1);
 
-  await dealMoment.getByLabel(/Caption/).fill("Replacement private Deal Moment");
+  await dealMoment
+    .getByLabel(/Caption/)
+    .fill("Replacement private Deal Moment");
   await dealMoment.locator('input[type="file"]').setInputFiles({
     name: "replacement-moment.png",
     mimeType: "image/png",

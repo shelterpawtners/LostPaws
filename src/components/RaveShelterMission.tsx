@@ -2,172 +2,96 @@ import { Link, useLocation } from "react-router-dom";
 import { LostPawsActivation } from "./LostPawsActivation";
 import "./RaveShelterMission.css";
 
+/**
+ * RAVE Shelter (/rave) is the evergreen marketplace and vendor program.
+ *
+ * It deliberately does NOT look or read like /lostpaws. LostPaws is a
+ * campaign for one festival family and leads with full-bleed artwork and
+ * community feeling; this page is the system behind it, so it leads
+ * typographically with the brand line, states the exchange in as few words as
+ * possible, and sends each of its two audiences to one obvious next step.
+ * Owner direction (2026-09-12) was to cut wording that convolutes the message.
+ */
 export function RaveShelterMission() {
   const location = useLocation();
   if (location.pathname === "/lostpaws") return <LostPawsActivation />;
 
   const base = import.meta.env.BASE_URL;
-  const lostPawsHero = `${base}brand/lostpaws-hero-16x9.png`;
-  const raveLogo = `${base}brand/rave-shelter-logo-static-v2.png`;
+  // Mark-only lockup: the full lockup bakes in the tagline, which the h1
+  // already says, so the hero would print the same sentence twice.
+  const raveLogo = `${base}brand/rave-shelter-logo-mark.svg`;
 
   return (
     <div className="rsmPage">
       <section className="rsmHero" aria-labelledby="rsm-title">
-        <div className="rsmHeroArt">
-          <img
-            src={lostPawsHero}
-            alt="LostPaws — a RAVE Shelter initiative for Lost Lands"
-            width={1672}
-            height={941}
-          />
-          <div className="rsmHeroFade" aria-hidden="true" />
-        </div>
-        <div className="rsmWrap rsmHeroCopy">
-          <p className="rsmTagline">Rave with purpose. Shop with impact.</p>
-          <p className="rsmEyebrow">RAVE Shelter</p>
-          <h1 id="rsm-title">
-            Music. Community. <span>Shelter pets.</span>
-          </h1>
-          <p className="rsmLead">
-            RAVE Shelter — Rewarding Adoption with Vendor Exclusives — is an
-            ongoing movement bringing ravers, festival vendors, creators, and
-            pet people together so everyday purchasing choices can do more for
-            shelter pets.
-          </p>
-          <div className="rsmActions">
-            <Link
-              className="rsmButton rsmPrimary"
-              to="/marketplace?channel=rave"
-            >
-              Shop RAVE Shelter offers
-            </Link>
-            <Link
-              className="rsmButton rsmSecondary"
-              to="/register?type=rave_vendor"
-            >
-              Join as a vendor
-            </Link>
+        <div className="rsmWrap rsmHeroGrid">
+          <div className="rsmHeroCopy">
+            <p className="rsmEyebrow">
+              RAVE Shelter — Rewarding Adoption with Vendor Exclusives
+            </p>
+            <h1 id="rsm-title">
+              Rave with purpose. <span>Shop with impact.</span>
+            </h1>
+            <p className="rsmLead">
+              Festival gear, art, and everyday finds from vendors who put part
+              of every sale behind shelter pets.
+            </p>
+            <div className="rsmActions">
+              <Link
+                className="rsmButton rsmPrimary"
+                to="/marketplace?channel=rave"
+              >
+                Shop RAVE Shelter offers
+              </Link>
+              <Link
+                className="rsmButton rsmSecondary"
+                to="/register?type=rave_vendor"
+              >
+                Join as a vendor
+              </Link>
+            </div>
           </div>
-          <p className="rsmDemandCta">
-            Right now, we need you to sign up and show demand — every
-            registration helps grow vendor participation, marketplace inventory,
-            and shelter support.
-          </p>
-        </div>
-      </section>
-
-      <section className="rsmMission" aria-labelledby="rsm-mission-title">
-        <div className="rsmWrap rsmMissionGrid">
-          <div>
-            <p className="rsmEyebrow">The mission is simple</p>
-            <h2 id="rsm-mission-title">
-              Turn everyday purchases into more help for shelter pets.
-            </h2>
-          </div>
-          <div className="rsmMissionCopy">
-            <p>
-              Shop participating RAVE Shelter partners for useful products,
-              festival gear, merch, and services. Participating offers create
-              savings for the community while partner contributions help build
-              shelter support.
-            </p>
-            <p>
-              As our giving tools come online, ravers and Guardians will also be
-              able to pass some or all of eligible savings forward to support
-              shelters they care about.
-            </p>
-            <p className="rsmMissionPunch">
-              Bring more resources together. Make every purchase matter more.
-            </p>
+          <div className="rsmHeroMark">
+            <img
+              src={raveLogo}
+              alt="RAVE Shelter"
+              width={520}
+              height={281}
+              loading="eager"
+            />
           </div>
         </div>
       </section>
 
-      <section className="rsmHow" aria-labelledby="rsm-how-title">
+      <section className="rsmBeats" aria-label="How RAVE Shelter works">
+        <div className="rsmWrap rsmBeatsRow">
+          <div className="rsmBeat">
+            <span>01</span>
+            <h2>You shop</h2>
+            <p>Gear you actually want, from independent vendors.</p>
+          </div>
+          <div className="rsmBeat">
+            <span>02</span>
+            <h2>You save</h2>
+            <p>Participating offers, on each vendor's own terms.</p>
+          </div>
+          <div className="rsmBeat">
+            <span>03</span>
+            <h2>Shelters gain</h2>
+            <p>Vendors send a share of eligible sales to a shelter.</p>
+          </div>
+        </div>
+      </section>
+
+      <section className="rsmDoors" aria-labelledby="rsm-doors-title">
         <div className="rsmWrap">
-          <div className="rsmSectionHead">
-            <p className="rsmEyebrow">How it works</p>
-            <h2 id="rsm-how-title">Shop. Save. Give more.</h2>
-            <p>
-              No complicated program to understand. The community already shops.
-              We connect that activity to businesses willing to help shelter
-              pets.
-            </p>
-          </div>
-          <div className="rsmSteps">
-            <article className="rsmStep">
-              <span className="rsmStepNumber">01</span>
-              <h3>Shop participating partners</h3>
-              <p>
-                Discover RAVE Shelter offers from vendors and PetBiz partners
-                serving the music and pet communities.
-              </p>
-            </article>
-            <article className="rsmStep">
-              <span className="rsmStepNumber">02</span>
-              <h3>Save while partners give</h3>
-              <p>
-                Use participating offers and savings while partner contribution
-                commitments help create measurable shelter support.
-              </p>
-            </article>
-            <article className="rsmStep rsmStepGive">
-              <span className="rsmStepNumber">03</span>
-              <div className="rsmComingSoon">Giving tools coming next</div>
-              <h3>Pass your savings forward</h3>
-              <p>
-                Our giving roadmap lets Guardians choose to direct eligible
-                savings toward verified shelter support instead of keeping every
-                dollar themselves.
-              </p>
-            </article>
-          </div>
-        </div>
-      </section>
-
-      <section className="rsmImpact" aria-labelledby="rsm-impact-title">
-        <div className="rsmWrap rsmImpactGrid">
-          <div className="rsmLogoPanel">
-            <img src={raveLogo} alt="RAVE Shelter" />
-            <p>Rewarding Adoption with Vendor Exclusives</p>
-          </div>
-          <div>
-            <p className="rsmEyebrow">Why RAVE Shelter exists</p>
-            <h2 id="rsm-impact-title">
-              A lot of small choices can become a much bigger resource for
-              shelters.
-            </h2>
-            <p>
-              One vendor offer is helpful. One shopper choosing to give back is
-              meaningful. Thousands of purchases, participating businesses, and
-              pet lovers moving in the same direction can become something much
-              larger.
-            </p>
-            <p>
-              RAVE Shelter is the broader ecosystem that connects offers,
-              vendors, shelters, adoption, and the ShelterPawtners platform for
-              the whole festival and rave community. LostPaws is a distinct RAVE
-              Shelter community initiative built specifically for the Lost Lands
-              / Excision festival family.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      <section className="rsmChoose" aria-labelledby="rsm-choose-title">
-        <div className="rsmWrap">
-          <div className="rsmSectionHead">
-            <p className="rsmEyebrow">Choose your path</p>
-            <h2 id="rsm-choose-title">How do you want to help?</h2>
-          </div>
-          <div className="rsmPathGrid">
-            <article className="rsmPathCard rsmRaverCard">
-              <span>Ravers + pet people</span>
-              <h3>Shop the mission</h3>
-              <p>
-                Start with current RAVE Shelter offers. Save with participating
-                partners and see how the community can turn value into impact.
-              </p>
+          <h2 id="rsm-doors-title" className="rsmSectionTitle">
+            Two ways in
+          </h2>
+          <div className="rsmDoorGrid">
+            <article className="rsmDoor">
+              <p className="rsmDoorTag">Shopping</p>
+              <h3>Find offers worth using</h3>
               <div className="rsmCardActions">
                 <Link
                   className="rsmButton rsmPrimary"
@@ -181,14 +105,9 @@ export function RaveShelterMission() {
               </div>
             </article>
 
-            <article className="rsmPathCard rsmVendorCard">
-              <span>Vendors + PetBiz</span>
-              <h3>Put your business behind the mission</h3>
-              <p>
-                Create a profile, publish useful offers, reach the community,
-                and build a track record of real participation and shelter
-                support.
-              </p>
+            <article className="rsmDoor rsmDoorVendor">
+              <p className="rsmDoorTag">Selling</p>
+              <h3>Reach people already looking</h3>
               <div className="rsmCardActions">
                 <Link
                   className="rsmButton rsmPink"
@@ -196,48 +115,53 @@ export function RaveShelterMission() {
                 >
                   Join RAVE Shelter
                 </Link>
-              </div>
-            </article>
-
-            <article className="rsmPathCard rsmShelterCard">
-              <span>Shelters + rescues</span>
-              <h3>Connect your adopters to more support</h3>
-              <p>
-                Join ShelterPawtners and help adopted pets carry their history,
-                community, and future support forward.
-              </p>
-              <div className="rsmCardActions">
-                <Link
-                  className="rsmButton rsmYellow"
-                  to="/register?type=shelter"
-                >
-                  Register a shelter
+                <Link className="rsmTextLink" to="/hero-vendor">
+                  Hero Vendor program
                 </Link>
               </div>
             </article>
           </div>
+          <p className="rsmShelterNote">
+            Running a shelter or rescue? It is free.{" "}
+            <Link to="/register?type=shelter">Register a shelter</Link>
+          </p>
         </div>
       </section>
 
-      <section className="rsmFinalCta" aria-labelledby="rsm-final-title">
-        <div className="rsmWrap rsmFinalInner">
+      <section className="rsmStraight" aria-labelledby="rsm-straight-title">
+        <div className="rsmWrap rsmStraightGrid">
+          <h2 id="rsm-straight-title">Straight answers</h2>
+          <ul className="rsmStraightList">
+            <li>
+              <b>Free for shoppers and vendors.</b> No subscription to
+              participate.
+            </li>
+            <li>
+              <b>Vendors set their own offers.</b> We do not promise them
+              traffic or sales.
+            </li>
+            <li>
+              <b>Giving tools are not live yet.</b> Nothing here moves money,
+              and no total is reported as donated.
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <section className="rsmLostPaws" aria-labelledby="rsm-lostpaws-title">
+        <div className="rsmWrap rsmLostPawsInner">
           <div>
-            <p className="rsmEyebrow">Take the mission into communities</p>
-            <h2 id="rsm-final-title">
-              Buy something useful. Save some money. Help shelter pets.
+            <p className="rsmEyebrow">Lost Lands community</p>
+            <h2 id="rsm-lostpaws-title">
+              LostPaws is our Lost Lands initiative.
             </h2>
             <p>
-              LostPaws is the RAVE Shelter community initiative built for Lost
-              Lands and the Excision festival family. Other festivals and events
-              get their own RAVE Shelter activations without borrowing the
-              LostPaws name.
+              Same mission, built for the Excision festival family. Other events
+              get their own activations.
             </p>
-            <Link className="rsmTextLink" to="/lostpaws">
-              Explore LostPaws — the Lost Lands / Excision community
-            </Link>
           </div>
-          <Link className="rsmButton rsmPrimary" to="/marketplace?channel=rave">
-            See current offers
+          <Link className="rsmTextLink" to="/lostpaws">
+            Explore LostPaws — the Lost Lands / Excision community
           </Link>
         </div>
       </section>
@@ -248,20 +172,13 @@ export function RaveShelterMission() {
       >
         <div className="rsmWrap">
           <p>
-            LostPaws is an independent ShelterPawtners / RAVE Shelter initiative
-            created by pet lovers in the festival community.
-          </p>
-          <p>
-            LostPaws, RAVE Shelter, and ShelterPawtners are not affiliated with,
-            sponsored by, endorsed by, or an official program of Lost Lands,
+            RAVE Shelter, LostPaws, and ShelterPawtners are not affiliated with,
+            sponsored by, endorsed by, or official programs of Lost Lands,
             Excision, or their affiliates.
           </p>
           <p>
-            Savings, partner commitments, and future giving features are shown
-            only where supported by current offer terms and platform capability.
-            No tax-deductibility is implied unless a completed donation is
-            processed through an eligible charitable recipient and applicable
-            requirements are met.
+            Savings and vendor contributions apply only where an offer's current
+            terms support them. No tax-deductibility is implied.
           </p>
         </div>
       </section>

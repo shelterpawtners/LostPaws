@@ -32,7 +32,10 @@ test.describe.serial("Hosted shared-dev smoke", () => {
 
     await signIn(
       page,
-      settingOrDefault("PLAYWRIGHT_GUARDIAN_EMAIL", "guardian-a@example.invalid"),
+      settingOrDefault(
+        "PLAYWRIGHT_GUARDIAN_EMAIL",
+        "guardian-a@example.invalid",
+      ),
       settingOrDefault("PLAYWRIGHT_GUARDIAN_PASSWORD", "Demo-only-Guardian-A!"),
     );
     const addAnotherPet = page.getByRole("link", { name: "Add another pet" });
@@ -68,7 +71,10 @@ test.describe.serial("Hosted shared-dev smoke", () => {
   }) => {
     await signIn(
       page,
-      settingOrDefault("PLAYWRIGHT_GUARDIAN_EMAIL", "guardian-a@example.invalid"),
+      settingOrDefault(
+        "PLAYWRIGHT_GUARDIAN_EMAIL",
+        "guardian-a@example.invalid",
+      ),
       settingOrDefault("PLAYWRIGHT_GUARDIAN_PASSWORD", "Demo-only-Guardian-A!"),
     );
     await expect(
@@ -81,7 +87,10 @@ test.describe.serial("Hosted shared-dev smoke", () => {
 
     await signIn(
       page,
-      settingOrDefault("PLAYWRIGHT_GUARDIAN_EMAIL", "guardian-a@example.invalid"),
+      settingOrDefault(
+        "PLAYWRIGHT_GUARDIAN_EMAIL",
+        "guardian-a@example.invalid",
+      ),
       settingOrDefault("PLAYWRIGHT_GUARDIAN_PASSWORD", "Demo-only-Guardian-A!"),
     );
     await expect(
@@ -101,7 +110,10 @@ test.describe.serial("Hosted shared-dev smoke", () => {
 
     await signIn(
       page,
-      settingOrDefault("PLAYWRIGHT_PARTNER_EMAIL", "partner-admin@example.invalid"),
+      settingOrDefault(
+        "PLAYWRIGHT_PARTNER_EMAIL",
+        "partner-admin@example.invalid",
+      ),
       settingOrDefault("PLAYWRIGHT_PARTNER_PASSWORD", "Demo-only-Partner!"),
     );
     await page.goto("/partner/offers");

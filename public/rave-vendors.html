@@ -259,17 +259,16 @@
     <main id="main">
       <section class="hero">
         <div class="wrap">
-          <picture>
-            <source
-              media="(prefers-reduced-motion: reduce)"
-              srcset="/brand/rave-shelter-logo-static-v2.png"
-            />
-            <img
-              class="brand"
-              src="/brand/rave-shelter-logo-animated-v2.gif"
-              alt="RAVE Shelter"
-            />
-          </picture>
+          <!-- The SVG lockup animates its own equalizer bars and honours
+               prefers-reduced-motion internally, replacing a 1.5 MB animated
+               GIF that also still carried the superseded tagline. -->
+          <img
+            class="brand"
+            src="/brand/rave-shelter-logo-mark.svg"
+            alt="RAVE Shelter"
+            width="390"
+            height="211"
+          />
           <span class="tagline">Rave with purpose. Shop with impact.</span>
           <span class="eyebrow">Rewarding Adoption with Vendor Exclusives</span>
           <h1>

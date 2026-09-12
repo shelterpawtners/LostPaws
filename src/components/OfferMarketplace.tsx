@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import {
   ArrowDown,
   ArrowUpRight,
@@ -14,6 +14,10 @@ import {
 } from "lucide-react";
 import { supabase as db } from "../lib/supabase";
 import { OfferCard, type PublicOffer } from "./OfferCard";
+import {
+  audienceFromChannelParam,
+  channelParamFromAudience,
+} from "../lib/marketplace-audience";
 import "../marketplace.css";
 import "../marketplace-flagship.css";
 import "../marketplace-premium.css";
@@ -45,8 +49,12 @@ export function OfferMarketplace({
 }) {
   const route = useParams();
   const location = useLocation();
+  const navigate = useNavigate();
   const offerId = route.offerId;
-  const rave = new URLSearchParams(location.search).get("channel") === "rave";
+  const audience = audienceFromChannelParam(
+    new URLSearchParams(location.search).get("channel"),
+  );
+  const rave = audience === "rave";
   const [offers, setOffers] = useState<PublicOffer[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState("");
@@ -54,6 +62,8 @@ export function OfferMarketplace({
   const [query, setQuery] = useState("");
   const [classification, setClassification] = useState("all");
   const [viewMode, setViewMode] = useState<MarketplaceViewMode>("grid");
+  const [channelFilterUnavailable, setChannelFilterUnavailable] =
+    useState(false);
   const [claim, setClaim] = useState<{
     redeem_code: string;
     expires_at: string;
@@ -61,21 +71,41 @@ export function OfferMarketplace({
 
   useEffect(() => {
     if (!db) return;
+    const client = db;
     setLoading(true);
     setLoadError("");
     setStatus("");
+    setChannelFilterUnavailable(false);
     void (async () => {
       try {
-        const { data, error } = await db.rpc("public_active_offers", {
+        const channel = channelParamFromAudience(audience);
+        let response = await client.rpc("public_active_offers", {
           p_organization_id: organizationId || null,
+          p_channel: channel,
         });
-        if (error) {
+
+        // A deployment whose database has not yet applied the migration that
+        // added p_channel rejects the call outright, because the parameter
+        // itself is unknown there — so retry without it on any error, not only
+        // when a channel was requested. Only say filtering is unavailable when
+        // a filter was actually asked for.
+        if (response.error) {
+          const fallback = await client.rpc("public_active_offers", {
+            p_organization_id: organizationId || null,
+          });
+          if (!fallback.error) {
+            if (channel) setChannelFilterUnavailable(true);
+            response = fallback;
+          }
+        }
+
+        if (response.error) {
           setLoadError("Unable to load current offers. Please try again.");
           setOffers([]);
           return;
         }
         setOffers(
-          ((data || []) as PublicOffer[]).filter(
+          ((response.data || []) as PublicOffer[]).filter(
             (item) => !offerId || item.offer_id === offerId,
           ),
         );
@@ -83,7 +113,7 @@ export function OfferMarketplace({
         setLoading(false);
       }
     })();
-  }, [organizationId, offerId]);
+  }, [organizationId, offerId, audience]);
 
   const classifications = useMemo(
     () =>
@@ -329,6 +359,49 @@ export function OfferMarketplace({
             aria-label="Search current offers"
           />
         </label>
+
+        <div className="marketplaceFilterArea">
+          <div className="marketplaceFilterLabel">
+            <SlidersHorizontal />
+            <span>Audience</span>
+          </div>
+          <div
+            className="marketplaceFilterButtons"
+            role="group"
+            aria-label="Filter offers by audience"
+          >
+            <button
+              type="button"
+              className={audience === "all" ? "active" : ""}
+              aria-pressed={audience === "all"}
+              onClick={() => navigate("/marketplace")}
+            >
+              Show everything
+            </button>
+            <button
+              type="button"
+              className={audience === "pet" ? "active" : ""}
+              aria-pressed={audience === "pet"}
+              onClick={() => navigate("/marketplace?channel=pet")}
+            >
+              Pet Offers
+            </button>
+            <button
+              type="button"
+              className={audience === "rave" ? "active" : ""}
+              aria-pressed={audience === "rave"}
+              onClick={() => navigate("/marketplace?channel=rave")}
+            >
+              RAVE Offers
+            </button>
+          </div>
+          {channelFilterUnavailable && (
+            <p className="marketplaceFilterNotice" role="status">
+              Audience filtering is not available on this deployment yet, so
+              every current offer is shown.
+            </p>
+          )}
+        </div>
 
         <div className="marketplaceFilterArea">
           <div className="marketplaceFilterLabel">

@@ -52,7 +52,8 @@ function adminQaBanner(page: Page) {
   return page.getByRole("status").filter({ hasText: "ADMIN QA MODE" });
 }
 
-test.describe.serial("Issue #5 human-style browser and persistence audit", () => {
+test.describe
+  .serial("Issue #5 human-style browser and persistence audit", () => {
   test.skip(!issue5Hosted, "Run through acceptance-gated Hosted QA.");
   test.describe.configure({ timeout: 180_000 });
 
@@ -198,9 +199,7 @@ test.describe.serial("Issue #5 human-style browser and persistence audit", () =>
       fresh.page.getByRole("link", { name: `Open ${petB}` }),
     ).toBeVisible();
     await fresh.page.goto(`/pets/${persistedIds[1]}`);
-    await expect(
-      fresh.page.getByRole("heading", { name: petB }),
-    ).toBeVisible();
+    await expect(fresh.page.getByRole("heading", { name: petB })).toBeVisible();
     await fresh.context.close();
     await db.auth.signOut();
   });
@@ -233,15 +232,15 @@ test.describe.serial("Issue #5 human-style browser and persistence audit", () =>
       .fill(`Issue 5 persisted Partner profile ${runSuffix}`);
     await page.getByLabel("How customers are served").selectOption("online");
     await saveDraft.click();
-    await expect(
-      page.getByTestId("partner-profile-save-status"),
-    ).toContainText("Saved as a private draft.");
+    await expect(page.getByTestId("partner-profile-save-status")).toContainText(
+      "Saved as a private draft.",
+    );
     await page
       .getByRole("button", { name: "Publish profile", exact: true })
       .click();
-    await expect(
-      page.getByTestId("partner-profile-save-status"),
-    ).toContainText("Published.");
+    await expect(page.getByTestId("partner-profile-save-status")).toContainText(
+      "Published.",
+    );
 
     await page.goto("/partner/offers");
     await expect(page.getByTestId("marketplace-profile-state")).toContainText(
@@ -257,10 +256,9 @@ test.describe.serial("Issue #5 human-style browser and persistence audit", () =>
         .eq("organization_id", organizationId)
         .eq("title", title);
       expect(offerError).toBeNull();
-      expect(
-        offers,
-        `${title} must have one canonical offer row`,
-      ).toHaveLength(1);
+      expect(offers, `${title} must have one canonical offer row`).toHaveLength(
+        1,
+      );
       expect(offers![0].current_version_id).toBeTruthy();
 
       const { data: versions, error: versionError } = await db
