@@ -32,7 +32,10 @@ export function LostPawsActivation() {
             <Link className="lpButton lpPrimary" to="/marketplace?channel=rave">
               Shop participating offers
             </Link>
-            <Link className="lpButton lpSecondary" to="/register?type=rave_vendor">
+            <Link
+              className="lpButton lpSecondary"
+              to="/register?type=rave_vendor"
+            >
               Join as a vendor or creator
             </Link>
           </div>
@@ -43,7 +46,9 @@ export function LostPawsActivation() {
         <div className="lpWrap lpSplit">
           <div>
             <p className="lpKicker">Why LostPaws exists</p>
-            <h2 id="lp-why-title">Use community energy for something that lasts.</h2>
+            <h2 id="lp-why-title">
+              Use community energy for something that lasts.
+            </h2>
           </div>
           <div className="lpCopy">
             <p>
@@ -63,7 +68,9 @@ export function LostPawsActivation() {
       <section className="lpBenefits" aria-labelledby="lp-benefits-title">
         <div className="lpWrap">
           <p className="lpKicker">Three ways the activation creates value</p>
-          <h2 id="lp-benefits-title">Ravers save. Businesses connect. Shelters gain support.</h2>
+          <h2 id="lp-benefits-title">
+            Ravers save. Businesses connect. Shelters gain support.
+          </h2>
           <div className="lpGrid">
             <article className="lpCard">
               <span>For ravers + pet people</span>
@@ -107,7 +114,9 @@ export function LostPawsActivation() {
           </div>
           <div>
             <p className="lpKicker">The bigger movement</p>
-            <h2 id="lp-movement-title">LostPaws is the activation. RAVE Shelter is the ecosystem.</h2>
+            <h2 id="lp-movement-title">
+              LostPaws is the activation. RAVE Shelter is the ecosystem.
+            </h2>
             <p>
               RAVE Shelter is the ongoing movement connecting Guardians,
               shelters, vendors, PetBiz partners, adoption, savings, and future
