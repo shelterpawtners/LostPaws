@@ -224,22 +224,22 @@ Prefer small recoverable checkpoints over one long autonomous job.
 ## LATEST AGENT UPDATE
 
 AGENT: WORK
-TIME: 2026-09-12
+TIME: 2026-09-12 16:00 EDT
 STATUS: BLOCKED
-CHECKPOINT: Google OAuth production acceptance
+CHECKPOINT: Vercel Google flag and production deployment
 PROVEN:
-- Live `/login` has disabled `Google sign-in coming soon`.
-- Google enablement depends on `VITE_GOOGLE_AUTH_ENABLED === "true"`.
-- Full OAuth lifecycle was not reached.
+- The connected Vercel project is `lost-paws` (`prj_LmJW9ASFzkJm3hKoJzqZkWKXaHNh`).
+- The connected Vercel surface exposes deployment reads but no environment-variable or ignored-build-setting write operation.
+- The local Vercel CLI is not installed in this Work environment.
+- The project’s latest production deployment is canceled; Google remains disabled in the live build.
 CHANGED:
 - none
 BLOCKERS:
-- Vercel Production needs `VITE_GOOGLE_AUTH_ENABLED=true` and a successful production deployment.
-- Ignored-build behavior currently prevents the required deployment.
+- An authenticated Vercel owner must set Production `VITE_GOOGLE_AUTH_ENABLED=true` and resolve/override the ignored-build behavior so one production deployment can complete.
 RISKS_OR_UNCERTAINTY:
-- Google callback/persona/duplicate continuity remains untested.
+- Google authorization, callback, return, logout/re-login, and persona/duplicate continuity remain untested.
 NEXT_RECOMMENDED_ACTION:
-- Enable the Vercel Production Google flag, resolve/override ignored-build behavior for one real production deployment, then run full Google OAuth acceptance.
-ADVISOR_REVIEW_REQUIRED: NO
+- Owner completes the single Vercel project configuration/deployment action, then invoke Work to verify usable Google sign-in and run the full OAuth acceptance flow.
+ADVISOR_REVIEW_REQUIRED: YES
 ADVISOR_QUESTION:
-- none; proceed under NEXT ACTION unless a new blocker is found.
+- Is Vercel owner access available now to set the existing Production flag and permit one build?
