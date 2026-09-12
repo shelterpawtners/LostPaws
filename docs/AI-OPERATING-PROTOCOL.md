@@ -15,7 +15,11 @@ Use GitHub as the coordination/control plane so ChatGPT, Codex, Copilot, Claude 
 7. **`docs/OWNER-DECISION-BACKLOG.md`** — provisional owner preferences and true blocking decisions.
 8. **`docs/DECISION-LOG.md`** — durable approved/autonomous decisions.
 
-Do not create parallel planning documents when an authoritative file already exists.
+Do not create parallel planning documents when an authoritative file already exists. As of 2026-09-12 this is a hard cap: no new `docs/product/*` or other planning files without an explicit owner request — update `AI-HANDOFF.md`, `CURRENT-WORK.md`, or the existing controlling doc instead.
+
+## Branch policy
+
+Prefer fewer, longer-lived branches over one branch per issue/sub-task. Reuse the current track's branch for its full scope (through PR merge) rather than opening a new branch each time a sub-task starts. Do not open the next track's branch until the current track has merged. This repository has accumulated a large number of short-lived, mostly-stale branches; do not add to that pattern.
 
 ## Agent responsibilities
 
@@ -31,6 +35,7 @@ Do not create parallel planning documents when an authoritative file already exi
 
 ### Codex
 
+- **Paused for the current RAVE Shelter / LostPaws dual-marketplace sprint (from 2026-09-12).** Do not create or delegate Codex sessions until the owner explicitly re-authorizes Codex for Track 2. Claude Code is the sole active implementation agent during this sprint.
 - Primary heavy implementation/debugging agent when OpenAI work credits are available.
 - Starts from the GitHub Issue and current repository instructions rather than relying on a pasted chat transcript.
 - Preserves newer branch work and checks current remote state before editing.

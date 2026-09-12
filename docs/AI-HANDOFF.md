@@ -1,29 +1,30 @@
 # AI Handoff
 
-STATUS: PAUSED_BY_OWNER
-CURRENT_PHASE: Lost Lands MVP launch readiness
-CURRENT_CHECKPOINT: Owner-requested pause after Issue #125 / PR #126 acceptance and launch-doc cleanup
-NEXT_CHECKPOINT: Resume only on explicit owner instruction, then re-read `docs/CURRENT-WORK.md`, this handoff, and current open issues before taking any action
-OWNER_DECISION_REQUIRED: YES_TO_RESUME
-SAFE_TO_CONTINUE: NO
+STATUS: IN_PROGRESS
+CURRENT_PHASE: RAVE Shelter / LostPaws dual-marketplace sprint — Track 1 (mobile conversion + brand correction)
+CURRENT_CHECKPOINT: Owner lifted the 2026-09-12 pause and authorized Track 1, then Track 2, per `docs/product/DUAL-MARKETPLACE-RAVE-SHELTER-EXECUTION-PLAN.md`
+NEXT_CHECKPOINT: Track 1 PR ready for owner review
+OWNER_DECISION_REQUIRED: NO
+SAFE_TO_CONTINUE: YES
 ACCEPTED_PRODUCT_SHA: bc14a3f6b839f4421781903c41d3c867f4bba848
-ACCEPTANCE_RUNTIME: OWNER_PAUSED_2026_09_12
+ACCEPTANCE_RUNTIME: OWNER_RESUMED_2026_09_12
 
-## Owner pause — 2026-09-12
+## Owner resume — 2026-09-12
 
-The owner explicitly paused autonomous work and asked to stop further automated tasks.
+The owner reviewed the plan under `docs/product/` and lifted the pause below. Current operating rules for this sprint:
 
-Until the owner explicitly resumes work:
+- **Claude Code is the only active coding agent.** Codex is paused/out of scope for now; do not create or delegate Codex sessions until the owner explicitly re-authorizes Codex.
+- Work **Track 1 first, then Track 2**, sequentially, not in parallel — Track 1 must merge and be verified live before Track 2 starts, since both tracks touch the same RAVE/LostPaws presentation components.
+- **Doc creation is capped.** Update `docs/AI-HANDOFF.md`, `docs/CURRENT-WORK.md`, and the existing `docs/product/` files rather than creating new planning documents. Do not add another `docs/product/*.md` file without an explicit owner request.
+- **Branch policy: fewer, longer-lived branches.** Reuse `feature/mobile-rave-lostpaws-claude` for the full Track 1 scope rather than opening a new branch per sub-task. Do not create a new branch for Track 2 until Track 1 has merged; when Track 2 starts, prefer continuing on one Track 2 branch rather than spawning several.
+- Reduce duplicated/redundant QA: do not add new parallel QA workflows or test suites that overlap existing Persona QA / Hosted QA / CI coverage; extend existing suites instead.
+- Automate routine execution; work around non-blocking obstacles and keep making progress on other in-scope Track 1 items rather than stopping to ask, but still respect the guardrails below (financial/legal claims, production config, secrets).
 
-- do not start new coding, QA, deployment, provider-console, DNS, legal-publication, or launch tasks;
-- do not create or delegate Copilot/Codex/Work coding sessions;
-- do not auto-merge or create new implementation branches/PRs;
-- do not change production configuration;
-- scheduled ChatGPT controllers/briefs are disabled;
-- the GitHub `AI Ops Status` hourly schedule is disabled and remains manual-dispatch only;
-- event-driven CI/QA safety workflows may remain configured, but they should have nothing to execute unless a human explicitly changes the repository.
+## Prior owner pause — 2026-09-12 (superseded)
 
-At the time of pause there were no open pull requests and no queued or in-progress GitHub Actions runs.
+The owner previously paused autonomous work after Issue #125 / PR #126 acceptance while the `docs/product/` plan was reviewed. That pause is now lifted by the resume above; this section is kept for history only.
+
+At the time of the original pause there were no open pull requests and no queued or in-progress GitHub Actions runs.
 
 ## Stable product / hosting state at pause
 
