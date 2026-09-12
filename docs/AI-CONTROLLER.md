@@ -223,22 +223,22 @@ Prefer small recoverable checkpoints and parallel independent lanes over one gia
 
 AGENT: WORK
 TIME: 2026-09-12 20:xx EDT
-STATUS: COMPLETE
-CHECKPOINT: Seven Star Shelters + release gate repair
+STATUS: BLOCKED
+CHECKPOINT: Post-merge production deployment
 PROVEN:
-- Final direct production acceptance of the prior product runtime passed: public routes, global navigation, account/help/sign-out controls, registration paths, marketplace audiences, Google OAuth, HTTPS, and Git-driven Vercel behavior.
-- PR #133 restored the repository control-plane formatting gate. All required GitHub checks passed; squash-merged at `fb48a43f7d052e10d372213bcc7463fab7b95ccd`.
-- PR #134 fixed the evidenced UTC date-range regression where one-day events could render as ranges in some timezones. All required GitHub checks passed; squash-merged at `b6726da55a9ab872890898d490b89df8a0699346`.
-- PR #132 added the independent `/sevenstars` React route, reused existing RAVE registration/marketplace flows, retained no-affiliation language, and added verified external community links. Its full GitHub matrix passed (CI, web, persona, public matrix, CodeQL, gates); squash-merged at `30536b49c8d81ad90b5edc1c2d1b1ddb96d128fd`.
+- PR #133 (control-plane formatting), PR #134 (UTC event-date regression), and PR #132 (independent `/sevenstars` route) are merged.
+- Current `main` is `30536b49c8d81ad90b5edc1c2d1b1ddb96d128fd`; PR #132 passed CI, web, persona, public release matrix, CodeQL, and all required gates before merge.
+- The existing live production runtime remains the prior READY deployment `dpl_4x32sTRgy9f1Knvt7xcNEqD9967P` at product SHA `5baee666d3e6084a6f01494a85305db6648bb448`.
+- Vercel received the product-affecting merge but reported: `Deployment rate limited — retry in 24 hours.`
 CHANGED:
-- `main` is now `30536b49c8d81ad90b5edc1c2d1b1ddb96d128fd`.
-- The product-affecting Seven Star deployment is awaiting Vercel's normal Git-driven build; no manual deployment was requested or performed.
+- Recorded the merged release work and the exact Vercel state.
 BLOCKERS:
+- Vercel Hobby build-rate limit prevents deployment of `30536b49` for up to 24 hours. No paid upgrade, purchase, or manual redeploy was performed.
 - Meta provider-console callback and account-continuity acceptance remain external; Facebook stays correctly disabled.
 RISKS_OR_UNCERTAINTY:
-- Production visual acceptance for the newly merged `/sevenstars` route remains pending the automatic Vercel deployment becoming READY.
+- `/sevenstars` is source- and CI-accepted but cannot receive final production visual acceptance until Vercel accepts the queued Git deployment.
 NEXT_RECOMMENDED_ACTION:
-- Verify the automatic production deployment for `30536b49` reaches READY, then run a focused public desktop/mobile smoke of `/sevenstars`. Keep Facebook disabled.
-ADVISOR_REVIEW_REQUIRED: NO
+- After the rate-limit window, inspect Vercel once for a normal Git-driven deployment of `30536b49`; when READY, run focused desktop/mobile `/sevenstars` smoke. Do not manually force a deployment or upgrade a plan.
+ADVISOR_REVIEW_REQUIRED: YES
 ADVISOR_QUESTION:
-- none
+- Is waiting for the free-tier Vercel build window acceptable, or should the owner choose a separately authorized deployment-capacity change?
