@@ -1,7 +1,11 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
+import { LostPawsActivation } from "./LostPawsActivation";
 import "./RaveShelterMission.css";
 
 export function RaveShelterMission() {
+  const location = useLocation();
+  if (location.pathname === "/lostpaws") return <LostPawsActivation />;
+
   const base = import.meta.env.BASE_URL;
   const lostPawsHero = `${base}brand/lostpaws-hero-16x9.png`;
   const raveLogo = `${base}brand/rave-shelter-logo-static-v2.png`;
@@ -19,13 +23,14 @@ export function RaveShelterMission() {
           <div className="rsmHeroFade" aria-hidden="true" />
         </div>
         <div className="rsmWrap rsmHeroCopy">
-          <p className="rsmEyebrow">LostPaws × RAVE Shelter</p>
+          <p className="rsmEyebrow">RAVE Shelter</p>
           <h1 id="rsm-title">
             Music. Community. <span>Shelter pets.</span>
           </h1>
           <p className="rsmLead">
-            RAVE Shelter brings ravers, vendors, shelters, and pet people
-            together so the things our community already buys can do more.
+            RAVE Shelter is the Rescue and Adoption Vendor Ecosystem: an ongoing
+            movement bringing community members, vendors, shelters, and pet
+            people together so everyday purchasing choices can do more.
           </p>
           <div className="rsmActions">
             <Link
@@ -132,9 +137,10 @@ export function RaveShelterMission() {
               larger.
             </p>
             <p>
-              LostPaws is the music-community activation of that idea. RAVE
-              Shelter is the ecosystem that connects it to offers, vendors,
-              shelters, adoption, and the broader ShelterPawtners platform.
+              LostPaws is the first music-community activation of that idea.
+              RAVE Shelter is the broader ecosystem that connects activations to
+              offers, vendors, shelters, adoption, and the ShelterPawtners
+              platform.
             </p>
           </div>
         </div>
@@ -208,14 +214,18 @@ export function RaveShelterMission() {
       <section className="rsmFinalCta" aria-labelledby="rsm-final-title">
         <div className="rsmWrap rsmFinalInner">
           <div>
-            <p className="rsmEyebrow">Start where you are</p>
+            <p className="rsmEyebrow">Take the mission into communities</p>
             <h2 id="rsm-final-title">
               Buy something useful. Save some money. Help shelter pets.
             </h2>
             <p>
-              That is the RAVE Shelter idea. LostPaws is where the music
-              community starts putting it into motion.
+              LostPaws is the first RAVE Shelter activation built for music and
+              festival communities. Future activations can carry the same model
+              into more events, cities, and communities.
             </p>
+            <Link className="rsmTextLink" to="/lostpaws">
+              Explore the LostPaws activation
+            </Link>
           </div>
           <Link className="rsmButton rsmPrimary" to="/marketplace?channel=rave">
             See current offers
