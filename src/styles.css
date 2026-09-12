@@ -1336,3 +1336,19 @@ header .guardianAccountPanel {
 .lostPawsRoadmap .eyebrow {
   color: #71d7cb;
 }
+/* The public foundation pages used to be a heading, one paragraph, and two
+   buttons. These are the concrete points a visitor actually needs. */
+.foundationPoints {
+  display: grid;
+  gap: 12px;
+  max-width: 760px;
+  margin: 26px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.foundationPoints li {
+  padding-left: 16px;
+  border-left: 3px solid var(--secondary);
+  color: var(--muted);
+  line-height: 1.6;
+}

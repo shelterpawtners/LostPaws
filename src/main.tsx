@@ -1490,27 +1490,68 @@ function Marketplace() {
 }
 const publicFoundations: Record<
   string,
-  { eyebrow: string; title: string; copy: string }
+  {
+    eyebrow: string;
+    title: string;
+    copy: string;
+    points: string[];
+    learn: { label: string; to: string };
+    primary: { label: string; to: string };
+  }
 > = {
   passport: {
     eyebrow: "Digital Pet Passport",
     title: "A private record that can grow with your pet.",
     copy: "Identity, guardianship, adoption history, and future care records stay connected without making private information public.",
+    points: [
+      "Private by default. Following an organization never grants access to Passport information.",
+      "A shelter confirms the adoption; until it does, the pet is shown as self-reported rather than shelter-confirmed.",
+      "Verified shelter adoption is what some participating offers use to decide eligibility.",
+    ],
+    learn: { label: "How the Passport works", to: "/learn/passport" },
+    primary: {
+      label: "Start your pet's Passport",
+      to: "/register?type=guardian",
+    },
   },
   partners: {
     eyebrow: "PetBiz and community partners",
     title: "Give guardians practical value after adoption.",
     copy: "Create an organization profile, locations, and offers using one account that can support multiple team members.",
+    points: [
+      "Registration and publishing offers are free.",
+      "You write your own terms, eligibility, and timing, and can unpublish at any time.",
+      "Pet businesses are not shown festival concepts unless they choose that audience.",
+    ],
+    learn: { label: "How vendor accounts work", to: "/learn/vendors" },
+    primary: {
+      label: "Create a business profile",
+      to: "/register?type=petbiz",
+    },
   },
   shelters: {
     eyebrow: "Shelters and rescues",
     title: "Help each adoption carry trusted history forward.",
     copy: "ShelterPawtners is free for shelters. The foundation supports adoption confirmation, report cards, transfers, and future imports.",
+    points: [
+      "Free for shelters and rescues, with no subscription.",
+      "Confirmation requests arrive as a secure, single-purpose link that opens only that request.",
+      "Registered is shown as registered, never as verified.",
+    ],
+    learn: { label: "How confirmation works", to: "/learn/shelters" },
+    primary: { label: "Register a shelter", to: "/register?type=shelter" },
   },
   about: {
     eyebrow: "Care. Savings. Community.",
     title: "Built to support the full life after adoption.",
     copy: "ShelterPawtners connects guardians, shelters, providers, and businesses around better continuity of care and measurable support.",
+    points: [
+      "Guardian accounts are free, and always will be. The point is to lower the cost of owning a pet.",
+      "Participating businesses, not Guardians, are asked to fund shelter support.",
+      "We say plainly what is live and what is still planned, and publish no savings figure we have not researched.",
+    ],
+    learn: { label: "Read how it all works", to: "/learn" },
+    primary: { label: "Choose how to participate", to: "/register" },
   },
 };
 function FoundationPage({ name }: { name: keyof typeof publicFoundations }) {
@@ -1521,12 +1562,17 @@ function FoundationPage({ name }: { name: keyof typeof publicFoundations }) {
         <span className="eyebrow">{page.eyebrow}</span>
         <h1>{page.title}</h1>
         <p className="lead">{page.copy}</p>
+        <ul className="foundationPoints">
+          {page.points.map((point) => (
+            <li key={point}>{point}</li>
+          ))}
+        </ul>
         <div className="actions">
-          <Link className="btn" to="/register">
-            Choose how to participate
+          <Link className="btn" to={page.primary.to}>
+            {page.primary.label}
           </Link>
-          <Link className="btn quiet" to="/marketplace">
-            Preview savings
+          <Link className="btn quiet" to={page.learn.to}>
+            {page.learn.label}
           </Link>
         </div>
       </section>
