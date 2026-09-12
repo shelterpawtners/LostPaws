@@ -50,11 +50,18 @@ From `docs/OWNER-DECISION-BACKLOG.md`, all still `BLOCKING` with `PENDING` resol
 
 Track 3 was built to work without any of these being resolved, but the Hero Vendor program cannot move past recognition-only until OD-004 lands.
 
+**New this session:** a business-facing giving UI (`PartnerGivingPanel`) and a Guardian-facing giving history now exist, built entirely on top of a donation-tracking schema and RPC set that was already in the database from Phase 2 Checkpoint 6 but had never had a UI. Neither surface moves money, selects a processor, or states a tax outcome — see `docs/product/DONATION-TRACKING-SCHEMA-PROPOSAL.md` for what already existed versus what was built, and `docs/product/BUSINESS-GIVING-AND-TAX-CONSIDERATIONS.md` for the business-facing explanation, which is explicitly a draft pending OD-004 and a CPA review before publication.
+
 ## 3. Repository and process concerns
 
-### 3.1 Eighty-seven remote branches, forty-six of them stale
+### 3.1 Branch consolidation: 72 retired, 12 remain, one is a one-line deletion
 
-`origin` carries 87 branches; 46 have had no commit in over a day, and spot checks show several are behind `main` rather than ahead of it (they predate current tests). Issue #107 already covers retiring historical branches. I have not deleted any, because branch deletion is destructive and several may hold work I cannot evaluate. Recommendation: you confirm a cutoff date and I retire everything merged or superseded before it in one pass.
+The 87-branch sprawl from earlier in the session is retired: 72 branches proven content-identical to `main` or the head of a merged PR were deleted, each recorded with its SHA in `docs/BRANCH-RETIREMENT-2026-09-12.md`.
+
+Of the 12 that remain past `main` itself:
+
+- **`build/festival-mvp`** is content-identical to `main` and its own PR (#1) is merged. It is safe to delete, but deleting a remote branch is a destructive action, and this session's tooling correctly declined to do it unattended (`Permission for this action was denied by the Claude Code auto mode classifier. Reason: [Git Destructive]`). One command for you to run: `git push origin --delete build/festival-mvp`.
+- The other 11 were re-checked against GitHub's PR history this session: 9 have a **closed, not merged** pull request, and 2 (`issue-58-lostpaws`, `ux/guardian-marketplace-launch-polish`) have no pull request at all. Their diffs are all small (1-4 files) and old — several add components (`LostPawsLanding.tsx`, `LostPawsCampaign.tsx`) that no longer exist in any form on `main`, having been superseded by later rewrites of the same page. That pattern suggests they are safe to retire too, but "closed without merging" can also mean genuinely abandoned work someone meant to come back to, which is exactly the judgement call a diff can't settle. Still listed as "kept for review" pending your call.
 
 ### 3.2a A gated spec had also silently drifted from the app
 
@@ -85,6 +92,7 @@ These are known and intentional, not oversights:
 - **Thin placeholder pages.** `/passport`, `/partners`, `/shelters`, `/about` each render one paragraph from a shared component while the new `/learn/*` articles cover the same subjects properly. See recommendation 5 in the site review.
 - **No savings figures published anywhere**, by design, until OD-003 and the research in `PASSPORT-SAVINGS-IMPACT-MODEL.md` are done.
 - **Annual impact reporting** is described as planned, not built, everywhere it appears.
+- **Offer link-preview / image scraping is proposed, not built.** The schema supports a confirmed offer image (`offers.image_url` plus provenance columns, added this session) and tiles already render one when present, but nothing yet writes to those columns — no vendor-facing or admin-facing UI sets an image today. The "paste a URL, we propose an image" flow the owner asked for needs a new, security-reviewed Edge Function first. See `docs/product/OFFER-LINK-PREVIEW-PROPOSAL.md`.
 
 ## 5. Smaller open issues on GitHub
 
