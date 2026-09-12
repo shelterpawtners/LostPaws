@@ -248,9 +248,11 @@ Prompt:
 Options:
 
 ### Pet Offers
+
 Pet products, services, adoption-related savings, and pet events.
 
 ### RAVE Offers
+
 Festival gear, apparel, accessories, creators, vendors, and event-related offers.
 
 Optional:

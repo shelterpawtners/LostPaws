@@ -101,10 +101,10 @@ Every published scenario should show:
 Example structure only:
 
 | Scenario | Monthly eligible spend | Avg discount used | Guardian savings | Eligible Hero-vendor sales | Business support rate | Projected shelter support |
-|---|---:|---:|---:|---:|---:|---:|
-| Low | TBD | TBD | TBD | TBD | TBD | TBD |
-| Base | TBD | TBD | TBD | TBD | TBD | TBD |
-| High | TBD | TBD | TBD | TBD | TBD | TBD |
+| -------- | ---------------------: | ----------------: | ---------------: | -------------------------: | --------------------: | ------------------------: |
+| Low      |                    TBD |               TBD |              TBD |                        TBD |                   TBD |                       TBD |
+| Base     |                    TBD |               TBD |              TBD |                        TBD |                   TBD |                       TBD |
+| High     |                    TBD |               TBD |              TBD |                        TBD |                   TBD |                       TBD |
 
 ## Public-story objective
 
