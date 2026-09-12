@@ -63,6 +63,7 @@ Status: **EXTERNALLY BLOCKED / CORRECTLY DISABLED**.
 - Live UI remains `Facebook sign-in coming soon`.
 - Real provider-console callback and identity-continuity acceptance require authorized Meta/provider access.
 - Do not enable Facebook publicly until callback + account-continuity acceptance passes.
+- Future Meta/legal readiness must include a documented government/law-enforcement request process covering legal review, challenge/escalation of unlawful or overbroad requests, data minimization, and an auditable record of requests/responses/legal reasoning/actors. This is a deferred compliance item, not a current launch blocker.
 
 ### Public smoke
 
@@ -163,6 +164,26 @@ Before merge, require targeted route/responsive/accessibility tests and confirm 
 
 ---
 
+## AUTH / CONNECTOR HANDOFF FAILSAFE
+
+A connector login or authorization handoff must never leave an agent spinning indefinitely.
+
+If GitHub, Vercel, Meta, Supabase, or another provider requires authentication that cannot be completed immediately:
+
+1. Attempt the secure handoff only when a concrete provider action or write is actually required.
+2. If the handoff is unavailable, missing the required sign-in method, or not completed promptly, stop waiting.
+3. Fall back to **read-only continuation** using GitHub `main` and any already-authorized provider surfaces as the source of truth.
+4. Complete every independent verification, analysis, or non-write task that remains safe.
+5. Record exactly one bounded pending action, including the target system and intended write/action.
+6. Do not reopen the same auth handoff repeatedly in the same run.
+7. Do not claim the entire workstream is blocked when only one write is blocked.
+8. If the blocked write is only a controller/handoff update, report the unpushed checkpoint in the final response and continue useful work; the next authorized agent can publish it.
+9. Never ask the owner to paste passwords, OAuth tokens, secrets, or recovery codes into chat.
+
+A Work run waiting on an inaccessible authentication UI for roughly 2–3 minutes should be treated as a failed handoff, not as active progress.
+
+---
+
 ## AUTONOMOUS CONTINUATION RULES
 
 Agents should not stop after routine successful substeps.
@@ -220,7 +241,6 @@ Prefer small recoverable checkpoints and parallel independent lanes over one gia
 ---
 
 ## LATEST AGENT UPDATE
-
 
 AGENT: WORK
 TIME: 2026-09-12 23:xx UTC
