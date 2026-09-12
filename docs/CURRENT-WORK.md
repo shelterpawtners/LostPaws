@@ -20,7 +20,7 @@ Current verified public acceptance surface:
 
 Current Vercel production deployment is also READY on the same accepted product SHA at deployment `dpl_B4uVrWYcdc9vDpRYwa1unyzzUgxw`, with stable alias `https://lost-paws-one.vercel.app`. The earlier Hobby-capacity freshness blocker is therefore cleared. Do not purchase or upgrade Vercel merely for capacity.
 
-Final `shelterpawtners.com` web-domain cutover is owner-authorized and blocked only on authenticated administrator-console access. On 2026-09-12, `origin/main` was verified at `cf6475db44a1f005369c9657b3ebd21b46b53774`; the latest successful Vercel production deployment is `dpl_F3dLB7Fd6jUWv582xjbL1fCqWSd6` (`READY`) from `7de02351227f793de7ad7fcc0b4e5361f5844cdc`. The intervening commits are documentation/GitHub Pages-workflow-only, so the deployed client bundle remains current for the cutover. No SiteGround, Microsoft 365, Supabase Auth, Google OAuth, Meta, legal-publication, or production-data setting was changed. See `docs/CUTOVER-SHELTERPAWTNERS-COM.md` for the exact account-console blocker and resume sequence.
+The owner-completed `shelterpawtners.com` cutover is now live: Vercel validates the apex and `www`, SiteGround web DNS uses Vercel's exact records, Supabase Auth uses the apex while GitHub Pages remains allowed for rollback, Google OAuth includes the apex origin, and Vercel redeploy `dpl_EZhNzZRjfKamY8FyeTnM3njnH7JN` is READY. Microsoft 365 and Auth/Resend DNS, Facebook/Instagram, unpublished legal routes, and production data remain untouched. The remaining launch check is a real Google login/logout returning to the apex plus the signed-in Guardian/mobile/direct-route smoke matrix. See `docs/CUTOVER-SHELTERPAWTNERS-COM.md`.
 
 ## Recent accepted launch work
 
