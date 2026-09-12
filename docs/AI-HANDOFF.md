@@ -1,24 +1,26 @@
 # AI Handoff
 
-STATUS: BLOCKED_ON_OWNER_CONSOLE_ACCESS_FOR_DOMAIN_AUTH_CUTOVER
+STATUS: READY_FOR_REAL_DOMAIN_ACCEPTANCE
 CURRENT_PHASE: Lost Lands MVP launch readiness
-CURRENT_CHECKPOINT: ShelterPawtners.com owner-authorized cutover; release/deployment verified, awaiting account-controlled domain/auth configuration
-NEXT_CHECKPOINT: Attach apex/www in Vercel, change only SiteGround web DNS, then configure Supabase/Google and smoke-test the apex domain
-OWNER_DECISION_REQUIRED: YES_FOR_ACCOUNT_CONSOLE_ACCESS_OR_AUTHENTICATED_SESSION
-SAFE_TO_CONTINUE: NO
+CURRENT_CHECKPOINT: Domain, Auth URL, Google origin, and Vercel production configuration complete; run real Guardian/Google/mobile acceptance
+NEXT_CHECKPOINT: Confirm Google login returns to apex, logout, and complete direct-route/mobile smoke
+OWNER_DECISION_REQUIRED: YES_FOR_FINAL_GOOGLE_ACCOUNT_INTERACTION_ONLY
+SAFE_TO_CONTINUE: YES
 ACCEPTED_PRODUCT_SHA: 45a87c3ff1bac1d3f35172386e8a4c3f5fb54d06
 ACCEPTANCE_RUNTIME: GITHUB_PAGES_PUBLIC_RELEASE_MATRIX_GREEN_AND_VERCEL_PRODUCTION_READY
 
-## Domain cutover attempt — 2026-09-12
+## Domain cutover completion — 2026-09-12
 
-The owner authorized the final `shelterpawtners.com` cutover. The release check is complete:
+The owner authorized and completed the domain/auth configuration:
 
-- `origin/main`: `cf6475db44a1f005369c9657b3ebd21b46b53774`.
-- Latest successful Vercel production deployment: `dpl_F3dLB7Fd6jUWv582xjbL1fCqWSd6` (`READY`), main SHA `7de02351227f793de7ad7fcc0b4e5361f5844cdc`.
-- The three commits between that successful deployment and current main alter only GitHub Pages workflows and this cutover runbook, not the deployed client bundle.
-- No domain, SiteGround DNS, Microsoft 365 mail DNS, Supabase Auth URL, Google OAuth, Facebook/Instagram, legal route, or production data setting changed during the attempt.
+- Vercel validates `shelterpawtners.com` and `www.shelterpawtners.com`; apex is canonical.
+- SiteGround web records were changed only to the exact Vercel-provided apex and `www` records. Microsoft 365 and Auth/Resend DNS remains unchanged.
+- Supabase Auth Site URL is the apex; the production wildcard redirect is allowed and GitHub Pages remains allowed for rollback/testing.
+- Google OAuth includes the apex JavaScript origin and retains the Supabase callback.
+- Vercel production was redeployed successfully as `dpl_EZhNzZRjfKamY8FyeTnM3njnH7JN` (`READY`).
+- Facebook/Instagram remains disabled and Privacy, Terms, and Data Deletion remain unpublished.
 
-The immediate blocker is authenticated administrator access: the connected Vercel capability is read/deployment-only; the locally available Vercel CLI is logged out; the Supabase capability has no hosted Auth URL Configuration write; and SiteGround/Google Cloud have no connected administrator integration. Do not guess Vercel DNS records or change SiteGround before the Vercel domains are actually attached. Resume from `docs/CUTOVER-SHELTERPAWTNERS-COM.md` when an authorized console session is available.
+Vercel's authenticated fetch returns the apex application shell with HTTP 200. This controller's cloud-browser proxy still has a short-lived certificate hostname-routing mismatch, so it cannot complete the interactive Google browser flow from this environment. The remaining acceptance is a real Google login/logout and the signed-in Guardian/mobile/direct-route matrix on an ordinary browser.
 
 ## Read first
 
