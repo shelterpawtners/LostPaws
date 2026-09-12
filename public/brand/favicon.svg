@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <linearGradient id="spBrand" x1="6" y1="58" x2="58" y2="6" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#d500f9"/>
+      <stop offset="0.5" stop-color="#5433ff"/>
+      <stop offset="1" stop-color="#00d4e8"/>
+    </linearGradient>
+    <mask id="spPaw">
+      <rect width="64" height="64" fill="#fff"/>
+      <ellipse cx="25.4" cy="31.4" rx="2.7" ry="3.6" fill="#000"/>
+      <ellipse cx="30.4" cy="28.8" rx="2.6" ry="3.7" fill="#000"/>
+      <ellipse cx="35.4" cy="28.8" rx="2.6" ry="3.7" fill="#000"/>
+      <ellipse cx="40.4" cy="31.4" rx="2.7" ry="3.6" fill="#000"/>
+      <ellipse cx="32.9" cy="38.6" rx="5.6" ry="6.3" fill="#000"/>
+    </mask>
+  </defs>
+  <rect width="64" height="64" rx="14" fill="#0d172b"/>
+  <path d="M9 30 L32 12 L55 30" fill="none" stroke="url(#spBrand)" stroke-width="5.4" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M12.4 29.6 V47 M51.6 29.6 V47" fill="none" stroke="url(#spBrand)" stroke-width="4.4" stroke-linecap="round"/>
+  <path d="M32.9 48.6 C29.2 43.6 20 38.4 20 30.4 C20 24.6 27.4 22.8 32.9 28.4 C38.4 22.8 45.8 24.6 45.8 30.4 C45.8 38.4 36.6 43.6 32.9 48.6 Z" fill="url(#spBrand)" mask="url(#spPaw)"/>
+</svg>

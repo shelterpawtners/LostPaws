@@ -85,15 +85,16 @@ export function OfferMarketplace({
         });
 
         // A deployment whose database has not yet applied the migration that
-        // added p_channel rejects the call outright. Fall back to the
-        // unfiltered signature so the marketplace still works, and say so
-        // rather than implying the results were filtered.
-        if (response.error && channel) {
+        // added p_channel rejects the call outright, because the parameter
+        // itself is unknown there — so retry without it on any error, not only
+        // when a channel was requested. Only say filtering is unavailable when
+        // a filter was actually asked for.
+        if (response.error) {
           const fallback = await client.rpc("public_active_offers", {
             p_organization_id: organizationId || null,
           });
           if (!fallback.error) {
-            setChannelFilterUnavailable(true);
+            if (channel) setChannelFilterUnavailable(true);
             response = fallback;
           }
         }

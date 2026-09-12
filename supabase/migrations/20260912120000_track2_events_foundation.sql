@@ -55,11 +55,20 @@ create trigger events_touch before update on public.events
 alter table public.events enable row level security;
 alter table public.event_participants enable row level security;
 
--- Public read mirrors the established offer_read boundary: anon/authenticated
--- see published, non-demo, non-expired rows; an organization's own members see
--- their organization's rows regardless of status; a solo (organization-less)
--- event is visible to its creator regardless of status.
-create policy events_read on public.events for select to anon, authenticated using (
+-- Read access is split by role on purpose. private.can_manage_org is granted
+-- to authenticated only, so a policy that mentions it must never be evaluated
+-- as anon: Postgres does not guarantee OR short-circuit order, and an anon
+-- query that reaches the call fails with "permission denied for function".
+-- Role-specific policies are OR-ed together, so each role evaluates only its
+-- own rule.
+create policy events_public_read on public.events for select to anon using (
+  status = 'active'
+  and published_at is not null
+  and (ends_at is null or ends_at > now())
+  and is_demo = false
+);
+
+create policy events_read on public.events for select to authenticated using (
   (status = 'active' and published_at is not null and (ends_at is null or ends_at > now()) and is_demo = false)
   or (organization_id is not null and private.can_manage_org(organization_id, array['owner', 'administrator', 'publisher', 'member']))
   or (organization_id is null and created_by = (select auth.uid()))
@@ -90,7 +99,19 @@ create policy events_update on public.events for update to authenticated using (
 -- Participation rows are visible alongside their event: anyone who can see the
 -- event (public read boundary above) can see who is participating, plus the
 -- participating organization's own members.
-create policy event_participants_read on public.event_participants for select to anon, authenticated using (
+-- Split by role for the same reason as events_read above.
+create policy event_participants_public_read on public.event_participants for select to anon using (
+  exists (
+    select 1 from public.events e
+    where e.id = event_id
+      and e.status = 'active'
+      and e.published_at is not null
+      and (e.ends_at is null or e.ends_at > now())
+      and e.is_demo = false
+  )
+);
+
+create policy event_participants_read on public.event_participants for select to authenticated using (
   exists (
     select 1 from public.events e
     where e.id = event_id

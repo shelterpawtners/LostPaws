@@ -24,7 +24,10 @@ select lives_ok($$insert into public.event_participants(event_id,organization_id
 -- Org B (20000000-...0003, owned by user 10000000-...0006) is a different
 -- organization from Org A.
 select set_config('request.jwt.claim.sub','10000000-0000-0000-0000-000000000006',true);
-select throws_ok($$update public.events set title='Hijacked' where id='40000000-0000-0000-0000-000000000001'$$,'42501',null,'a non-managing organization cannot update another organization''s event');
+-- Row level security filters the row out of the UPDATE rather than raising, so
+-- the assertion is that nothing changed, not that an error was thrown.
+update public.events set title='Hijacked' where id='40000000-0000-0000-0000-000000000001';
+select isnt((select title from public.events where id='40000000-0000-0000-0000-000000000001'),'Hijacked','a non-managing organization cannot update another organization''s event');
 select throws_ok($$insert into public.event_participants(event_id,organization_id,role,created_by) values ('40000000-0000-0000-0000-000000000001','20000000-0000-0000-0000-000000000001','vending','10000000-0000-0000-0000-000000000006')$$,'42501',null,'a business cannot add participation on behalf of an organization it does not manage');
 select lives_ok($$insert into public.event_participants(event_id,organization_id,role,created_by) values ('40000000-0000-0000-0000-000000000001','20000000-0000-0000-0000-000000000003','vending','10000000-0000-0000-0000-000000000006')$$,'a different organization can add its own participation on someone else''s published event');
 select throws_ok($$insert into public.event_participants(event_id,organization_id,role,created_by) values ('40000000-0000-0000-0000-000000000001','20000000-0000-0000-0000-000000000003','vending','10000000-0000-0000-0000-000000000006')$$,'23505',null,'duplicate event/organization/role participation is rejected');
@@ -36,7 +39,7 @@ values ('40000000-0000-0000-0000-000000000002',null,'10000000-0000-0000-0000-000
 select is((select created_by from public.events where id='40000000-0000-0000-0000-000000000002'),'10000000-0000-0000-0000-000000000001','a guardian can create an organization-less event');
 
 select set_config('request.jwt.claim.sub','10000000-0000-0000-0000-000000000003',true);
-select throws_ok($$update public.events set title='Taken over' where id='40000000-0000-0000-0000-000000000002'$$,'42501',null,'another user cannot edit someone else''s organization-less draft event');
+update public.events set title='Taken over' where id='40000000-0000-0000-0000-000000000002';
 select is((select count(*) from public.events where id='40000000-0000-0000-0000-000000000002')::bigint,0::bigint,'another user cannot even see someone else''s organization-less draft event');
 
 select set_config('request.jwt.claim.sub','',true);
@@ -47,6 +50,7 @@ select is((select count(*) from public.event_participants where event_id='400000
 
 reset role;
 select is((select count(*) from public.events where id in ('40000000-0000-0000-0000-000000000001','40000000-0000-0000-0000-000000000002'))::bigint,2::bigint,'both demo events exist when row level security is bypassed');
+select isnt((select title from public.events where id='40000000-0000-0000-0000-000000000002'),'Taken over','the organization-less event survived another user''s update attempt');
 
 select * from finish();
 rollback;
