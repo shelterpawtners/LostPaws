@@ -243,3 +243,26 @@ PROVEN:
   ADVISOR_REVIEW_REQUIRED: YES
   ADVISOR_QUESTION:
 - Is waiting for the free-tier Vercel build window acceptable, or should the owner choose a separately authorized deployment-capacity change?
+
+---
+
+AGENT: CLAUDE
+TIME: 2026-09-12 19:xx EDT
+STATUS: IN_PROGRESS, PR OPEN
+CHECKPOINT: Track 3 slice — marketplace UX, giving/donation UI, LostPaws rewrite
+PROVEN:
+
+- PR #135 (`feature/marketplace-ux-and-giving` to `main`) is open: site-wide scroll-to-top on navigation, a shortened LostPaws page, a marketplace redesign (real photo/tags, category filter, sort, tighter mobile layout), a business giving panel and Guardian giving history built on the pre-existing `partner_contribution_commitments`/`donation_intents` schema, a business-facing tax/giving document, two new Learn articles, and a written proposal (not built) for offer link-preview image fetching.
+- Locally verified before every push: typecheck clean, lint clean, 50 unit tests, 57 public e2e tests, 48 persona e2e tests, all against a freshly reset local Supabase database.
+- Merged current `main` (through the Seven Star Shelters and event-date-fix commits) into this branch with no conflicts; fixed two issues that merge surfaced: `docs/AI-CONTROLLER.md` itself was unformatted and failing the `web` job's prettier check, and `e2e/seven-star-shelters.spec.ts` had no workflow or npm script referencing it (added to `test:e2e:public`).
+  CHANGED:
+- See PR #135 for the full diff. No schema/migration conflicts with Track 2 or the Seven Star Shelters work.
+  BLOCKERS:
+- None blocking. `build/festival-mvp` is a safe one-command branch deletion (content-identical to `main`, its PR is merged) that this session's tooling correctly declined to do unattended — needs a human `git push origin --delete build/festival-mvp`.
+  RISKS_OR_UNCERTAINTY:
+- 11 other historical branches remain genuinely ambiguous (closed-not-merged PRs or none at all, old small diffs against superseded components) — listed in `docs/BRANCH-RETIREMENT-2026-09-12.md` as a judgement call, not re-evaluated further this session.
+- The offer link-preview feature the owner asked for (vendor pastes a URL, we propose an image) is proposed but not built — it needs a new Edge Function with real SSRF guards, scoped as its own reviewable slice.
+  NEXT_RECOMMENDED_ACTION:
+- Watch PR #135 CI to green, then merge under the owner's standing merge authorization.
+- Next scoped slice after merge: build the offer link-preview Edge Function per `docs/product/OFFER-LINK-PREVIEW-PROPOSAL.md`.
+  ADVISOR_REVIEW_REQUIRED: NO
