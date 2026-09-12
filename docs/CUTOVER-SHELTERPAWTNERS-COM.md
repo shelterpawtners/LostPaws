@@ -2,6 +2,19 @@
 
 Status: owner-authorized soft-launch cutover. Legal/privacy routes remain unpublished until separately approved.
 
+## Cutover attempt — 2026-09-12
+
+Verified before any production configuration change:
+
+- `origin/main` is `cf6475db44a1f005369c9657b3ebd21b46b53774`.
+- The most recent successful Vercel **production** deployment is `dpl_F3dLB7Fd6jUWv582xjbL1fCqWSd6`, `READY`, from main SHA `7de02351227f793de7ad7fcc0b4e5361f5844cdc`.
+- The commits after that deployment change only GitHub Pages workflow flags and this runbook; the deployed application bundle is unchanged.
+- The Vercel project currently has only its two Vercel-owned domains. No custom-domain, DNS, Supabase Auth, Google OAuth, or SiteGround change was made in this attempt.
+
+Current blocker: the connected Vercel integration is read/deployment-only and the local Vercel CLI has no authenticated account, so it cannot attach custom domains or display this project's authoritative DNS challenge. The connected Supabase integration does not expose hosted Auth URL Configuration writes, and no connected Google Cloud or SiteGround administrator is available. These are account-security/console actions, not an application defect.
+
+When authenticated console access is available, perform the remaining configuration in the order in this runbook, then complete the production smoke checklist. Keep all Microsoft 365 mail records and the Meta/legal publication gates unchanged.
+
 ## Release source
 
 - Repository: `shelterpawtners/LostPaws`

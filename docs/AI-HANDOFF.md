@@ -1,13 +1,24 @@
 # AI Handoff
 
-STATUS: EXTERNAL_LAUNCH_GATES_WITH_VERIFIED_GITHUB_PAGES_AND_VERCEL_RELEASE_CANDIDATE
+STATUS: BLOCKED_ON_OWNER_CONSOLE_ACCESS_FOR_DOMAIN_AUTH_CUTOVER
 CURRENT_PHASE: Lost Lands MVP launch readiness
-CURRENT_CHECKPOINT: Unified LostPaws/RAVE mission + password recovery source readiness + Google/Facebook OAuth source readiness accepted on main; Vercel production current
-NEXT_CHECKPOINT: Real auth/provider acceptance, Support OS privileged delivery deployment, owner legal review, final cutover prep
-OWNER_DECISION_REQUIRED: YES_FOR_PROVIDER_CREDENTIALS_SUPPORT_DESTINATION_LEGAL_AND_FINAL_CUTOVER
-SAFE_TO_CONTINUE: YES
+CURRENT_CHECKPOINT: ShelterPawtners.com owner-authorized cutover; release/deployment verified, awaiting account-controlled domain/auth configuration
+NEXT_CHECKPOINT: Attach apex/www in Vercel, change only SiteGround web DNS, then configure Supabase/Google and smoke-test the apex domain
+OWNER_DECISION_REQUIRED: YES_FOR_ACCOUNT_CONSOLE_ACCESS_OR_AUTHENTICATED_SESSION
+SAFE_TO_CONTINUE: NO
 ACCEPTED_PRODUCT_SHA: 45a87c3ff1bac1d3f35172386e8a4c3f5fb54d06
 ACCEPTANCE_RUNTIME: GITHUB_PAGES_PUBLIC_RELEASE_MATRIX_GREEN_AND_VERCEL_PRODUCTION_READY
+
+## Domain cutover attempt — 2026-09-12
+
+The owner authorized the final `shelterpawtners.com` cutover. The release check is complete:
+
+- `origin/main`: `cf6475db44a1f005369c9657b3ebd21b46b53774`.
+- Latest successful Vercel production deployment: `dpl_F3dLB7Fd6jUWv582xjbL1fCqWSd6` (`READY`), main SHA `7de02351227f793de7ad7fcc0b4e5361f5844cdc`.
+- The three commits between that successful deployment and current main alter only GitHub Pages workflows and this cutover runbook, not the deployed client bundle.
+- No domain, SiteGround DNS, Microsoft 365 mail DNS, Supabase Auth URL, Google OAuth, Facebook/Instagram, legal route, or production data setting changed during the attempt.
+
+The immediate blocker is authenticated administrator access: the connected Vercel capability is read/deployment-only; the locally available Vercel CLI is logged out; the Supabase capability has no hosted Auth URL Configuration write; and SiteGround/Google Cloud have no connected administrator integration. Do not guess Vercel DNS records or change SiteGround before the Vercel domains are actually attached. Resume from `docs/CUTOVER-SHELTERPAWTNERS-COM.md` when an authorized console session is available.
 
 ## Read first
 
