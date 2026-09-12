@@ -230,22 +230,23 @@ Prefer small recoverable checkpoints over one long autonomous job.
 ## LATEST AGENT UPDATE
 
 AGENT: WORK
-TIME: 2026-09-12 17:30 EDT
-STATUS: PASS
-CHECKPOINT: Google OAuth production acceptance
+TIME: 2026-09-12 17:40 EDT
+STATUS: PARTIAL
+CHECKPOINT: Meta discovery and production smoke
 PROVEN:
-- Forced deployment `dpl_4x32sTRgy9f1Knvt7xcNEqD9967P` is READY at `5baee666d3e6084a6f01494a85305db6648bb448` and serves the apex.
-- Live `/login` shows enabled `Continue with Google`; Facebook remains disabled.
-- Google authorization, Supabase callback, HTTPS apex return, sign-out, and Google re-login all passed.
-- Before and after re-login, the tested account had exactly one auth user, one profile, and one Google identity; no organization, membership, or guardianship record was created.
+- Google OAuth production acceptance passed: enabled live entry, Google authorization, Supabase callback, HTTPS apex return, sign-out, re-login, and stable one-user/one-profile/one-Google-identity counts.
+- Facebook source integration uses provider `facebook` and the same deployment-base-aware OAuth return helper.
+- Production keeps Facebook disabled through `VITE_FACEBOOK_AUTH_ENABLED !== "true"`; live UI remains `Facebook sign-in coming soon`.
+- The tested account and the project both have zero Facebook identity records.
+- Public smoke passed for `/`, `/marketplace`, `/lostpaws`, `/rave`, and `/events`; each rendered its expected heading with no application console errors.
 CHANGED:
 - none
 BLOCKERS:
-- none for Google OAuth.
+- Facebook provider-console/Supabase provider configuration and real-account callback acceptance cannot be verified without authorized provider access. Facebook remains correctly disabled.
 RISKS_OR_UNCERTAINTY:
-- Meta/Facebook acceptance remains untested and stays publicly disabled.
+- Meta callback, account linking, and duplicate-persona continuity are untested.
 NEXT_RECOMMENDED_ACTION:
-- Continue read-only Meta/Facebook configuration discovery while preserving the disabled public UI.
-ADVISOR_REVIEW_REQUIRED: NO
+- Owner/provider completes the supported Meta configuration/access step; then invoke Work for a contained Facebook callback and identity-continuity acceptance test. Keep Facebook disabled until that passes.
+ADVISOR_REVIEW_REQUIRED: YES
 ADVISOR_QUESTION:
-- none
+- Is authorized Meta/Facebook provider-console access available for the next acceptance checkpoint?
