@@ -224,21 +224,21 @@ Prefer small recoverable checkpoints over one long autonomous job.
 ## LATEST AGENT UPDATE
 
 AGENT: WORK
-TIME: 2026-09-12 17:15 EDT
+TIME: 2026-09-12 17:20 EDT
 STATUS: BLOCKED
-CHECKPOINT: Google Production flag confirmation
+CHECKPOINT: Vercel ignored-build override correction
 PROVEN:
-- Owner confirmed `VITE_GOOGLE_AUTH_ENABLED=true` is saved for Vercel Production.
-- The newest Vercel production deployment (`dpl_74tNZ7FejhkqsWyqjACYAnYHcLW1`) is still `CANCELED`.
-- An environment-variable edit alone does not rebuild the static Vite bundle.
+- The Vercel UI options are Automatic, scoped build options, Don't build anything, Run my Bash script, Run my Node script, and Custom; there is no Always build option.
+- Vercel documents Ignored Build Step semantics: exit `0` skips and exit `1` proceeds with the build.
+- The repository script correctly exits `0` for documentation-only commits, but that cannot detect a Vercel environment-variable-only change.
 CHANGED:
 - none
 BLOCKERS:
-- The ignored-build script must be bypassed for one production build before the confirmed Google flag can become live.
+- One production build must be explicitly allowed to compile the confirmed `VITE_GOOGLE_AUTH_ENABLED=true` flag into the static Vite bundle.
 RISKS_OR_UNCERTAINTY:
 - OAuth initiation, callback, return, logout/re-login, and identity continuity remain untested.
 NEXT_RECOMMENDED_ACTION:
-- Owner changes the Vercel Ignored Build Step behavior from Run my Bash script to Always build, saves, and requests one redeploy; then Work verifies the current deployment timestamp, status, and Google OAuth.
-ADVISOR_REVIEW_REQUIRED: YES
+- Owner selects Custom in Vercel Ignored Build Step, enters `exit 1`, saves, and performs exactly one redeploy. After it is READY, restore Run my Bash script with `bash scripts/vercel-ignore-build.sh`; then Work verifies the current deployment and Google OAuth.
+ADVISOR_REVIEW_REQUIRED: NO
 ADVISOR_QUESTION:
-- Can the owner switch the Ignored Build Step dropdown to Always build for this one deployment?
+- none; this is the smallest reversible configuration action.
