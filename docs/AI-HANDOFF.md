@@ -2,8 +2,8 @@
 
 STATUS: READY_FOR_ACCEPTANCE
 CURRENT_PHASE: RAVE Shelter / LostPaws dual-marketplace sprint — Track 1 (mobile conversion + brand correction)
-CURRENT_CHECKPOINT: Track 1 implemented on `feature/mobile-rave-lostpaws-claude`, PR opened for owner review
-NEXT_CHECKPOINT: Owner reviews/merges Track 1; Track 2 (dual marketplace + Events, schema-first) does not start until Track 1 is merged
+CURRENT_CHECKPOINT: Track 1 implemented and CI-green on PR #130 (`feature/mobile-rave-lostpaws-claude` -> `main`), including a live-rendered visual check; ready for owner merge decision
+NEXT_CHECKPOINT: Owner reviews/merges PR #130; Track 2 (dual marketplace + Events, schema-first) does not start until Track 1 is merged
 OWNER_DECISION_REQUIRED: YES_TO_MERGE
 SAFE_TO_CONTINUE: YES
 ACCEPTED_PRODUCT_SHA: bc14a3f6b839f4421781903c41d3c867f4bba848
@@ -26,7 +26,11 @@ Not done / explicitly deferred:
 - Founding-business free-account-before-2027 message — waiting on final commercial wording confirmation.
 - Track 3 (Hero Vendor, Learn/FAQ, savings calculator) — not started, by design.
 
-Tests run: `npm run typecheck`, `npm run build`, `npm test` (23 passed), and `npx playwright test e2e/issue-125-rave-lostpaws-mobile.spec.ts` (9 passed, including mobile overflow at 320–768px and ≥44px touch targets) — all green. Did not verify live in a browser; owner/human visual review still recommended before merge.
+Tests run: `npm run typecheck`, `npm run build`, `npm test` (23 passed), `npx playwright test e2e/issue-125-rave-lostpaws-mobile.spec.ts` (9 passed, including mobile overflow at 320–768px on `/`, `/rave`, `/lostpaws`, and ≥44px touch targets) — all green.
+
+Also fixed `.github/workflows/github-pages-mvp-acceptance.yml`'s `public-release-matrix` job, which asserted the old "A RAVE Shelter activation" / "Bring the mission into the music community." / "Explore the LostPaws activation" copy this PR replaced; updated its assertions to match and confirmed the full PR #130 check suite is green (Persona QA Gate, Hosted QA Gate, Database QA Gate, CodeQL, public-release-matrix, etc.).
+
+Ran a live visual pass: built `dist/`, served it with `vite preview`, and screenshotted `/`, `/rave`, `/lostpaws`, and `/rave-vendors` at 390px width with Playwright. Copy, layout, and CTAs render correctly with no overflow. One finding, not fixed (approved brand asset, out of scope per the execution plan's "do not redraw logos" rule): `public/brand/rave-shelter-logo-static-v2.png` (used on `/rave`, `/lostpaws`, and reused as `rave-shelter-logo-animated-v2.gif` on `/rave-vendors`) has the superseded tagline **"Deals for ravers. Support for shelter pets."** baked into the image pixels, next to text that now correctly says "Rave with purpose. Shop with impact." Whoever owns brand assets should regenerate this logo lockup with the new tagline; recorded here rather than worked around.
 
 ## Owner resume — 2026-09-12
 
