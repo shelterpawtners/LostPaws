@@ -34,23 +34,35 @@ export function HeroVendorProgram() {
   return (
     <div className="learnPage hvPage">
       <section className="hvHero">
-        <div className="learnWrap">
-          <span className="hvKicker">RAVE Shelter Hero Vendor</span>
-          <h1>Sell more. Give more. Get recognized for it.</h1>
-          <p className="learnLead">
-            RAVE Shelter is free to join. Businesses that choose to put at least
-            5% of eligible participating sales behind a shelter or rescue can
-            earn Hero Vendor recognition — and we will make sure the community
-            knows who they are.
-          </p>
-          <div className="hvActions">
-            <Link className="learnButton" to="/register?type=rave_vendor">
-              Join as a vendor <ArrowRight />
-            </Link>
-            <Link className="hvTextLink" to="/learn/vendors">
-              How vendor accounts work
-            </Link>
+        <div className="learnWrap hvHeroGrid">
+          <div>
+            <span className="hvKicker">RAVE Shelter Hero Vendor</span>
+            <h1>Sell more. Give more. Get recognized for it.</h1>
+            <p className="learnLead">
+              RAVE Shelter is free to join. Businesses that choose to put at
+              least 5% of eligible participating sales behind a shelter or
+              rescue can earn Hero Vendor recognition — and we will make sure
+              the community knows who they are.
+            </p>
+            <div className="hvActions">
+              <Link className="learnButton" to="/register?type=rave_vendor">
+                Join as a vendor <ArrowRight />
+              </Link>
+              <Link className="hvTextLink" to="/learn/vendors">
+                How vendor accounts work
+              </Link>
+            </div>
           </div>
+          <aside className="hvHeroBadge" aria-label="Hero Vendor threshold">
+            <Award aria-hidden="true" />
+            <p className="hvHeroBadgeFigure">5%+</p>
+            <p className="hvHeroBadgeLabel">
+              of eligible participating sales, to a shelter or rescue you choose
+            </p>
+            <p className="hvHeroBadgeNote">
+              Joining and listing stay free either way.
+            </p>
+          </aside>
         </div>
       </section>
 

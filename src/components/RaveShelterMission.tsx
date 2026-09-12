@@ -7,19 +7,23 @@ export function RaveShelterMission() {
   if (location.pathname === "/lostpaws") return <LostPawsActivation />;
 
   const base = import.meta.env.BASE_URL;
-  const lostPawsHero = `${base}brand/lostpaws-hero-16x9.png`;
+  const lostPawsHero = `${base}brand/lostpaws-hero-16x9.webp`;
+  const lostPawsHeroFallback = `${base}brand/lostpaws-hero-16x9.png`;
   const raveLogo = `${base}brand/rave-shelter-logo-static-v2.png`;
 
   return (
     <div className="rsmPage">
       <section className="rsmHero" aria-labelledby="rsm-title">
         <div className="rsmHeroArt">
-          <img
-            src={lostPawsHero}
-            alt="LostPaws — a RAVE Shelter initiative for Lost Lands"
-            width={1672}
-            height={941}
-          />
+          <picture>
+            <source srcSet={lostPawsHero} type="image/webp" />
+            <img
+              src={lostPawsHeroFallback}
+              alt="LostPaws — a RAVE Shelter initiative for Lost Lands"
+              width={1672}
+              height={941}
+            />
+          </picture>
           <div className="rsmHeroFade" aria-hidden="true" />
         </div>
         <div className="rsmWrap rsmHeroCopy">

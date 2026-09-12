@@ -27,6 +27,16 @@ These were small, unambiguous defects, so they were corrected rather than just l
 3. **Touch targets below the 44px minimum**, in three groups: footer links (32px, including ones added earlier that day), header nav links (42px — just under), and standalone card CTAs on `/rave` and `/lostpaws` such as "Browse RAVE offers" and "Create a Guardian account" (17–30px). Note the existing mobile test only measured `.lpActions .lpButton`, which passed, so the smaller card links were never checked.
 4. **`/register` skipped a heading level** (`h1` → `h3`), which misleads screen-reader navigation. The role cards now take a heading level prop so the outline stays sequential on both home and `/register`.
 
+## Design, image, and logo pass (after the restore point)
+
+Done after tagging `restore-point-2026-09-12-pre-design`, so all of it is reversible with `git checkout restore-point-2026-09-12-pre-design`.
+
+1. **Image weight cut by about 92%.** `LostPaws Logo.png` was 2.6 MB and `lostpaws-hero-16x9.png` was 2.1 MB, so a phone visiting `/lostpaws` pulled roughly 4.8 MB of artwork. Both were re-encoded to WebP at sensible delivery sizes (209 KB and 164 KB) and are served through `<picture>` with the original PNGs as fallbacks. No visible quality loss at full width.
+2. **The RAVE Shelter logo tagline is corrected.** `rave-shelter-logo-v2.svg` is text-based vector art, so the superseded "Deals for ravers" line was edited directly, and `rave-shelter-logo-static-v2.png` was re-rendered from that corrected SVG (with motion paused so the bars sit at their designed heights). Recommendation 4 below is now resolved for the SVG and static PNG.
+3. **The animated logo is now SVG instead of a 1.5 MB GIF.** The equalizer bars animate via CSS inside the SVG and stop for `prefers-reduced-motion`, so `/rave-vendors` gets a sharper, animated, correctly-worded logo for a few kilobytes. The old GIF is left in the repo but no longer referenced.
+4. **Explainer tiles are a 3-then-2 grid.** Five equal columns had squeezed every title onto two or three lines; titles now sit on one line at desktop, and the grid collapses to two columns then one on smaller screens.
+5. **The Learn and Hero Vendor heroes are two-column.** Both previously left roughly half the viewport empty above the fold. Learn gained a "Written for" panel whose topic counts are derived from the content itself so they cannot drift; Hero Vendor gained a **5%+** badge that anchors the page on the one number that matters. This addresses recommendation 2 for those two pages.
+
 ## Recommendations for your review
 
 Ordered by what I think matters most. None of these are defects — they are judgment calls I did not want to make unilaterally.

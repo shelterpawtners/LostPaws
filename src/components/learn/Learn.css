@@ -110,14 +110,42 @@
   letter-spacing: -0.02em;
 }
 
+/* Five equal columns squeezed each tile to ~200px and wrapped most titles
+   onto three lines. A 3-then-2 arrangement gives the text room; the first
+   two tiles widen to fill the second row. */
 .learnTiles {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-columns: repeat(6, 1fr);
   gap: 1rem;
   margin: 0;
   padding: 0;
   list-style: none;
-  counter-reset: learn-tile;
+}
+
+.learnTiles > li {
+  grid-column: span 2;
+}
+
+.learnTiles > li:nth-child(4),
+.learnTiles > li:nth-child(5) {
+  grid-column: span 3;
+}
+
+@media (max-width: 900px) {
+  .learnTiles {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .learnTiles > li,
+  .learnTiles > li:nth-child(4),
+  .learnTiles > li:nth-child(5) {
+    grid-column: span 1;
+  }
+}
+
+@media (max-width: 520px) {
+  .learnTiles {
+    grid-template-columns: 1fr;
+  }
 }
 
 .learnTile {
@@ -569,5 +597,73 @@
   .learnCalcTable {
     display: block;
     overflow-x: auto;
+  }
+}
+
+/* Two-column hero. The single-column version left roughly half the viewport
+   empty above the fold at laptop width. */
+.learnHeroGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(0, 0.65fr);
+  gap: clamp(1.5rem, 4vw, 3rem);
+  align-items: center;
+}
+
+.learnHeroPanel {
+  padding: 1.4rem;
+  border: 1px solid var(--learn-line);
+  border-radius: 20px;
+  background: var(--learn-surface);
+  box-shadow: 0 22px 65px rgba(29, 35, 68, 0.09);
+}
+
+.learnHeroPanelTitle {
+  margin: 0 0 0.85rem;
+  color: var(--learn-primary);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.learnHeroPanel ul {
+  display: grid;
+  gap: 0.6rem;
+  margin: 0 0 1rem;
+  padding: 0;
+  list-style: none;
+}
+
+.learnHeroPanel li {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding-bottom: 0.6rem;
+  border-bottom: 1px solid var(--learn-line);
+  font-size: 0.94rem;
+}
+
+.learnHeroPanel li:last-child {
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
+.learnHeroPanel li b {
+  flex: none;
+  color: var(--learn-primary);
+  font-size: 0.84rem;
+}
+
+.learnHeroPanelNote {
+  margin: 0;
+  color: var(--learn-muted);
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+@media (max-width: 860px) {
+  .learnHeroGrid {
+    grid-template-columns: 1fr;
   }
 }

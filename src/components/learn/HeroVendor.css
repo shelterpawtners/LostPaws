@@ -305,3 +305,60 @@
     grid-template-columns: 1fr;
   }
 }
+
+.hvHeroGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(0, 0.65fr);
+  gap: clamp(1.5rem, 4vw, 3rem);
+  align-items: center;
+}
+
+.hvHeroBadge {
+  padding: 1.75rem 1.5rem;
+  border: 1px solid rgba(255, 226, 74, 0.4);
+  border-radius: 24px;
+  background:
+    radial-gradient(
+      circle at 50% 0%,
+      rgba(255, 226, 74, 0.16),
+      transparent 60%
+    ),
+    rgba(255, 255, 255, 0.04);
+  text-align: center;
+}
+
+.hvHeroBadge > svg {
+  width: 2rem;
+  height: 2rem;
+  color: var(--hv-yellow);
+}
+
+.hvHeroBadgeFigure {
+  margin: 0.5rem 0 0.35rem;
+  color: var(--hv-yellow);
+  font-size: clamp(2.75rem, 7vw, 4rem);
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
+
+.hvHeroBadgeLabel {
+  margin: 0 0 0.9rem;
+  color: var(--hv-ink);
+  font-size: 0.95rem;
+  line-height: 1.45;
+}
+
+.hvHeroBadgeNote {
+  margin: 0;
+  padding-top: 0.9rem;
+  border-top: 1px solid var(--hv-line);
+  color: var(--hv-muted);
+  font-size: 0.85rem;
+}
+
+@media (max-width: 860px) {
+  .hvHeroGrid {
+    grid-template-columns: 1fr;
+  }
+}

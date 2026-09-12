@@ -3,24 +3,34 @@ import "./LostPawsActivation.css";
 
 export function LostPawsActivation() {
   const base = import.meta.env.BASE_URL;
-  const hero = `${base}brand/lostpaws-hero-16x9.png`;
-  const logo = `${base}brand/LostPaws Logo.png`;
+  // WebP re-encodes of the original art: 2.1 MB -> 164 KB and
+  // 2.6 MB -> 209 KB, with the PNG originals kept as fallbacks.
+  const hero = `${base}brand/lostpaws-hero-16x9.webp`;
+  const heroFallback = `${base}brand/lostpaws-hero-16x9.png`;
+  const logo = `${base}brand/lostpaws-logo.webp`;
+  const logoFallback = `${base}brand/LostPaws Logo.png`;
   const raveLogo = `${base}brand/rave-shelter-logo-static-v2.png`;
 
   return (
     <div className="lpPage">
       <section className="lpHero" aria-labelledby="lp-title">
         <div className="lpHeroMedia">
-          <img
-            src={hero}
-            alt="LostPaws music-community artwork"
-            width={1672}
-            height={941}
-          />
+          <picture>
+            <source srcSet={hero} type="image/webp" />
+            <img
+              src={heroFallback}
+              alt="LostPaws music-community artwork"
+              width={1672}
+              height={941}
+            />
+          </picture>
         </div>
         <div className="lpWrap lpHeroContent">
           <p className="lpKicker">A RAVE Shelter initiative for Lost Lands</p>
-          <img className="lpLogo" src={logo} alt="LostPaws" />
+          <picture>
+            <source srcSet={logo} type="image/webp" />
+            <img className="lpLogo" src={logoFallback} alt="LostPaws" />
+          </picture>
           <h1 id="lp-title">
             Bring the mission into the Lost Lands community.
           </h1>
