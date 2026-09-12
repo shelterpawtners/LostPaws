@@ -221,24 +221,25 @@ Prefer small recoverable checkpoints and parallel independent lanes over one gia
 
 ## LATEST AGENT UPDATE
 
+
 AGENT: WORK
-TIME: 2026-09-12 20:xx EDT
-STATUS: BLOCKED
-CHECKPOINT: Post-merge production deployment
+TIME: 2026-09-12 23:xx UTC
+STATUS: DEFERRED / NO ACTIONABLE SOURCE WORK
+CHECKPOINT: Fresh GitHub-main and single normal Vercel inspection
 PROVEN:
-- PR #133 (control-plane formatting), PR #134 (UTC event-date regression), and PR #132 (independent `/sevenstars` route) are merged.
-- Current `main` is `30536b49c8d81ad90b5edc1c2d1b1ddb96d128fd`; PR #132 passed CI, web, persona, public release matrix, CodeQL, and all required gates before merge.
-- The existing live production runtime remains the prior READY deployment `dpl_4x32sTRgy9f1Knvt7xcNEqD9967P` at product SHA `5baee666d3e6084a6f01494a85305db6648bb448`.
-- Vercel received the product-affecting merge but reported: `Deployment rate limited — retry in 24 hours.`
+- GitHub `main` is `da24e2cb514f8702e1b10eec7a2eb51d9a6a5e0d`; it remains the source of truth.
+- The controller’s prior `30536b49` reference is stale. The current main delta is control-plane/history documentation; no new source change was made in this checkpoint.
+- Vercel is connected and continues to create then cancel non-product builds. The accepted production runtime remains `dpl_4x32sTRgy9f1Knvt7xcNEqD9967P` at `5baee666d3e6084a6f01494a85305db6648bb448`.
+- No deployment, redeployment, environment change, provider change, or GitHub authentication handoff was attempted.
 CHANGED:
-- Recorded the merged release work and the exact Vercel state.
+- Replaced the stale checkpoint with this fresh-source status.
 BLOCKERS:
-- Vercel Hobby build-rate limit prevents deployment of `30536b49` for up to 24 hours. No paid upgrade, purchase, or manual redeploy was performed.
-- Meta provider-console callback and account-continuity acceptance remain external; Facebook stays correctly disabled.
+- Production acceptance for product changes that have not reached a READY production deployment remains deferred until Vercel accepts a normal Git-driven product deployment.
+- Meta provider-console callback and identity-continuity acceptance remain external; Facebook stays disabled.
 RISKS_OR_UNCERTAINTY:
-- `/sevenstars` is source- and CI-accepted but cannot receive final production visual acceptance until Vercel accepts the queued Git deployment.
+- This single Vercel inspection confirms canceled builds, but does not establish a new deployment-rate-limit reset time. Do not poll or force a deployment.
 NEXT_RECOMMENDED_ACTION:
-- After the rate-limit window, inspect Vercel once for a normal Git-driven deployment of `30536b49`; when READY, run focused desktop/mobile `/sevenstars` smoke. Do not manually force a deployment or upgrade a plan.
-ADVISOR_REVIEW_REQUIRED: YES
+- Do not wait on or reopen GitHub sign-in. On the next user-invoked checkpoint, inspect Vercel once only if there is a product-affecting current-main commit awaiting deployment; otherwise continue independent launch-readiness work without enabling Facebook.
+ADVISOR_REVIEW_REQUIRED: NO
 ADVISOR_QUESTION:
-- Is waiting for the free-tier Vercel build window acceptable, or should the owner choose a separately authorized deployment-capacity change?
+- none
