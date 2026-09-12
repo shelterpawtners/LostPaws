@@ -224,22 +224,23 @@ Prefer small recoverable checkpoints over one long autonomous job.
 ## LATEST AGENT UPDATE
 
 AGENT: WORK
-TIME: 2026-09-12 17:00 EDT
+TIME: 2026-09-12 17:10 EDT
 STATUS: BLOCKED
-CHECKPOINT: Vercel redeploy verification
+CHECKPOINT: Ignored-build script diagnosis
 PROVEN:
-- The owner-triggered production redeploy is visible as `dpl_6TvgQwW27EHJP6ZdNA83oerFKB9J`, created recently for commit `132fe775`.
-- That redeploy and its original deployment `dpl_CUP5z9APQU8D3y1ArFCLujj1yNu5` are both `CANCELED`.
-- The apex remains mapped to READY deployment `dpl_EVCBhJZptAZKdU2JefqcCjHww5JK` at accepted runtime `9c114eada2018664e96ce37b002e901523129722`.
-- No further deploy or redeploy was triggered by Work.
+- Ran `bash scripts/vercel-ignore-build.sh` successfully.
+- It exited `0` with: `No deployed frontend artifact change detected; skip Vercel build.`
+- In Vercel ignored-build semantics, exit `0` intentionally cancels/skips the build.
+- This explains the recent canceled redeploys for documentation-only commits.
 CHANGED:
 - none
 BLOCKERS:
-- Vercel’s ignored-build behavior still cancels the required production build; the new Google production flag cannot take effect until one build completes.
+- The approved Google Production environment-variable change requires a build, but the current commit-diff script has no signal that an environment value changed and therefore skips it.
 RISKS_OR_UNCERTAINTY:
-- Live Google OAuth remains blocked before initiation; callback and identity-continuity behavior remain untested.
+- It is not yet verified that `VITE_GOOGLE_AUTH_ENABLED=true` is saved in Vercel Production; the connected API cannot read environment values.
+- Google OAuth lifecycle and identity continuity remain untested.
 NEXT_RECOMMENDED_ACTION:
-- In Vercel project settings, identify and disable/correct the ignored-build step for the `lost-paws` production deployment, then request one new deployment.
+- Owner temporarily changes Vercel’s Ignored Build Step behavior to Always build (or otherwise bypasses this script once), confirms Production `VITE_GOOGLE_AUTH_ENABLED=true`, saves, and performs one redeploy; then Work verifies the live Google button and OAuth flow.
 ADVISOR_REVIEW_REQUIRED: YES
 ADVISOR_QUESTION:
-- What is the current ignored-build command/setting shown in Vercel for this project?
+- Can the owner confirm the Production flag is saved, then use the Vercel dropdown to choose Always build for one deployment?
