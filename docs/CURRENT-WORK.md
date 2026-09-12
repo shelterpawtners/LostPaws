@@ -4,8 +4,8 @@
 
 Owner reviewed and authorized `docs/product/DUAL-MARKETPLACE-RAVE-SHELTER-EXECUTION-PLAN.md`. Active sequence:
 
-1. **Track 1 (in progress, Claude Code only)** — mobile conversion + RAVE Shelter/LostPaws brand correction on `feature/mobile-rave-lostpaws-claude`. Corrects the prior "LostPaws is the music-community activation of RAVE Shelter" framing (Issue #100/#125) to the owner-directed hierarchy: LostPaws reserved for Lost Lands/Excision-family campaigns only.
-2. **Track 2 (not started)** — dual marketplace audience model + Events, deferred until Track 1 merges and is verified live. Codex is paused for this sprint; do not delegate Track 2 to Codex without explicit owner re-authorization.
+1. **Track 1 (merged 2026-09-12, PR #130)** — mobile conversion + RAVE Shelter/LostPaws brand correction. Corrected the prior "LostPaws is the music-community activation of RAVE Shelter" framing (Issue #100/#125) to the owner-directed hierarchy: LostPaws reserved for Lost Lands/Excision-family campaigns only. One follow-up recorded, not blocking: the RAVE Shelter logo artwork still has the superseded tagline baked into the image (see `docs/product/OWNER-DECISIONS-NEXT-SPRINT.md`).
+2. **Track 2 (in progress, Claude Code only)** — dual marketplace audience model + Events on `feature/dual-marketplace-events` (PR #131). Schema-review proposal posted; awaiting owner answers to 3 open questions before migrations are written. Codex is paused for this sprint; do not delegate to Codex without explicit owner re-authorization.
 3. **Track 3 (not started)** — Hero Vendor + Learn/FAQ + savings storytelling, deferred until Track 2's foundation is stable.
 
 Governance for this sprint: no new `docs/product/*` files without an explicit owner request (update existing docs instead); reuse the existing Track 1/Track 2 branches rather than creating new ones per sub-task; do not duplicate existing Persona/Hosted QA coverage with new parallel test suites.

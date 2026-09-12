@@ -1,13 +1,15 @@
 # AI Handoff
 
-STATUS: READY_FOR_ACCEPTANCE
-CURRENT_PHASE: RAVE Shelter / LostPaws dual-marketplace sprint — Track 1 (mobile conversion + brand correction)
-CURRENT_CHECKPOINT: Track 1 implemented and CI-green on PR #130 (`feature/mobile-rave-lostpaws-claude` -> `main`), including a live-rendered visual check; ready for owner merge decision
-NEXT_CHECKPOINT: Owner reviews/merges PR #130; Track 2 (dual marketplace + Events, schema-first) does not start until Track 1 is merged
-OWNER_DECISION_REQUIRED: YES_TO_MERGE
+STATUS: IN_PROGRESS
+CURRENT_PHASE: RAVE Shelter / LostPaws dual-marketplace sprint — Track 2 (dual marketplace + Events)
+CURRENT_CHECKPOINT: Track 1 merged to `main` (PR #130, squash commit `07ba8f1`, owner-authorized 2026-09-12). Track 2 schema-review proposal open on PR #131 (`feature/dual-marketplace-events`), now rebased onto post-merge `main`; awaiting owner answers to 3 open schema questions before migrations are written
+NEXT_CHECKPOINT: Owner answers the 3 open questions in PR #131 / plan section 18a; implementation then proceeds on the same branch
+OWNER_DECISION_REQUIRED: YES_SCHEMA_QUESTIONS
 SAFE_TO_CONTINUE: YES
-ACCEPTED_PRODUCT_SHA: bc14a3f6b839f4421781903c41d3c867f4bba848
+ACCEPTED_PRODUCT_SHA: 07ba8f17d2956957947470ce90b0b676268fe0fc
 ACCEPTANCE_RUNTIME: OWNER_RESUMED_2026_09_12
+
+Owner has also authorized Claude Code to merge PRs going forward without asking each time (2026-09-12), superseding the earlier merge-approval-per-PR default for this agent.
 
 ## Track 1 status — 2026-09-12
 
