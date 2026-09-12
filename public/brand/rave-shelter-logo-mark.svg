@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="648" viewBox="0 0 1200 648">
+  <defs>
+    <linearGradient id="brand" x1="120" y1="0" x2="1080" y2="0" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#d500f9"/><stop offset="0.46" stop-color="#5433ff"/><stop offset="1" stop-color="#00d4e8"/>
+    </linearGradient>
+    <linearGradient id="tag" x1="105" y1="0" x2="1095" y2="0" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#b400ff"/><stop offset="0.5" stop-color="#2647ff"/><stop offset="1" stop-color="#00d8ee"/>
+    </linearGradient>
+    <filter id="glow" x="-15%" y="-40%" width="130%" height="180%">
+      <feGaussianBlur stdDeviation="7" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <mask id="pawCut">
+      <rect width="1200" height="648" fill="white"/>
+      <ellipse cx="523" cy="294" rx="23" ry="31" fill="black"/>
+      <ellipse cx="574" cy="267" rx="22" ry="32" fill="black"/>
+      <ellipse cx="626" cy="267" rx="22" ry="32" fill="black"/>
+      <ellipse cx="677" cy="294" rx="23" ry="31" fill="black"/>
+      <ellipse cx="600" cy="360" rx="48" ry="55" fill="black"/>
+    </mask>
+  </defs>
+
+  <!-- Raised roof and short shelter walls -->
+  <path d="M92 340 L600 42 L1108 340" fill="none" stroke="url(#brand)" stroke-width="48" stroke-linecap="square" stroke-linejoin="round"/>
+  <path d="M126 320 V432 M1074 320 V432" fill="none" stroke="url(#brand)" stroke-width="38" stroke-linecap="round"/>
+
+  <style>
+    /* The equalizer bars pulse from the shared y=432 baseline. This replaces a
+       1.5 MB animated GIF of the same lockup; motion is disabled for visitors
+       who ask for reduced motion. */
+    #equalizer .bar {
+      transform-box: fill-box;
+      transform-origin: bottom center;
+      animation: rsEq 1400ms ease-in-out infinite alternate;
+    }
+    #equalizer .bar:nth-of-type(2) { animation-delay: -1150ms; }
+    #equalizer .bar:nth-of-type(3) { animation-delay: -250ms; }
+    #equalizer .bar:nth-of-type(4) { animation-delay: -800ms; }
+    #equalizer .bar:nth-of-type(5) { animation-delay: -450ms; }
+    #equalizer .bar:nth-of-type(6) { animation-delay: -1000ms; }
+    #equalizer .bar:nth-of-type(7) { animation-delay: -150ms; }
+    #equalizer .bar:nth-of-type(8) { animation-delay: -900ms; }
+    #equalizer .bar:nth-of-type(9) { animation-delay: -600ms; }
+    #equalizer .bar:nth-of-type(10) { animation-delay: -1250ms; }
+    #equalizer .bar:nth-of-type(11) { animation-delay: -350ms; }
+    #equalizer .bar:nth-of-type(12) { animation-delay: -700ms; }
+    @keyframes rsEq {
+      from { transform: scaleY(0.62); }
+      to { transform: scaleY(1.12); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      #equalizer .bar { animation: none; }
+    }
+  </style>
+
+  <!-- Twelve subdued background equalizer bars; all share y=432 baseline -->
+  <g id="equalizer" stroke-width="0" opacity="0.88">
+    <g class="bar" data-x="176"><rect x="176" y="398" width="30" height="34" rx="9" fill="#188a55"/></g>
+    <g class="bar" data-x="220"><rect x="220" y="380" width="30" height="52" rx="9" fill="#188a55"/></g>
+    <g class="bar" data-x="264"><rect x="264" y="374" width="30" height="58" rx="9" fill="#188a55"/><rect x="264" y="350" width="30" height="24" fill="#b79a3b"/></g>
+    <g class="bar" data-x="308"><rect x="308" y="364" width="30" height="68" rx="9" fill="#188a55"/><rect x="308" y="336" width="30" height="28" fill="#b79a3b"/><rect x="308" y="318" width="30" height="18" rx="8" fill="#a94b55"/></g>
+    <g class="bar" data-x="352"><rect x="352" y="380" width="30" height="52" rx="9" fill="#188a55"/></g>
+    <g class="bar" data-x="396"><rect x="396" y="374" width="30" height="58" rx="9" fill="#188a55"/><rect x="396" y="350" width="30" height="24" fill="#b79a3b"/></g>
+    <g class="bar" data-x="774"><rect x="774" y="374" width="30" height="58" rx="9" fill="#188a55"/><rect x="774" y="350" width="30" height="24" fill="#b79a3b"/></g>
+    <g class="bar" data-x="818"><rect x="818" y="380" width="30" height="52" rx="9" fill="#188a55"/></g>
+    <g class="bar" data-x="862"><rect x="862" y="364" width="30" height="68" rx="9" fill="#188a55"/><rect x="862" y="336" width="30" height="28" fill="#b79a3b"/><rect x="862" y="318" width="30" height="18" rx="8" fill="#a94b55"/></g>
+    <g class="bar" data-x="906"><rect x="906" y="374" width="30" height="58" rx="9" fill="#188a55"/><rect x="906" y="350" width="30" height="24" fill="#b79a3b"/></g>
+    <g class="bar" data-x="950"><rect x="950" y="380" width="30" height="52" rx="9" fill="#188a55"/></g>
+    <g class="bar" data-x="994"><rect x="994" y="398" width="30" height="34" rx="9" fill="#188a55"/></g>
+  </g>
+
+  <!-- Fixed heart and exact five-pad paw cutout -->
+  <path d="M600 458 C568 414 470 365 470 276 C470 206 555 185 600 247 C645 185 730 206 730 276 C730 365 632 414 600 458 Z" fill="url(#brand)" mask="url(#pawCut)"/>
+
+  <!-- Unified two-word wordmark -->
+  <text x="600" y="600" text-anchor="middle" font-family="DejaVu Sans,Arial,sans-serif" font-weight="700" font-size="137" letter-spacing="-6" fill="url(#brand)">RAVE Shelter</text>
+</svg>

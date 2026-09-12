@@ -9,9 +9,12 @@ test.describe("Issue #125 RAVE Shelter and LostPaws launch surfaces", () => {
     await page.goto("/rave");
     await expect(page.locator(".rsmPage")).toBeVisible();
     await expect(
-      page.getByText("Rewarding Adoption with Vendor Exclusives", {
-        exact: true,
-      }),
+      page.getByText(
+        "RAVE Shelter — Rewarding Adoption with Vendor Exclusives",
+        {
+          exact: true,
+        },
+      ),
     ).toBeVisible();
     await expect(page.locator(".lpPage")).toHaveCount(0);
 

@@ -18,7 +18,8 @@
 }
 
 .marketplaceViewControls button {
-  min-height: 36px;
+  /* 36px was below the 44px touch-target floor on mobile. */
+  min-height: 44px;
   display: inline-flex;
   align-items: center;
   gap: 7px;

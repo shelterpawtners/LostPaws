@@ -154,10 +154,10 @@ jobs:
             await homeMissionLink.waitFor({ state: 'visible', timeout: 10000 });
             await homeMissionLink.click();
             await page.waitForURL(url => url.pathname.endsWith('/rave'), { timeout: 10000 });
-            await page.getByRole('heading', { name: /Music\. Community\. Shelter pets\./i }).waitFor({ state: 'visible', timeout: 10000 });
+            await page.getByRole('heading', { level: 1, name: /Rave with purpose\. Shop with impact\./i }).waitFor({ state: 'visible', timeout: 10000 });
 
             await page.goto(`${process.env.SITE_URL}/rave`, { waitUntil: 'networkidle' });
-            await page.getByRole('heading', { name: /Music\. Community\. Shelter pets\./i }).waitFor({ state: 'visible', timeout: 10000 });
+            await page.getByRole('heading', { level: 1, name: /Rave with purpose\. Shop with impact\./i }).waitFor({ state: 'visible', timeout: 10000 });
             const raveLinks = [
               ['Shop RAVE Shelter offers', '/marketplace?channel=rave'],
               ['Join as a vendor', '/register?type=rave_vendor'],

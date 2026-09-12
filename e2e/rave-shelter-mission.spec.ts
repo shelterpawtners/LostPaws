@@ -18,7 +18,10 @@ test.describe("LostPaws and RAVE Shelter mission flow", () => {
 
     await expect(page).toHaveURL(/\/rave$/);
     await expect(
-      page.getByRole("heading", { name: /Music\. Community\. Shelter pets\./ }),
+      page.getByRole("heading", {
+        level: 1,
+        name: /Rave with purpose\. Shop with impact\./,
+      }),
     ).toBeVisible();
   });
 
