@@ -47,8 +47,16 @@
 
 .lpHero {
   background:
-    radial-gradient(circle at 15% 88%, rgba(53, 233, 255, 0.11), transparent 30%),
-    radial-gradient(circle at 85% 88%, rgba(255, 70, 187, 0.11), transparent 30%),
+    radial-gradient(
+      circle at 15% 88%,
+      rgba(53, 233, 255, 0.11),
+      transparent 30%
+    ),
+    radial-gradient(
+      circle at 85% 88%,
+      rgba(255, 70, 187, 0.11),
+      transparent 30%
+    ),
     #030305;
 }
 
@@ -186,7 +194,11 @@
 
 .lpBenefits {
   background:
-    radial-gradient(circle at 90% 12%, rgba(255, 70, 187, 0.08), transparent 30%),
+    radial-gradient(
+      circle at 90% 12%,
+      rgba(255, 70, 187, 0.08),
+      transparent 30%
+    ),
     #09080c;
 }
 
@@ -248,7 +260,11 @@
 
 .lpMovement {
   background:
-    radial-gradient(circle at 18% 50%, rgba(53, 233, 255, 0.08), transparent 32%),
+    radial-gradient(
+      circle at 18% 50%,
+      rgba(53, 233, 255, 0.08),
+      transparent 32%
+    ),
     var(--lp-bg);
 }
 
@@ -282,8 +298,7 @@
 .lpFinal {
   background:
     linear-gradient(110deg, rgba(53, 233, 255, 0.08), transparent 34%),
-    linear-gradient(290deg, rgba(255, 70, 187, 0.08), transparent 34%),
-    #050507;
+    linear-gradient(290deg, rgba(255, 70, 187, 0.08), transparent 34%), #050507;
 }
 
 .lpFinalInner {
