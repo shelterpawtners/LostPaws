@@ -156,21 +156,42 @@ jobs:
             await page.waitForURL(url => url.pathname.endsWith('/rave'), { timeout: 10000 });
             await page.getByRole('heading', { name: /Music\. Community\. Shelter pets\./i }).waitFor({ state: 'visible', timeout: 10000 });
 
-            for (const route of ['/rave', '/lostpaws']) {
-              await page.goto(`${process.env.SITE_URL}${route}`, { waitUntil: 'networkidle' });
-              await page.getByRole('heading', { name: /Music\. Community\. Shelter pets\./i }).waitFor({ state: 'visible', timeout: 10000 });
-              const expectedLinks = [
-                ['Shop RAVE Shelter offers', '/marketplace?channel=rave'],
-                ['Join as a vendor', '/register?type=rave_vendor'],
-                ['Create a Guardian account', '/register?type=guardian'],
-                ['Register a shelter', '/register?type=shelter'],
-              ];
-              for (const [name, suffix] of expectedLinks) {
-                const href = await page.getByRole('link', { name, exact: true }).first().getAttribute('href');
-                if (!href || !href.endsWith(suffix)) {
-                  throw new Error(`${viewport.name} ${route}: ${name} points to ${href}, expected suffix ${suffix}`);
-                }
+            await page.goto(`${process.env.SITE_URL}/rave`, { waitUntil: 'networkidle' });
+            await page.getByRole('heading', { name: /Music\. Community\. Shelter pets\./i }).waitFor({ state: 'visible', timeout: 10000 });
+            const raveLinks = [
+              ['Shop RAVE Shelter offers', '/marketplace?channel=rave'],
+              ['Join as a vendor', '/register?type=rave_vendor'],
+              ['Create a Guardian account', '/register?type=guardian'],
+              ['Register a shelter', '/register?type=shelter'],
+              ['Explore the LostPaws activation', '/lostpaws'],
+            ];
+            for (const [name, suffix] of raveLinks) {
+              const href = await page.getByRole('link', { name, exact: true }).first().getAttribute('href');
+              if (!href || !href.endsWith(suffix)) {
+                throw new Error(`${viewport.name} /rave: ${name} points to ${href}, expected suffix ${suffix}`);
               }
+            }
+
+            await page.goto(`${process.env.SITE_URL}/lostpaws`, { waitUntil: 'networkidle' });
+            await page.getByText('A RAVE Shelter activation', { exact: true }).waitFor({ state: 'visible', timeout: 10000 });
+            await page.getByRole('heading', { name: 'Bring the mission into the music community.' }).waitFor({ state: 'visible', timeout: 10000 });
+            const lostPawsLinks = [
+              ['Shop participating offers', '/marketplace?channel=rave'],
+              ['Join as a vendor or creator', '/register?type=rave_vendor'],
+              ['Register a shelter', '/register?type=shelter'],
+              ['Explore the full RAVE Shelter mission', '/rave'],
+            ];
+            for (const [name, suffix] of lostPawsLinks) {
+              const href = await page.getByRole('link', { name, exact: true }).first().getAttribute('href');
+              if (!href || !href.endsWith(suffix)) {
+                throw new Error(`${viewport.name} /lostpaws: ${name} points to ${href}, expected suffix ${suffix}`);
+              }
+            }
+            const lostPawsHeroFit = await page.locator('.lpHeroMedia img').evaluate(
+              element => getComputedStyle(element).objectFit,
+            );
+            if (lostPawsHeroFit !== 'contain') {
+              throw new Error(`${viewport.name} /lostpaws: hero object-fit is ${lostPawsHeroFit}, expected contain`);
             }
 
             await page.goto(`${process.env.SITE_URL}/rave-shelter`, { waitUntil: 'networkidle' });
