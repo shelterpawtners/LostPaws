@@ -5,6 +5,8 @@
   "outputDirectory": "dist",
   "ignoreCommand": "bash scripts/vercel-ignore-build.sh",
   "rewrites": [
+    { "source": "/privacy", "destination": "/privacy.html" },
+    { "source": "/privacy/", "destination": "/privacy.html" },
     { "source": "/rave-vendors", "destination": "/rave-vendors.html" },
     { "source": "/rave-vendors/", "destination": "/rave-vendors.html" },
     { "source": "/(.*)", "destination": "/index.html" }

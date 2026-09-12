@@ -4,6 +4,25 @@ set -euo pipefail
 # Vercel Ignored Build Step semantics:
 #   exit 0 => skip build
 #   exit 1 => proceed with build
+#
+# Explicit commit-message controls:
+#   [deploy]      => force a Vercel build even when the file diff would normally skip it
+#   [skip deploy] => force a skip when it is intentionally safe to do so
+#
+# This lets automation trigger rebuilds for environment-variable-only changes
+# without requiring an owner to manually toggle Vercel project settings.
+
+commit_message="$(git log -1 --pretty=%B 2>/dev/null || true)"
+
+if grep -Eqi '\[deploy\]' <<< "${commit_message}"; then
+  echo "Explicit [deploy] marker found; run Vercel build."
+  exit 1
+fi
+
+if grep -Eqi '\[skip[[:space:]]+deploy\]' <<< "${commit_message}"; then
+  echo "Explicit [skip deploy] marker found; skip Vercel build."
+  exit 0
+fi
 
 if ! git rev-parse HEAD^ >/dev/null 2>&1; then
   echo "No parent commit available; build conservatively."

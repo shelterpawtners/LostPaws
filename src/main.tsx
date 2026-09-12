@@ -79,6 +79,7 @@ import { EventsPage } from "./components/events/EventsPage";
 import { RouteFocus } from "./components/RouteFocus";
 import { AdoptionVerificationResponder } from "./components/AdoptionVerificationResponder";
 import { RaveShelterMission } from "./components/RaveShelterMission";
+import { SevenStarSheltersPage } from "./components/SevenStarSheltersPage";
 import {
   AdminQaMode,
   AdminQaNavLink,
@@ -2138,6 +2139,14 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/rave" element={<RaveMissionPage />} />
+        <Route
+          path="/sevenstars"
+          element={
+            <Page>
+              <SevenStarSheltersPage />
+            </Page>
+          }
+        />
         <Route path="/rave-shelter" element={<Navigate to="/rave" replace />} />
         <Route path="/passport" element={<FoundationPage name="passport" />} />
         <Route path="/partners" element={<FoundationPage name="partners" />} />
