@@ -135,16 +135,16 @@ Use **Sol** only as a targeted escalation when Terra proves insufficient for a g
 
 Keep **Fast mode OFF** unless speed is more important than allowance efficiency for one urgent step.
 
-| Phase | Environment | Model | Effort | Fast |
-| --- | --- | --- | --- | --- |
-| Vercel Google-enable/deploy blocker | Work | Terra | Medium | Off |
-| Google OAuth live acceptance | Work | Terra | Medium | Off |
-| Hard OAuth debugging | Work | Terra High, then Sol Medium only if needed | High / Medium | Off |
-| Meta discovery | Work | Terra | Low/Medium | Off |
-| Retained-branch reconciliation | VS Code Codex | Terra | Medium | Off |
-| Difficult auth/RLS/security/merge case | VS Code Codex | Sol only if Terra is insufficient | Medium/High | Off |
-| Routine tests/docs/inventory | VS Code Codex | Terra or lighter available model | Low/Medium | Off |
-| Final production smoke | Work | Terra | Low/Medium | Off |
+| Phase                                  | Environment   | Model                                      | Effort        | Fast |
+| -------------------------------------- | ------------- | ------------------------------------------ | ------------- | ---- |
+| Vercel Google-enable/deploy blocker    | Work          | Terra                                      | Medium        | Off  |
+| Google OAuth live acceptance           | Work          | Terra                                      | Medium        | Off  |
+| Hard OAuth debugging                   | Work          | Terra High, then Sol Medium only if needed | High / Medium | Off  |
+| Meta discovery                         | Work          | Terra                                      | Low/Medium    | Off  |
+| Retained-branch reconciliation         | VS Code Codex | Terra                                      | Medium        | Off  |
+| Difficult auth/RLS/security/merge case | VS Code Codex | Sol only if Terra is insufficient          | Medium/High   | Off  |
+| Routine tests/docs/inventory           | VS Code Codex | Terra or lighter available model           | Low/Medium    | Off  |
+| Final production smoke                 | Work          | Terra                                      | Low/Medium    | Off  |
 
 ---
 
@@ -168,15 +168,15 @@ Keep **Fast mode OFF** unless speed is more important than allowance efficiency 
 
 # Five-hour sequence and environment switches
 
-| Window | Environment | Goal | Status |
-| --- | --- | --- | --- |
-| A1 | Work | Hosted Supabase + Vercel + domain + HTTPS | **COMPLETE** |
-| A2a | Work | First Google acceptance attempt | **BLOCKED — flag/deploy** |
-| A2b | Work | Resolve ignored-build + set production Google flag + deploy | **NEXT** |
-| A2c | Work | Full live Google OAuth acceptance | After A2b |
-| A3 | Work | Meta discovery / quick smoke | After Google result |
-| B | VS Code Codex + Claude in parallel | Codex branch reconciliation; Claude resumes own work | After live auth checkpoints or when Claude returns |
-| C | Work | Final live production acceptance | Final checkpoint |
+| Window | Environment                        | Goal                                                        | Status                                             |
+| ------ | ---------------------------------- | ----------------------------------------------------------- | -------------------------------------------------- |
+| A1     | Work                               | Hosted Supabase + Vercel + domain + HTTPS                   | **COMPLETE**                                       |
+| A2a    | Work                               | First Google acceptance attempt                             | **BLOCKED — flag/deploy**                          |
+| A2b    | Work                               | Resolve ignored-build + set production Google flag + deploy | **NEXT**                                           |
+| A2c    | Work                               | Full live Google OAuth acceptance                           | After A2b                                          |
+| A3     | Work                               | Meta discovery / quick smoke                                | After Google result                                |
+| B      | VS Code Codex + Claude in parallel | Codex branch reconciliation; Claude resumes own work        | After live auth checkpoints or when Claude returns |
+| C      | Work                               | Final live production acceptance                            | Final checkpoint                                   |
 
 ## Explicit switching rule
 
