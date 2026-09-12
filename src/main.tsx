@@ -14,6 +14,7 @@ import {
   Routes,
   useLocation,
   useNavigate,
+  useNavigationType,
   useParams,
 } from "react-router-dom";
 import {
@@ -75,6 +76,7 @@ import { GuardianProfileLite } from "./components/GuardianProfileLite";
 import { GuardianPetPassport } from "./components/GuardianPetPassport";
 import { SupportPage } from "./components/SupportPage";
 import { EventsPage } from "./components/events/EventsPage";
+import { RouteFocus } from "./components/RouteFocus";
 import { AdoptionVerificationResponder } from "./components/AdoptionVerificationResponder";
 import { RaveShelterMission } from "./components/RaveShelterMission";
 import {
@@ -2132,6 +2134,7 @@ function App() {
   return (
     <>
       <DocumentTitle />
+      <RouteFocus />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/rave" element={<RaveMissionPage />} />

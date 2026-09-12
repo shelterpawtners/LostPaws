@@ -27,7 +27,7 @@ test.describe("Issue #125 RAVE Shelter and LostPaws launch surfaces", () => {
     ).toBeVisible();
     await expect(
       page.getByRole("heading", {
-        name: "Bring the mission into the Lost Lands community.",
+        name: "Shop the lot. Help the pack.",
       }),
     ).toBeVisible();
     await expect(page.locator(".rsmPage")).toHaveCount(0);
