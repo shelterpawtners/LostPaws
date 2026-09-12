@@ -12,6 +12,7 @@ const exactTitles: Record<string, string> = {
   "/": "ShelterPawtners — Care, savings, and community for shelter pets",
   "/rave": "RAVE Shelter — Rave with purpose. Shop with impact.",
   "/lostpaws": "LostPaws — a RAVE Shelter initiative for Lost Lands",
+  "/sevenstars": "Seven Star Shelters — Spread shelter love",
   "/marketplace": "Marketplace",
   "/learn": "Learn how it works",
   "/learn/savings-explorer": "Savings explorer",

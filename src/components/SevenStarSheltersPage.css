@@ -1,0 +1,460 @@
+.sevenStarsPage {
+  --sss-ink: #171333;
+  --sss-night: #21173f;
+  --sss-plum: #513166;
+  --sss-gold: #ffc85a;
+  --sss-coral: #ed735e;
+  --sss-cream: #fff6de;
+  --sss-mist: #f7e8cf;
+  color: var(--sss-ink);
+  background: var(--sss-cream);
+}
+.sevenStarsPage * {
+  box-sizing: border-box;
+}
+.sevenStarsPage h1,
+.sevenStarsPage h2,
+.sevenStarsPage h3,
+.sevenStarsPage p {
+  margin-top: 0;
+}
+.sevenStarsWrap {
+  width: min(1160px, calc(100% - 2rem));
+  margin: 0 auto;
+}
+.sevenStarsEyebrow,
+.sevenStarsPathTag {
+  margin-bottom: 0.55rem;
+  color: var(--sss-coral);
+  font-size: 0.73rem;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.sevenStarsHero {
+  overflow: hidden;
+  padding: clamp(3.5rem, 8vw, 6.5rem) 0;
+  color: var(--sss-cream);
+  background:
+    radial-gradient(circle at 15% 15%, #be627c 0, transparent 26%),
+    radial-gradient(circle at 82% 40%, #e8814e80 0, transparent 30%),
+    var(--sss-night);
+}
+.sevenStarsHeroGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(270px, 0.9fr);
+  gap: clamp(2rem, 6vw, 5rem);
+  align-items: center;
+}
+.sevenStarsHero .sevenStarsEyebrow {
+  color: var(--sss-gold);
+}
+.sevenStarsKicker {
+  margin-bottom: 1rem;
+  color: var(--sss-gold);
+  letter-spacing: 0.4em;
+}
+.sevenStarsHero h1 {
+  max-width: 11ch;
+  margin-bottom: 1.15rem;
+  font-family: Outfit, system-ui, sans-serif;
+  font-size: clamp(3rem, 7.2vw, 6.2rem);
+  line-height: 0.91;
+  letter-spacing: -0.06em;
+  text-transform: uppercase;
+}
+.sevenStarsLead {
+  max-width: 56ch;
+  color: #f7e8d4;
+  font-size: clamp(1.05rem, 2vw, 1.25rem);
+  line-height: 1.65;
+}
+.sevenStarsActions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 1.75rem 0;
+}
+.sevenStarsButton {
+  display: inline-flex;
+  min-height: 46px;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 1.15rem;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  font-weight: 900;
+  text-align: center;
+}
+.sevenStarsPrimary {
+  background: var(--sss-gold);
+  color: #281735;
+  box-shadow: 0 10px 0 #b25159;
+}
+.sevenStarsOutline {
+  border-color: #fff1d6a8;
+  color: var(--sss-cream);
+}
+.sevenStarsTextLink {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  color: inherit;
+  font-weight: 900;
+  text-decoration: underline;
+  text-underline-offset: 0.25em;
+}
+.sevenStarsDisclosure {
+  max-width: 68ch;
+  margin: 1.5rem 0 0;
+  color: #eadccb;
+  font-size: 0.8rem;
+  line-height: 1.55;
+}
+.sevenStarsPoster {
+  position: relative;
+  display: grid;
+  min-height: 385px;
+  place-content: center;
+  overflow: hidden;
+  border: 1px solid #fff3d540;
+  border-radius: 42% 42% 32px 32px;
+  background: linear-gradient(#f58c62 0 47%, #f8bc68 47% 57%, #5d3266 57%);
+  box-shadow: 18px 20px 0 #c6595b;
+  text-align: center;
+  isolation: isolate;
+}
+.sevenStarsPoster::before {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-image: radial-gradient(#fff7dc 1px, transparent 1.5px);
+  background-size: 33px 33px;
+  content: "";
+  opacity: 0.65;
+}
+.sevenStarsSun {
+  position: absolute;
+  top: 47px;
+  width: 144px;
+  height: 144px;
+  border-radius: 50%;
+  background: #ffe084;
+  box-shadow: 0 0 0 13px #ffcf6c;
+}
+.sevenStarsMountain {
+  position: absolute;
+  bottom: -20px;
+  width: 130%;
+  height: 48%;
+  clip-path: polygon(
+    0 100%,
+    20% 35%,
+    34% 68%,
+    52% 6%,
+    68% 65%,
+    82% 27%,
+    100% 100%
+  );
+}
+.sevenStarsMountainBack {
+  background: #402750;
+  opacity: 0.8;
+}
+.sevenStarsMountainFront {
+  bottom: -40px;
+  background: #251a3c;
+}
+.sevenStarsPoster span,
+.sevenStarsPoster b,
+.sevenStarsPoster small {
+  position: relative;
+  z-index: 2;
+  display: block;
+  font-family: Outfit, system-ui, sans-serif;
+  text-transform: uppercase;
+}
+.sevenStarsPoster span {
+  color: #432650;
+  font-size: clamp(2rem, 4.2vw, 3.4rem);
+  font-weight: 900;
+  line-height: 0.9;
+}
+.sevenStarsPoster b {
+  color: #fff4d7;
+  font-size: clamp(3rem, 6.5vw, 5rem);
+  line-height: 0.9;
+  text-shadow: 4px 4px 0 #a94859;
+}
+.sevenStarsPoster small {
+  margin-top: 1rem;
+  color: #fff1d6;
+  font-size: 0.78rem;
+  font-weight: 900;
+  letter-spacing: 0.17em;
+}
+.sevenStarsIntro,
+.sevenStarsPaths,
+.sevenStarsHow {
+  padding: clamp(3.5rem, 7vw, 6rem) 0;
+}
+.sevenStarsIntro {
+  background: var(--sss-mist);
+}
+.sevenStarsIntroGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+  gap: 2rem;
+  align-items: start;
+}
+.sevenStarsPage h2 {
+  font-family: Outfit, system-ui, sans-serif;
+  font-size: clamp(2rem, 4.2vw, 3.7rem);
+  line-height: 1;
+  letter-spacing: -0.045em;
+  text-transform: uppercase;
+}
+.sevenStarsIntroGrid > p,
+.sevenStarsEarlyInner > div > p {
+  margin: 0;
+  color: #504764;
+  font-size: 1.06rem;
+  line-height: 1.7;
+}
+.sevenStarsPillars {
+  padding: clamp(3.5rem, 7vw, 6rem) 0;
+  color: var(--sss-cream);
+  background: var(--sss-plum);
+}
+.sevenStarsPillars .sevenStarsEyebrow {
+  color: var(--sss-gold);
+}
+.sevenStarsSectionHeading {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: end;
+  margin-bottom: 2rem;
+}
+.sevenStarsSectionHeading a {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  color: var(--sss-gold);
+  font-weight: 900;
+  text-decoration: underline;
+  text-underline-offset: 0.24em;
+}
+.sevenStarsPillarGrid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.sevenStarsPillarGrid li {
+  min-height: 215px;
+  padding: 1rem;
+  border: 1px solid #ffe5af57;
+  border-radius: 14px;
+  background: #fff4dc0a;
+}
+.sevenStarsPillarGrid span,
+.sevenStarsHowGrid span {
+  color: var(--sss-gold);
+  font-size: 0.75rem;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+}
+.sevenStarsPillarGrid h3 {
+  margin: 1.2rem 0 0.7rem;
+  font-size: 1rem;
+  line-height: 1.1;
+}
+.sevenStarsPillarGrid p {
+  margin: 0;
+  color: #eee1de;
+  font-size: 0.84rem;
+  line-height: 1.5;
+}
+.sevenStarsPaths {
+  background: #fffaf0;
+}
+.sevenStarsPathGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+.sevenStarsPathGrid article {
+  display: flex;
+  flex-direction: column;
+  padding: 1.45rem;
+  border: 1px solid #dccaaa;
+  border-radius: 18px;
+  background: #fff;
+}
+.sevenStarsPathGrid article:nth-child(2) {
+  background: #fce0bf;
+}
+.sevenStarsPathGrid h3 {
+  margin: 0 0 0.7rem;
+  font-family: Outfit, system-ui, sans-serif;
+  font-size: 1.7rem;
+  line-height: 1;
+}
+.sevenStarsPathGrid article > p:not(.sevenStarsPathTag) {
+  color: #5b5365;
+  line-height: 1.6;
+}
+.sevenStarsPathGrid a {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  margin-top: auto;
+  color: #6c294e;
+  font-weight: 900;
+  text-decoration: underline;
+  text-underline-offset: 0.24em;
+}
+.sevenStarsAmplify {
+  padding: clamp(3.5rem, 7vw, 6rem) 0;
+  color: var(--sss-cream);
+  background: #272044;
+}
+.sevenStarsAmplifyLead {
+  max-width: 72ch;
+  color: #e4d8d1;
+  line-height: 1.6;
+}
+.sevenStarsCommunityGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.8rem;
+  margin-top: 2rem;
+}
+.sevenStarsCommunityGrid a {
+  min-height: 200px;
+  padding: 1.2rem;
+  border: 1px solid #e8d4b74f;
+  border-radius: 18px;
+  background: #fff7e60a;
+}
+.sevenStarsCommunityGrid h3 {
+  margin: 0 0 0.8rem;
+  color: var(--sss-gold);
+  font-family: Outfit, system-ui, sans-serif;
+  font-size: 1.25rem;
+  line-height: 1.05;
+}
+.sevenStarsCommunityGrid p {
+  margin: 0;
+  color: #e2d9df;
+  font-size: 0.91rem;
+  line-height: 1.55;
+}
+.sevenStarsHow {
+  background: #ed735e;
+}
+.sevenStarsHow .sevenStarsEyebrow {
+  color: #542146;
+}
+.sevenStarsHowGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+.sevenStarsHowGrid article {
+  padding: 1.25rem 0;
+  border-top: 2px solid #63264f;
+}
+.sevenStarsHowGrid span {
+  color: #64254f;
+}
+.sevenStarsHowGrid h3 {
+  margin: 0.7rem 0;
+  font-family: Outfit, system-ui, sans-serif;
+  font-size: 1.5rem;
+}
+.sevenStarsHowGrid p {
+  margin: 0;
+  color: #48213e;
+  line-height: 1.6;
+}
+.sevenStarsEarly {
+  padding: clamp(3.5rem, 7vw, 6rem) 0;
+  color: var(--sss-cream);
+  background:
+    radial-gradient(circle at 80% 20%, #f9a35c44, transparent 35%),
+    var(--sss-night);
+}
+.sevenStarsEarly .sevenStarsEyebrow {
+  color: var(--sss-gold);
+}
+.sevenStarsEarlyInner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+}
+.sevenStarsEarlyInner > div:first-child {
+  max-width: 660px;
+}
+.sevenStarsEarlyInner h2 {
+  margin-bottom: 1rem;
+}
+.sevenStarsEarlyInner > .sevenStarsActions {
+  max-width: 310px;
+  margin: 0;
+}
+.sevenStarsPage a:focus-visible {
+  outline: 3px solid var(--sss-gold);
+  outline-offset: 3px;
+}
+@media (max-width: 960px) {
+  .sevenStarsPillarGrid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+  .sevenStarsCommunityGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 720px) {
+  .sevenStarsHeroGrid,
+  .sevenStarsIntroGrid,
+  .sevenStarsPathGrid,
+  .sevenStarsHowGrid {
+    grid-template-columns: 1fr;
+  }
+  .sevenStarsPoster {
+    min-height: 290px;
+    max-width: 470px;
+  }
+  .sevenStarsPillarGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .sevenStarsPillarGrid li {
+    min-height: 175px;
+  }
+}
+@media (max-width: 480px) {
+  .sevenStarsButton {
+    width: 100%;
+  }
+  .sevenStarsTextLink {
+    width: 100%;
+    justify-content: center;
+  }
+  .sevenStarsCommunityGrid {
+    grid-template-columns: 1fr;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sevenStarsPage * {
+    scroll-behavior: auto !important;
+    transition: none !important;
+  }
+}
