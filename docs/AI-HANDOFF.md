@@ -3,7 +3,7 @@
 STATUS: READY_FOR_ACCEPTANCE
 CURRENT_PHASE: RAVE Shelter / LostPaws dual-marketplace sprint — Track 3 slice (marketplace UX, giving, Learn) on `feature/marketplace-ux-and-giving`
 CURRENT_CHECKPOINT: Tracks 1 and 2 merged to `main` (PR #130 `07ba8f1`, PR #131 `9c114ea`). `feature/marketplace-ux-and-giving` adds: site-wide scroll-to-top on navigation, a shortened LostPaws page, a marketplace redesign (real tags/images, category filter, sort, tighter mobile layout), a business giving panel and Guardian giving history built on the pre-existing donation schema, a business-facing tax/giving document, new Learn articles, and a written (not yet built) proposal for offer link-preview image fetching. Typecheck, lint, 49 unit tests, 54 public e2e tests, and 48 persona e2e tests all pass locally against a freshly reset database.
-NEXT_CHECKPOINT: Push `feature/marketplace-ux-and-giving`, open a PR, get CI green, merge to `main`
+NEXT_CHECKPOINT: PR #135 open (https://github.com/shelterpawtners/LostPaws/pull/135). Waiting on CI, then owner merge under the standing merge authorization.
 OWNER_DECISION_REQUIRED: NO
 SAFE_TO_CONTINUE: YES
 ACCEPTED_PRODUCT_SHA: 9c114eada2018664e96ce37b002e901523129722
