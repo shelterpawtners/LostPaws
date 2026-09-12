@@ -1299,3 +1299,10 @@ header .guardianAccountPanel {
   align-items: center;
   min-height: 44px;
 }
+/* The LostPaws feature band is dark, but .eyebrow defaults to the light-theme
+   purple, which measured 2.56:1 there. Use the same teal the .dark sections
+   already use. */
+.lostPawsFeature .eyebrow,
+.lostPawsRoadmap .eyebrow {
+  color: #71d7cb;
+}

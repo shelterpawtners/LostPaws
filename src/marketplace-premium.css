@@ -306,7 +306,7 @@
   border-radius: 999px;
   background: #ffffffd9;
   color: #253653;
-  font-size: 0.64rem;
+  font-size: 0.72rem;
   font-weight: 900;
   letter-spacing: 0.055em;
   text-transform: uppercase;
@@ -339,8 +339,8 @@
 .marketOfferProviderContext {
   display: block;
   margin-top: 2px;
-  color: #7b8799;
-  font-size: 0.68rem;
+  color: #a9b4c6;
+  font-size: 0.72rem;
   font-weight: 650;
 }
 
@@ -368,7 +368,7 @@
 
 .marketOfferEligibilityPreview > span {
   color: #647087;
-  font-size: 0.64rem;
+  font-size: 0.72rem;
   font-weight: 900;
   letter-spacing: 0.07em;
   text-transform: uppercase;

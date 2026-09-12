@@ -134,7 +134,8 @@
 
 .rsmPink {
   background: var(--rsm-pink);
-  color: #fff;
+  /* White on this pink is only 3.07:1; dark ink clears the 4.5 floor. */
+  color: #14101f;
 }
 
 .rsmButton:hover {
