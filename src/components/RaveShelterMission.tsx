@@ -16,21 +16,23 @@ export function RaveShelterMission() {
         <div className="rsmHeroArt">
           <img
             src={lostPawsHero}
-            alt="LostPaws — a RAVE Shelter music-community activation"
+            alt="LostPaws — a RAVE Shelter initiative for Lost Lands"
             width={1672}
             height={941}
           />
           <div className="rsmHeroFade" aria-hidden="true" />
         </div>
         <div className="rsmWrap rsmHeroCopy">
+          <p className="rsmTagline">Rave with purpose. Shop with impact.</p>
           <p className="rsmEyebrow">RAVE Shelter</p>
           <h1 id="rsm-title">
             Music. Community. <span>Shelter pets.</span>
           </h1>
           <p className="rsmLead">
-            RAVE Shelter is the Rescue and Adoption Vendor Ecosystem: an ongoing
-            movement bringing community members, vendors, shelters, and pet
-            people together so everyday purchasing choices can do more.
+            RAVE Shelter — Rewarding Adoption with Vendor Exclusives — is an
+            ongoing movement bringing ravers, festival vendors, creators, and
+            pet people together so everyday purchasing choices can do more for
+            shelter pets.
           </p>
           <div className="rsmActions">
             <Link
@@ -46,6 +48,11 @@ export function RaveShelterMission() {
               Join as a vendor
             </Link>
           </div>
+          <p className="rsmDemandCta">
+            Right now, we need you to sign up and show demand — every
+            registration helps grow vendor participation, marketplace inventory,
+            and shelter support.
+          </p>
         </div>
       </section>
 
@@ -122,7 +129,7 @@ export function RaveShelterMission() {
         <div className="rsmWrap rsmImpactGrid">
           <div className="rsmLogoPanel">
             <img src={raveLogo} alt="RAVE Shelter" />
-            <p>Rescue and Adoption Vendor Ecosystem</p>
+            <p>Rewarding Adoption with Vendor Exclusives</p>
           </div>
           <div>
             <p className="rsmEyebrow">Why RAVE Shelter exists</p>
@@ -137,10 +144,11 @@ export function RaveShelterMission() {
               larger.
             </p>
             <p>
-              LostPaws is the first music-community activation of that idea.
-              RAVE Shelter is the broader ecosystem that connects activations to
-              offers, vendors, shelters, adoption, and the ShelterPawtners
-              platform.
+              RAVE Shelter is the broader ecosystem that connects offers,
+              vendors, shelters, adoption, and the ShelterPawtners platform for
+              the whole festival and rave community. LostPaws is a distinct RAVE
+              Shelter community initiative built specifically for the Lost Lands
+              / Excision festival family.
             </p>
           </div>
         </div>
@@ -219,12 +227,13 @@ export function RaveShelterMission() {
               Buy something useful. Save some money. Help shelter pets.
             </h2>
             <p>
-              LostPaws is the first RAVE Shelter activation built for music and
-              festival communities. Future activations can carry the same model
-              into more events, cities, and communities.
+              LostPaws is the RAVE Shelter community initiative built for Lost
+              Lands and the Excision festival family. Other festivals and events
+              get their own RAVE Shelter activations without borrowing the
+              LostPaws name.
             </p>
             <Link className="rsmTextLink" to="/lostpaws">
-              Explore the LostPaws activation
+              Explore LostPaws — the Lost Lands / Excision community
             </Link>
           </div>
           <Link className="rsmButton rsmPrimary" to="/marketplace?channel=rave">

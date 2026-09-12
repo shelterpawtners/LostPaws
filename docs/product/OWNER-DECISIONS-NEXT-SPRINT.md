@@ -51,3 +51,7 @@ Status: open owner review list.
    - whether certification means shelter-confirmed adoption only or additional validation.
 
 These open decisions must not block Track 1 mobile/branding/conversion work, but they should block irreversible financial automation and unsupported public tax claims.
+
+## Brand asset follow-up (found during Track 1, 2026-09-12)
+
+`public/brand/rave-shelter-logo-static-v2.png` (and the `rave-shelter-logo-animated-v2.gif` built from it) has the superseded tagline "Deals for ravers. Support for shelter pets." baked into the image itself. Track 1 corrected the surrounding page copy to "Rave with purpose. Shop with impact." but did not touch this approved logo asset. Needs a regenerated logo lockup with the new tagline from whoever owns brand assets.

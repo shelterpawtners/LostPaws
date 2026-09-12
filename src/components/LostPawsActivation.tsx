@@ -19,14 +19,16 @@ export function LostPawsActivation() {
           />
         </div>
         <div className="lpWrap lpHeroContent">
-          <p className="lpKicker">A RAVE Shelter activation</p>
+          <p className="lpKicker">A RAVE Shelter initiative for Lost Lands</p>
           <img className="lpLogo" src={logo} alt="LostPaws" />
-          <h1 id="lp-title">Bring the mission into the music community.</h1>
+          <h1 id="lp-title">
+            Bring the mission into the Lost Lands community.
+          </h1>
           <p className="lpLead">
-            LostPaws is the first RAVE Shelter activation: a festival-community
-            campaign connecting useful offers, independent vendors, pet people,
-            and shelters through intentional purchases that can create more
-            value and measurable support.
+            LostPaws is the RAVE Shelter community initiative built for Lost
+            Lands and the Excision festival family: connecting useful offers,
+            independent vendors, pet people, and shelters through intentional
+            purchases that can create more value and measurable support.
           </p>
           <div className="lpActions">
             <Link className="lpButton lpPrimary" to="/marketplace?channel=rave">
@@ -39,6 +41,11 @@ export function LostPawsActivation() {
               Join as a vendor or creator
             </Link>
           </div>
+          <p className="lpDemandCta">
+            Right now, we need you to sign up and show demand — every
+            registration helps grow vendor participation, marketplace inventory,
+            and shelter support.
+          </p>
         </div>
       </section>
 
@@ -52,14 +59,17 @@ export function LostPawsActivation() {
           </div>
           <div className="lpCopy">
             <p>
-              Music communities already discover artists, makers, merch, food,
-              services, and causes through each other. LostPaws gives that same
-              discovery behavior a practical path toward shelter impact.
+              The Lost Lands and Excision community already discovers artists,
+              makers, merch, food, services, and causes through each other.
+              LostPaws gives that same discovery behavior a practical path
+              toward shelter impact.
             </p>
             <p>
-              It is designed as one activation in a larger RAVE Shelter model,
-              so the idea can travel to more events, cities, and communities
-              without pretending to be an official program of any festival.
+              LostPaws is a distinct RAVE Shelter community initiative reserved
+              for the Lost Lands / Excision festival family. It is not an
+              official program of, or affiliated with, Lost Lands, Excision, or
+              their affiliates. Other festivals and events get their own RAVE
+              Shelter activations rather than the LostPaws name.
             </p>
           </div>
         </div>
@@ -110,18 +120,21 @@ export function LostPawsActivation() {
         <div className="lpWrap lpMovementGrid">
           <div className="lpRaveLogoPanel">
             <img src={raveLogo} alt="RAVE Shelter" />
-            <p>Rescue and Adoption Vendor Ecosystem</p>
+            <p>Rewarding Adoption with Vendor Exclusives</p>
           </div>
           <div>
             <p className="lpKicker">The bigger movement</p>
             <h2 id="lp-movement-title">
-              LostPaws is the activation. RAVE Shelter is the ecosystem.
+              LostPaws is the Lost Lands community. RAVE Shelter is the
+              ecosystem.
             </h2>
             <p>
-              RAVE Shelter is the ongoing movement connecting Guardians,
-              shelters, vendors, PetBiz partners, adoption, savings, and future
-              giving tools. LostPaws is the first campaign built to carry that
-              mission through music and festival communities.
+              RAVE Shelter — Rewarding Adoption with Vendor Exclusives — is the
+              ongoing movement connecting Guardians, shelters, vendors, PetBiz
+              partners, adoption, savings, and future giving tools across the
+              whole festival and rave community. LostPaws is the dedicated piece
+              of that movement built specifically for Lost Lands and the
+              Excision festival family.
             </p>
             <Link className="lpTextLink" to="/rave">
               Explore the full RAVE Shelter mission

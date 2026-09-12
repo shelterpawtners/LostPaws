@@ -8,16 +8,16 @@ Avoid em dashes, unnecessary dashed sentence constructions, generic AI phrasing,
 
 ## Terminology
 
-| Term                  | Usage                                                                                                                                                        |
-| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| ShelterPawtners       | Business and broader ecosystem; preserve spelling and capitalization.                                                                                        |
-| LostPaws              | Distinct initiative and this application repository; not shorthand for an official festival relationship.                                                    |
-| RAVE Shelter          | Rescue and Adoption Vendor Ecosystem; the LostPaws rave-community vendor marketplace. Use the approved tagline “Deals for ravers. Support for shelter pets.” |
-| Digital Pet Passport  | Core pet record concept; shorten to Passport after introducing it.                                                                                           |
-| Guardian              | Preferred term for the person caring for a pet.                                                                                                              |
-| Pet owner             | Use only for search, public familiarity, legal meaning, or necessary clarification.                                                                          |
-| ShelterCARD / ReWards | Related savings concepts; preserve capitalization and do not invent finalized commercial terms.                                                              |
-| Verified              | State what was verified and by whom; never imply all record content is verified.                                                                             |
+| Term                  | Usage                                                                                                                                                                                                                                                                                                          |
+| --------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| ShelterPawtners       | Business and broader ecosystem; preserve spelling and capitalization.                                                                                                                                                                                                                                          |
+| LostPaws              | Distinct initiative and this application repository; not shorthand for an official festival relationship.                                                                                                                                                                                                      |
+| RAVE Shelter          | Rewarding Adoption with Vendor Exclusives; the human/festival-facing marketplace and community program powered by ShelterPawtners. LostPaws is a RAVE Shelter initiative (not the reverse), reserved for Lost Lands/Excision-family campaigns. Use the approved tagline "Rave with purpose. Shop with impact." |
+| Digital Pet Passport  | Core pet record concept; shorten to Passport after introducing it.                                                                                                                                                                                                                                             |
+| Guardian              | Preferred term for the person caring for a pet.                                                                                                                                                                                                                                                                |
+| Pet owner             | Use only for search, public familiarity, legal meaning, or necessary clarification.                                                                                                                                                                                                                            |
+| ShelterCARD / ReWards | Related savings concepts; preserve capitalization and do not invent finalized commercial terms.                                                                                                                                                                                                                |
+| Verified              | State what was verified and by whom; never imply all record content is verified.                                                                                                                                                                                                                               |
 
 ## Claims and trust
 

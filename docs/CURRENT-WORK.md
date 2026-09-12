@@ -1,5 +1,15 @@
 # Current ShelterPawtners Work
 
+## Current sprint — 2026-09-12
+
+Owner reviewed and authorized `docs/product/DUAL-MARKETPLACE-RAVE-SHELTER-EXECUTION-PLAN.md`. Active sequence:
+
+1. **Track 1 (in progress, Claude Code only)** — mobile conversion + RAVE Shelter/LostPaws brand correction on `feature/mobile-rave-lostpaws-claude`. Corrects the prior "LostPaws is the music-community activation of RAVE Shelter" framing (Issue #100/#125) to the owner-directed hierarchy: LostPaws reserved for Lost Lands/Excision-family campaigns only.
+2. **Track 2 (not started)** — dual marketplace audience model + Events, deferred until Track 1 merges and is verified live. Codex is paused for this sprint; do not delegate Track 2 to Codex without explicit owner re-authorization.
+3. **Track 3 (not started)** — Hero Vendor + Learn/FAQ + savings storytelling, deferred until Track 2's foundation is stable.
+
+Governance for this sprint: no new `docs/product/*` files without an explicit owner request (update existing docs instead); reuse the existing Track 1/Track 2 branches rather than creating new ones per sub-task; do not duplicate existing Persona/Hosted QA coverage with new parallel test suites.
+
 ## Current stage
 
 Phase 1 — Platform + Data Foundation is **complete**.

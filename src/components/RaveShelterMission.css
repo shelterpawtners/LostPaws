@@ -45,6 +45,27 @@
   text-transform: uppercase;
 }
 
+.rsmTagline {
+  margin: 0 auto 1rem;
+  max-width: 720px;
+  color: var(--rsm-yellow);
+  font-size: clamp(1.05rem, 2.4vw, 1.5rem);
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+.rsmDemandCta {
+  max-width: 640px;
+  margin: 1.5rem auto 0;
+  padding: 0.85rem 1.1rem;
+  border: 1px solid var(--rsm-line);
+  border-radius: 0.75rem;
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--rsm-muted);
+  font-size: 0.92rem;
+  line-height: 1.45;
+}
+
 .rsmHero {
   position: relative;
   overflow: hidden;
