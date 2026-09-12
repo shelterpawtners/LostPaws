@@ -45,6 +45,23 @@ The owner reviewed the plan under `docs/product/` and lifted the pause below. Cu
 - Reduce duplicated/redundant QA: do not add new parallel QA workflows or test suites that overlap existing Persona QA / Hosted QA / CI coverage; extend existing suites instead.
 - Automate routine execution; work around non-blocking obstacles and keep making progress on other in-scope Track 1 items rather than stopping to ask, but still respect the guardrails below (financial/legal claims, production config, secrets).
 
+## Track 3 and site/design work — 2026-09-12
+
+Same branch and PR as Track 2 (`feature/dual-marketplace-events`, PR #131), continued after the owner authorized working through blockers autonomously.
+
+Track 3 delivered:
+
+- One data-driven Learn/Help system (`src/lib/learn-content.ts` rendered through `LearnHub`, `LearnArticlePage`, `FaqPage`) covering the Passport, both marketplaces, vendors, shelters, events, savings, and where support goes — rather than seven separate page architectures.
+- `/hero-vendor`: the Hero Vendor program with the 5%+ commitment, standard-vs-Hero benefits, and an explicit "what is not settled yet" section naming the eligible-sales basis, recipient eligibility, money movement, and reporting as undefined.
+- `/learn/savings-explorer`: month, year, and multi-year projections computed **only** from figures the visitor enters, with a low/base/high band. It starts empty by design, because publishing an unresearched average would be inventing a statistic, and an e2e test guards that nothing appears before input.
+- Explainer tiles use the existing lucide line icons; no emoji pseudo-icons existed to remove.
+
+Site review (`docs/SITE-REVIEW-2026-09-12.md`) audited 25 public routes at two viewports and fixed four defects: `/directory` overflowed mobile at 938px in a 390px window, every route shared one document title, touch targets ran 17–42px in several places, and `/register` skipped from `h1` to `h3`. `e2e/site-hygiene.spec.ts` now guards all of it.
+
+Design pass, taken after tagging `restore-point-2026-09-12-pre-design`: the RAVE Shelter logo's superseded tagline is corrected in the SVG and the static PNG re-rendered from it; the 1.5 MB animated GIF is replaced by CSS animation inside the SVG that honours `prefers-reduced-motion`; `LostPaws Logo.png` (2.6 MB) and the hero (2.1 MB) are re-encoded to WebP at 209 KB and 164 KB behind `<picture>`, cutting `/lostpaws` from roughly 4.8 MB of artwork to about 370 KB; explainer tiles move to a 3-then-2 grid; and the Learn and Hero Vendor heroes become two-column. `index.html` had no icons or sharing metadata at all, so it gained an SVG favicon with raster fallbacks, a 1200x630 social card, and Open Graph/Twitter tags.
+
+Open items are consolidated in `docs/OPEN-ITEMS-2026-09-12.md`.
+
 ## Track 2 status — 2026-09-12
 
 Branch: `feature/dual-marketplace-events` (PR #131). Owner-confirmed design decisions: nullable `events.organization_id`, four participation roles (`attending`/`vending`/`hosting`/`for_hire`), `pet`/`human`/`both` audience values, selector modal built now.
@@ -63,7 +80,11 @@ Deferred, by design:
 - Onboarding changes to hide RAVE content from existing pet businesses unless opted in.
 - A dedicated `/events` browsing page — schema is ready; presentation is follow-up work.
 
-Tests run: `typecheck`, `build`, `lint`, `npm test` (27 passed), and the marketplace/campaign e2e set (12 passed, 5 credential-gated skips). **The migrations have not been executed anywhere yet** — this workstation has no Docker daemon, so `supabase db reset` + pgTAP could not run locally. CI's Database QA job is their first real execution; do not treat the schema as verified until it passes.
+Tests run: `typecheck`, `build`, `lint`, `npm test` (39 passed), and the credential-free browser suite (46 passed).
+
+**The migrations are verified.** Docker Desktop was installed but not running on this workstation; starting it enabled a real `supabase db reset` plus `supabase test db`, and all 26 pgTAP files and 308 assertions pass against a database built from every migration. Audience filtering was then confirmed end to end — SQL, the anon REST endpoint, and the rendered marketplace all return pet+shared for the Pet view, rave+shared for the RAVE view, and everything unfiltered.
+
+That local run caught two defects CI had also flagged but that reasoning alone had missed: an anon read could reach a `private.can_manage_org` call it cannot execute (fixed by splitting the read policies per role), and two assertions expected an error where row level security silently filters the row (fixed to assert the row is unchanged). **Applying the migrations to any hosted environment is still outstanding and needs the owner.**
 
 ## Prior owner pause — 2026-09-12 (superseded)
 

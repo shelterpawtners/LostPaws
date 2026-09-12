@@ -8,7 +8,13 @@ Ordered by what blocks a launch first. Items marked **needs you** cannot be comp
 
 ### 1.1 The two new migrations are not deployed anywhere — **needs you**
 
-Track 2 added `supabase/migrations/20260912120000_track2_events_foundation.sql` and `20260912130000_track2_marketplace_channel_filter.sql`. They pass in CI's ephemeral database, but no hosted environment has them. Until they are applied:
+Track 2 added `supabase/migrations/20260912120000_track2_events_foundation.sql` and `20260912130000_track2_marketplace_channel_filter.sql`.
+
+**They are now verified, not assumed.** Docker Desktop turned out to be installed but not running on this machine; starting it allowed a full local `supabase db reset` followed by `supabase test db`, and **all 26 pgTAP files and 308 assertions pass** against a database built from every migration in order. The audience filtering was then exercised end to end with real rows — through SQL, through the anon REST endpoint, and through the rendered marketplace — and returns exactly the contract in plan section 6: the Pet view shows pet plus shared offers, the RAVE view shows rave plus shared, and the unfiltered view shows everything.
+
+That verification found two genuine defects that no amount of local reasoning had caught: an anon read could reach a `private.can_manage_org` call it has no privilege to execute, and two of my own test assertions expected an error where row level security silently filters the row instead. Both are fixed.
+
+What remains is purely deployment: no hosted environment has these migrations. Until they are applied:
 
 - audience filtering silently falls back to showing every offer (the marketplace says so on screen rather than pretending to filter);
 - `public.events` and `public.event_participants` do not exist, so nothing can create an event.
