@@ -1,13 +1,13 @@
 # Branch retirement manifest — 2026-09-12
 
-Every branch retired in the consolidation pass, with the exact commit it pointed at. Nothing is lost: any entry can be restored with
+Executed after PR #131 merged to `main`. Every branch below was retired from `origin`, with the exact commit it pointed at. Nothing is lost — restore any entry with:
 
 ```
-git branch <name> <sha>          # locally
-git push origin <name>           # back to the remote
+git branch <name> <sha>
+git push origin <name>
 ```
 
-A branch was only retired if it met at least one of two tests: its content added nothing to `main` (`git diff main...branch` empty), or GitHub reports its pull request as merged. Branches with unique unmerged work were left alone and are listed at the end.
+A branch qualified only if its content added nothing to `main` (`git diff main...branch` empty) or GitHub reports its pull request as merged. Branches with unique unmerged work were left in place and are listed at the end.
 
 ## Retired
 
@@ -35,6 +35,7 @@ A branch was only retired if it met at least one of two tests: its content added
 | `feat/support-release-context`                | `96370a90d95fe0b6169a309b8dc76a2b495c5699` | 2026-09-11  |
 | `feat/support-triage-digest-foundation`       | `72c3a410c220b2a18b0ec73d3fa7205eddefa56d` | 2026-09-11  |
 | `feat/support-triage-queue`                   | `9479ea5494af41515cbedc48102e2ff097cd0525` | 2026-09-11  |
+| `feature/dual-marketplace-events`             | `f318bcbf65a1c8c0421855f4f027498b6d178f48` | 2026-09-12  |
 | `fix/disable-meta-auth`                       | `48c7c8692e5920dbd88f3a922d300b2c7fa4b76b` | 2026-09-11  |
 | `fix/enable-google-auth-pages`                | `e7f6188e07998cf682bedddf808caf69f4e78f98` | 2026-09-11  |
 | `fix/github-pages-brand-paths`                | `45b3e7fbc91818684d2ebdabeb57c719ab04626e` | 2026-09-11  |
@@ -88,14 +89,13 @@ A branch was only retired if it met at least one of two tests: its content added
 
 ## Kept for your review
 
-These still hold content that is not in `main` and whose pull request GitHub does not report as merged. They were deliberately not touched. Several look superseded rather than valuable — for example the LostPaws shell and canonical-LostPaws branches predate the current campaign pages — but that is a judgement call about intent, not something to infer from a diff.
+These hold content not in `main` and no merged pull request. Whether that content is still wanted is a judgement about intent, not something a diff settles.
 
 | Branch                                         | Adds (files) | Last commit |
 | ---------------------------------------------- | ------------ | ----------- |
 | `docs/controller-handoff-2026-09-11-rave-live` | 1            | 2026-09-11  |
 | `docs/issue-125-launch-handoff`                | 2            | 2026-09-12  |
 | `feat/rave-vendor-acquisition`                 | 3            | 2026-09-10  |
-| `feature/dual-marketplace-events`              | 74           | 2026-09-12  |
 | `fix/issue-96-canonical-lostpaws`              | 2            | 2026-09-11  |
 | `fix/support-fingerprint-search-path`          | 2            | 2026-09-11  |
 | `issue-58-lostpaws`                            | 3            | 2026-09-10  |
