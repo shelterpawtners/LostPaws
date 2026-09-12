@@ -10,38 +10,39 @@ Lost Lands MVP LL-1 through LL-6 are **accepted** and must not be reopened witho
 
 `main` is the only release-candidate source of truth. Do not wholesale-merge historical branches.
 
-Current accepted product/auth/UI baseline:
+Current accepted product/UI baseline after Issue #125 / PR #126:
 
-`45a87c3ff1bac1d3f35172386e8a4c3f5fb54d06`
+`bc14a3f6b839f4421781903c41d3c867f4bba848`
 
 Current verified public acceptance surface:
 
 `https://shelterpawtners.github.io/LostPaws/`
 
-Current Vercel production deployment is also READY on the same accepted product SHA at deployment `dpl_B4uVrWYcdc9vDpRYwa1unyzzUgxw`, with stable alias `https://lost-paws-one.vercel.app`. The earlier Hobby-capacity freshness blocker is therefore cleared. Do not purchase or upgrade Vercel merely for capacity.
+The owner-completed `shelterpawtners.com` domain/auth cutover remains live: Vercel validates the apex and `www`, SiteGround web DNS uses Vercel's exact records, Supabase Auth uses the apex while GitHub Pages remains allowed for rollback, and Google OAuth includes the apex origin. Microsoft 365 and Auth/Resend DNS remain intentionally separate. The remaining auth launch checks require real account interaction rather than more source-only work.
 
-The owner-completed `shelterpawtners.com` cutover is now live: Vercel validates the apex and `www`, SiteGround web DNS uses Vercel's exact records, Supabase Auth uses the apex while GitHub Pages remains allowed for rollback, Google OAuth includes the apex origin, and Vercel redeploy `dpl_EZhNzZRjfKamY8FyeTnM3njnH7JN` is READY. Microsoft 365 and Auth/Resend DNS, Facebook/Instagram, unpublished legal routes, and production data remain untouched. The remaining launch check is a real Google login/logout returning to the apex plus the signed-in Guardian/mobile/direct-route smoke matrix. See `docs/CUTOVER-SHELTERPAWTNERS-COM.md`.
+Vercel production was previously READY on the pre-#126 accepted release. PR #126 produced a Vercel Hobby build-rate-limit status, so do not represent Vercel production as carrying #126 until a later READY production deployment is verified. Do not purchase or upgrade Vercel merely to clear that limit.
 
 ## Recent accepted launch work
 
-### Unified LostPaws + RAVE Shelter mission
+### Distinct RAVE Shelter + LostPaws experiences
 
-Issue #100 / PR #102 replaced the competing LostPaws experiences with one coherent mission flow.
+Issue #125 / PR #126 supersede the earlier same-page campaign decision because the repository recorded concrete regression evidence and new owner direction.
 
-- `/rave` renders the unified RAVE Shelter mission experience.
-- `/lostpaws` renders the same mission experience with LostPaws as the music-community activation.
-- `/rave-shelter` canonicalizes to `/rave`.
-- The old generic LostPaws FoundationPage entry is removed.
-- `public/lostpaws.html` and the Vercel LostPaws static rewrites are retired.
-- The normal ShelterPawtners global header/footer remain present.
-- Home now tells one LostPaws × RAVE Shelter story and links into the mission page and RAVE Marketplace.
-- Raver/Guardian, RAVE Vendor/PetBiz, and Shelter/Rescue paths route to their intended destinations.
-- Guardian give-back is described as a future giving capability, not as an already-settled charitable donation flow.
-- Strong non-affiliation wording remains in place.
+- `/rave` is the evergreen **RAVE Shelter** ecosystem/movement experience.
+- `/lostpaws` is a distinct **LostPaws** activation page for music/festival communities.
+- LostPaws is explicitly presented as the first RAVE Shelter activation, not the master brand.
+- `/rave-shelter` continues to canonicalize to `/rave`.
+- Both routes continue into the shared RAVE Marketplace, Guardian, RAVE Vendor/PetBiz, and Shelter/Rescue ecosystem.
+- Approved LostPaws and RAVE artwork is reused from the repository; do not generatively redraw locked brand assets in product code.
+- LostPaws mobile art uses safe 16:9 containment rather than cropping the owner-approved hero.
+- Responsive acceptance covers 320, 360, 375, 390, 412, 430px and tablet portrait in addition to the existing release matrix.
+- Primary activation actions retain mobile touch targets of at least 44px.
+- Strong independence/non-affiliation wording remains in place.
+- No donation percentage, tax-deductibility, festival sponsorship, or endorsement is implied.
 
-PR #103 updated the live GitHub Pages assertion to the new mission copy after #102 merged.
+PR #126 also updated GitHub Pages MVP Acceptance so `/rave` and `/lostpaws` are tested against their separate intended contracts rather than requiring identical headings/CTAs.
 
-Issue #58, Issue #96, and PR #97 are superseded and must not be revived absent regression evidence.
+Issue #100 / PR #102 remain useful history for the unified ecosystem model, but their requirement that `/rave` and `/lostpaws` render the same component is superseded by Issue #125 / PR #126. Issue #58, Issue #96, and PR #97 remain superseded historical work.
 
 ### OAuth deployment-base readiness
 
@@ -56,15 +57,15 @@ Issue #99 / PR #104 added `src/lib/auth-oauth.ts` and moved Google OAuth app ret
 Issue #98 / PR #106 added Facebook source readiness:
 
 - existing `VITE_FACEBOOK_AUTH_ENABLED` flag controls the UI;
-- Facebook is offered beside Google on Guardian, Shelter, PetBiz, RAVE Vendor signup and sign-in;
-- provider is `facebook`;
+- Facebook is offered beside Google on Guardian, Shelter, PetBiz, RAVE Vendor signup and sign-in when enabled;
+- provider is Supabase `facebook`;
 - signup preserves `sp_kind` and returns to the selected persona onboarding path through the same base-aware helper;
 - login returns to the current application base;
 - Facebook initiation failures use a generic user-safe message;
 - no universal Instagram login is advertised;
 - no Meta credentials, secrets, DNS, or provider-console configuration are committed.
 
-Live Google and Facebook provider acceptance remains external and must not be represented as complete until provider-console credentials/settings and real account flows are tested.
+Live Google and Facebook provider acceptance remains external and must not be represented as complete until real account flows are tested.
 
 ## Auth/email status
 
@@ -110,29 +111,22 @@ Do **not** deploy the delivery Edge Function until an approved owner-alert desti
 
 ### GitHub Pages
 
-GitHub Pages is the primary low-cost release-candidate acceptance environment. Public desktop/tablet/mobile acceptance is green for the unified mission flow and the latest auth source changes.
+GitHub Pages remains the primary low-cost release-candidate acceptance environment. PR #126 passed CI, Hosted QA, Persona QA, Database QA, Dependency Review, Merge Gate, and GitHub Pages MVP Acceptance before merge.
 
 ### Vercel
 
-Vercel production is current with accepted product SHA `45a87c3ff1bac1d3f35172386e8a4c3f5fb54d06`.
-
-- Deployment: `dpl_B4uVrWYcdc9vDpRYwa1unyzzUgxw`
-- State: READY
-- Target: production
-- Stable alias: `https://lost-paws-one.vercel.app`
-
-The prior Hobby capacity/freshness blocker is cleared. Continue to avoid unnecessary preview deployments and do not upgrade solely for capacity.
+The last independently verified READY production deployment predates PR #126. A Vercel Hobby build-rate-limit status was attached to #126, so wait for an allowed deployment window or an already-authorized deployment path; do not upgrade solely for capacity.
 
 ## Remaining external launch gates
 
 1. Complete real password-recovery lifecycle acceptance.
 2. Verify Microsoft 365 human mailbox send/receive.
 3. Supply an approved Support OS owner-alert destination and managed secrets, then review/deploy the privileged delivery runtime.
-4. Configure Google OAuth provider credentials/settings and perform real hosted acceptance.
-5. Configure Meta/Facebook provider credentials/settings and perform real hosted acceptance.
+4. Perform real hosted Google OAuth login/signup/logout/persona acceptance.
+5. Configure/accept Meta/Facebook provider behavior and perform real hosted login/signup/persona acceptance before enabling it publicly.
 6. Verify social/email auth flows preserve persona continuity and do not create duplicate profiles/organizations.
-7. Complete owner/legal review of draft Terms/Privacy. Do not publish final versions without approval.
-8. Prepare but do not perform final `shelterpawtners.com` web-domain/custom-domain cutover without separate owner authorization.
+7. Complete owner/legal review of draft Terms/Privacy/Data Deletion. Do not publish final versions without approval.
+8. Verify a current Vercel production deployment containing the accepted `main` SHA before treating the production web runtime as fully current.
 
 Supabase project callback used by external OAuth providers:
 
@@ -140,12 +134,13 @@ Supabase project callback used by external OAuth providers:
 
 ## Current next sequence
 
-1. Treat `main` as locked release-candidate source of truth.
-2. Perform real password-recovery acceptance when a safe account/inbox is available.
-3. Complete Google and Facebook provider-console setup only when authorized credentials/tooling are available; source readiness is already complete.
-4. Advance Support OS only when its legitimate transport/secret prerequisites exist.
-5. Keep legal publication and final production-domain cutover owner-gated.
-6. If external lanes remain blocked, continue useful non-destructive QA, messaging/UI polish, issue reconciliation, and launch documentation rather than inventing privileged production mechanisms.
+1. Treat `main` as the only release-candidate source of truth.
+2. Preserve Issue #125 / PR #126 as the controlling RAVE/LostPaws public architecture unless new regression evidence appears.
+3. Perform real password-recovery and Google acceptance when a safe account/inbox/browser session is available.
+4. Complete Facebook provider-console/live acceptance only when actionable tooling/session access exists; source readiness is already complete.
+5. Advance Support OS only when its legitimate transport/secret prerequisites exist.
+6. Keep final legal publication and any destructive/paid changes owner-gated.
+7. If external lanes remain blocked, continue useful non-destructive QA, messaging/UI polish, issue reconciliation, and launch documentation rather than inventing privileged production mechanisms.
 
 ## Guardrails still in force
 
@@ -156,7 +151,9 @@ Never:
 - alter Microsoft 365 mail DNS;
 - decide OD-003 or OD-004;
 - weaken tests or RLS;
-- publish unapproved final Terms/Privacy;
+- publish unapproved final Terms/Privacy/Data Deletion language;
 - expose secrets;
-- perform the final `shelterpawtners.com` production web-domain DNS/custom-domain cutover without separate authorization;
-- reopen completed Lost Lands slices or superseded LostPaws architecture without regression evidence.
+- auto-close/fix support cases solely from AI suggestions;
+- bypass privacy/P0/P1 human escalation;
+- wholesale-merge historical branches;
+- reopen completed Lost Lands slices without regression evidence.
