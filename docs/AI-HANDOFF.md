@@ -1,13 +1,32 @@
 # AI Handoff
 
-STATUS: IN_PROGRESS
+STATUS: READY_FOR_ACCEPTANCE
 CURRENT_PHASE: RAVE Shelter / LostPaws dual-marketplace sprint — Track 1 (mobile conversion + brand correction)
-CURRENT_CHECKPOINT: Owner lifted the 2026-09-12 pause and authorized Track 1, then Track 2, per `docs/product/DUAL-MARKETPLACE-RAVE-SHELTER-EXECUTION-PLAN.md`
-NEXT_CHECKPOINT: Track 1 PR ready for owner review
-OWNER_DECISION_REQUIRED: NO
+CURRENT_CHECKPOINT: Track 1 implemented on `feature/mobile-rave-lostpaws-claude`, PR opened for owner review
+NEXT_CHECKPOINT: Owner reviews/merges Track 1; Track 2 (dual marketplace + Events, schema-first) does not start until Track 1 is merged
+OWNER_DECISION_REQUIRED: YES_TO_MERGE
 SAFE_TO_CONTINUE: YES
 ACCEPTED_PRODUCT_SHA: bc14a3f6b839f4421781903c41d3c867f4bba848
 ACCEPTANCE_RUNTIME: OWNER_RESUMED_2026_09_12
+
+## Track 1 status — 2026-09-12
+
+Branch: `feature/mobile-rave-lostpaws-claude`. Agent: Claude Code (sole active coding agent this sprint).
+
+Implemented:
+
+- RAVE Shelter renamed from "Rescue and Adoption Vendor Ecosystem" to **Rewarding Adoption with Vendor Exclusives**, with the tagline **"Rave with purpose. Shop with impact."** made prominent on `/rave`, `/lostpaws`, `/rave-vendors`, and home.
+- LostPaws corrected from a generic, reusable "music-community activation" (Issue #100/#125 framing, still present in the shipped copy despite being marked accepted) to a RAVE Shelter initiative reserved specifically for the Lost Lands / Excision festival family, in `RaveShelterMission.tsx`, `LostPawsActivation.tsx`, and home.
+- Soft-launch demand messaging ("right now, we need you to sign up and show demand...") added to the `/rave`, `/lostpaws`, and `/rave-vendors` heroes.
+- Updated the authoritative brand/content docs that still stated the old acronym/hierarchy (`BRAND-DESIGN-SYSTEM.md`, `CONTENT-STANDARDS.md`, `FESTIVAL-MVP-AND-VERIFICATION.md`, `PRODUCT-VISION.md`, `LOSTPAWS-RAVE-LANDING-DIRECTION.md`) so a future agent reading them won't reintroduce the superseded framing; marked `RAVE-SHELTER-LOSTPAWS-MISSION.md` superseded.
+- Non-affiliation language preserved verbatim; no schema/migration changes; no founding-business-promise wording added (owner has not finalized that commercial language yet, per `docs/product/OWNER-DECISIONS-NEXT-SPRINT.md`).
+
+Not done / explicitly deferred:
+
+- Founding-business free-account-before-2027 message — waiting on final commercial wording confirmation.
+- Track 3 (Hero Vendor, Learn/FAQ, savings calculator) — not started, by design.
+
+Tests run: `npm run typecheck`, `npm run build`, `npm test` (23 passed), and `npx playwright test e2e/issue-125-rave-lostpaws-mobile.spec.ts` (9 passed, including mobile overflow at 320–768px and ≥44px touch targets) — all green. Did not verify live in a browser; owner/human visual review still recommended before merge.
 
 ## Owner resume — 2026-09-12
 
