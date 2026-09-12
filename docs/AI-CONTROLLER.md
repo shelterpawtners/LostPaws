@@ -222,24 +222,23 @@ Prefer small recoverable checkpoints and parallel independent lanes over one gia
 ## LATEST AGENT UPDATE
 
 AGENT: WORK
-TIME: 2026-09-12 19:xx EDT
-STATUS: PARTIAL
-CHECKPOINT: Seven Star Shelters implementation
+TIME: 2026-09-12 20:xx EDT
+STATUS: COMPLETE
+CHECKPOINT: Seven Star Shelters + release gate repair
 PROVEN:
-
-- Current live runtime acceptance is complete on READY deployment `dpl_4x32sTRgy9f1Knvt7xcNEqD9967P` / product SHA `5baee666d3e6084a6f01494a85305db6648bb448`; current `main` only adds documentation.
-- Vercel follows the Git-driven policy: the explicit `[deploy]` commit is READY and later docs-only commits are CANCELED.
-- PR #132 adds the isolated `/sevenstars` route, reusing existing Guardian, RAVE-vendor, shelter, and RAVE marketplace paths.
-- The page includes explicit independence language and direct official Seven Stars, GRiZMAS, GRiZ, and It Gets Better links; it adds no donation, payment, partnership, or endorsement claim.
-- Typecheck, production build, focused title tests (6), changed-file formatting, and whitespace checks passed.
-  CHANGED:
-- Opened PR #132: `feat: add Seven Star Shelters landing` (`feat/seven-star-shelters-landing`).
-  BLOCKERS:
-- Local full Vitest is blocked by the existing timezone-sensitive Events formatter assertion; local Playwright is blocked because the environment lacks its Chromium binary. Neither is a Seven Star source failure.
-  RISKS_OR_UNCERTAINTY:
-- PR #132 still needs normal GitHub CI/review before merge. Original CSS artwork intentionally substitutes for unlicensed/AI-looking festival imagery.
-  NEXT_RECOMMENDED_ACTION:
-- Monitor PR #132 checks; if green, review and merge it. Keep Facebook disabled pending its external provider acceptance.
-  ADVISOR_REVIEW_REQUIRED: NO
-  ADVISOR_QUESTION:
+- Final direct production acceptance of the prior product runtime passed: public routes, global navigation, account/help/sign-out controls, registration paths, marketplace audiences, Google OAuth, HTTPS, and Git-driven Vercel behavior.
+- PR #133 restored the repository control-plane formatting gate. All required GitHub checks passed; squash-merged at `fb48a43f7d052e10d372213bcc7463fab7b95ccd`.
+- PR #134 fixed the evidenced UTC date-range regression where one-day events could render as ranges in some timezones. All required GitHub checks passed; squash-merged at `b6726da55a9ab872890898d490b89df8a0699346`.
+- PR #132 added the independent `/sevenstars` React route, reused existing RAVE registration/marketplace flows, retained no-affiliation language, and added verified external community links. Its full GitHub matrix passed (CI, web, persona, public matrix, CodeQL, gates); squash-merged at `30536b49c8d81ad90b5edc1c2d1b1ddb96d128fd`.
+CHANGED:
+- `main` is now `30536b49c8d81ad90b5edc1c2d1b1ddb96d128fd`.
+- The product-affecting Seven Star deployment is awaiting Vercel's normal Git-driven build; no manual deployment was requested or performed.
+BLOCKERS:
+- Meta provider-console callback and account-continuity acceptance remain external; Facebook stays correctly disabled.
+RISKS_OR_UNCERTAINTY:
+- Production visual acceptance for the newly merged `/sevenstars` route remains pending the automatic Vercel deployment becoming READY.
+NEXT_RECOMMENDED_ACTION:
+- Verify the automatic production deployment for `30536b49` reaches READY, then run a focused public desktop/mobile smoke of `/sevenstars`. Keep Facebook disabled.
+ADVISOR_REVIEW_REQUIRED: NO
+ADVISOR_QUESTION:
 - none
