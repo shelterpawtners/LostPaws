@@ -44,6 +44,9 @@ test.describe("site hygiene", () => {
   }
 
   test("every route has its own document title", async ({ page }) => {
+    // These four walk every route in one test, so the default 30s budget is
+    // too tight under parallel workers and caused intermittent failures.
+    test.slow();
     const titles = new Map<string, string>();
     for (const route of routes) {
       await page.goto(route);
@@ -66,6 +69,7 @@ test.describe("site hygiene", () => {
   });
 
   test("headings stay sequential and singular", async ({ page }) => {
+    test.slow();
     for (const route of routes) {
       await page.goto(route);
       await page.locator("#main").waitFor({ state: "visible" });
@@ -89,6 +93,7 @@ test.describe("site hygiene", () => {
   test("interactive targets are at least 44px tall on mobile", async ({
     page,
   }) => {
+    test.slow();
     await page.setViewportSize({ width: 390, height: 900 });
     for (const route of routes) {
       await page.goto(route);
@@ -114,6 +119,7 @@ test.describe("site hygiene", () => {
   });
 
   test("no broken images and every image has alt text", async ({ page }) => {
+    test.slow();
     for (const route of routes) {
       await page.goto(route);
       await page.locator("#main").waitFor({ state: "visible" });

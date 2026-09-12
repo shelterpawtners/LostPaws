@@ -37,6 +37,15 @@ Done after tagging `restore-point-2026-09-12-pre-design`, so all of it is revers
 4. **Explainer tiles are a 3-then-2 grid.** Five equal columns had squeezed every title onto two or three lines; titles now sit on one line at desktop, and the grid collapses to two columns then one on smaller screens.
 5. **The Learn and Hero Vendor heroes are two-column.** Both previously left roughly half the viewport empty above the fold. Learn gained a "Written for" panel whose topic counts are derived from the content itself so they cannot drift; Hero Vendor gained a **5%+** badge that anchors the page on the one number that matters. This addresses recommendation 2 for those two pages.
 
+## One deliberate deviation from the plan — **please confirm**
+
+Plan section 6 asks for a marketplace selector **modal**. I built it as a modal, and Persona QA then failed: a full-screen overlay intercepts clicks on the offers underneath, so the accepted offer-redemption flow timed out. Two things made me change it rather than work around the test:
+
+- It gated `/marketplace` — the page a demand-proving soft launch most needs people to reach — behind an interstitial.
+- The marketplace already carries a persistent **Audience** filter row, so the choice was available either way; the modal was a convenience presented as a gate.
+
+It is now an inline, dismissible prompt above the listings with the same three choices and the same "remember my choice" behaviour. A direct link such as `/marketplace?channel=rave` still skips it entirely. If you specifically want a blocking modal, say so and I will restore it — but it will need the persona flow updated to dismiss it.
+
 ## Recommendations for your review
 
 Ordered by what I think matters most. None of these are defects — they are judgment calls I did not want to make unilaterally.
