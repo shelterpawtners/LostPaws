@@ -84,7 +84,10 @@ export function formatEventWhen(
   if (!endsAt) return startDay;
   const end = new Date(endsAt);
   if (Number.isNaN(end.getTime())) return startDay;
-  const sameDay = start.toDateString() === end.toDateString();
+  // Events are stored as UTC instants. Compare their persisted calendar days,
+  // not a visitor's local calendar, so a one-day event near midnight does not
+  // turn into a two-day range for users east of UTC.
+  const sameDay = startsAt.slice(0, 10) === endsAt.slice(0, 10);
   if (sameDay) return startDay;
   return `${startDay} — ${end.toLocaleDateString(undefined, dayFormat)}`;
 }
