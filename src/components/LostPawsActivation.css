@@ -1,0 +1,407 @@
+.lpPage {
+  --lp-bg: #050507;
+  --lp-panel: #0d0c11;
+  --lp-line: rgba(255, 255, 255, 0.12);
+  --lp-copy: #f8f7fb;
+  --lp-muted: #bdb5c6;
+  --lp-cyan: #35e9ff;
+  --lp-pink: #ff46bb;
+  --lp-yellow: #ffe24a;
+  overflow-x: clip;
+  background: var(--lp-bg);
+  color: var(--lp-copy);
+  color-scheme: dark;
+}
+
+.lpPage *,
+.lpPage *::before,
+.lpPage *::after {
+  box-sizing: border-box;
+}
+
+.lpPage img {
+  display: block;
+  max-width: 100%;
+}
+
+.lpPage h1,
+.lpPage h2,
+.lpPage h3,
+.lpPage p {
+  margin-top: 0;
+}
+
+.lpWrap {
+  width: min(1160px, calc(100% - 2rem));
+  margin: 0 auto;
+}
+
+.lpKicker {
+  margin-bottom: 0.65rem;
+  color: var(--lp-cyan);
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.lpHero {
+  background:
+    radial-gradient(
+      circle at 15% 88%,
+      rgba(53, 233, 255, 0.11),
+      transparent 30%
+    ),
+    radial-gradient(
+      circle at 85% 88%,
+      rgba(255, 70, 187, 0.11),
+      transparent 30%
+    ),
+    #030305;
+}
+
+.lpHeroMedia {
+  width: min(1440px, 100%);
+  margin: 0 auto;
+  padding: clamp(0.75rem, 2vw, 1.25rem) clamp(0.75rem, 2vw, 1.25rem) 0;
+}
+
+.lpHeroMedia img {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  object-fit: contain;
+  background: #000;
+}
+
+.lpHeroContent {
+  padding: clamp(1.8rem, 5vw, 4.25rem) 0 clamp(3rem, 7vw, 6rem);
+  text-align: center;
+}
+
+.lpLogo {
+  width: min(430px, 80vw);
+  max-height: 150px;
+  margin: 0 auto 1rem;
+  object-fit: contain;
+}
+
+.lpHero h1,
+.lpIntro h2,
+.lpBenefits h2,
+.lpMovement h2,
+.lpFinal h2 {
+  letter-spacing: -0.045em;
+  text-transform: uppercase;
+}
+
+.lpHero h1 {
+  max-width: 900px;
+  margin: 0 auto 1rem;
+  font-size: clamp(2.25rem, 6vw, 5rem);
+  line-height: 0.96;
+}
+
+.lpLead {
+  max-width: 800px;
+  margin: 0 auto 1.5rem;
+  color: #d8d2de;
+  font-size: clamp(1rem, 2vw, 1.2rem);
+  line-height: 1.6;
+}
+
+.lpActions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+.lpButton {
+  display: inline-flex;
+  min-height: 46px;
+  align-items: center;
+  justify-content: center;
+  padding: 0.8rem 1.05rem;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 6px;
+  font-size: 0.78rem;
+  font-weight: 900;
+  letter-spacing: 0.055em;
+  line-height: 1.15;
+  text-align: center;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+
+.lpButton:hover {
+  transform: translateY(-1px);
+}
+
+.lpButton:focus-visible,
+.lpTextLink:focus-visible,
+.lpCard a:focus-visible {
+  outline: 3px solid var(--lp-yellow);
+  outline-offset: 3px;
+}
+
+.lpPrimary {
+  border-color: var(--lp-cyan);
+  background: var(--lp-cyan);
+  color: #050507;
+}
+
+.lpSecondary {
+  background: rgba(5, 5, 7, 0.82);
+  color: #fff;
+}
+
+.lpIntro,
+.lpBenefits,
+.lpMovement,
+.lpFinal {
+  padding: clamp(3rem, 7vw, 6rem) 0;
+  border-top: 1px solid var(--lp-line);
+}
+
+.lpSplit,
+.lpMovementGrid,
+.lpFinalInner {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: clamp(2rem, 6vw, 5rem);
+  align-items: start;
+}
+
+.lpIntro h2,
+.lpBenefits h2,
+.lpMovement h2,
+.lpFinal h2 {
+  margin-bottom: 1rem;
+  font-size: clamp(2rem, 4.8vw, 4rem);
+  line-height: 0.98;
+}
+
+.lpCopy p,
+.lpMovement p,
+.lpFinal p {
+  color: var(--lp-muted);
+  font-size: clamp(0.98rem, 1.5vw, 1.1rem);
+  line-height: 1.65;
+}
+
+.lpBenefits {
+  background:
+    radial-gradient(
+      circle at 90% 12%,
+      rgba(255, 70, 187, 0.08),
+      transparent 30%
+    ),
+    #09080c;
+}
+
+.lpGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.9rem;
+  margin-top: 2rem;
+}
+
+.lpCard {
+  display: flex;
+  min-height: 330px;
+  flex-direction: column;
+  padding: 1.5rem;
+  border: 1px solid var(--lp-line);
+  border-radius: 10px;
+  background: var(--lp-panel);
+}
+
+.lpCard > span {
+  margin-bottom: 1rem;
+  color: var(--lp-cyan);
+  font-size: 0.68rem;
+  font-weight: 900;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+}
+
+.lpCard:nth-child(2) > span {
+  color: var(--lp-pink);
+}
+
+.lpCard:nth-child(3) > span {
+  color: var(--lp-yellow);
+}
+
+.lpCard h3 {
+  margin-bottom: 0.8rem;
+  font-size: clamp(1.35rem, 2.4vw, 2rem);
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+}
+
+.lpCard p {
+  margin-bottom: 1.4rem;
+  color: var(--lp-muted);
+  line-height: 1.58;
+}
+
+.lpCard a,
+.lpTextLink {
+  margin-top: auto;
+  color: #fff;
+  font-weight: 800;
+  text-underline-offset: 0.22em;
+}
+
+.lpMovement {
+  background:
+    radial-gradient(
+      circle at 18% 50%,
+      rgba(53, 233, 255, 0.08),
+      transparent 32%
+    ),
+    var(--lp-bg);
+}
+
+.lpMovementGrid {
+  grid-template-columns: minmax(0, 0.75fr) minmax(0, 1.25fr);
+  align-items: center;
+}
+
+.lpRaveLogoPanel {
+  padding: clamp(1.25rem, 4vw, 2.5rem);
+  border: 1px solid var(--lp-line);
+  border-radius: 14px;
+  background: rgba(13, 12, 17, 0.88);
+}
+
+.lpRaveLogoPanel img {
+  width: min(100%, 420px);
+  margin: 0 auto 0.8rem;
+}
+
+.lpRaveLogoPanel p {
+  margin-bottom: 0;
+  color: #918999;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.11em;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.lpFinal {
+  background:
+    linear-gradient(110deg, rgba(53, 233, 255, 0.08), transparent 34%),
+    linear-gradient(290deg, rgba(255, 70, 187, 0.08), transparent 34%), #050507;
+}
+
+.lpFinalInner {
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+}
+
+.lpFinalInner > div {
+  max-width: 800px;
+}
+
+.lpFinal p {
+  margin-bottom: 0;
+}
+
+.lpLegal {
+  padding: 1.5rem 0 2.2rem;
+  border-top: 1px solid var(--lp-line);
+  background: #030305;
+  color: #817987;
+  font-size: 0.72rem;
+  line-height: 1.55;
+  text-align: center;
+}
+
+.lpLegal p {
+  max-width: 930px;
+  margin: 0.25rem auto;
+}
+
+@media (max-width: 900px) {
+  .lpSplit,
+  .lpMovementGrid,
+  .lpFinalInner,
+  .lpGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .lpCard {
+    min-height: 0;
+  }
+
+  .lpFinalInner .lpButton {
+    justify-self: start;
+  }
+}
+
+@media (max-width: 640px) {
+  .lpWrap {
+    width: min(100% - 2rem, 1160px);
+  }
+
+  .lpHeroMedia {
+    padding: 0.75rem 0.75rem 0;
+  }
+
+  .lpHeroMedia img {
+    border-radius: 8px;
+    object-fit: contain;
+  }
+
+  .lpHeroContent {
+    padding-top: 1.5rem;
+  }
+
+  .lpLogo {
+    width: min(310px, 86vw);
+    max-height: 110px;
+  }
+
+  .lpHero h1 {
+    font-size: clamp(2rem, 11vw, 3rem);
+    line-height: 0.98;
+  }
+
+  .lpActions {
+    align-items: stretch;
+  }
+
+  .lpButton {
+    width: 100%;
+    min-height: 48px;
+  }
+
+  .lpIntro,
+  .lpBenefits,
+  .lpMovement,
+  .lpFinal {
+    padding: 3rem 0;
+  }
+
+  .lpCard {
+    padding: 1.25rem;
+  }
+}
+
+@media (max-width: 360px) {
+  .lpWrap {
+    width: min(100% - 1.5rem, 1160px);
+  }
+
+  .lpHeroMedia {
+    padding-right: 0.5rem;
+    padding-left: 0.5rem;
+  }
+}
