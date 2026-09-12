@@ -48,6 +48,19 @@ Preferred MVP approach unless counsel/owner chooses otherwise:
 
 If Meta requires a callback rather than instructions for the selected permissions/use case, implement a dedicated authenticated callback only after reviewing Meta's current contract and security requirements.
 
+## Deferred legal-request / government-request governance
+
+Before public Meta submission or any production process that could involve government, law-enforcement, court, or similar compulsory requests for user data, create and approve a written policy covering at minimum:
+
+1. **Legal review of each request** before disclosure, including verification of authority, scope, jurisdiction, and validity.
+2. **Challenge / escalation procedures** for requests believed to be unlawful, defective, overbroad, disproportionate, or otherwise inappropriate, with escalation to qualified counsel when needed.
+3. **Data minimization** so any disclosure is limited to the minimum information legally required and technically available for the validated request.
+4. **Request documentation and auditability**, including the request received, verification performed, response provided, legal reasoning, dates, decision-makers/actors, approvals, objections/challenges, and final disposition.
+5. **Confidentiality / user-notice handling** consistent with applicable law, including documenting when notice is prohibited or delayed.
+6. **Secure production and transfer** of any responsive data, with access limited to authorized personnel and no secrets or customer data placed in public repository records.
+
+This is deliberately **deferred compliance work**, not a current MVP launch blocker. Do not invent legal standards or operational commitments before owner/counsel review.
+
 ## Facebook Login configuration
 
 Supabase callback target:
@@ -94,6 +107,7 @@ Before submission, prepare:
 8. Screen recording/screenshots if Meta requests them.
 9. Exact steps showing Facebook Login returns to ShelterPawtners and does not expose another user's data.
 10. If Instagram login is submitted, separate reviewer steps for the Instagram flow and account eligibility.
+11. Owner/counsel-reviewed government/law-enforcement request governance if required by Meta review or applicable law at submission time.
 
 ## Reviewer-instruction draft outline
 
@@ -129,7 +143,8 @@ Do not perform these without explicit owner authorization:
 - final `shelterpawtners.com` DNS/custom-domain cutover;
 - publication of final Terms or Privacy Notice;
 - publication/submission of the Meta app for general public use;
-- legal-policy decisions such as minimum age, retention commitments, governing law, arbitration/class-action treatment, OD-003, or OD-004.
+- legal-policy decisions such as minimum age, retention commitments, governing law, arbitration/class-action treatment, OD-003, or OD-004;
+- final government/law-enforcement request policy or any disclosure decision under it without appropriate owner/legal authority.
 
 ## Definition of ready for Meta submission
 
@@ -143,4 +158,5 @@ Do not perform these without explicit owner authorization:
 - [ ] Reviewer instructions are reproducible.
 - [ ] Data-handling answers match the deployed system.
 - [ ] Business verification requirements are satisfied or clearly understood.
+- [ ] Deferred legal-request/government-request governance is completed if required for Meta review/public operation.
 - [ ] Owner explicitly authorizes Meta publication/submission.
