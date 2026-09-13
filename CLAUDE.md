@@ -1,20 +1,19 @@
 # Claude Code Instructions
 
-`AGENTS.md` is the primary cross-agent instruction file. Read it first.
+Read the shared authority chain in this order:
 
-For the active task, then read only:
+1. current GitHub `main`;
+2. `AGENTS.md`;
+3. `docs/AI-CONTROLLER.md` — human live status, blockers, and next actions;
+4. the active GitHub Issue/PR (or active task brief);
+5. only the domain document needed for the task.
 
-- the active GitHub Issue/PR;
-- `docs/CURRENT-WORK.md`;
-- `docs/AI-HANDOFF.md`;
-- `docs/AUTONOMOUS-EXECUTION-POLICY.md`;
-- `docs/AI-COST-AND-TESTING-GOVERNANCE.md`;
-- relevant product/architecture/security/phase files.
+`docs/AI-HANDOFF.md` is a CI-required machine-readable release-state file, not a replacement for the controller. Preserve its current path and top-level fields, including `CURRENT_CHECKPOINT`; consult or update it only when the task's completion/acceptance/workflow contract requires it. Do not use `docs/CURRENT-WORK.md` as competing live status.
 
-Do not duplicate policy from those files here. Newer owner instructions and the live handoff supersede stale historical gates.
+Do not duplicate cross-agent policy here. Newer owner instructions and the authority chain above supersede stale historical plans.
 
 When implementing, work through related GREEN/YELLOW defects in the same bounded task and use native deterministic validation. When reviewing, remain non-mutating unless implementation is explicitly authorized and focus on auth/RLS, ownership, idempotency, economic history, privacy/provenance, regression validity, and unnecessary complexity.
 
-Phase 2 remainder is authorized under the current repo policy. Phase 3, production/DNS, paid infrastructure, material RED decisions, and merging remain owner-gated.
+Phase 2 remainder is authorized under current repository policy. Phase 3, production/DNS, paid infrastructure, material RED decisions, and merging remain owner-gated.
 
-Before completion or blockage, update `docs/AI-HANDOFF.md` with the final SHA, exact validation evidence, defects/decisions, and next action.
+Before completion or blockage, follow `AGENTS.md`'s completion contract, including the required `docs/AI-HANDOFF.md` update when applicable.
