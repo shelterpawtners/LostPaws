@@ -187,7 +187,7 @@ jobs:
           const response = await page.goto(url, { waitUntil: 'networkidle' });
           if (!response || !response.ok()) throw new Error(`Navigation failed: ${response?.status()}`);
           await page.getByRole('heading', { name: 'Better pet care starts with a connected community.' }).waitFor({ timeout: 15000 });
-          await page.getByRole('heading', { name: 'Music. Community. More resources for shelter pets.' }).waitFor({ timeout: 15000 });
+          await page.getByRole('heading', { name: 'Rave with purpose. Shop with impact.' }).waitFor({ timeout: 15000 });
           await page.getByRole('link', { name: 'See the RAVE Shelter mission' }).waitFor({ timeout: 15000 });
           const skipTransform = await page.locator('.skip').evaluate(el => getComputedStyle(el).transform);
           if (skipTransform === 'none') throw new Error('Skip link is visibly rendered instead of visually hidden.');
