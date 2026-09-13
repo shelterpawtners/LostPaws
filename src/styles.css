@@ -1085,23 +1085,29 @@ select:focus {
   line-height: 1.55;
 }
 footer {
-  padding: 55px 0;
+  padding: 32px 0 28px;
   background: #0d172b;
   color: #fff;
 }
 .foot {
   display: grid;
-  grid-template-columns: 2fr 1fr;
-  gap: 50px;
+  grid-template-columns: 1.3fr 1fr 1fr 1fr;
+  gap: 24px;
+}
+.foot b {
+  font-size: 0.95rem;
 }
 .foot p {
+  margin: 4px 0 0;
   color: #a9b2c4;
+  font-size: 0.82rem;
+  line-height: 1.4;
 }
 .foot a {
   display: block;
+  margin: 1px 0;
   color: #c7cedb;
-  margin: 9px 0;
-  font-size: 0.86rem;
+  font-size: 0.84rem;
 }
 @media (max-width: 900px) {
   .cards {
@@ -1157,10 +1163,16 @@ footer {
   .connect,
   .fields,
   .partnerOnboardingGrid,
-  .foot,
   .dashboardGrid,
   .nextCards {
     grid-template-columns: 1fr;
+  }
+  .foot {
+    grid-template-columns: 1fr 1fr;
+    row-gap: 20px;
+  }
+  .foot > div:first-child {
+    grid-column: 1 / -1;
   }
   .dashboardTitle {
     align-items: flex-start;
