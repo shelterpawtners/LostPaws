@@ -56,13 +56,16 @@ Work verified live production Google OAuth end to end:
 
 ### Meta/Facebook
 
-Status: **EXTERNALLY BLOCKED / CORRECTLY DISABLED**.
+Status: **DEFERRED OWNER/PROVIDER ADMIN — NOT A LAUNCH BLOCKER**.
 
 - Source integration uses provider `facebook` and the same deployment-base-aware OAuth return helper.
 - Production keeps Facebook disabled through `VITE_FACEBOOK_AUTH_ENABLED !== "true"`.
 - Live UI remains `Facebook sign-in coming soon`.
 - Real provider-console callback and identity-continuity acceptance require authorized Meta/provider access.
-- Do not enable Facebook publicly until callback + account-continuity acceptance passes.
+- Owner has chosen to defer Meta configuration while business/legal-entity verification details are prepared.
+- Do not enable Facebook publicly, do not spend Work/Codex cycles retrying Meta, and do not treat Meta as blocking unrelated launch work.
+- Resume Meta only after the owner explicitly says business verification/provider access is ready.
+- Future Meta/legal readiness must include a documented government/law-enforcement request process covering legal review, challenge/escalation of unlawful or overbroad requests, data minimization, and an auditable record of requests/responses/legal reasoning/actors. This is a deferred compliance item, not a current launch blocker.
 
 ### Public smoke
 
@@ -78,21 +81,7 @@ Authoritative brief:
 
 `docs/SEVEN-STAR-SHELTERS-LANDING-BRIEF.md`
 
-This should be built as a normal React route in the existing Vite app, not a standalone unmanaged HTML page.
-
-Recommended route:
-
-`/sevenstars`
-
-The brief includes:
-
-- mission/copy;
-- Seven Stars / GRiZ / GRiZMAS research-grounded links;
-- no-affiliation guardrails;
-- early engagement CTAs;
-- vendor + marketplace reuse;
-- design direction based on the approved Seven Star Shelters visual concept;
-- explicit direction to reduce obvious AI-generated visual artifacts.
+The `/sevenstars` implementation has been merged and is source/CI accepted. Final production visual acceptance remains dependent on Vercel accepting the next normal product deployment.
 
 ### Historical branches
 
@@ -106,60 +95,62 @@ Claude resumes its own paused current-development/design work when available. Co
 
 ## NEXT ACTIONS
 
-### Lane A — Codex Work: launch readiness
-
-Stay in the existing **Launch Readiness Work tab**.
+### Lane A — Codex Work: non-Meta launch readiness
 
 Recommended setting:
 
 - Model: Terra
-- Reasoning: Medium
+- Reasoning: Low/Medium
 - Fast: OFF
 
 On next sync:
 
-1. Treat Google OAuth as accepted and do not retest unless production changes touch auth.
-2. Treat Meta as externally blocked and leave Facebook disabled.
-3. Do not wait on Meta. Move to the next independent launch-readiness work.
-4. Run the remaining final production acceptance from `docs/AI-EXECUTION-PLAN-2026-09-12.md` that is still relevant after the already-passed public smoke.
-5. Specifically verify the currently deployed production SHA, whether any newer `main` delta is product-affecting, and whether Vercel is now following the Git-driven deployment policy normally.
-6. Record any remaining true release blockers, owner/provider gates, or production-affecting source changes.
-7. Update this controller and continue autonomously through routine PASS checkpoints.
+1. Treat Google OAuth as accepted; do not retest unless production auth changes.
+2. Treat Meta/Facebook as intentionally deferred by the owner; leave Facebook disabled and do not spend cycles on Meta.
+3. Refresh GitHub `main` before acting.
+4. Inspect Vercel at most once, and only when a product-affecting current-main commit is awaiting deployment.
+5. If Vercel is still rate-limited/canceling the pending product deployment, record the state once and move on; do not poll, force deploy, or request a paid upgrade.
+6. Continue all independent launch-readiness work that does not depend on a fresh production deployment.
+7. When a new product deployment becomes READY, run focused final production acceptance for the newly deployed delta, especially `/sevenstars`, `/privacy`, mobile behavior, and regression smoke on core routes.
+8. Update this controller after material checkpoints.
 
-Do not stop merely because Meta provider access is unavailable.
+### Lane B — VS Code Codex: retained-branch reconciliation
 
-### Lane B — Seven Star Shelters: parallel repository build
+Because Meta is deferred and Vercel may be temporarily unavailable, repository-native work is now the best use of parallel engineering time.
 
-This is independent of the launch-provider lane and can proceed in parallel on a separate branch.
+- Start from latest `main`.
+- Read `docs/BRANCH-RETIREMENT-2026-09-12.md` and relevant handoff/protocol docs.
+- Process retained historical branches in batches of 3.
+- Classify each as KEEP / SUPERSEDED / CONFLICTS_WITH_CURRENT_DIRECTION / OWNER_REVIEW / CLAUDE_REVIEW.
+- For KEEP, port only the useful delta onto a fresh current-main branch; never blind-merge a stale branch.
+- Do not delete retained branches until reviewed/authorized.
+- Stop only for non-trivial auth/RLS/architecture conflicts or true owner decisions.
 
-Owner-approved goal:
+### Lane C — Owner admin: business verification preparation (parallel, non-blocking)
 
-Create an early production-capable `/sevenstars` page so promotion, vendor recruitment, and community engagement can begin before the festival.
+Owner will separately prepare the legal-business information needed for Meta verification. This lane must not block product/engineering work.
 
-Read first:
+Before resuming Meta, establish one authoritative legal entity identity for the app and ensure the legal name, address, phone, website/domain, and tax/registration documents are consistent across Meta and supporting records.
 
-- `docs/SEVEN-STAR-SHELTERS-LANDING-BRIEF.md`
-- `docs/AI-CONTROLLER.md`
-- current `/lostpaws` and `/rave` implementations
+---
 
-Implementation guidance:
+## AUTH / CONNECTOR HANDOFF FAILSAFE
 
-- normal React/Vite route, not standalone HTML;
-- reuse existing RAVE registration and `?channel=rave` marketplace flows;
-- original Seven Star Shelters design system, informed by the approved visual concept;
-- use clean intentional visual assets, not faux festival photography or AI-looking crowds/signage;
-- link outward to verified GRiZ / Seven Stars / GRiZMAS resources;
-- prominently retain independent/no-affiliation disclosure;
-- do not invent partnerships, donation mechanics, or endorsement;
-- ship useful early-engagement MVP before perfect visual polish.
+A connector login or authorization handoff must never leave an agent spinning indefinitely.
 
-Recommended branch if Codex owns this lane:
+If GitHub, Vercel, Meta, Supabase, or another provider requires authentication that cannot be completed immediately:
 
-`feat/seven-star-shelters-landing`
+1. Attempt the secure handoff only when a concrete provider action or write is actually required.
+2. If the handoff is unavailable, missing the required sign-in method, or not completed promptly, stop waiting.
+3. Fall back to **read-only continuation** using GitHub `main` and any already-authorized provider surfaces as the source of truth.
+4. Complete every independent verification, analysis, or non-write task that remains safe.
+5. Record exactly one bounded pending action, including the target system and intended write/action.
+6. Do not reopen the same auth handoff repeatedly in the same run.
+7. Do not claim the entire workstream is blocked when only one write is blocked.
+8. If the blocked write is only a controller/handoff update, report the unpushed checkpoint in the final response and continue useful work; the next authorized agent can publish it.
+9. Never ask the owner to paste passwords, OAuth tokens, secrets, or recovery codes into chat.
 
-Do not mix this work into the historical branch-reconciliation branch.
-
-Before merge, require targeted route/responsive/accessibility tests and confirm no regression to `/lostpaws`, `/rave`, or the shared marketplace.
+A Work run waiting on an inaccessible authentication UI for roughly 2–3 minutes should be treated as a failed handoff, not as active progress.
 
 ---
 
@@ -221,48 +212,54 @@ Prefer small recoverable checkpoints and parallel independent lanes over one gia
 
 ## LATEST AGENT UPDATE
 
-AGENT: WORK
-TIME: 2026-09-12 20:xx EDT
-STATUS: BLOCKED
-CHECKPOINT: Post-merge production deployment
+AGENT: CHATGPT_ADVISOR
+TIME: 2026-09-12
+STATUS: PASS
+CHECKPOINT: Defer Meta and advance independent work
 PROVEN:
 
-- PR #133 (control-plane formatting), PR #134 (UTC event-date regression), and PR #132 (independent `/sevenstars` route) are merged.
-- Current `main` is `30536b49c8d81ad90b5edc1c2d1b1ddb96d128fd`; PR #132 passed CI, web, persona, public release matrix, CodeQL, and all required gates before merge.
-- The existing live production runtime remains the prior READY deployment `dpl_4x32sTRgy9f1Knvt7xcNEqD9967P` at product SHA `5baee666d3e6084a6f01494a85305db6648bb448`.
-- Vercel received the product-affecting merge but reported: `Deployment rate limited — retry in 24 hours.`
+- Google production OAuth remains accepted.
+- Meta/Facebook cannot be completed until owner-side business/provider verification is ready.
+- Meta can remain disabled without blocking unrelated product launch/readiness work.
+- `/sevenstars` is merged/source-accepted and awaits production deployment acceptance.
+- Vercel deployment capacity/rate limiting is a temporary external constraint and should not consume repeated polling cycles.
   CHANGED:
-- Recorded the merged release work and the exact Vercel state.
+- Meta is now explicitly deferred/non-blocking in the control plane.
+- Next engineering work prioritizes independent launch acceptance and retained-branch reconciliation.
+- Added a separate non-blocking owner-admin lane for business verification preparation.
   BLOCKERS:
-- Vercel Hobby build-rate limit prevents deployment of `30536b49` for up to 24 hours. No paid upgrade, purchase, or manual redeploy was performed.
-- Meta provider-console callback and account-continuity acceptance remain external; Facebook stays correctly disabled.
+- Fresh production acceptance for newer product changes still depends on Vercel accepting a normal deployment.
   RISKS_OR_UNCERTAINTY:
-- `/sevenstars` is source- and CI-accepted but cannot receive final production visual acceptance until Vercel accepts the queued Git deployment.
+- Meta business verification entity/details are not yet finalized; do not resume Meta until owner explicitly reopens that lane.
   NEXT_RECOMMENDED_ACTION:
-- After the rate-limit window, inspect Vercel once for a normal Git-driven deployment of `30536b49`; when READY, run focused desktop/mobile `/sevenstars` smoke. Do not manually force a deployment or upgrade a plan.
-  ADVISOR_REVIEW_REQUIRED: YES
+- Work continues non-Meta launch readiness; VS Code Codex can process retained branches in parallel while waiting for Vercel.
+  ADVISOR_REVIEW_REQUIRED: NO
   ADVISOR_QUESTION:
-- Is waiting for the free-tier Vercel build window acceptable, or should the owner choose a separately authorized deployment-capacity change?
+- none
 
 ---
 
 AGENT: CLAUDE
-TIME: 2026-09-12 19:xx EDT
-STATUS: IN_PROGRESS, PR OPEN
-CHECKPOINT: Track 3 slice — marketplace UX, giving/donation UI, LostPaws rewrite
+TIME: 2026-09-13 00:xx UTC
+STATUS: BLOCKED (docs-only, non-destructive fix applied)
+CHECKPOINT: `main` CI Gate was failing on a formatting regression in this file
+
 PROVEN:
 
-- PR #135 (`feature/marketplace-ux-and-giving` to `main`) is open: site-wide scroll-to-top on navigation, a shortened LostPaws page, a marketplace redesign (real photo/tags, category filter, sort, tighter mobile layout), a business giving panel and Guardian giving history built on the pre-existing `partner_contribution_commitments`/`donation_intents` schema, a business-facing tax/giving document, two new Learn articles, and a written proposal (not built) for offer link-preview image fetching.
-- Locally verified before every push: typecheck clean, lint clean, 50 unit tests, 57 public e2e tests, 48 persona e2e tests, all against a freshly reset local Supabase database.
-- Merged current `main` (through the Seven Star Shelters and event-date-fix commits) into this branch with no conflicts; fixed two issues that merge surfaced: `docs/AI-CONTROLLER.md` itself was unformatted and failing the `web` job's prettier check, and `e2e/seven-star-shelters.spec.ts` had no workflow or npm script referencing it (added to `test:e2e:public`).
-  CHANGED:
-- See PR #135 for the full diff. No schema/migration conflicts with Track 2 or the Seven Star Shelters work.
-  BLOCKERS:
-- None blocking. `build/festival-mvp` is a safe one-command branch deletion (content-identical to `main`, its PR is merged) that this session's tooling correctly declined to do unattended — needs a human `git push origin --delete build/festival-mvp`.
-  RISKS_OR_UNCERTAINTY:
-- 11 other historical branches remain genuinely ambiguous (closed-not-merged PRs or none at all, old small diffs against superseded components) — listed in `docs/BRANCH-RETIREMENT-2026-09-12.md` as a judgement call, not re-evaluated further this session.
-- The offer link-preview feature the owner asked for (vendor pastes a URL, we propose an image) is proposed but not built — it needs a new Edge Function with real SSRF guards, scoped as its own reviewable slice.
-  NEXT_RECOMMENDED_ACTION:
-- Watch PR #135 CI to green, then merge under the owner's standing merge authorization.
-- Next scoped slice after merge: build the offer link-preview Edge Function per `docs/product/OFFER-LINK-PREVIEW-PROPOSAL.md`.
-  ADVISOR_REVIEW_REQUIRED: NO
+- This file itself (`docs/AI-CONTROLLER.md`) failed `web`'s prettier check on `main` at commit `5b19fca`, which failed `CI Gate` — a docs-only formatting break, not a product regression. Fixed by running `npx prettier --write` and pushing directly to `main`, matching the pattern already used for other docs-only fixes today.
+- Separately, PR #135 (`feature/marketplace-ux-and-giving`) is open and CI-green: a marketplace UX/giving-and-donation Track 3 slice, plus this session's newest work — RAVE Shelter is now a nav dropdown holding the mission page, LostPaws, and Seven Star Shelters; LostPaws' duplicate logo is fixed; and Terms/Data Deletion placeholder pages plus footer links were added. See `docs/AI-HANDOFF.md` and `docs/OPEN-ITEMS-2026-09-12.md` for detail.
+
+CHANGED:
+
+- `docs/AI-CONTROLLER.md` formatting only, on `main`.
+
+BLOCKERS:
+
+- None for Claude's own lane. PR #135 is ready to merge under the owner's standing merge authorization.
+
+NEXT_RECOMMENDED_ACTION:
+
+- Merge PR #135 when convenient.
+- Whoever edits this file next: run `npx prettier --write docs/AI-CONTROLLER.md` before committing — this is the second time in one session this file broke `web`'s formatting check.
+
+ADVISOR_REVIEW_REQUIRED: NO
