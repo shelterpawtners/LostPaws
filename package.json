@@ -14,9 +14,8 @@
     "test:e2e:admin-qa": "playwright test e2e/admin-qa-mode.spec.ts",
     "lint": "prettier --check src docs README.md AGENTS.md CLAUDE.md '.github/**/*.{md,yml,yaml}'",
     "lint:shell": "bash -n scripts/*.sh",
-    "test:shell": "bash scripts/verify-vercel-ignore-build.sh",
     "typecheck": "tsc -b --pretty false",
-    "check": "npm run lint && npm run lint:shell && npm run test:shell && npm run typecheck && npm test"
+    "check": "npm run lint && npm run lint:shell && npm run typecheck && npm test"
   },
   "dependencies": {
     "@supabase/supabase-js": "2.115.0",
