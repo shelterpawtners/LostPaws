@@ -79,6 +79,12 @@ There is also now a **local way to run these**: the credentials in the persona s
 
 Every Playwright invocation in `.github/workflows` names specific spec files. Two specs — `rave-shelter-mission.spec.ts` and `issue-125-rave-lostpaws-mobile.spec.ts` — were referenced by no workflow at all, so they silently rotted out of sync with the app and gave false confidence. Both now run through `npm run test:e2e:public` in CI's `web` job, alongside the new Track 3 and site-hygiene specs. **Any new spec file must be added to a script or it will never run.**
 
+### 3.2b An occasional sign-out race on CI, investigated but not fixed
+
+Two Persona QA runs on PR #135 each showed exactly one Guardian-Passport-area test landing on `/login` instead of `/` right after clicking "Sign out," while every other run this session (many, both local and CI) passed cleanly. The `signOut()` handler in `Header` navigates to `/` and then awaits `db.auth.signOut()`; the theory was that the auth-state listener's async session refresh could redirect a still-guarded route to `/login` after the navigate already resolved, so reordering to await first should make the explicit navigate the last write.
+
+That reorder was tried, pushed, and reverted in the same session: on CI it did not fix the original failure and additionally broke the core "clears the browser session on logout" test, which had never failed before. `Header` is remounted fresh per route (`Page` renders `<Header/>` inside every route's own element), which makes the actual timing here less predictable than either ordering assumes, and a real fix needs more investigation than a same-day guess — reverted to the original order rather than trading one intermittent failure for a different, less intermittent one. Locally, both orderings passed 100% of the time across roughly a dozen runs, so this is CI-runner-timing-specific and low severity (an occasional, self-resolving hiccup on a `.serial` suite under parallel workers), not a user-facing defect anyone has reported. Worth a focused look with CI's exact concurrency settings reproduced, rather than guessed at from logs.
+
 ### 3.3 The bundle is one 628 KB chunk
 
 Every build warns about it. Not urgent, but the whole app, including admin and dashboard code, ships to a first-time visitor reading the FAQ. Route-level code splitting would be the fix.
