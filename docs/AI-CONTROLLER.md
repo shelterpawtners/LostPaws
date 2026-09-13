@@ -71,66 +71,58 @@ Status: **DEFERRED OWNER/PROVIDER ADMIN — NOT A LAUNCH BLOCKER**.
 
 Work passed `/`, `/marketplace`, `/lostpaws`, `/rave`, and `/events` with expected headings and no application console errors.
 
-### Seven Star Shelters — new parallel product lane
+### Seven Star Shelters
 
-Owner approved a second RAVE Shelter festival activation:
+- `/sevenstars` is merged and source/CI accepted.
+- Final production visual acceptance remains dependent on Vercel accepting the next normal product deployment.
 
-**Seven Star Shelters — Spread Shelter Love**
+### Claude Track 3
 
-Authoritative brief:
-
-`docs/SEVEN-STAR-SHELTERS-LANDING-BRIEF.md`
-
-The `/sevenstars` implementation has been merged and is source/CI accepted. Final production visual acceptance remains dependent on Vercel accepting the next normal product deployment.
+- PR #135 (`feature/marketplace-ux-and-giving`) is **merged**.
+- Merge commit: `27c07d0697eb7f9fed99ac7c4380b064e1f42748`.
+- Delivered marketplace UX/giving UI, LostPaws rewrite/cleanup, RAVE Shelter nav dropdown, Terms/Data Deletion placeholder pages/footer links, and related regression fixes.
+- Claude also fixed stale hardcoded CI assertions in GitHub Pages Staging and MVP Acceptance workflows.
+- A speculative sign-out-race change was correctly reverted; the unresolved race remains documented for future root-cause work.
+- `main` is reported green across CI, GitHub Pages Staging, and GitHub Pages MVP Acceptance.
 
 ### Historical branches
 
 Retained historical branches still require reconciliation. Do not wholesale merge them.
 
-### Claude ownership
-
-Claude resumes its own paused current-development/design work when available. Codex must not overwrite Claude-owned work.
-
 ---
 
 ## NEXT ACTIONS
 
-### Lane A — Codex Work: non-Meta launch readiness
-
-Recommended setting:
-
-- Model: Terra
-- Reasoning: Low/Medium
-- Fast: OFF
-
-On next sync:
+### Lane A — Work: non-Meta launch readiness
 
 1. Treat Google OAuth as accepted; do not retest unless production auth changes.
-2. Treat Meta/Facebook as intentionally deferred by the owner; leave Facebook disabled and do not spend cycles on Meta.
+2. Treat Meta/Facebook as intentionally deferred; leave Facebook disabled.
 3. Refresh GitHub `main` before acting.
-4. Inspect Vercel at most once, and only when a product-affecting current-main commit is awaiting deployment.
-5. If Vercel is still rate-limited/canceling the pending product deployment, record the state once and move on; do not poll, force deploy, or request a paid upgrade.
-6. Continue all independent launch-readiness work that does not depend on a fresh production deployment.
-7. When a new product deployment becomes READY, run focused final production acceptance for the newly deployed delta, especially `/sevenstars`, `/privacy`, mobile behavior, and regression smoke on core routes.
-8. Update this controller after material checkpoints.
+4. Inspect Vercel at most once, and only if a product-affecting current-main commit is awaiting deployment.
+5. If Vercel is still rate-limited/canceling, record once and move on; do not poll, force deploy, or request a paid upgrade.
+6. When a new product deployment becomes READY, run focused final production acceptance for `/sevenstars`, `/privacy`, `/terms`, `/data-deletion`, LostPaws, Marketplace, mobile behavior, and core-route regression smoke.
+7. Continue any other independent launch-readiness checks that do not overlap active repo implementation.
 
-### Lane B — VS Code Codex: retained-branch reconciliation
+### Lane B — Codex in VS Code: retained-branch reconciliation
 
-Because Meta is deferred and Vercel may be temporarily unavailable, repository-native work is now the best use of parallel engineering time.
+When Codex usage is available:
 
-- Start from latest `main`.
-- Read `docs/BRANCH-RETIREMENT-2026-09-12.md` and relevant handoff/protocol docs.
-- Process retained historical branches in batches of 3.
-- Classify each as KEEP / SUPERSEDED / CONFLICTS_WITH_CURRENT_DIRECTION / OWNER_REVIEW / CLAUDE_REVIEW.
-- For KEEP, port only the useful delta onto a fresh current-main branch; never blind-merge a stale branch.
-- Do not delete retained branches until reviewed/authorized.
-- Stop only for non-trivial auth/RLS/architecture conflicts or true owner decisions.
+- start from latest `main`;
+- read `docs/BRANCH-RETIREMENT-2026-09-12.md` and current handoff/protocol docs;
+- process retained historical branches in batches of 3;
+- classify each as KEEP / SUPERSEDED / CONFLICTS_WITH_CURRENT_DIRECTION / OWNER_REVIEW / CLAUDE_REVIEW;
+- port only useful deltas onto fresh current-main work; never blind-merge stale branches;
+- do not delete retained branches without review/authorization;
+- stop only for non-trivial auth/RLS/architecture conflicts or true owner decisions.
 
-### Lane C — Owner admin: business verification preparation (parallel, non-blocking)
+### Lane C — Owner/advisor preparation (non-blocking)
 
-Owner will separately prepare the legal-business information needed for Meta verification. This lane must not block product/engineering work.
+Continue drafting review-ready owner materials rather than pausing for preferences:
 
-Before resuming Meta, establish one authoritative legal entity identity for the app and ensure the legal name, address, phone, website/domain, and tax/registration documents are consistent across Meta and supporting records.
+- Lost Lands event/activation copy and vendor QR outreach;
+- Seven Star Shelters content/design refinement;
+- LLC/business-verification preparation for later Meta verification;
+- batch owner approvals instead of interrupting engineering flow.
 
 ---
 
@@ -213,53 +205,23 @@ Prefer small recoverable checkpoints and parallel independent lanes over one gia
 ## LATEST AGENT UPDATE
 
 AGENT: CHATGPT_ADVISOR
-TIME: 2026-09-12
+TIME: 2026-09-12 21:xx EDT
 STATUS: PASS
-CHECKPOINT: Defer Meta and advance independent work
+CHECKPOINT: Claude Track 3 merged and main green
 PROVEN:
-
-- Google production OAuth remains accepted.
-- Meta/Facebook cannot be completed until owner-side business/provider verification is ready.
-- Meta can remain disabled without blocking unrelated product launch/readiness work.
-- `/sevenstars` is merged/source-accepted and awaits production deployment acceptance.
-- Vercel deployment capacity/rate limiting is a temporary external constraint and should not consume repeated polling cycles.
-  CHANGED:
-- Meta is now explicitly deferred/non-blocking in the control plane.
-- Next engineering work prioritizes independent launch acceptance and retained-branch reconciliation.
-- Added a separate non-blocking owner-admin lane for business verification preparation.
-  BLOCKERS:
-- Fresh production acceptance for newer product changes still depends on Vercel accepting a normal deployment.
-  RISKS_OR_UNCERTAINTY:
-- Meta business verification entity/details are not yet finalized; do not resume Meta until owner explicitly reopens that lane.
-  NEXT_RECOMMENDED_ACTION:
-- Work continues non-Meta launch readiness; VS Code Codex can process retained branches in parallel while waiting for Vercel.
-  ADVISOR_REVIEW_REQUIRED: NO
-  ADVISOR_QUESTION:
-- none
-
----
-
-AGENT: CLAUDE
-TIME: 2026-09-13 00:xx UTC
-STATUS: BLOCKED (docs-only, non-destructive fix applied)
-CHECKPOINT: `main` CI Gate was failing on a formatting regression in this file
-
-PROVEN:
-
-- This file itself (`docs/AI-CONTROLLER.md`) failed `web`'s prettier check on `main` at commit `5b19fca`, which failed `CI Gate` — a docs-only formatting break, not a product regression. Fixed by running `npx prettier --write` and pushing directly to `main`, matching the pattern already used for other docs-only fixes today.
-- Separately, PR #135 (`feature/marketplace-ux-and-giving`) is open and CI-green: a marketplace UX/giving-and-donation Track 3 slice, plus this session's newest work — RAVE Shelter is now a nav dropdown holding the mission page, LostPaws, and Seven Star Shelters; LostPaws' duplicate logo is fixed; and Terms/Data Deletion placeholder pages plus footer links were added. See `docs/AI-HANDOFF.md` and `docs/OPEN-ITEMS-2026-09-12.md` for detail.
-
+- PR #135 is merged at `27c07d0697eb7f9fed99ac7c4380b064e1f42748`.
+- Track 3 marketplace/giving/LostPaws/navigation/legal-placeholder work is now on `main`.
+- Claude fixed two stale hardcoded CI assertion defects and reverted a speculative sign-out-race fix rather than masking the issue.
+- Owner reports `main` green across CI, GitHub Pages Staging, and GitHub Pages MVP Acceptance.
 CHANGED:
-
-- `docs/AI-CONTROLLER.md` formatting only, on `main`.
-
+- Controller advanced past Claude's PR #135 merge checkpoint.
 BLOCKERS:
-
-- None for Claude's own lane. PR #135 is ready to merge under the owner's standing merge authorization.
-
+- Fresh production acceptance still depends on Vercel accepting a normal product deployment.
+- Meta remains intentionally deferred and non-blocking.
+RISKS_OR_UNCERTAINTY:
+- Intermittent sign-out race remains a documented future investigation; do not paper over it with assertion/test weakening.
 NEXT_RECOMMENDED_ACTION:
-
-- Merge PR #135 when convenient.
-- Whoever edits this file next: run `npx prettier --write docs/AI-CONTROLLER.md` before committing — this is the second time in one session this file broke `web`'s formatting check.
-
+- Use Work only for non-Meta live/readiness checks; when Codex usage is available, start retained-branch reconciliation from latest `main`. Continue advisor-side drafting in parallel.
 ADVISOR_REVIEW_REQUIRED: NO
+ADVISOR_QUESTION:
+- none
