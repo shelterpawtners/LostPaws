@@ -29,15 +29,15 @@ Updated 2026-09-12.
 
 ### Deployment automation
 
-The prior manual Vercel ignored-build toggle is retired as the normal operating pattern.
+**Simplified 2026-09-13 (issue #138).** The custom file-diff Ignored Build Step (`scripts/vercel-ignore-build.sh`) is retired, along with the `[deploy]` / `[skip deploy]` commit-message conventions it read — neither exists anymore; do not use or expect them. It was logically correct but had already caused one real stale-production incident, preview confusion, and repeated owner/agent diagnostic time, for a build cheap enough that skipping it wasn't worth the risk.
 
-`scripts/vercel-ignore-build.sh` supports explicit commit-message controls:
+Vercel's own native `git.deploymentEnabled` config in `vercel.json` now controls this declaratively instead of custom shell logic:
 
-- `[deploy]` => force a Vercel build;
-- `[skip deploy]` => explicitly skip when intentionally safe;
-- otherwise the existing change-impact classifier decides automatically.
+```json
+"git": { "deploymentEnabled": { "**": false, "main": true } }
+```
 
-Agents should use the Git-driven trigger rather than asking the owner to repeatedly change Vercel settings.
+See **Deployment policy** below for the resulting rule of thumb.
 
 ### Google OAuth
 
@@ -88,6 +88,14 @@ Work passed `/`, `/marketplace`, `/lostpaws`, `/rave`, and `/events` with expect
 ### Historical branches
 
 Retained historical branches still require reconciliation. Do not wholesale merge them.
+
+---
+
+## DEPLOYMENT POLICY
+
+- **Production (`main`) = always deploy.** Every push to `main` gets a normal Vercel production deployment. No file-diff skip logic.
+- **GitHub Pages = normal QA/staging.** Unaffected by this policy; keep using it to review in-progress work.
+- **Vercel previews = intentional, not automatic for routine agent work.** Feature/docs/agent branches do not automatically consume a Vercel preview deployment. If a real preview is genuinely needed for a specific branch, either temporarily add that branch to `vercel.json`'s `git.deploymentEnabled`, or deploy it manually with the Vercel CLI — do not re-introduce a custom always-on preview mechanism or a new custom deployment gate.
 
 ---
 

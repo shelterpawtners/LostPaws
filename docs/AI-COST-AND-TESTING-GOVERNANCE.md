@@ -128,9 +128,13 @@ A stale signal never launches an AI agent automatically.
 
 ## Deployment
 
-Vercel's Ignored Build Step uses `scripts/vercel-ignore-build.sh`, which delegates to the canonical change classifier.
+`main` always gets a normal Vercel production deployment on every push — no custom build-skip logic. This is a deliberate MVP-stage simplification (2026-09-13, issue #138): a prior custom Ignored Build Step script caused a real stale-production incident and repeated diagnostic overhead, for a build cheap enough that skipping it isn't worth the risk.
 
-Skip frontend builds when the commit cannot change the deployed web artifact.
+Preview deployments for other branches are disabled by Vercel's own native `git.deploymentEnabled` config in `vercel.json` (`"**": false, "main": true`), not custom shell logic. A Vercel preview is intentional when actually needed (temporarily add that branch to `deploymentEnabled`, or deploy manually with the Vercel CLI), not automatic for routine agent branches.
+
+GitHub Pages remains the normal staging/QA surface for reviewing in-progress work; it is unaffected by this.
+
+`scripts/classify-change-impact.sh` remains the canonical change classifier for GitHub Actions CI (persona/database/dependency-review/merge-gate/hosted-qa job routing) — that usage is unrelated to Vercel and was not touched.
 
 Do not add another CI/CD or deployment provider to optimize this flow.
 
