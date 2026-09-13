@@ -57,6 +57,7 @@ Examples may include:
 - `.openai/**`
 - `AGENTS.md`
 - `CLAUDE.md`
+- the approved minimal portable `.vscode/settings.json`
 - other convention-based tool entry files
 
 Rules:
@@ -65,6 +66,7 @@ Rules:
 - make these thin adapters where possible;
 - point to canonical project docs rather than restating large policies;
 - intentional tool-specific duplication must be documented as intentional.
+- commit the approved minimal portable `.vscode/settings.json`; it enables repository prompt discovery and is not personal editor preference.
 
 ### C. Canonical current knowledge
 
@@ -116,6 +118,12 @@ Target default startup contract for substantial agent work:
 
 Tool-specific adapters such as `CLAUDE.md` or Copilot instructions should add only tool-specific behavior and point back to the authority chain above.
 
+## Machine-readable release-state boundary
+
+`docs/AI-HANDOFF.md` is currently a CI-required machine-readable state file, not merely a historical narrative. Keep it at its current path and retain its current top-level field contract—including `CURRENT_CHECKPOINT`, `STATUS`, `CURRENT_PHASE`, `NEXT_CHECKPOINT`, `SAFE_TO_CONTINUE`, `OWNER_DECISION_REQUIRED`, `ACCEPTANCE_RUNTIME`, `ACCEPTANCE_DEPLOYED_SHA`, and `ACCEPTED_CODE_SHA`—until every consumer is migrated together.
+
+Current consumers include `.github/workflows/merge-gate.yml`, `persona-qa.yml`, `hosted-qa.yml`, and `scripts/update-ai-ops-status.sh`. Any future handoff consolidation is one bounded compatibility migration: update all consumers and their parsing assertions in the same PR, preserve equivalent semantics, and prove the required checks pass. Do not turn the file into a pointer/stub as part of documentation cleanup.
+
 ## Audit required before any migration
 
 Claude / local-workspace review should inspect the **entire repository**, including hidden folders, and provide evidence for:
@@ -151,44 +159,46 @@ Each non-KEEP action should include:
 
 ## Migration sequence after approval
 
-### Phase 0 — Audit only
+### Phase 0 — final audit artifact (this PR)
 
 - no file moves/deletes;
-- validate tool conventions and references;
-- refine PR #144 migration matrix;
-- owner/ChatGPT review of target tree.
+- validate tool conventions, inbound references, CI parsing, and stale-authority conflicts;
+- publish the matrix and information-architecture plan;
+- obtain planning review before execution.
 
-### Phase 1 — Establish canonical structure
+### Phase 1 — first implementation batch: authority chain, not migration
 
-- create `docs/README.md` authority/index;
-- create only the canonical folders/files justified by the audit;
-- consolidate durable knowledge into those files;
-- keep compatibility pointers where required.
+- commit the existing approved minimal portable `.vscode/settings.json`;
+- add `docs/README.md` as the authority/index map;
+- update `AGENTS.md` and `CLAUDE.md` together to load `docs/AI-CONTROLLER.md` as the human live-status authority before historical narrative docs;
+- preserve `docs/AI-HANDOFF.md` unchanged, including `CURRENT_CHECKPOINT` and its existing CI fields;
+- do not move, archive, or delete documentation in this batch.
 
-### Phase 2 — Thin tool adapters
+### Phase 2 — compatibility-safe state and current-work reconciliation
 
-- reduce duplicated policy in `AGENTS.md`, `CLAUDE.md`, Copilot instructions, skills, prompts, and other adapters where safe;
-- preserve tool-specific requirements and discovery paths.
+- if a future design changes handoff storage/format, migrate all workflows and `scripts/update-ai-ops-status.sh` in the same PR with parser-proof validation;
+- reconcile `CURRENT-WORK.md` and `scripts/set-active-phase.ps1` together before reducing either to a pointer;
+- update root README documentation links in lockstep with any later file move.
 
-### Phase 3 — Historical archive
+### Phase 3 — establish canonical structure
+
+- create only the additional canonical folders/files justified by completed dependency review;
+- consolidate durable knowledge in small subject batches;
+- keep compatibility sources until every inbound reference is updated.
+
+### Phase 4 — historical archive
 
 - move truly useful historical records into explicit archive locations;
 - add archive guidance stating they are non-authoritative;
-- update references.
+- update references and validate each batch.
 
-### Phase 4 — Remove unnecessary history from working tree
+### Phase 5 — remove unnecessary history and verify
 
-- delete files only after durable knowledge and references are verified;
-- rely on Git history for material that does not merit a maintained archive copy.
-
-### Phase 5 — Verification
-
-- validate links/references;
+- delete only after durable knowledge and references are verified;
 - run CI and relevant tests;
-- verify GitHub workflows;
 - verify VS Code / Claude / Codex / Copilot instruction discovery;
 - verify Vercel/Supabase/runtime behavior is unchanged;
-- confirm agent startup context is materially smaller and authority is obvious.
+- confirm startup context is materially smaller and authority is obvious.
 
 ## Review questions for Claude
 
