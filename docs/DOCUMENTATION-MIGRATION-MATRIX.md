@@ -20,6 +20,17 @@ Scope: current `main` at `64b13cb30216a3dd04db485e935f609837169c4b`; generated f
 - Active task briefs: `docs/tasks/active/` (planned)
 - Documentation map: `docs/README.md` (planned)
 
+## First implementation batch — authority-chain correction only
+
+This is the first execution batch after this planning PR merges. It is deliberately small and contains **no move, rename, archive, deletion, workflow/parser, provider, or product-behavior change**:
+
+1. Commit the existing approved minimal portable `.vscode/settings.json` so the repository-shipped `.github/prompts/**` convention is discoverable in a fresh VS Code clone.
+2. Add `docs/README.md` as the concise documentation map and authority guide; it must point to the controller as human live status and distinguish historical material.
+3. Update `AGENTS.md` and `CLAUDE.md` together so their startup order points to: current `main` → `AGENTS.md` → `docs/AI-CONTROLLER.md` → active Issue/PR → only the relevant domain document. They may reference `docs/AI-HANDOFF.md` for completion/CI state, but must not direct every task to treat it or `CURRENT-WORK.md` as competing live narrative authority.
+4. Do **not** alter `docs/AI-HANDOFF.md`, its current top-level fields (including `CURRENT_CHECKPOINT`), workflows, or `scripts/update-ai-ops-status.sh` in this batch.
+
+Required validation: settings JSON validity, documentation/format checks, repository reference scan, and normal CI.
+
 ## File-by-file ledger
 
 | Source                                                         | Disposition                                                                                                      | Target                                                             | Required before changing                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
@@ -154,10 +165,12 @@ Read-only audit against current `main` (`64b13cb`) plus this branch, per Issue #
 
 ## Migration-batch order
 
-1. Create the thin authority index and agent-operations/decisions destinations; do not delete legacy sources.
-2. Convert `AI-HANDOFF.md` and `CURRENT-WORK.md` to compatibility pointers only after their still-live facts are in the controller.
-3. Migrate one historical family at a time (prompts, phase/progress, launch snapshots), with link/build validation after each PR.
-4. Delete only files whose matrix row has been upgraded from `REVIEW` to an evidence-backed archival decision.
+1. **Phase 0 — audit and plan only (this PR):** retain every existing source path; record every file disposition and automation dependency. No moves/deletes.
+2. **First implementation batch — authority chain:** execute exactly the four items above: commit the approved portable VS Code setting, add the docs index, and correct `AGENTS.md`/`CLAUDE.md` together. Keep `docs/AI-HANDOFF.md` unchanged.
+3. **Machine-readable handoff batch:** only if consolidation needs it, migrate `.github/workflows/merge-gate.yml`, `persona-qa.yml`, `hosted-qa.yml`, and `scripts/update-ai-ops-status.sh` together with any handoff format/path change; prove all parsing and required fields still pass in the same PR. Until then, retain the current path and field contract.
+4. **Current-work/phase batch:** reconcile `docs/CURRENT-WORK.md` with `scripts/set-active-phase.ps1`, its template assumptions, phase references, root README links, and any controller-derived state before converting it to a pointer or archive candidate.
+5. **Historical family batches:** migrate prompts, phase/progress, launch snapshots, and similar families one at a time with link/build validation.
+6. **Deletion last:** delete only files whose rows are upgraded from `REVIEW` to an evidence-backed archival decision.
 
 ## Validation checklist for every follow-up PR
 
