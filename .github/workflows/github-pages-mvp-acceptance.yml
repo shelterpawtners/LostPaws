@@ -295,11 +295,11 @@ jobs:
             }
             const accountMenu = page.locator('.guardianAccountMenu');
             await accountMenu.locator('summary').click();
-            const helpButton = accountMenu.getByRole('button', { name: 'Help & feedback' });
-            await helpButton.waitFor({ state: 'visible', timeout: 10000 });
-            await helpButton.click();
-            await accountMenu.getByRole('heading', { name: 'Help & feedback' }).waitFor({ state: 'visible', timeout: 10000 });
-            await accountMenu.getByRole('button', { name: 'Close help form' }).click();
+            const helpLink = accountMenu.getByRole('link', { name: 'Help & support' });
+            await helpLink.waitFor({ state: 'visible', timeout: 10000 });
+            await helpLink.click();
+            await page.waitForURL(/\/LostPaws\/support$/, { timeout: 15000 });
+            await page.getByRole('heading', { name: 'How can we help?' }).waitFor({ state: 'visible', timeout: 10000 });
 
             await page.goto(`${process.env.SITE_URL}/passport`, { waitUntil: 'networkidle' });
             if (!page.url().includes('/LostPaws/passport')) {
