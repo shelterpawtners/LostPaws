@@ -103,7 +103,7 @@ test.describe.serial("Phase 2 offer and redemption journey", () => {
     await page.getByLabel("Public email").fill("partner@example.invalid");
     await page.getByLabel("How customers are served").selectOption("online");
     await page.getByRole("button", { name: "Save draft" }).click();
-    await expect(page.getByRole("status")).toContainText(
+    await expect(page.getByTestId("partner-profile-save-status")).toContainText(
       "Saved as a private draft",
     );
     await page.reload();
@@ -117,7 +117,9 @@ test.describe.serial("Phase 2 offer and redemption journey", () => {
     await page
       .getByRole("button", { name: "Publish profile", exact: true })
       .click();
-    await expect(page.getByRole("status")).toContainText("Published.");
+    await expect(
+      page.getByTestId("partner-profile-save-status"),
+    ).toContainText("Published.");
 
     await page.goto("/partner/offers");
     const offerOrganization = page

@@ -107,7 +107,8 @@
 }
 
 .marketplacePremium .marketplaceCardGrid-grid .marketOfferCta {
-  min-height: 42px;
+  /* Was 42px, below the 44px touch floor. */
+  min-height: 44px;
 }
 
 .marketplacePremium .marketplaceCardGrid-list {
@@ -202,7 +203,7 @@
 }
 
 .marketplacePremium .marketplaceCardGrid-list .marketOfferCta {
-  min-height: 42px;
+  min-height: 44px;
 }
 
 @media (max-width: 760px) {
@@ -255,5 +256,354 @@
   .marketplacePremium .marketplaceCardGrid-list .marketOfferVisualLabel,
   .marketplacePremium .marketplaceCardGrid-list .marketOfferVisualIcon {
     display: none;
+  }
+}
+
+/* ---- Tile redesign (2026-09-12) ----
+   The marketplace opened with a tall hero and every tile repeated eligibility,
+   provider context, and verification dates, so three offers filled a phone
+   screen. Tiles are now scannable and those details live on the detail page
+   the tile links to. */
+
+.marketplaceFlagship {
+  /* Was 36px all round, which pushed the first offer far below the fold. */
+  padding: 20px;
+}
+
+.marketplaceFlagship .marketplaceHeroLayout {
+  gap: 18px;
+  margin-bottom: 14px;
+}
+
+.marketplaceFlagship .marketplaceConceptIntro h2 {
+  font-size: clamp(1.5rem, 3.2vw, 2.1rem);
+  line-height: 1.08;
+}
+
+.marketplaceFlagship .marketplaceConceptIntro p {
+  max-width: 62ch;
+  font-size: 0.95rem;
+}
+
+.marketplaceFlagship .marketplaceDiscovery {
+  margin-bottom: 16px;
+}
+
+/* Real tags, replacing a decorative tag icon that read as a missing value. */
+.marketOfferTags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.marketOfferTag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 9px;
+  border: 1px solid #3a4d6b;
+  border-radius: 999px;
+  background: #16243c;
+  color: #c6d3e6;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+
+.marketOfferTag svg {
+  width: 12px;
+  height: 12px;
+}
+
+.marketOfferTagCategory {
+  border-color: #2f7f77;
+  background: #10302f;
+  color: #8fe3da;
+}
+
+.marketOfferTagRave {
+  border-color: #7a3f77;
+  background: #2a1430;
+  color: #f0a6e6;
+}
+
+/* Vendor-supplied photo fills the visual panel when one is confirmed. */
+.marketOfferPhoto {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.marketplacePremium .marketOfferVisual {
+  position: relative;
+  overflow: hidden;
+}
+
+.marketplacePremium .marketOfferVisualLabel {
+  z-index: 2;
+}
+
+/* Tighter tile rhythm now that the body carries less. */
+.marketplacePremium .marketplaceCardGrid-grid .marketOfferVisual {
+  min-height: 132px;
+}
+
+.marketplacePremium .marketplaceCardGrid-grid .marketOfferBody {
+  padding: 14px 15px 15px;
+}
+
+.marketplacePremium .marketplaceCardGrid-grid .marketOfferCard h2 {
+  margin-bottom: 6px;
+  font-size: 1.08rem;
+}
+
+.marketplacePremium .marketplaceCardGrid-grid .marketOfferProvider {
+  margin-bottom: 6px;
+}
+
+.marketplacePremium .marketplaceCardGrid-grid .marketOfferMeta {
+  margin-top: 9px;
+}
+
+.marketplaceSortControl {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.marketplaceSortControl select {
+  min-height: 44px;
+  padding: 0 12px;
+  border: 1px solid #40536f;
+  border-radius: 12px;
+  background: #101d32;
+  color: #dce7f5;
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.marketplaceSortControl select:focus-visible {
+  outline: 3px solid #25e6ff;
+  outline-offset: 2px;
+}
+
+/* ---- Header density pass (2026-09-12) ----
+   Measured on a 390px screen the first offer began 1624px down: the hero
+   layout alone was 638px, the filter stack 416px, plus a duplicate outer
+   hero. Target is the first card inside the second screen. */
+
+/* The flagship panel carries its own intro, so the outer page hero above it
+   is duplicate chrome. */
+.market:has(+ .section .marketplaceFlagship) {
+  display: none;
+}
+
+.marketplaceFlagship .marketplaceConceptIntro .marketplaceHeroActions {
+  margin-top: 12px;
+}
+
+/* Count panel: a compact strip instead of a stacked card. */
+.marketplaceFlagship .marketplaceValuePanel {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 18px;
+  padding: 12px 14px;
+}
+
+.marketplaceFlagship .marketplaceValuePanel > div {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 18px;
+}
+
+.marketplaceFlagship .marketplaceValueTotal {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.marketplaceFlagship .marketplaceValueBreakdown {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  margin: 0;
+}
+
+.marketplaceFlagship .marketplaceValueBreakdown > div {
+  margin: 0;
+}
+
+/* Filters: one wrapping band rather than four labelled blocks stacked. */
+.marketplaceFlagship .marketplaceDiscovery {
+  display: grid;
+  gap: 10px;
+}
+
+.marketplaceFlagship .marketplaceFilterArea {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+}
+
+.marketplaceFlagship .marketplaceFilterLabel {
+  margin: 0;
+  white-space: nowrap;
+}
+
+.marketplaceFlagship .marketplaceFilterButtons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.marketplaceFlagship .marketplaceResultsHeader {
+  padding-top: 6px;
+}
+
+@media (max-width: 760px) {
+  /* The intro paragraph is context, not instruction: two lines is enough
+     before the offers themselves. */
+  .marketplaceFlagship .marketplaceConceptIntro p {
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+
+  .marketplaceFlagship .marketplaceConceptIntro h2 {
+    font-size: 1.35rem;
+  }
+
+  /* Chips scroll sideways instead of stacking into a tall column. */
+  .marketplaceFlagship .marketplaceFilterButtons {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 2px;
+    scrollbar-width: none;
+  }
+
+  .marketplaceFlagship .marketplaceFilterButtons::-webkit-scrollbar {
+    display: none;
+  }
+
+  .marketplaceFlagship .marketplaceFilterButtons button {
+    flex: none;
+  }
+
+  .marketplaceFlagship .marketplaceValueBreakdown {
+    gap: 6px 12px;
+  }
+}
+
+/* Filters collapse behind one control on mobile and sit inline on desktop. */
+.marketplaceFilterDisclosure {
+  display: grid;
+  gap: 10px;
+}
+
+.marketplaceFilterDisclosure > summary {
+  display: none;
+}
+
+@media (max-width: 760px) {
+  .marketplaceFilterDisclosure > summary {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 44px;
+    padding: 0 14px;
+    border: 1px solid #40536f;
+    border-radius: 12px;
+    background: #101d32;
+    color: #dce7f5;
+    font-size: 0.84rem;
+    font-weight: 800;
+    cursor: pointer;
+    list-style: none;
+  }
+
+  .marketplaceFilterDisclosure > summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .marketplaceFilterDisclosure > summary svg {
+    width: 15px;
+    height: 15px;
+  }
+
+  .marketplaceFilterCountBadge {
+    display: inline-grid;
+    place-items: center;
+    min-width: 20px;
+    height: 20px;
+    margin-left: auto;
+    padding: 0 6px;
+    border-radius: 999px;
+    background: #edfdfa;
+    color: #163049;
+    font-size: 0.72rem;
+    font-weight: 900;
+  }
+
+  /* Stack the count strip as one line of text rather than a tall card. */
+  .marketplaceFlagship .marketplaceValuePanel {
+    padding: 10px 12px;
+  }
+
+  .marketplaceFlagship .marketplaceValueEyebrow {
+    display: none;
+  }
+
+  .marketplaceFlagship .marketplaceValueBreakdown svg {
+    display: none;
+  }
+
+  .marketplaceFlagship .marketplaceValueBreakdown span {
+    font-size: 0.76rem;
+  }
+
+  .marketplaceFlagship .marketplaceResultsHeader {
+    padding-top: 0;
+  }
+}
+
+@media (max-width: 760px) {
+  /* The count panel and notice were each a full card; fold them down to a
+     single compact line so the first offer arrives sooner. */
+  .marketplaceFlagship .marketplaceValuePanel {
+    justify-content: space-between;
+  }
+
+  .marketplaceFlagship.marketplaceFlagship .marketplaceValueBreakdown {
+    display: none;
+  }
+
+  .marketplaceFlagship .marketplaceHeroLayout {
+    margin-bottom: 10px;
+  }
+
+  .marketplaceFlagship .marketplaceConceptIntro {
+    margin-bottom: 4px;
+  }
+
+  .market + .section .notice,
+  .marketplaceFlagship .notice {
+    padding: 10px 12px;
+  }
+
+  .marketplaceFlagship .notice p {
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
+    font-size: 0.82rem;
   }
 }

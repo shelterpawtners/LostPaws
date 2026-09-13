@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { PartnerGivingPanel } from "./giving/PartnerGivingPanel";
 import type { Session } from "@supabase/supabase-js";
 import { supabase as db } from "../lib/supabase";
 import {
@@ -506,6 +507,7 @@ export function PartnerProfileEditor({ session }: { session: Session | null }) {
           {status}
         </p>
       </div>
+      {id && <PartnerGivingPanel organizationId={id} />}
     </section>
   );
 }

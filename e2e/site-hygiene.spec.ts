@@ -24,6 +24,8 @@ const routes = [
   "/partners",
   "/shelters",
   "/about",
+  "/terms",
+  "/data-deletion",
   "/register",
   "/login",
   "/forgot-password",

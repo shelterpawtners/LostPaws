@@ -20,6 +20,8 @@ export type PublicOffer = {
   terms: string;
   classification: string;
   channel: "pet" | "rave" | "shared";
+  category: string | null;
+  image_url: string | null;
   destination_url: string | null;
   eligibility: string | null;
   last_verified_at: string | null;
@@ -95,40 +97,48 @@ export function OfferCard({
     <article
       className={`offerCard marketOfferCard marketOfferCard-${concept} marketOfferCard-${offer.classification || "current"}${featured ? " marketOfferCard-featured" : ""}`}
     >
-      <div className="marketOfferVisual" aria-hidden="true">
+      <div className="marketOfferVisual">
+        {offer.image_url ? (
+          <img
+            className="marketOfferPhoto"
+            src={offer.image_url}
+            alt=""
+            loading="lazy"
+          />
+        ) : (
+          <span className="marketOfferMonogram" aria-hidden="true">
+            {initials}
+          </span>
+        )}
         <span className="marketOfferVisualLabel">
           {visualLabel(offer.classification)}
-        </span>
-        <span className="marketOfferMonogram">{initials}</span>
-        <span className="marketOfferVisualIcon">
-          <Tag />
         </span>
       </div>
 
       <div className="marketOfferBody">
-        <div className="marketOfferBadges" aria-label="Offer context">
-          <span>{eligibilityLabel(offer.eligibility_kind)}</span>
-          <span>{classification}</span>
-        </div>
-
-        <div className="marketOfferProvider">
-          <Store />
-          <span>
-            {offer.business_name}
-            <small className="marketOfferProviderContext">
-              {providerContext}
-            </small>
-          </span>
+        <div className="marketOfferTags" aria-label="Offer tags">
+          {offer.category && (
+            <span className="marketOfferTag marketOfferTagCategory">
+              <Tag aria-hidden="true" /> {offer.category}
+            </span>
+          )}
+          <span className="marketOfferTag">{classification}</span>
+          {offer.channel === "rave" && (
+            <span className="marketOfferTag marketOfferTagRave">RAVE</span>
+          )}
         </div>
 
         <h2>{offer.title}</h2>
+
+        <div className="marketOfferProvider">
+          <Store />
+          <span>{offer.business_name}</span>
+        </div>
+
         <p className="marketOfferSummary">{offer.summary}</p>
 
-        {!detailed && offer.eligibility && (
-          <div className="marketOfferEligibilityPreview">
-            <span>Eligibility</span>
-            <p>{offer.eligibility}</p>
-          </div>
+        {detailed && (
+          <div className="marketOfferProviderContext">{providerContext}</div>
         )}
 
         <div className="marketOfferMeta">
@@ -143,13 +153,20 @@ export function OfferCard({
               {new Date(offer.ends_at).toLocaleDateString()}
             </span>
           )}
-          {external && offer.last_verified_at && (
+          {detailed && external && offer.last_verified_at && (
             <span>
               <ShieldCheck /> Last verified{" "}
               {new Date(offer.last_verified_at).toLocaleDateString()}
             </span>
           )}
         </div>
+
+        {detailed && offer.eligibility && (
+          <div className="marketOfferEligibilityPreview">
+            <span>Eligibility</span>
+            <p>{offer.eligibility}</p>
+          </div>
+        )}
 
         {detailed && offer.details && <p>{offer.details}</p>}
 

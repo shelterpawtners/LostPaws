@@ -42,6 +42,15 @@ function isExternalResource(offer: PublicOffer) {
 
 type MarketplaceViewMode = "grid" | "list";
 
+type SortKey = "ending" | "newest" | "provider" | "title";
+
+const sortLabels: Record<SortKey, string> = {
+  ending: "Ending soonest",
+  newest: "Newest",
+  provider: "Provider A–Z",
+  title: "Title A–Z",
+};
+
 export function OfferMarketplace({
   organizationId,
 }: {
@@ -61,9 +70,28 @@ export function OfferMarketplace({
   const [status, setStatus] = useState("");
   const [query, setQuery] = useState("");
   const [classification, setClassification] = useState("all");
+  const [category, setCategory] = useState("all");
+  const [sort, setSort] = useState<SortKey>("ending");
   const [viewMode, setViewMode] = useState<MarketplaceViewMode>("grid");
   const [channelFilterUnavailable, setChannelFilterUnavailable] =
     useState(false);
+  // Filters collapse on a phone and stay open on a larger screen. A <details>
+  // hides its own content when closed, so this cannot be done in CSS alone.
+  const [filtersOpen, setFiltersOpen] = useState(
+    () =>
+      typeof window === "undefined" ||
+      !window.matchMedia?.("(max-width: 760px)").matches,
+  );
+
+  useEffect(() => {
+    const narrow = window.matchMedia?.("(max-width: 760px)");
+    if (!narrow) return;
+    const sync = (event: MediaQueryList | MediaQueryListEvent) =>
+      setFiltersOpen(!("matches" in event ? event.matches : narrow.matches));
+    sync(narrow);
+    narrow.addEventListener("change", sync);
+    return () => narrow.removeEventListener("change", sync);
+  }, []);
   const [claim, setClaim] = useState<{
     redeem_code: string;
     expires_at: string;
@@ -115,6 +143,14 @@ export function OfferMarketplace({
     })();
   }, [organizationId, offerId, audience]);
 
+  const categories = useMemo(
+    () =>
+      Array.from(
+        new Set(offers.map((offer) => offer.category).filter(Boolean)),
+      ).sort() as string[],
+    [offers],
+  );
+
   const classifications = useMemo(
     () =>
       Array.from(
@@ -141,11 +177,13 @@ export function OfferMarketplace({
     return offers.filter((offer) => {
       if (classification !== "all" && offer.classification !== classification)
         return false;
+      if (category !== "all" && offer.category !== category) return false;
       if (!normalized) return true;
       const searchable = [
         offer.title,
         offer.summary,
         offer.business_name,
+        offer.category,
         offer.terms,
         listingTypeLabel(offer.classification || ""),
         humanize(offer.eligibility_kind || ""),
@@ -156,7 +194,36 @@ export function OfferMarketplace({
         .toLowerCase();
       return searchable.includes(normalized);
     });
-  }, [offers, query, classification]);
+  }, [offers, query, classification, category]);
+
+  const activeFilterCount =
+    (audience !== "all" ? 1 : 0) +
+    (classification !== "all" ? 1 : 0) +
+    (category !== "all" ? 1 : 0);
+
+  const sortedOffers = useMemo(() => {
+    const list = [...visibleOffers];
+    const time = (value: string | null) =>
+      value ? new Date(value).getTime() : null;
+    list.sort((a, b) => {
+      if (sort === "provider")
+        return (a.business_name || "").localeCompare(b.business_name || "");
+      if (sort === "title") return (a.title || "").localeCompare(b.title || "");
+      if (sort === "newest") {
+        const at = time(a.starts_at) ?? 0;
+        const bt = time(b.starts_at) ?? 0;
+        return bt - at;
+      }
+      // Ending soonest, with open-ended offers last.
+      const ae = time(a.ends_at);
+      const be = time(b.ends_at);
+      if (ae === null && be === null) return 0;
+      if (ae === null) return 1;
+      if (be === null) return -1;
+      return ae - be;
+    });
+    return list;
+  }, [visibleOffers, sort]);
 
   async function claimOffer(id: string) {
     if (!db) return;
@@ -360,84 +427,155 @@ export function OfferMarketplace({
           />
         </label>
 
-        <div className="marketplaceFilterArea">
-          <div className="marketplaceFilterLabel">
-            <SlidersHorizontal />
-            <span>Audience</span>
-          </div>
-          <div
-            className="marketplaceFilterButtons"
-            role="group"
-            aria-label="Filter offers by audience"
-          >
-            <button
-              type="button"
-              className={audience === "all" ? "active" : ""}
-              aria-pressed={audience === "all"}
-              onClick={() => navigate("/marketplace")}
-            >
-              Show everything
-            </button>
-            <button
-              type="button"
-              className={audience === "pet" ? "active" : ""}
-              aria-pressed={audience === "pet"}
-              onClick={() => navigate("/marketplace?channel=pet")}
-            >
-              Pet Offers
-            </button>
-            <button
-              type="button"
-              className={audience === "rave" ? "active" : ""}
-              aria-pressed={audience === "rave"}
-              onClick={() => navigate("/marketplace?channel=rave")}
-            >
-              RAVE Offers
-            </button>
-          </div>
-          {channelFilterUnavailable && (
-            <p className="marketplaceFilterNotice" role="status">
-              Audience filtering is not available on this deployment yet, so
-              every current offer is shown.
-            </p>
-          )}
-        </div>
+        <details
+          className="marketplaceFilterDisclosure"
+          open={filtersOpen}
+          onToggle={(event) =>
+            setFiltersOpen((event.target as HTMLDetailsElement).open)
+          }
+        >
+          <summary>
+            <SlidersHorizontal aria-hidden="true" />
+            Filters and sort
+            {activeFilterCount > 0 && (
+              <span className="marketplaceFilterCountBadge">
+                {activeFilterCount}
+              </span>
+            )}
+          </summary>
 
-        <div className="marketplaceFilterArea">
-          <div className="marketplaceFilterLabel">
-            <SlidersHorizontal />
-            <span>Listing type</span>
-          </div>
-          <div
-            className="marketplaceFilterButtons"
-            role="group"
-            aria-label="Filter offers by listing type"
-          >
-            <button
-              type="button"
-              className={classification === "all" ? "active" : ""}
-              aria-pressed={classification === "all"}
-              onClick={() => setClassification("all")}
+          <div className="marketplaceFilterArea">
+            <div className="marketplaceFilterLabel">
+              <SlidersHorizontal />
+              <span>Audience</span>
+            </div>
+            <div
+              className="marketplaceFilterButtons"
+              role="group"
+              aria-label="Filter offers by audience"
             >
-              All current
-              <span className="marketplaceFilterCount">{offers.length}</span>
-            </button>
-            {classifications.map((item) => (
               <button
                 type="button"
-                key={item}
-                className={classification === item ? "active" : ""}
-                aria-pressed={classification === item}
-                onClick={() => setClassification(item)}
+                className={audience === "all" ? "active" : ""}
+                aria-pressed={audience === "all"}
+                onClick={() => navigate("/marketplace")}
               >
-                {listingTypeLabel(item)}
-                <span className="marketplaceFilterCount">
-                  {listingCounts[item] || 0}
-                </span>
+                Show everything
               </button>
-            ))}
+              <button
+                type="button"
+                className={audience === "pet" ? "active" : ""}
+                aria-pressed={audience === "pet"}
+                onClick={() => navigate("/marketplace?channel=pet")}
+              >
+                Pet Offers
+              </button>
+              <button
+                type="button"
+                className={audience === "rave" ? "active" : ""}
+                aria-pressed={audience === "rave"}
+                onClick={() => navigate("/marketplace?channel=rave")}
+              >
+                RAVE Offers
+              </button>
+            </div>
+            {channelFilterUnavailable && (
+              <p className="marketplaceFilterNotice" role="status">
+                Audience filtering is not available on this deployment yet, so
+                every current offer is shown.
+              </p>
+            )}
           </div>
-        </div>
+
+          {categories.length > 1 && (
+            <div className="marketplaceFilterArea">
+              <div className="marketplaceFilterLabel">
+                <SlidersHorizontal />
+                <span>Category</span>
+              </div>
+              <div
+                className="marketplaceFilterButtons"
+                role="group"
+                aria-label="Filter offers by category"
+              >
+                <button
+                  type="button"
+                  className={category === "all" ? "active" : ""}
+                  aria-pressed={category === "all"}
+                  onClick={() => setCategory("all")}
+                >
+                  Any category
+                </button>
+                {categories.map((item) => (
+                  <button
+                    type="button"
+                    key={item}
+                    className={category === item ? "active" : ""}
+                    aria-pressed={category === item}
+                    onClick={() => setCategory(item)}
+                  >
+                    {item}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <div className="marketplaceFilterArea">
+            <label className="marketplaceSortControl">
+              <span className="marketplaceFilterLabel">
+                <SlidersHorizontal />
+                <span>Sort by</span>
+              </span>
+              <select
+                value={sort}
+                onChange={(event) => setSort(event.target.value as SortKey)}
+              >
+                {Object.entries(sortLabels).map(([value, label]) => (
+                  <option key={value} value={value}>
+                    {label}
+                  </option>
+                ))}
+              </select>
+            </label>
+          </div>
+
+          <div className="marketplaceFilterArea">
+            <div className="marketplaceFilterLabel">
+              <SlidersHorizontal />
+              <span>Listing type</span>
+            </div>
+            <div
+              className="marketplaceFilterButtons"
+              role="group"
+              aria-label="Filter offers by listing type"
+            >
+              <button
+                type="button"
+                className={classification === "all" ? "active" : ""}
+                aria-pressed={classification === "all"}
+                onClick={() => setClassification("all")}
+              >
+                All current
+                <span className="marketplaceFilterCount">{offers.length}</span>
+              </button>
+              {classifications.map((item) => (
+                <button
+                  type="button"
+                  key={item}
+                  className={classification === item ? "active" : ""}
+                  aria-pressed={classification === item}
+                  onClick={() => setClassification(item)}
+                >
+                  {listingTypeLabel(item)}
+                  <span className="marketplaceFilterCount">
+                    {listingCounts[item] || 0}
+                  </span>
+                </button>
+              ))}
+            </div>
+          </div>
+        </details>
       </div>
 
       <div className="marketplaceTrustStrip">
@@ -519,7 +657,7 @@ export function OfferMarketplace({
         <div
           className={`marketplaceCardGrid marketplaceCardGrid-value marketplaceCardGrid-${viewMode}`}
         >
-          {visibleOffers.map((offer) => (
+          {sortedOffers.map((offer) => (
             <OfferCard key={offer.offer_id} offer={offer} concept="value" />
           ))}
         </div>

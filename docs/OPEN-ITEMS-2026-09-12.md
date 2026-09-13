@@ -30,9 +30,13 @@ None are code problems; each needs a real account, a provider console, or a mail
 3. Facebook/Meta: Supabase callback plus persona and duplicate-account continuity. Facebook stays publicly disabled until accepted.
 4. Microsoft 365 human mailbox send and receive verification.
 
-### 1.3 Legal routes are written but unpublished — **needs you**
+### 1.3 Legal routes: Privacy is live, Terms and Data Deletion are now placeholders — **needs you**
 
-Privacy, Terms, and Data Deletion drafts exist and `legalRoutesReadyForPublication` is still `false` in `src/lib/legal-routes.ts`. Meta app review (issue #119) depends on these being publicly reachable. This needs your and/or a lawyer's review before the flag flips — I have deliberately not flipped it.
+This moved since it was last written. A real Privacy Policy is now live at `/privacy`, published as a static `public/privacy.html` file with a Vercel rewrite (`vercel.json`) — that work landed on `main` from a parallel agent while this branch was in progress, outside the `src/lib/legal-routes.ts` / `legalRoutesReadyForPublication` mechanism this repo had built for gating legal publication. `legalRoutesReadyForPublication` is still `false` and nothing in the app reads it, so it is now dead scaffolding rather than the thing actually gating Privacy's publication — worth a decision on whether to keep it, since it no longer reflects reality for at least Privacy.
+
+`/terms` and `/data-deletion` did not exist anywhere before this session; each is now a real route with placeholder content (not the old static drafts, which this session could not find committed anywhere) stating plainly that it is a placeholder, listing what the finished page needs to cover, and saying it will be drafted after the Lost Lands launch in a future phase. The footer now links to all three. Data Deletion in particular gates Meta/Facebook app review (issue #119) and should not be treated as launch-ready until it has real content and legal review.
+
+One open question this raises: `/privacy` is reachable on Vercel via its rewrite, but this session did not verify it resolves correctly on the GitHub Pages target (which serves under a `/LostPaws/` base path and has no equivalent rewrite). That is deployment plumbing outside this session's lane; flagging it for whoever owns that configuration rather than changing it here.
 
 ### 1.4 The founding-business promise is live copy but not finally worded — **needs you**
 
@@ -50,11 +54,18 @@ From `docs/OWNER-DECISION-BACKLOG.md`, all still `BLOCKING` with `PENDING` resol
 
 Track 3 was built to work without any of these being resolved, but the Hero Vendor program cannot move past recognition-only until OD-004 lands.
 
+**New this session:** a business-facing giving UI (`PartnerGivingPanel`) and a Guardian-facing giving history now exist, built entirely on top of a donation-tracking schema and RPC set that was already in the database from Phase 2 Checkpoint 6 but had never had a UI. Neither surface moves money, selects a processor, or states a tax outcome — see `docs/product/DONATION-TRACKING-SCHEMA-PROPOSAL.md` for what already existed versus what was built, and `docs/product/BUSINESS-GIVING-AND-TAX-CONSIDERATIONS.md` for the business-facing explanation, which is explicitly a draft pending OD-004 and a CPA review before publication.
+
 ## 3. Repository and process concerns
 
-### 3.1 Eighty-seven remote branches, forty-six of them stale
+### 3.1 Branch consolidation: 72 retired, 12 remain, one is a one-line deletion
 
-`origin` carries 87 branches; 46 have had no commit in over a day, and spot checks show several are behind `main` rather than ahead of it (they predate current tests). Issue #107 already covers retiring historical branches. I have not deleted any, because branch deletion is destructive and several may hold work I cannot evaluate. Recommendation: you confirm a cutoff date and I retire everything merged or superseded before it in one pass.
+The 87-branch sprawl from earlier in the session is retired: 72 branches proven content-identical to `main` or the head of a merged PR were deleted, each recorded with its SHA in `docs/BRANCH-RETIREMENT-2026-09-12.md`.
+
+Of the 12 that remain past `main` itself:
+
+- **`build/festival-mvp`** is content-identical to `main` and its own PR (#1) is merged. It is safe to delete, but deleting a remote branch is a destructive action, and this session's tooling correctly declined to do it unattended (`Permission for this action was denied by the Claude Code auto mode classifier. Reason: [Git Destructive]`). One command for you to run: `git push origin --delete build/festival-mvp`.
+- The other 11 were re-checked against GitHub's PR history this session: 9 have a **closed, not merged** pull request, and 2 (`issue-58-lostpaws`, `ux/guardian-marketplace-launch-polish`) have no pull request at all. Their diffs are all small (1-4 files) and old — several add components (`LostPawsLanding.tsx`, `LostPawsCampaign.tsx`) that no longer exist in any form on `main`, having been superseded by later rewrites of the same page. That pattern suggests they are safe to retire too, but "closed without merging" can also mean genuinely abandoned work someone meant to come back to, which is exactly the judgement call a diff can't settle. Still listed as "kept for review" pending your call.
 
 ### 3.2a A gated spec had also silently drifted from the app
 
@@ -67,6 +78,12 @@ There is also now a **local way to run these**: the credentials in the persona s
 ### 3.2 CI's browser tests are an allow-list, and two specs had fallen out of it
 
 Every Playwright invocation in `.github/workflows` names specific spec files. Two specs — `rave-shelter-mission.spec.ts` and `issue-125-rave-lostpaws-mobile.spec.ts` — were referenced by no workflow at all, so they silently rotted out of sync with the app and gave false confidence. Both now run through `npm run test:e2e:public` in CI's `web` job, alongside the new Track 3 and site-hygiene specs. **Any new spec file must be added to a script or it will never run.**
+
+### 3.2b An occasional sign-out race on CI, investigated but not fixed
+
+Two Persona QA runs on PR #135 each showed exactly one Guardian-Passport-area test landing on `/login` instead of `/` right after clicking "Sign out," while every other run this session (many, both local and CI) passed cleanly. The `signOut()` handler in `Header` navigates to `/` and then awaits `db.auth.signOut()`; the theory was that the auth-state listener's async session refresh could redirect a still-guarded route to `/login` after the navigate already resolved, so reordering to await first should make the explicit navigate the last write.
+
+That reorder was tried, pushed, and reverted in the same session: on CI it did not fix the original failure and additionally broke the core "clears the browser session on logout" test, which had never failed before. `Header` is remounted fresh per route (`Page` renders `<Header/>` inside every route's own element), which makes the actual timing here less predictable than either ordering assumes, and a real fix needs more investigation than a same-day guess — reverted to the original order rather than trading one intermittent failure for a different, less intermittent one. Locally, both orderings passed 100% of the time across roughly a dozen runs, so this is CI-runner-timing-specific and low severity (an occasional, self-resolving hiccup on a `.serial` suite under parallel workers), not a user-facing defect anyone has reported. Worth a focused look with CI's exact concurrency settings reproduced, rather than guessed at from logs.
 
 ### 3.3 The bundle is one 628 KB chunk
 
@@ -85,6 +102,7 @@ These are known and intentional, not oversights:
 - **Thin placeholder pages.** `/passport`, `/partners`, `/shelters`, `/about` each render one paragraph from a shared component while the new `/learn/*` articles cover the same subjects properly. See recommendation 5 in the site review.
 - **No savings figures published anywhere**, by design, until OD-003 and the research in `PASSPORT-SAVINGS-IMPACT-MODEL.md` are done.
 - **Annual impact reporting** is described as planned, not built, everywhere it appears.
+- **Offer link-preview / image scraping is proposed, not built.** The schema supports a confirmed offer image (`offers.image_url` plus provenance columns, added this session) and tiles already render one when present, but nothing yet writes to those columns — no vendor-facing or admin-facing UI sets an image today. The "paste a URL, we propose an image" flow the owner asked for needs a new, security-reviewed Edge Function first. See `docs/product/OFFER-LINK-PREVIEW-PROPOSAL.md`.
 
 ## 5. Smaller open issues on GitHub
 

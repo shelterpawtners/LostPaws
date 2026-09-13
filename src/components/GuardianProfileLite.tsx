@@ -4,6 +4,7 @@ import type { Session } from "@supabase/supabase-js";
 import { Camera, UserRound } from "lucide-react";
 import { supabase as db } from "../lib/supabase";
 import { GuardianActivityTimeline } from "./GuardianActivityTimeline";
+import { GuardianGivingHistory } from "./giving/GuardianGivingHistory";
 import "../guardian-profile-lite.css";
 
 type ProfileLite = {
@@ -238,6 +239,7 @@ export function GuardianProfileLite({ session }: { session: Session | null }) {
           Go to Help &amp; support
         </Link>
       </section>
+      <GuardianGivingHistory session={session} />
       <GuardianActivityTimeline session={session} />
     </>
   );
