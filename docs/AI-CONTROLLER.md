@@ -231,31 +231,34 @@ PROVEN:
 
 AGENT: CLAUDE
 TIME: 2026-09-13
-STATUS: IN_PROGRESS, PR NOT YET OPEN
-CHECKPOINT: Vercel deployment-classifier fix + Marketplace/footer compact redesign, on `fix/vercel-deploy-classifier`
+STATUS: PASS, MERGED
+CHECKPOINT: Vercel deployment-classifier fix + Marketplace/footer compact redesign — PR #137 merged
 
 PROVEN:
 
 - Root-caused and fixed the Vercel classifier bug: `scripts/vercel-ignore-build.sh` compared only `HEAD^` vs `HEAD`, so PR #135 followed by docs-only commits looked docs-only forever after, even with production still behind. Now compares against `$VERCEL_GIT_PREVIOUS_SHA` and fails toward building when that's unavailable. Reproduced the failure against real git history before changing anything, and added `scripts/verify-vercel-ignore-build.sh` (a throwaway-temp-repo regression suite, wired into `npm run check` and CI) that fails 3/6 against the old script and passes 6/6 against the fix.
-- Redesigned `/marketplace`: first offer card now appears at 275px desktop / 387px mobile, down from 1171px / 1387px, by replacing the hero/value-panel/stacked-filters with one compact header + toolbar. Fixed two regressions the rename caused (a stale `:has()` selector, list-view CSS scoped to a dropped class) and two it introduced (sub-44px touch targets, a duplicate h1) before they left this branch.
+- Redesigned `/marketplace`: first offer card now appears at 275px desktop / 387px mobile, down from 1171px / 1387px, by replacing the hero/value-panel/stacked-filters with one compact header + toolbar. Fixed two regressions the rename caused (a stale `:has()` selector, list-view CSS scoped to a dropped class) and three it introduced (two sub-44px touch targets, a duplicate h1) before they left this branch, plus a third stale hardcoded selector this same rename broke in `github-pages-mvp-acceptance.yml`'s `public-release-matrix` job (caught by CI, not local testing — a `.yml` inline script, which my own earlier grep across `e2e/*.ts` had missed).
 - Compacted the sitewide footer to one row of four columns on desktop and a 2-column mobile wrap, keeping the existing 44px link touch-target floor.
 - Verified together: `npm run check`, the full public e2e suite (59 tests), 48 persona e2e tests, a normal production build, and a `GITHUB_PAGES=true` build all pass/succeed.
+- PR #137 merged to `main` as squash commit `c013203`. `main` is green post-merge (CI Gate, GitHub Pages Staging) — this also incidentally fixed a pre-existing `docs/AI-CONTROLLER.md` formatting break that had been failing `main`'s CI Gate since before this branch existed (commit `588f74b` and earlier).
 
 CHANGED:
 
-- `scripts/vercel-ignore-build.sh`, `scripts/verify-vercel-ignore-build.sh` (new), `package.json`, `.github/workflows/ci.yml`, `src/components/OfferMarketplace.tsx`, `src/marketplace-launch-density.css`, `src/styles.css`, plus e2e fixups for the marketplace copy/structure change (`e2e/marketplace-premium.spec.ts`, `e2e/hosted-design-qa.spec.ts`, `e2e/hosted-qa-smoke.spec.ts`).
+- `scripts/vercel-ignore-build.sh`, `scripts/verify-vercel-ignore-build.sh` (new), `package.json`, `.github/workflows/ci.yml`, `.github/workflows/github-pages-mvp-acceptance.yml`, `src/components/OfferMarketplace.tsx`, `src/marketplace-launch-density.css`, `src/styles.css`, plus e2e fixups (`e2e/marketplace-premium.spec.ts`, `e2e/hosted-design-qa.spec.ts`, `e2e/hosted-qa-smoke.spec.ts`).
 
 BLOCKERS:
 
-- None. Branch is pushed; PR not yet opened as of this entry — will open, watch CI, and merge under the standing authorization if green.
+- None.
 
 RISKS_OR_UNCERTAINTY:
 
-- Two `phase-1-accessibility.spec.ts` failures (mobile-menu, RAVE-logo) reproduce on a clean run but touch no file this branch changes relative to `main` — confirmed pre-existing, flagged for a future fix, not addressed here (out of scope for this sprint).
+- This PR's own Vercel preview build showed "Canceled by Ignored Build Step" on every push despite real product changes. Could not verify from here (no Vercel dashboard access) whether preview contexts set `VERCEL_GIT_PREVIOUS_SHA` differently than production — plausible this is correct (an earlier preview in the same PR already captured the diff), but worth one check by whoever has dashboard access.
+- Two `phase-1-accessibility.spec.ts` failures (mobile-menu, RAVE-logo) reproduce on a clean run but touch no file this branch changed relative to `main` — confirmed pre-existing, flagged for a future fix, not addressed here (out of scope for this sprint).
 - Did not touch Meta/Facebook, Microsoft 365 DNS, secrets, money movement, or the sign-out race, per this sprint's guardrails.
 
 NEXT_RECOMMENDED_ACTION:
 
-- Open the PR, watch CI, merge when green, update this controller and the handoff with the merge SHA.
+- Confirm the next normal `main` push produces a real Vercel production deployment (the actual bug this sprint fixed).
+- Whoever picks up `phase-1-accessibility.spec.ts`'s two pre-existing failures next: they're unrelated to this PR, reproducible on a clean run.
 
 ADVISOR_REVIEW_REQUIRED: NO
