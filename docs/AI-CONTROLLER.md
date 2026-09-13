@@ -270,3 +270,36 @@ NEXT_RECOMMENDED_ACTION:
 - Whoever picks up `phase-1-accessibility.spec.ts`'s two pre-existing failures next: they're unrelated to this PR, reproducible on a clean run.
 
 ADVISOR_REVIEW_REQUIRED: NO
+
+---
+
+AGENT: CLAUDE
+TIME: 2026-09-13
+STATUS: PASS, MERGED
+CHECKPOINT: Vercel deployment simplification (issue #138) — PR #140 merged, resolves the open question above
+
+PROVEN:
+
+- The owner explicitly revised issue #138's literal direction ("let normal Git integration build every push") to something more deliberate: production `main` always deploys, but routine feature/docs/agent branches should not automatically consume a Vercel Preview deployment either — prefer Vercel's native config over another custom script.
+- Retired the custom Ignored Build Step entirely: `vercel.json`'s `ignoreCommand`, `scripts/vercel-ignore-build.sh`, `scripts/verify-vercel-ignore-build.sh`, the `test:shell` npm/CI step, and the `[deploy]`/`[skip deploy]` commit-message conventions. Nothing else referenced them (confirmed with a repo-wide sweep).
+- Replaced with Vercel's own native `git.deploymentEnabled` in `vercel.json`: `{"**": false, "main": true}`. Verified this exact mechanism against Vercel's current official docs before using it (not guessed) — it is fully expressible in repo config, no dashboard/provider setting needed. Used `**` rather than `*` deliberately: minimatch's `*` does not cross `/`, and this repo's branches are commonly named `prefix/name`.
+- `scripts/classify-change-impact.sh` and `scripts/latest-frontend-artifact-sha.sh` untouched — confirmed six other GitHub Actions workflows depend on the former, unrelated to Vercel.
+- **This resolves the open question from the entry above**: PR #140 merged as squash commit `0eeb75f`, and GitHub's commit-status API shows `Vercel: success, "Deployment has completed"` for that commit — a real production deployment, not canceled. Separately, PR #140's own CI run (on the non-`main` branch) shows no Vercel check at all, confirming previews are now correctly suppressed for routine branches rather than ambiguously "canceled."
+
+CHANGED:
+
+- `vercel.json`, `package.json`, `.github/workflows/ci.yml`, `docs/AI-CONTROLLER.md` (this entry + a new DEPLOYMENT POLICY section), `docs/AI-COST-AND-TESTING-GOVERNANCE.md`, `docs/DEV-LOOP-V2.md`, `docs/AI-HANDOFF.md`. Deleted `scripts/vercel-ignore-build.sh` and `scripts/verify-vercel-ignore-build.sh`.
+
+BLOCKERS:
+
+- None.
+
+RISKS_OR_UNCERTAINTY:
+
+- None identified. Did not touch DNS, Meta, Supabase auth/RLS, production data, or product UX, per this task's guardrails.
+
+NEXT_RECOMMENDED_ACTION:
+
+- None required. Optional cosmetic check: confirm `shelterpawtners.com` has aliased to the new deployment (DNS propagation, not a code gate).
+
+ADVISOR_REVIEW_REQUIRED: NO
