@@ -188,12 +188,8 @@ function Header() {
   const navigate = useNavigate();
   useEffect(() => setO(false), [location.pathname, location.search]);
   async function signOut() {
-    // Sign out before navigating: the auth-state listener's async refresh can
-    // otherwise redirect a still-mounted guarded route to /login after this
-    // navigate resolves, non-deterministically winning the race. Awaiting
-    // first means this navigate is always the last write to history.
-    await db?.auth.signOut();
     navigate("/", { replace: true });
+    await db?.auth.signOut();
   }
   return (
     <header>
