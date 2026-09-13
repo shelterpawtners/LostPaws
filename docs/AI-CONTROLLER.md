@@ -71,6 +71,14 @@ Status: **DEFERRED OWNER/PROVIDER ADMIN — NOT A LAUNCH BLOCKER**.
 
 Work passed `/`, `/marketplace`, `/lostpaws`, `/rave`, and `/events` with expected headings and no application console errors.
 
+### Security headers / MVP hardening (issue #141)
+
+**Resolved 2026-09-13 (PR #142, merge commit `6161a67`).** Production now serves `Content-Security-Policy`, `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `Referrer-Policy: strict-origin-when-cross-origin`, and a minimal `Permissions-Policy`, added via `vercel.json`'s native `headers` (no custom middleware). Confirmed live via `curl -sI https://shelterpawtners.com/` post-merge. HSTS was already present as a Vercel platform default and is unchanged.
+
+The two pre-existing `phase-1-accessibility.spec.ts` failures (mobile-menu, RAVE-logo) were root-caused to stale test expectations from already-merged product changes and fixed at the test level; both pass in CI now.
+
+**Open item:** `www.shelterpawtners.com` still serves the site directly instead of redirecting to the apex — confirmed still true post-merge via `curl -sI https://www.shelterpawtners.com/`. This is a Vercel **dashboard-only** feature (no safe `vercel.json`/DNS equivalent for cross-domain host redirects). One-time manual action for whoever holds Vercel project access: **Settings → Domains → edit the `www` row → Redirect to → `shelterpawtners.com`**. No DNS change needed.
+
 ### Seven Star Shelters
 
 - `/sevenstars` is merged and source/CI accepted.
@@ -301,5 +309,40 @@ RISKS_OR_UNCERTAINTY:
 NEXT_RECOMMENDED_ACTION:
 
 - None required. Optional cosmetic check: confirm `shelterpawtners.com` has aliased to the new deployment (DNS propagation, not a code gate).
+
+ADVISOR_REVIEW_REQUIRED: NO
+
+---
+
+AGENT: CLAUDE
+TIME: 2026-09-13
+STATUS: PASS, MERGED
+CHECKPOINT: MVP hardening (issue #141) — PR #142 merged, security headers live in production
+
+PROVEN:
+
+- Root-caused both named `phase-1-accessibility.spec.ts` failures to stale test expectations from already-merged, intentional product changes (not real regressions) and fixed the tests, not the product: the mobile-menu test's loose "Marketplace" locator matched an unrelated home-page CTA link containing the same substring; the RAVE-logo test still asserted the old full-lockup PNG (`.rsmLogoPanel`) that Track 2 work had already replaced with a mark-only SVG (`.rsmHeroMark img`).
+- Added production security headers via `vercel.json`'s native `headers` field (no custom middleware/scripts): CSP, `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`, `Permissions-Policy`. CSP was derived from an actual repo audit (no inline/external scripts, Google Fonts confirmed to survive the build, production Supabase origin confirmed from existing docs) and verified pre-merge against a local server replicating Vercel's documented header/rewrite/filesystem-precedence behavior, exercised in a real headless browser across 7 routes with zero CSP violations.
+- Added `e2e/hosted-security-headers.spec.ts`, a `PLAYWRIGHT_HOSTED_QA`-gated check (same pattern as existing hosted-QA specs) asserting these headers on the live domain.
+- Confirmed `www.shelterpawtners.com` → apex canonicalization is genuinely Vercel-dashboard-only (verified against official docs, not guessed) and documented the exact one-time manual action instead of inventing a workaround.
+- PR #142 merged as squash commit `6161a67f9ed2f0e0e7ef982d9243b87ef7bb9b8c`. Verified post-merge: GitHub's commit-status API shows `Vercel: success, "Deployment has completed"`; `curl -sI https://shelterpawtners.com/` and `/marketplace` both show all five new headers live; `curl -sI https://www.shelterpawtners.com/` confirms the canonical redirect genuinely has not happened yet (still 200, no redirect), matching the documented open item.
+- Posted a full checkpoint to issue #141: https://github.com/shelterpawtners/LostPaws/issues/141#issuecomment-5656038855
+
+CHANGED:
+
+- `e2e/phase-1-accessibility.spec.ts`, `vercel.json`, `e2e/hosted-security-headers.spec.ts` (new), this controller (CURRENT STATUS + this entry).
+
+BLOCKERS:
+
+- None affecting this lane. Issue #136 (owned by Work) untouched.
+
+RISKS_OR_UNCERTAINTY:
+
+- `www.shelterpawtners.com` canonicalization remains pending a one-time Vercel dashboard action (Settings → Domains → edit `www` row → Redirect to `shelterpawtners.com`) by whoever holds Vercel project access — not completable from repo config.
+- A fully locked-down CSP (nonce/hash-based `script-src`, narrower `img-src`) remains a bounded future follow-up if the owner wants stricter policy later; current policy already improves materially on no CSP and doesn't restrict anything the app currently needs.
+
+NEXT_RECOMMENDED_ACTION:
+
+- Whoever holds Vercel dashboard access: complete the one `www` redirect setting above to close the last open item from issue #141.
 
 ADVISOR_REVIEW_REQUIRED: NO
