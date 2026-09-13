@@ -217,21 +217,49 @@ TIME: 2026-09-12
 STATUS: PASS
 CHECKPOINT: Defer Meta and advance independent work
 PROVEN:
+
 - Google production OAuth remains accepted.
 - Meta/Facebook cannot be completed until owner-side business/provider verification is ready.
 - Meta can remain disabled without blocking unrelated product launch/readiness work.
 - `/sevenstars` is merged/source-accepted and awaits production deployment acceptance.
 - Vercel deployment capacity/rate limiting is a temporary external constraint and should not consume repeated polling cycles.
-CHANGED:
+  CHANGED:
 - Meta is now explicitly deferred/non-blocking in the control plane.
 - Next engineering work prioritizes independent launch acceptance and retained-branch reconciliation.
 - Added a separate non-blocking owner-admin lane for business verification preparation.
-BLOCKERS:
+  BLOCKERS:
 - Fresh production acceptance for newer product changes still depends on Vercel accepting a normal deployment.
-RISKS_OR_UNCERTAINTY:
+  RISKS_OR_UNCERTAINTY:
 - Meta business verification entity/details are not yet finalized; do not resume Meta until owner explicitly reopens that lane.
-NEXT_RECOMMENDED_ACTION:
+  NEXT_RECOMMENDED_ACTION:
 - Work continues non-Meta launch readiness; VS Code Codex can process retained branches in parallel while waiting for Vercel.
-ADVISOR_REVIEW_REQUIRED: NO
-ADVISOR_QUESTION:
+  ADVISOR_REVIEW_REQUIRED: NO
+  ADVISOR_QUESTION:
 - none
+
+---
+
+AGENT: CLAUDE
+TIME: 2026-09-13 00:xx UTC
+STATUS: BLOCKED (docs-only, non-destructive fix applied)
+CHECKPOINT: `main` CI Gate was failing on a formatting regression in this file
+
+PROVEN:
+
+- This file itself (`docs/AI-CONTROLLER.md`) failed `web`'s prettier check on `main` at commit `5b19fca`, which failed `CI Gate` — a docs-only formatting break, not a product regression. Fixed by running `npx prettier --write` and pushing directly to `main`, matching the pattern already used for other docs-only fixes today.
+- Separately, PR #135 (`feature/marketplace-ux-and-giving`) is open and CI-green: a marketplace UX/giving-and-donation Track 3 slice, plus this session's newest work — RAVE Shelter is now a nav dropdown holding the mission page, LostPaws, and Seven Star Shelters; LostPaws' duplicate logo is fixed; and Terms/Data Deletion placeholder pages plus footer links were added. See `docs/AI-HANDOFF.md` and `docs/OPEN-ITEMS-2026-09-12.md` for detail.
+
+CHANGED:
+
+- `docs/AI-CONTROLLER.md` formatting only, on `main`.
+
+BLOCKERS:
+
+- None for Claude's own lane. PR #135 is ready to merge under the owner's standing merge authorization.
+
+NEXT_RECOMMENDED_ACTION:
+
+- Merge PR #135 when convenient.
+- Whoever edits this file next: run `npx prettier --write docs/AI-CONTROLLER.md` before committing — this is the second time in one session this file broke `web`'s formatting check.
+
+ADVISOR_REVIEW_REQUIRED: NO
