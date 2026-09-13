@@ -56,13 +56,15 @@ Work verified live production Google OAuth end to end:
 
 ### Meta/Facebook
 
-Status: **EXTERNALLY BLOCKED / CORRECTLY DISABLED**.
+Status: **DEFERRED OWNER/PROVIDER ADMIN — NOT A LAUNCH BLOCKER**.
 
 - Source integration uses provider `facebook` and the same deployment-base-aware OAuth return helper.
 - Production keeps Facebook disabled through `VITE_FACEBOOK_AUTH_ENABLED !== "true"`.
 - Live UI remains `Facebook sign-in coming soon`.
 - Real provider-console callback and identity-continuity acceptance require authorized Meta/provider access.
-- Do not enable Facebook publicly until callback + account-continuity acceptance passes.
+- Owner has chosen to defer Meta configuration while business/legal-entity verification details are prepared.
+- Do not enable Facebook publicly, do not spend Work/Codex cycles retrying Meta, and do not treat Meta as blocking unrelated launch work.
+- Resume Meta only after the owner explicitly says business verification/provider access is ready.
 - Future Meta/legal readiness must include a documented government/law-enforcement request process covering legal review, challenge/escalation of unlawful or overbroad requests, data minimization, and an auditable record of requests/responses/legal reasoning/actors. This is a deferred compliance item, not a current launch blocker.
 
 ### Public smoke
@@ -79,21 +81,7 @@ Authoritative brief:
 
 `docs/SEVEN-STAR-SHELTERS-LANDING-BRIEF.md`
 
-This should be built as a normal React route in the existing Vite app, not a standalone unmanaged HTML page.
-
-Recommended route:
-
-`/sevenstars`
-
-The brief includes:
-
-- mission/copy;
-- Seven Stars / GRiZ / GRiZMAS research-grounded links;
-- no-affiliation guardrails;
-- early engagement CTAs;
-- vendor + marketplace reuse;
-- design direction based on the approved Seven Star Shelters visual concept;
-- explicit direction to reduce obvious AI-generated visual artifacts.
+The `/sevenstars` implementation has been merged and is source/CI accepted. Final production visual acceptance remains dependent on Vercel accepting the next normal product deployment.
 
 ### Historical branches
 
@@ -107,60 +95,42 @@ Claude resumes its own paused current-development/design work when available. Co
 
 ## NEXT ACTIONS
 
-### Lane A — Codex Work: launch readiness
-
-Stay in the existing **Launch Readiness Work tab**.
+### Lane A — Codex Work: non-Meta launch readiness
 
 Recommended setting:
 
 - Model: Terra
-- Reasoning: Medium
+- Reasoning: Low/Medium
 - Fast: OFF
 
 On next sync:
 
-1. Treat Google OAuth as accepted and do not retest unless production changes touch auth.
-2. Treat Meta as externally blocked and leave Facebook disabled.
-3. Do not wait on Meta. Move to the next independent launch-readiness work.
-4. Run the remaining final production acceptance from `docs/AI-EXECUTION-PLAN-2026-09-12.md` that is still relevant after the already-passed public smoke.
-5. Specifically verify the currently deployed production SHA, whether any newer `main` delta is product-affecting, and whether Vercel is now following the Git-driven deployment policy normally.
-6. Record any remaining true release blockers, owner/provider gates, or production-affecting source changes.
-7. Update this controller and continue autonomously through routine PASS checkpoints.
+1. Treat Google OAuth as accepted; do not retest unless production auth changes.
+2. Treat Meta/Facebook as intentionally deferred by the owner; leave Facebook disabled and do not spend cycles on Meta.
+3. Refresh GitHub `main` before acting.
+4. Inspect Vercel at most once, and only when a product-affecting current-main commit is awaiting deployment.
+5. If Vercel is still rate-limited/canceling the pending product deployment, record the state once and move on; do not poll, force deploy, or request a paid upgrade.
+6. Continue all independent launch-readiness work that does not depend on a fresh production deployment.
+7. When a new product deployment becomes READY, run focused final production acceptance for the newly deployed delta, especially `/sevenstars`, `/privacy`, mobile behavior, and regression smoke on core routes.
+8. Update this controller after material checkpoints.
 
-Do not stop merely because Meta provider access is unavailable.
+### Lane B — VS Code Codex: retained-branch reconciliation
 
-### Lane B — Seven Star Shelters: parallel repository build
+Because Meta is deferred and Vercel may be temporarily unavailable, repository-native work is now the best use of parallel engineering time.
 
-This is independent of the launch-provider lane and can proceed in parallel on a separate branch.
+- Start from latest `main`.
+- Read `docs/BRANCH-RETIREMENT-2026-09-12.md` and relevant handoff/protocol docs.
+- Process retained historical branches in batches of 3.
+- Classify each as KEEP / SUPERSEDED / CONFLICTS_WITH_CURRENT_DIRECTION / OWNER_REVIEW / CLAUDE_REVIEW.
+- For KEEP, port only the useful delta onto a fresh current-main branch; never blind-merge a stale branch.
+- Do not delete retained branches until reviewed/authorized.
+- Stop only for non-trivial auth/RLS/architecture conflicts or true owner decisions.
 
-Owner-approved goal:
+### Lane C — Owner admin: business verification preparation (parallel, non-blocking)
 
-Create an early production-capable `/sevenstars` page so promotion, vendor recruitment, and community engagement can begin before the festival.
+Owner will separately prepare the legal-business information needed for Meta verification. This lane must not block product/engineering work.
 
-Read first:
-
-- `docs/SEVEN-STAR-SHELTERS-LANDING-BRIEF.md`
-- `docs/AI-CONTROLLER.md`
-- current `/lostpaws` and `/rave` implementations
-
-Implementation guidance:
-
-- normal React/Vite route, not standalone HTML;
-- reuse existing RAVE registration and `?channel=rave` marketplace flows;
-- original Seven Star Shelters design system, informed by the approved visual concept;
-- use clean intentional visual assets, not faux festival photography or AI-looking crowds/signage;
-- link outward to verified GRiZ / Seven Stars / GRiZMAS resources;
-- prominently retain independent/no-affiliation disclosure;
-- do not invent partnerships, donation mechanics, or endorsement;
-- ship useful early-engagement MVP before perfect visual polish.
-
-Recommended branch if Codex owns this lane:
-
-`feat/seven-star-shelters-landing`
-
-Do not mix this work into the historical branch-reconciliation branch.
-
-Before merge, require targeted route/responsive/accessibility tests and confirm no regression to `/lostpaws`, `/rave`, or the shared marketplace.
+Before resuming Meta, establish one authoritative legal entity identity for the app and ensure the legal name, address, phone, website/domain, and tax/registration documents are consistent across Meta and supporting records.
 
 ---
 
@@ -242,24 +212,26 @@ Prefer small recoverable checkpoints and parallel independent lanes over one gia
 
 ## LATEST AGENT UPDATE
 
-AGENT: WORK
-TIME: 2026-09-12 23:xx UTC
-STATUS: DEFERRED / NO ACTIONABLE SOURCE WORK
-CHECKPOINT: Fresh GitHub-main and single normal Vercel inspection
+AGENT: CHATGPT_ADVISOR
+TIME: 2026-09-12
+STATUS: PASS
+CHECKPOINT: Defer Meta and advance independent work
 PROVEN:
-- GitHub `main` is `da24e2cb514f8702e1b10eec7a2eb51d9a6a5e0d`; it remains the source of truth.
-- The controller’s prior `30536b49` reference is stale. The current main delta is control-plane/history documentation; no new source change was made in this checkpoint.
-- Vercel is connected and continues to create then cancel non-product builds. The accepted production runtime remains `dpl_4x32sTRgy9f1Knvt7xcNEqD9967P` at `5baee666d3e6084a6f01494a85305db6648bb448`.
-- No deployment, redeployment, environment change, provider change, or GitHub authentication handoff was attempted.
+- Google production OAuth remains accepted.
+- Meta/Facebook cannot be completed until owner-side business/provider verification is ready.
+- Meta can remain disabled without blocking unrelated product launch/readiness work.
+- `/sevenstars` is merged/source-accepted and awaits production deployment acceptance.
+- Vercel deployment capacity/rate limiting is a temporary external constraint and should not consume repeated polling cycles.
 CHANGED:
-- Replaced the stale checkpoint with this fresh-source status.
+- Meta is now explicitly deferred/non-blocking in the control plane.
+- Next engineering work prioritizes independent launch acceptance and retained-branch reconciliation.
+- Added a separate non-blocking owner-admin lane for business verification preparation.
 BLOCKERS:
-- Production acceptance for product changes that have not reached a READY production deployment remains deferred until Vercel accepts a normal Git-driven product deployment.
-- Meta provider-console callback and identity-continuity acceptance remain external; Facebook stays disabled.
+- Fresh production acceptance for newer product changes still depends on Vercel accepting a normal deployment.
 RISKS_OR_UNCERTAINTY:
-- This single Vercel inspection confirms canceled builds, but does not establish a new deployment-rate-limit reset time. Do not poll or force a deployment.
+- Meta business verification entity/details are not yet finalized; do not resume Meta until owner explicitly reopens that lane.
 NEXT_RECOMMENDED_ACTION:
-- Do not wait on or reopen GitHub sign-in. On the next user-invoked checkpoint, inspect Vercel once only if there is a product-affecting current-main commit awaiting deployment; otherwise continue independent launch-readiness work without enabling Facebook.
+- Work continues non-Meta launch readiness; VS Code Codex can process retained branches in parallel while waiting for Vercel.
 ADVISOR_REVIEW_REQUIRED: NO
 ADVISOR_QUESTION:
 - none
