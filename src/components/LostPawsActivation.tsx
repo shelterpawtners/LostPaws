@@ -30,10 +30,6 @@ export function LostPawsActivation() {
         </div>
         <div className="lpWrap lpHeroContent">
           <p className="lpKicker">A RAVE Shelter initiative for Lost Lands</p>
-          <picture>
-            <source srcSet={logo} type="image/webp" />
-            <img className="lpLogo" src={logoFallback} alt="LostPaws" />
-          </picture>
           <h1 id="lp-title">Shop the lot. Help the pack.</h1>
           <p className="lpLead">
             Gear and art from Lost Lands vendors who put part of every sale
@@ -114,6 +110,10 @@ export function LostPawsActivation() {
 
       <section className="lpLegal" aria-label="LostPaws independence statement">
         <div className="lpWrap">
+          <picture>
+            <source srcSet={logo} type="image/webp" />
+            <img className="lpFooterLogo" src={logoFallback} alt="LostPaws" />
+          </picture>
           <p>
             LostPaws is an independent ShelterPawtners initiative. It is not
             affiliated with, sponsored by, endorsed by, or an official program

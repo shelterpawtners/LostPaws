@@ -22,6 +22,8 @@ const exactTitles: Record<string, string> = {
   "/partners": "PetBiz and community partners",
   "/shelters": "For shelters and rescues",
   "/about": "About ShelterPawtners",
+  "/terms": "Terms of service",
+  "/data-deletion": "Data deletion instructions",
   "/register": "Create your account",
   "/login": "Sign in",
   "/forgot-password": "Reset your password",

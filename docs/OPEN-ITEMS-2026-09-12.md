@@ -30,9 +30,13 @@ None are code problems; each needs a real account, a provider console, or a mail
 3. Facebook/Meta: Supabase callback plus persona and duplicate-account continuity. Facebook stays publicly disabled until accepted.
 4. Microsoft 365 human mailbox send and receive verification.
 
-### 1.3 Legal routes are written but unpublished — **needs you**
+### 1.3 Legal routes: Privacy is live, Terms and Data Deletion are now placeholders — **needs you**
 
-Privacy, Terms, and Data Deletion drafts exist and `legalRoutesReadyForPublication` is still `false` in `src/lib/legal-routes.ts`. Meta app review (issue #119) depends on these being publicly reachable. This needs your and/or a lawyer's review before the flag flips — I have deliberately not flipped it.
+This moved since it was last written. A real Privacy Policy is now live at `/privacy`, published as a static `public/privacy.html` file with a Vercel rewrite (`vercel.json`) — that work landed on `main` from a parallel agent while this branch was in progress, outside the `src/lib/legal-routes.ts` / `legalRoutesReadyForPublication` mechanism this repo had built for gating legal publication. `legalRoutesReadyForPublication` is still `false` and nothing in the app reads it, so it is now dead scaffolding rather than the thing actually gating Privacy's publication — worth a decision on whether to keep it, since it no longer reflects reality for at least Privacy.
+
+`/terms` and `/data-deletion` did not exist anywhere before this session; each is now a real route with placeholder content (not the old static drafts, which this session could not find committed anywhere) stating plainly that it is a placeholder, listing what the finished page needs to cover, and saying it will be drafted after the Lost Lands launch in a future phase. The footer now links to all three. Data Deletion in particular gates Meta/Facebook app review (issue #119) and should not be treated as launch-ready until it has real content and legal review.
+
+One open question this raises: `/privacy` is reachable on Vercel via its rewrite, but this session did not verify it resolves correctly on the GitHub Pages target (which serves under a `/LostPaws/` base path and has no equivalent rewrite). That is deployment plumbing outside this session's lane; flagging it for whoever owns that configuration rather than changing it here.
 
 ### 1.4 The founding-business promise is live copy but not finally worded — **needs you**
 

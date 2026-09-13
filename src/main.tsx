@@ -213,8 +213,14 @@ function Header() {
           aria-label="Primary navigation"
         >
           <Link to="/marketplace">Marketplace</Link>
-          <Link to="/lostpaws">LostPaws</Link>
-          <Link to="/rave">RAVE Shelter</Link>
+          <details className="navGroup" key={location.pathname}>
+            <summary>RAVE Shelter</summary>
+            <div className="navGroupPanel">
+              <Link to="/rave">RAVE Shelter mission</Link>
+              <Link to="/lostpaws">LostPaws</Link>
+              <Link to="/sevenstars">Seven Star Shelters</Link>
+            </div>
+          </details>
           <Link to="/events">Events</Link>
           <Link to="/learn">Learn</Link>
           {!session && <Link to="/register">Join</Link>}
@@ -238,6 +244,7 @@ function Header() {
   );
 }
 function Footer() {
+  const base = import.meta.env.BASE_URL;
   return (
     <footer>
       <div className="shell foot">
@@ -257,6 +264,11 @@ function Footer() {
           <a href="mailto:contact@shelterpawtners.com">General questions</a>
           <a href="mailto:adoptions@shelterpawtners.com">Adoption support</a>
           <a href="mailto:petbiz@shelterpawtners.com">PetBiz and vendors</a>
+        </div>
+        <div>
+          <a href={`${base}privacy`}>Privacy policy</a>
+          <Link to="/terms">Terms of service</Link>
+          <Link to="/data-deletion">Data deletion</Link>
         </div>
       </div>
     </footer>
@@ -1582,6 +1594,66 @@ function FoundationPage({ name }: { name: keyof typeof publicFoundations }) {
     </Page>
   );
 }
+const legalPlaceholders: Record<
+  string,
+  { eyebrow: string; title: string; needs: string[] }
+> = {
+  terms: {
+    eyebrow: "Legal",
+    title: "Terms of service",
+    needs: [
+      "Account eligibility, registration accuracy, and acceptable use across Guardian, shelter, PetBiz, and RAVE Shelter roles.",
+      "Marketplace terms: how offers are listed, claimed, and redeemed, and each party's responsibilities when a redemption is disputed.",
+      "Digital Pet Passport data ownership and what a Guardian controls versus what a confirming shelter can see.",
+      "Giving and Hero Vendor commitments: that a commitment is a pledge, not a payment, and platform limitation of liability around third-party giving processors once one is selected.",
+      "Disclaimers, limitation of liability, dispute resolution, and termination.",
+      "Governing law and any required arbitration or class-action provisions.",
+    ],
+  },
+  "data-deletion": {
+    eyebrow: "Legal",
+    title: "Data deletion instructions",
+    needs: [
+      "Step-by-step instructions a user can follow to request deletion of their account and associated data, independent of which sign-in method (including Facebook, once enabled) they used.",
+      "What is deleted immediately versus retained for a defined period for security, fraud-prevention, or legal-recordkeeping reasons, and why.",
+      "How a request is verified before it is honored.",
+      "The specific confirmation a requester receives once deletion completes.",
+      "This page's URL is what a Meta/Facebook Login app review checks for a Data Deletion Instructions URL, so its content must be finalized before Facebook sign-in is enabled publicly.",
+    ],
+  },
+};
+function LegalPlaceholderPage({
+  name,
+}: {
+  name: keyof typeof legalPlaceholders;
+}) {
+  const page = legalPlaceholders[name];
+  return (
+    <Page>
+      <section className="section shell formPage narrow">
+        <span className="eyebrow">{page.eyebrow}</span>
+        <h1>{page.title}</h1>
+        <p className="lead">
+          This page is a placeholder. The {page.title.toLowerCase()} will be
+          fully drafted and published in a future phase, after the Lost Lands
+          launch, once legal review is complete.
+        </p>
+        <p>What the finished page needs to cover:</p>
+        <ul className="foundationPoints">
+          {page.needs.map((need) => (
+            <li key={need}>{need}</li>
+          ))}
+        </ul>
+        <p>Questions in the meantime:</p>
+        <div className="actions">
+          <a className="btn quiet" href="mailto:contact@shelterpawtners.com">
+            contact@shelterpawtners.com
+          </a>
+        </div>
+      </section>
+    </Page>
+  );
+}
 function AppFoundation({ title, copy }: { title: string; copy: string }) {
   return (
     <Page>
@@ -2161,6 +2233,11 @@ function App() {
         <Route path="/shelters" element={<FoundationPage name="shelters" />} />
         <Route path="/lostpaws" element={<RaveMissionPage />} />
         <Route path="/about" element={<FoundationPage name="about" />} />
+        <Route path="/terms" element={<LegalPlaceholderPage name="terms" />} />
+        <Route
+          path="/data-deletion"
+          element={<LegalPlaceholderPage name="data-deletion" />}
+        />
         <Route path="/register" element={<Register />} />
         <Route
           path="/register.html"

@@ -93,9 +93,9 @@
   text-align: center;
 }
 
-.lpLogo {
-  width: min(430px, 80vw);
-  max-height: 150px;
+.lpFooterLogo {
+  width: min(160px, 60vw);
+  max-height: 56px;
   margin: 0 auto 1rem;
   object-fit: contain;
 }
@@ -377,11 +377,6 @@
 
   .lpHeroContent {
     padding-top: 1.5rem;
-  }
-
-  .lpLogo {
-    width: min(310px, 86vw);
-    max-height: 110px;
   }
 
   .lpHero h1 {
