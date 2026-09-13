@@ -35,7 +35,10 @@ test.describe("Phase 1 public accessibility and responsive regressions", () => {
       );
     expect(linkHeights.every((height) => height >= 44)).toBe(true);
 
-    await page.getByRole("link", { name: "Marketplace" }).click();
+    await page
+      .locator("#primary-navigation")
+      .getByRole("link", { name: "Marketplace", exact: true })
+      .click();
     await expect(menu).toHaveAttribute("aria-label", "Open menu");
     await expect(menu).toHaveAttribute("aria-expanded", "false");
   });
@@ -66,9 +69,9 @@ test.describe("Phase 1 public accessibility and responsive regressions", () => {
   }) => {
     await page.goto("/rave");
 
-    await expect(page.locator(".rsmLogoPanel img")).toHaveAttribute(
+    await expect(page.locator(".rsmHeroMark img")).toHaveAttribute(
       "src",
-      /rave-shelter-logo-static-v2\.png/,
+      /rave-shelter-logo-mark\.svg/,
     );
   });
 });
