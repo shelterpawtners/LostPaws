@@ -198,7 +198,7 @@ jobs:
             await page.waitForURL(url => url.pathname.endsWith('/rave'), { timeout: 10000 });
 
             await page.goto(`${process.env.SITE_URL}/marketplace`, { waitUntil: 'networkidle' });
-            await page.locator('[data-marketplace-concept="flagship"]').waitFor({ state: 'visible', timeout: 30000 });
+            await page.locator('[data-marketplace-concept="compact"]').waitFor({ state: 'visible', timeout: 30000 });
             await page.locator('.offerCard').first().waitFor({ state: 'visible', timeout: 30000 });
             await page.close();
           }

@@ -15,9 +15,9 @@ test.describe("Premium Marketplace experience", () => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/marketplace");
 
-    const marketplace = page.locator('[data-marketplace-concept="flagship"]');
+    const marketplace = page.locator('[data-marketplace-concept="compact"]');
     await expect(marketplace).toBeVisible();
-    await expect(marketplace.locator(".marketplaceValuePanel")).toBeVisible();
+    await expect(marketplace.locator(".marketCompactCount")).toBeVisible();
     await expect(marketplace.locator(".offerCard").first()).toBeVisible();
 
     const hasPhoneOverflow = await page.evaluate(
@@ -38,14 +38,12 @@ test.describe("Premium Marketplace experience", () => {
       }),
     ).toBeVisible();
 
-    await marketplace
-      .getByRole("button", { name: "Clear search and filters" })
-      .click();
+    // Filters and sort collapse behind a summary toggle at this width.
+    await marketplace.getByText("Filters and sort").click();
+    await marketplace.getByRole("button", { name: "Clear filters" }).click();
     await expect(marketplace.locator(".offerCard").first()).toBeVisible();
 
-    await marketplace
-      .getByRole("button", { name: /Public Adoption Benefits/ })
-      .click();
+    await marketplace.getByLabel("Listing type").selectOption("public_program");
     await expect(
       marketplace.locator(".marketOfferCard-public_program").first(),
     ).toBeVisible();

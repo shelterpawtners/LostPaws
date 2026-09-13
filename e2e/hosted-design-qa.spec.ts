@@ -101,14 +101,9 @@ async function attachAxe(
 }
 
 async function waitForStableMarketplace(page: Page) {
-  await expect(
-    page.getByRole("heading", {
-      name: "Useful pet-parent value, without the fine-print hunt.",
-    }),
-  ).toBeVisible();
-  await expect(
-    page.locator('[data-marketplace-concept="flagship"]'),
-  ).toBeVisible();
+  const marketplace = page.locator('[data-marketplace-concept="compact"]');
+  await expect(marketplace).toBeVisible();
+  await expect(marketplace.locator(".marketCompactCount")).toBeVisible();
   await expect(page.locator(".offerCard").first()).toBeVisible();
   await waitForFonts(page);
 }

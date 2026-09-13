@@ -209,19 +209,53 @@ TIME: 2026-09-12 21:xx EDT
 STATUS: PASS
 CHECKPOINT: Claude Track 3 merged and main green
 PROVEN:
+
 - PR #135 is merged at `27c07d0697eb7f9fed99ac7c4380b064e1f42748`.
 - Track 3 marketplace/giving/LostPaws/navigation/legal-placeholder work is now on `main`.
 - Claude fixed two stale hardcoded CI assertion defects and reverted a speculative sign-out-race fix rather than masking the issue.
 - Owner reports `main` green across CI, GitHub Pages Staging, and GitHub Pages MVP Acceptance.
-CHANGED:
+  CHANGED:
 - Controller advanced past Claude's PR #135 merge checkpoint.
-BLOCKERS:
+  BLOCKERS:
 - Fresh production acceptance still depends on Vercel accepting a normal product deployment.
 - Meta remains intentionally deferred and non-blocking.
-RISKS_OR_UNCERTAINTY:
+  RISKS_OR_UNCERTAINTY:
 - Intermittent sign-out race remains a documented future investigation; do not paper over it with assertion/test weakening.
-NEXT_RECOMMENDED_ACTION:
+  NEXT_RECOMMENDED_ACTION:
 - Use Work only for non-Meta live/readiness checks; when Codex usage is available, start retained-branch reconciliation from latest `main`. Continue advisor-side drafting in parallel.
-ADVISOR_REVIEW_REQUIRED: NO
-ADVISOR_QUESTION:
+  ADVISOR_REVIEW_REQUIRED: NO
+  ADVISOR_QUESTION:
 - none
+
+---
+
+AGENT: CLAUDE
+TIME: 2026-09-13
+STATUS: IN_PROGRESS, PR NOT YET OPEN
+CHECKPOINT: Vercel deployment-classifier fix + Marketplace/footer compact redesign, on `fix/vercel-deploy-classifier`
+
+PROVEN:
+
+- Root-caused and fixed the Vercel classifier bug: `scripts/vercel-ignore-build.sh` compared only `HEAD^` vs `HEAD`, so PR #135 followed by docs-only commits looked docs-only forever after, even with production still behind. Now compares against `$VERCEL_GIT_PREVIOUS_SHA` and fails toward building when that's unavailable. Reproduced the failure against real git history before changing anything, and added `scripts/verify-vercel-ignore-build.sh` (a throwaway-temp-repo regression suite, wired into `npm run check` and CI) that fails 3/6 against the old script and passes 6/6 against the fix.
+- Redesigned `/marketplace`: first offer card now appears at 275px desktop / 387px mobile, down from 1171px / 1387px, by replacing the hero/value-panel/stacked-filters with one compact header + toolbar. Fixed two regressions the rename caused (a stale `:has()` selector, list-view CSS scoped to a dropped class) and two it introduced (sub-44px touch targets, a duplicate h1) before they left this branch.
+- Compacted the sitewide footer to one row of four columns on desktop and a 2-column mobile wrap, keeping the existing 44px link touch-target floor.
+- Verified together: `npm run check`, the full public e2e suite (59 tests), 48 persona e2e tests, a normal production build, and a `GITHUB_PAGES=true` build all pass/succeed.
+
+CHANGED:
+
+- `scripts/vercel-ignore-build.sh`, `scripts/verify-vercel-ignore-build.sh` (new), `package.json`, `.github/workflows/ci.yml`, `src/components/OfferMarketplace.tsx`, `src/marketplace-launch-density.css`, `src/styles.css`, plus e2e fixups for the marketplace copy/structure change (`e2e/marketplace-premium.spec.ts`, `e2e/hosted-design-qa.spec.ts`, `e2e/hosted-qa-smoke.spec.ts`).
+
+BLOCKERS:
+
+- None. Branch is pushed; PR not yet opened as of this entry — will open, watch CI, and merge under the standing authorization if green.
+
+RISKS_OR_UNCERTAINTY:
+
+- Two `phase-1-accessibility.spec.ts` failures (mobile-menu, RAVE-logo) reproduce on a clean run but touch no file this branch changes relative to `main` — confirmed pre-existing, flagged for a future fix, not addressed here (out of scope for this sprint).
+- Did not touch Meta/Facebook, Microsoft 365 DNS, secrets, money movement, or the sign-out race, per this sprint's guardrails.
+
+NEXT_RECOMMENDED_ACTION:
+
+- Open the PR, watch CI, merge when green, update this controller and the handoff with the merge SHA.
+
+ADVISOR_REVIEW_REQUIRED: NO

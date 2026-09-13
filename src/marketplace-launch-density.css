@@ -397,9 +397,9 @@
    layout alone was 638px, the filter stack 416px, plus a duplicate outer
    hero. Target is the first card inside the second screen. */
 
-/* The flagship panel carries its own intro, so the outer page hero above it
-   is duplicate chrome. */
-.market:has(+ .section .marketplaceFlagship) {
+/* The marketplace panel carries its own compact header, so the outer page
+   hero above it is duplicate chrome. */
+.market:has(+ .section .marketplaceCompact) {
   display: none;
 }
 
@@ -605,5 +605,227 @@
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 1;
     font-size: 0.82rem;
+  }
+}
+
+/* ---- Marketplace compact redesign (2026-09-13) ----
+   Replaces the flagship hero/value-panel/stacked-filter treatment above with
+   a single-screen ecommerce-style header: a compact title/count row, an
+   always-visible audience selector, and one search+filter toolbar. Cards
+   should be reachable without scrolling past a landing-page-style intro. */
+
+.marketplaceCompact {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.marketCompactHeader {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.marketCompactTitle {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.marketCompactTitle h2 {
+  margin: 0;
+  font-family: Outfit;
+  font-size: clamp(1.3rem, 2.4vw, 1.7rem);
+  line-height: 1.15;
+}
+
+.marketCompactCount {
+  color: var(--market-muted);
+  font-size: 0.86rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.marketCompactAudience {
+  display: inline-flex;
+  gap: 4px;
+  padding: 4px;
+  border: 1px solid var(--market-line);
+  border-radius: 999px;
+  background: var(--market-card);
+}
+
+.marketCompactAudience button {
+  min-height: 44px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: 999px;
+  background: none;
+  color: var(--market-ink);
+  font-weight: 700;
+  font-size: 0.86rem;
+  cursor: pointer;
+}
+
+.marketCompactAudience button.active {
+  background: var(--market-ink);
+  color: #fff;
+}
+
+.marketCompactToolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.marketCompactSearch {
+  display: flex;
+  align-items: center;
+  flex: 1 1 260px;
+  min-height: 44px;
+  padding: 0 14px;
+  border: 1px solid var(--market-line);
+  border-radius: 12px;
+  background: var(--market-card);
+  gap: 8px;
+}
+
+.marketCompactSearch svg {
+  flex: none;
+  width: 17px;
+  height: 17px;
+  color: var(--market-muted);
+}
+
+.marketCompactSearch input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  color: inherit;
+}
+
+.marketCompactSearch input:focus {
+  outline: none;
+}
+
+.marketCompactFilters {
+  display: flex;
+}
+
+.marketCompactFilterRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.marketCompactSelect select {
+  min-height: 44px;
+  padding: 0 30px 0 12px;
+  border: 1px solid var(--market-line);
+  border-radius: 12px;
+  background: var(--market-card);
+  color: var(--market-ink);
+  font: inherit;
+  font-size: 0.86rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.marketCompactViewToggle {
+  display: inline-flex;
+  gap: 2px;
+  padding: 3px;
+  border: 1px solid var(--market-line);
+  border-radius: 10px;
+  background: var(--market-card);
+}
+
+.marketCompactViewToggle button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: 7px;
+  background: none;
+  color: var(--market-muted);
+  cursor: pointer;
+}
+
+.marketCompactViewToggle button svg {
+  width: 17px;
+  height: 17px;
+}
+
+.marketCompactViewToggle button.active {
+  background: var(--market-ink);
+  color: #fff;
+}
+
+.marketCompactClear {
+  min-height: 38px;
+  padding: 0 12px;
+  border: 0;
+  background: none;
+  color: var(--market-purple);
+  font-weight: 700;
+  font-size: 0.84rem;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.marketCompactTrustLine {
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+  margin: 0;
+  color: var(--market-muted);
+  font-size: 0.78rem;
+  line-height: 1.4;
+}
+
+.marketCompactTrustLine svg {
+  flex: none;
+  width: 14px;
+  height: 14px;
+  margin-top: 0.15rem;
+  color: var(--market-teal);
+}
+
+@media (max-width: 760px) {
+  .marketCompactHeader {
+    align-items: flex-start;
+  }
+
+  .marketCompactAudience {
+    width: 100%;
+  }
+
+  .marketCompactAudience button {
+    flex: 1;
+    padding: 0 8px;
+  }
+
+  .marketCompactFilterRow {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .marketCompactSelect select,
+  .marketCompactViewToggle,
+  .marketCompactClear {
+    width: 100%;
+  }
+
+  .marketCompactViewToggle {
+    justify-content: center;
   }
 }
