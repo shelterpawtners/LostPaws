@@ -18,13 +18,13 @@ ShelterPawtners/LostPaws is in active MVP design hardening and release-readiness
 
 Read only the context needed for the task, in this order:
 
-1. active GitHub Issue/PR;
-2. `docs/AI-HANDOFF.md`;
-3. `docs/CURRENT-WORK.md`;
-4. `docs/AI-TOOLING-AND-DESIGN-ROADMAP.md` when the work affects UX, visual design, testing, or AI tooling;
-5. `docs/AUTONOMOUS-EXECUTION-POLICY.md`;
-6. `docs/DEV-LOOP-V2.md`;
-7. relevant product/architecture/security/design files.
+1. current GitHub `main`;
+2. this `AGENTS.md`;
+3. `docs/AI-CONTROLLER.md` — the human live-status, blocker, and next-action authority;
+4. the active GitHub Issue/PR (or active task brief);
+5. at most one relevant canonical domain document.
+
+`docs/AI-HANDOFF.md` is a separate CI-required machine-readable release-state file. Preserve its current path and top-level field contract, including `CURRENT_CHECKPOINT`. Read it when a task needs completion/acceptance/workflow state; do not treat it or `docs/CURRENT-WORK.md` as a competing human live-status narrative.
 
 Do not load unrelated historical files just for completeness.
 
