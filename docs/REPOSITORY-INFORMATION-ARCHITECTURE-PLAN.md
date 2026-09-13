@@ -39,6 +39,7 @@ Some duplication is intentional because tools discover files by convention. Othe
 Examples: application source, tests, Supabase migrations/functions, package/config files, deployment configuration, public assets.
 
 Rules:
+
 - organized primarily by runtime/development conventions;
 - never mixed with historical documentation;
 - moves require build/test/deploy verification.
@@ -46,6 +47,7 @@ Rules:
 ### B. Active tool configuration
 
 Examples may include:
+
 - `.github/workflows/**`
 - `.github/instructions/**`
 - `.github/agents/**`
@@ -58,6 +60,7 @@ Examples may include:
 - other convention-based tool entry files
 
 Rules:
+
 - keep exact required paths when a tool discovers them by convention;
 - make these thin adapters where possible;
 - point to canonical project docs rather than restating large policies;
@@ -95,6 +98,7 @@ docs/archive/
 ```
 
 Archive rules:
+
 - historical evidence only;
 - not part of normal agent startup;
 - must not override `AGENTS.md`, `docs/AI-CONTROLLER.md`, an active Issue, or canonical domain docs;
@@ -137,6 +141,7 @@ Every relevant file should receive one of:
 - **REVIEW / UNCERTAIN**
 
 Each non-KEEP action should include:
+
 - target path;
 - reason;
 - inbound references;
@@ -198,6 +203,41 @@ Claude should challenge this plan rather than merely agree with it:
 7. Are any source/test/config directories currently duplicated or nested in a way that creates runtime or developer confusion?
 8. What changes would make future Claude/Codex/Copilot sessions cheaper and more deterministic without losing needed context?
 9. What should be changed in draft PR #144 before any migration execution begins?
+
+## Claude workspace audit (2026-09-13)
+
+Read-only review against current `main` (`64b13cb`) and this branch's two planning artifacts, from a real VS Code/Claude Code workspace rather than by inference. No files were moved or deleted. Corrections are also reflected as row-level edits and a new section in `docs/DOCUMENTATION-MIGRATION-MATRIX.md`. Overall verdict: **the four-class model, authority model, and phased sequencing are sound and should proceed** — the corrections below are refinements and one materially important CI-safety fix, not a rejection of the approach.
+
+### Answers to "Review questions for Claude"
+
+1. **Which proposed paths would break or weaken Claude/VS Code behavior?** None of the proposed target paths themselves break tooling, but the plan's implicit assumption that `docs/AI-HANDOFF.md` can become a thin "compatibility pointer" would break three required GitHub Actions checks (`merge-gate.yml`, `persona-qa.yml`, `hosted-qa.yml`) and `scripts/update-ai-ops-status.sh`, all of which `sed`/`grep` exact `KEY: VALUE` lines out of that file at its current path. This is now corrected in the matrix: `docs/AI-HANDOFF.md` is reclassified `KEEP — CI-REQUIRED MACHINE-READABLE STATE FILE` until those workflows are migrated in the same PR as any consolidation.
+
+2. **Are `.agents`, `.github/agents`, `.github/instructions`, `.github/prompts`, `.github/skills`, and `.openai` all intentionally distinct? Which are tool-required vs. historical experiments?** All are tool-required by a real, currently-documented convention, and none are accidental duplicates of each other:
+   - `.github/copilot-instructions.md` — GitHub Copilot's repository custom-instructions file (always loaded).
+   - `.github/instructions/*.instructions.md` — VS Code Copilot's glob-scoped custom instructions (`applyTo` frontmatter); confirmed current convention.
+   - `.github/prompts/*.prompt.md` — VS Code/Visual Studio/JetBrains Copilot "prompt files," gated by the `chat.promptFiles` setting. That setting currently only exists in this workspace's **untracked** `.vscode/settings.json` — see finding below.
+   - `.github/agents/*.agent.md` — VS Code Copilot's current "custom agents" feature (the successor to `.chatmode.md`); explicitly referenced from `AGENTS.md` itself, not experimental.
+   - `.github/skills/*/SKILL.md` — GitHub Copilot's custom-skills convention. Copilot's own docs name `.github/skills`, `.claude/skills`, and `.agents/skills` as three interchangeable locations for the same feature.
+   - `.agents/skills/shelterpawtners/SKILL.md` — this repo's own root `README.md` labels it explicitly "for Codex." Verified against Claude Code's current official documentation that Claude Code discovers project skills **only** from `.claude/skills/` — never `.agents/skills/` or `.github/skills/`. This repo has no committed `.claude/skills/` directory at all, so **Claude Code currently loads zero repo-committed skills from either location.** `.agents/skills/` and `.github/skills/` are not redundant with each other: they hold materially different content (a thin cross-doc router for Codex vs. detailed brand/UX skill packs for Copilot) for different tools.
+   - `.openai/hosting.json` — has zero inbound references anywhere in this repository; its shape matches an external OpenAI-side static-hosting manifest read only by that external provider, unrelated to Codex CLI (which uses `~/.codex`/`.codex/config.toml`, not `.openai`).
+
+3. **Additional tool-specific conventions not represented here?** `.vscode/settings.json` itself belongs in Class B — it is currently untracked/uncommitted, meaning the `chat.promptFiles` setting that makes `.github/prompts/**` actually discoverable does not ship to a fresh clone. Recommend committing it.
+
+4. **Is the canonical docs taxonomy too broad/deep/missing a domain?** No changes recommended; `docs/engineering/`, `docs/product/`, `docs/security/`, `docs/legal/`, `docs/data/`, `docs/design/` map cleanly onto content that already exists under different names (`docs/product/` and `docs/legal/`/`docs/support/` subtrees already exist and work well as precedents for the others).
+
+5. **Which current files are genuine conflicting duplicates vs. intentional adapters?** The clearest genuine conflict found is **`docs/CURRENT-WORK.md` vs. `docs/AI-CONTROLLER.md`**: `CURRENT-WORK.md` is still dated 2026-09-12 and describes Track 3 as "not started," when it in fact merged as PR #135 well before this audit. Both `AGENTS.md` and `CLAUDE.md`'s own "read this first" lists currently name `docs/AI-HANDOFF.md` and `docs/CURRENT-WORK.md` but **never mention `docs/AI-CONTROLLER.md` at all** — i.e. the repo's two actual agent-entry files do not yet point at the plan's own declared sole live-status authority. `docs/phases/PHASE-2.md` is a second, smaller conflict: its header still reads "inactive until explicitly activated," contradicting `AGENTS.md`'s "Phase 2 is complete."
+
+6. **Which dated documents should stay archived in-repo vs. rely on Git history?** No blanket change recommended beyond what the matrix already proposes; the `REVIEW` disposition already in place for launch/phase/checkpoint snapshots is appropriately conservative.
+
+7. **Are any source/test/config directories duplicated or nested confusingly?** None found. `src/`, `e2e/`, `supabase/`, `scripts/` are conventionally organized with no overlapping trees.
+
+8. **What would make future sessions cheaper/more deterministic without losing context?** Fix `AGENTS.md`/`CLAUDE.md`'s own load order to add `docs/AI-CONTROLLER.md` (ideally as the _first_ doc read, ahead of `AI-HANDOFF.md`/`CURRENT-WORK.md`) — this is likely higher-value than any file move, since it's the actual mechanism by which every future agent decides what to read.
+
+9. **What should change in draft PR #144 before migration execution?** Applied directly to `docs/DOCUMENTATION-MIGRATION-MATRIX.md`: reclassified `docs/AI-HANDOFF.md`'s disposition (material CI-safety fix); flagged `docs/CURRENT-WORK.md`, `docs/DECISION-LOG.md`, `docs/PHASE-1-EXECUTION.md`, `docs/PHASE-1-PROGRESS.md` as also referenced by `scripts/set-active-phase.ps1` (must be updated/retired alongside, not left generating stale output); flagged root `README.md`'s own hand-written documentation index as needing updates in lockstep with any linked-file move; flagged `docs/phases/PHASE-2.md`'s stale status header; documented the `scripts/classify-change-impact.sh` case-precedence gap as a known, separately-tracked condition (not this issue's to fix, but relevant to how safely Phase 2 AGENTS.md/CLAUDE.md edits get validated).
+
+### What Claude agrees with, unchanged
+
+The four repository classes, the "one canonical source per durable subject" principle, treating `docs/archive/**` as non-authoritative, the conservative Phase 0→5 sequencing, and keeping legal/support/security files untouched pending explicit owner review are all correct as written and should proceed without modification.
 
 ## Definition of done for planning
 
