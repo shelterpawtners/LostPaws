@@ -58,6 +58,7 @@ jobs:
       - run: npm ci
       - run: npm run lint
       - run: npm run lint:shell
+      - run: npm run test:shell
       - run: npm test
       - run: npm run build
       # Credential-free browser regressions. These previously existed as spec
