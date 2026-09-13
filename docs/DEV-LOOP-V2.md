@@ -226,11 +226,9 @@ Dependency-changing PRs to `main` run GitHub's native Dependency Review and fail
 
 ## Vercel
 
-The configured Ignored Build Step uses `scripts/vercel-ignore-build.sh`, which delegates to the canonical classifier.
+`main` is the Production Branch and always gets a normal deployment on push — no custom build-skip logic (retired 2026-09-13, issue #138, after a custom Ignored Build Step script caused a stale-production incident).
 
-It skips deployments when a commit cannot affect the deployed web artifact.
-
-`main` is the Production Branch; short-lived feature/design branches create preview artifacts when the Vercel classifier determines the deployed frontend changed.
+Preview deployments for other branches are disabled by Vercel's own native `git.deploymentEnabled` config in `vercel.json`, not a custom script. Short-lived feature/design branches do not automatically consume a preview deployment; request one intentionally (temporarily enable that branch in `deploymentEnabled`, or use the Vercel CLI) only when actually needed.
 
 ## Cost guardrails
 
