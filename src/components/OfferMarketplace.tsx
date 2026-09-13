@@ -350,7 +350,7 @@ export function OfferMarketplace({
     >
       <div className="marketCompactHeader">
         <div className="marketCompactTitle">
-          <h1>{rave ? "RAVE Shelter marketplace" : "Marketplace"}</h1>
+          <h2>{rave ? "RAVE Shelter marketplace" : "Marketplace"}</h2>
           <span className="marketCompactCount" role="status" aria-live="polite">
             {visibleOffers.length}{" "}
             {visibleOffers.length === 1 ? "listing" : "listings"}
