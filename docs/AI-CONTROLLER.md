@@ -209,19 +209,20 @@ TIME: 2026-09-12 21:xx EDT
 STATUS: PASS
 CHECKPOINT: Claude Track 3 merged and main green
 PROVEN:
+
 - PR #135 is merged at `27c07d0697eb7f9fed99ac7c4380b064e1f42748`.
 - Track 3 marketplace/giving/LostPaws/navigation/legal-placeholder work is now on `main`.
 - Claude fixed two stale hardcoded CI assertion defects and reverted a speculative sign-out-race fix rather than masking the issue.
 - Owner reports `main` green across CI, GitHub Pages Staging, and GitHub Pages MVP Acceptance.
-CHANGED:
+  CHANGED:
 - Controller advanced past Claude's PR #135 merge checkpoint.
-BLOCKERS:
+  BLOCKERS:
 - Fresh production acceptance still depends on Vercel accepting a normal product deployment.
 - Meta remains intentionally deferred and non-blocking.
-RISKS_OR_UNCERTAINTY:
+  RISKS_OR_UNCERTAINTY:
 - Intermittent sign-out race remains a documented future investigation; do not paper over it with assertion/test weakening.
-NEXT_RECOMMENDED_ACTION:
+  NEXT_RECOMMENDED_ACTION:
 - Use Work only for non-Meta live/readiness checks; when Codex usage is available, start retained-branch reconciliation from latest `main`. Continue advisor-side drafting in parallel.
-ADVISOR_REVIEW_REQUIRED: NO
-ADVISOR_QUESTION:
+  ADVISOR_REVIEW_REQUIRED: NO
+  ADVISOR_QUESTION:
 - none
