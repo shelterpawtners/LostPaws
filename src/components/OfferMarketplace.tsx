@@ -1,16 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import {
-  ArrowDown,
   ArrowUpRight,
-  BadgeCheck,
-  HeartHandshake,
   LayoutGrid,
   List,
   Search,
   ShieldCheck,
   SlidersHorizontal,
-  Store,
 } from "lucide-react";
 import { supabase as db } from "../lib/supabase";
 import { OfferCard, type PublicOffer } from "./OfferCard";
@@ -196,10 +192,8 @@ export function OfferMarketplace({
     });
   }, [offers, query, classification, category]);
 
-  const activeFilterCount =
-    (audience !== "all" ? 1 : 0) +
-    (classification !== "all" ? 1 : 0) +
-    (category !== "all" ? 1 : 0);
+  const hiddenFilterCount =
+    (classification !== "all" ? 1 : 0) + (category !== "all" ? 1 : 0);
 
   const sortedOffers = useMemo(() => {
     const list = [...visibleOffers];
@@ -351,84 +345,70 @@ export function OfferMarketplace({
 
   return (
     <section
-      className={`marketplaceExperience marketplaceFlagship marketplacePremium${rave ? " marketplaceRave" : ""}`}
-      data-marketplace-concept="flagship"
+      className={`marketplaceExperience marketplaceCompact marketplacePremium${rave ? " marketplaceRave" : ""}`}
+      data-marketplace-concept="compact"
     >
-      <div className="marketplaceHeroLayout">
-        <div className="marketplaceConceptIntro marketplaceFlagshipIntro">
-          <span className="eyebrow">
-            {rave
-              ? "RAVE Shelter marketplace view"
-              : "ShelterPawtners marketplace"}
+      <div className="marketCompactHeader">
+        <div className="marketCompactTitle">
+          <h1>{rave ? "RAVE Shelter marketplace" : "Marketplace"}</h1>
+          <span className="marketCompactCount" role="status" aria-live="polite">
+            {visibleOffers.length}{" "}
+            {visibleOffers.length === 1 ? "listing" : "listings"}
           </span>
-          <h2>Useful pet-parent value, without the fine-print hunt.</h2>
-          <p>
-            Discover current public adoption benefits alongside offers published
-            by ShelterPawtners participants. Every listing shows who provides
-            it, eligibility context, and current terms before you take the next
-            step.
-          </p>
-          <div className="marketplaceHeroActions">
-            <a className="marketplaceHeroJump" href="#marketplace-results">
-              Browse current value <ArrowDown />
-            </a>
-            <span>Based on current published Marketplace listings</span>
-          </div>
         </div>
-
-        <aside
-          className="marketplaceValuePanel"
-          aria-label="Current Marketplace listing overview"
+        <div
+          className="marketCompactAudience"
+          role="group"
+          aria-label="Filter offers by audience"
         >
-          <div>
-            <span className="marketplaceValueEyebrow">Current marketplace</span>
-            <div className="marketplaceValueTotal">
-              <strong>{offers.length}</strong>
-              <span>
-                {offers.length === 1 ? "active listing" : "active listings"}
-              </span>
-            </div>
-          </div>
-          <div className="marketplaceValueBreakdown">
-            <div>
-              <BadgeCheck />
-              <span>
-                Public adoption benefits
-                <b>{listingCounts.public_program || 0}</b>
-              </span>
-            </div>
-            <div>
-              <HeartHandshake />
-              <span>
-                Community resources
-                <b>{listingCounts.community || 0}</b>
-              </span>
-            </div>
-            <div>
-              <Store />
-              <span>
-                Participant offers
-                <b>{listingCounts.partner_published || 0}</b>
-              </span>
-            </div>
-          </div>
-        </aside>
+          <button
+            type="button"
+            className={audience === "all" ? "active" : ""}
+            aria-pressed={audience === "all"}
+            onClick={() => navigate("/marketplace")}
+          >
+            All
+          </button>
+          <button
+            type="button"
+            className={audience === "pet" ? "active" : ""}
+            aria-pressed={audience === "pet"}
+            onClick={() => navigate("/marketplace?channel=pet")}
+          >
+            Pet
+          </button>
+          <button
+            type="button"
+            className={audience === "rave" ? "active" : ""}
+            aria-pressed={audience === "rave"}
+            onClick={() => navigate("/marketplace?channel=rave")}
+          >
+            RAVE
+          </button>
+        </div>
       </div>
 
-      <div className="marketplaceDiscovery">
-        <label className="marketplaceSearch">
-          <Search />
+      {channelFilterUnavailable && (
+        <p className="marketplaceFilterNotice" role="status">
+          Audience filtering is not available on this deployment yet, so every
+          current offer is shown.
+        </p>
+      )}
+
+      <div className="marketCompactToolbar">
+        <label className="marketCompactSearch">
+          <Search aria-hidden="true" />
           <span className="srOnly">Search current offers</span>
           <input
             value={query}
             onChange={(event) => setQuery(event.target.value)}
-            placeholder="Search benefits, providers, terms, or location"
+            placeholder="Search offers, providers, or terms"
             aria-label="Search current offers"
           />
         </label>
 
         <details
-          className="marketplaceFilterDisclosure"
+          className="marketplaceFilterDisclosure marketCompactFilters"
           open={filtersOpen}
           onToggle={(event) =>
             setFiltersOpen((event.target as HTMLDetailsElement).open)
@@ -437,96 +417,46 @@ export function OfferMarketplace({
           <summary>
             <SlidersHorizontal aria-hidden="true" />
             Filters and sort
-            {activeFilterCount > 0 && (
+            {hiddenFilterCount > 0 && (
               <span className="marketplaceFilterCountBadge">
-                {activeFilterCount}
+                {hiddenFilterCount}
               </span>
             )}
           </summary>
 
-          <div className="marketplaceFilterArea">
-            <div className="marketplaceFilterLabel">
-              <SlidersHorizontal />
-              <span>Audience</span>
-            </div>
-            <div
-              className="marketplaceFilterButtons"
-              role="group"
-              aria-label="Filter offers by audience"
-            >
-              <button
-                type="button"
-                className={audience === "all" ? "active" : ""}
-                aria-pressed={audience === "all"}
-                onClick={() => navigate("/marketplace")}
+          <div className="marketCompactFilterRow">
+            <label className="marketCompactSelect">
+              <span className="srOnly">Category</span>
+              <select
+                value={category}
+                onChange={(event) => setCategory(event.target.value)}
               >
-                Show everything
-              </button>
-              <button
-                type="button"
-                className={audience === "pet" ? "active" : ""}
-                aria-pressed={audience === "pet"}
-                onClick={() => navigate("/marketplace?channel=pet")}
-              >
-                Pet Offers
-              </button>
-              <button
-                type="button"
-                className={audience === "rave" ? "active" : ""}
-                aria-pressed={audience === "rave"}
-                onClick={() => navigate("/marketplace?channel=rave")}
-              >
-                RAVE Offers
-              </button>
-            </div>
-            {channelFilterUnavailable && (
-              <p className="marketplaceFilterNotice" role="status">
-                Audience filtering is not available on this deployment yet, so
-                every current offer is shown.
-              </p>
-            )}
-          </div>
-
-          {categories.length > 1 && (
-            <div className="marketplaceFilterArea">
-              <div className="marketplaceFilterLabel">
-                <SlidersHorizontal />
-                <span>Category</span>
-              </div>
-              <div
-                className="marketplaceFilterButtons"
-                role="group"
-                aria-label="Filter offers by category"
-              >
-                <button
-                  type="button"
-                  className={category === "all" ? "active" : ""}
-                  aria-pressed={category === "all"}
-                  onClick={() => setCategory("all")}
-                >
-                  Any category
-                </button>
+                <option value="all">All categories</option>
                 {categories.map((item) => (
-                  <button
-                    type="button"
-                    key={item}
-                    className={category === item ? "active" : ""}
-                    aria-pressed={category === item}
-                    onClick={() => setCategory(item)}
-                  >
+                  <option key={item} value={item}>
                     {item}
-                  </button>
+                  </option>
                 ))}
-              </div>
-            </div>
-          )}
+              </select>
+            </label>
 
-          <div className="marketplaceFilterArea">
-            <label className="marketplaceSortControl">
-              <span className="marketplaceFilterLabel">
-                <SlidersHorizontal />
-                <span>Sort by</span>
-              </span>
+            <label className="marketCompactSelect">
+              <span className="srOnly">Listing type</span>
+              <select
+                value={classification}
+                onChange={(event) => setClassification(event.target.value)}
+              >
+                <option value="all">All types ({offers.length})</option>
+                {classifications.map((item) => (
+                  <option key={item} value={item}>
+                    {listingTypeLabel(item)} ({listingCounts[item] || 0})
+                  </option>
+                ))}
+              </select>
+            </label>
+
+            <label className="marketCompactSelect">
+              <span className="srOnly">Sort by</span>
               <select
                 value={sort}
                 onChange={(event) => setSort(event.target.value as SortKey)}
@@ -538,104 +468,54 @@ export function OfferMarketplace({
                 ))}
               </select>
             </label>
-          </div>
 
-          <div className="marketplaceFilterArea">
-            <div className="marketplaceFilterLabel">
-              <SlidersHorizontal />
-              <span>Listing type</span>
-            </div>
             <div
-              className="marketplaceFilterButtons"
+              className="marketCompactViewToggle"
               role="group"
-              aria-label="Filter offers by listing type"
+              aria-label="Marketplace view"
             >
               <button
                 type="button"
-                className={classification === "all" ? "active" : ""}
-                aria-pressed={classification === "all"}
-                onClick={() => setClassification("all")}
+                className={viewMode === "grid" ? "active" : ""}
+                aria-pressed={viewMode === "grid"}
+                aria-label="Grid view"
+                onClick={() => setViewMode("grid")}
               >
-                All current
-                <span className="marketplaceFilterCount">{offers.length}</span>
+                <LayoutGrid />
               </button>
-              {classifications.map((item) => (
-                <button
-                  type="button"
-                  key={item}
-                  className={classification === item ? "active" : ""}
-                  aria-pressed={classification === item}
-                  onClick={() => setClassification(item)}
-                >
-                  {listingTypeLabel(item)}
-                  <span className="marketplaceFilterCount">
-                    {listingCounts[item] || 0}
-                  </span>
-                </button>
-              ))}
+              <button
+                type="button"
+                className={viewMode === "list" ? "active" : ""}
+                aria-pressed={viewMode === "list"}
+                aria-label="List view"
+                onClick={() => setViewMode("list")}
+              >
+                <List />
+              </button>
             </div>
+
+            {(query || classification !== "all" || category !== "all") && (
+              <button
+                type="button"
+                className="marketCompactClear"
+                onClick={() => {
+                  setQuery("");
+                  setClassification("all");
+                  setCategory("all");
+                }}
+              >
+                Clear filters
+              </button>
+            )}
           </div>
         </details>
       </div>
 
-      <div className="marketplaceTrustStrip">
-        <ShieldCheck />
-        <div>
-          <strong>Public benefits and partner offers stay distinct.</strong>
-          <span>
-            Public programs link to the responsible third party. ShelterPawtners
-            redemption codes are reserved for offers actually published through
-            this platform.
-          </span>
-        </div>
-      </div>
-
-      <div className="marketplaceResultsHeader" id="marketplace-results">
-        <div role="status" aria-live="polite" aria-atomic="true">
-          <strong>{visibleOffers.length}</strong>
-          <span>
-            {visibleOffers.length === 1
-              ? " current listing"
-              : " current listings"}
-          </span>
-        </div>
-        <div className="marketplaceResultsActions">
-          <div
-            className="marketplaceViewControls"
-            role="group"
-            aria-label="Marketplace view"
-          >
-            <button
-              type="button"
-              className={viewMode === "grid" ? "active" : ""}
-              aria-pressed={viewMode === "grid"}
-              onClick={() => setViewMode("grid")}
-            >
-              <LayoutGrid /> Grid
-            </button>
-            <button
-              type="button"
-              className={viewMode === "list" ? "active" : ""}
-              aria-pressed={viewMode === "list"}
-              onClick={() => setViewMode("list")}
-            >
-              <List /> List
-            </button>
-          </div>
-          {(query || classification !== "all") && (
-            <button
-              type="button"
-              className="marketplaceClearFilters"
-              onClick={() => {
-                setQuery("");
-                setClassification("all");
-              }}
-            >
-              Clear search and filters
-            </button>
-          )}
-        </div>
-      </div>
+      <p className="marketCompactTrustLine">
+        <ShieldCheck aria-hidden="true" /> Public programs link to the
+        responsible third party; ShelterPawtners redemption codes are reserved
+        for offers published through this platform.
+      </p>
 
       {!offers.length ? (
         <div className="marketplaceEmpty">
