@@ -54,9 +54,10 @@ jobs:
             echo "run_hosted=true" >> "$GITHUB_OUTPUT"
             exit 0
           fi
-          status=$(sed -n 's/^STATUS:[[:space:]]*//p' docs/AI-HANDOFF.md | head -n 1)
-          safe=$(sed -n 's/^SAFE_TO_CONTINUE:[[:space:]]*//p' docs/AI-HANDOFF.md | head -n 1)
-          owner=$(sed -n 's/^OWNER_DECISION_REQUIRED:[[:space:]]*//p' docs/AI-HANDOFF.md | head -n 1)
+          state_file=docs/engineering/AI-RELEASE-STATE.md
+          status=$(sed -n 's/^STATUS:[[:space:]]*//p' "$state_file" | head -n 1)
+          safe=$(sed -n 's/^SAFE_TO_CONTINUE:[[:space:]]*//p' "$state_file" | head -n 1)
+          owner=$(sed -n 's/^OWNER_DECISION_REQUIRED:[[:space:]]*//p' "$state_file" | head -n 1)
           prs=$(gh api "repos/${REPO}/pulls?state=open&base=main&per_page=100")
           pr_number=$(jq -r --arg branch "${GITHUB_HEAD_REF:-${GITHUB_REF_NAME}}" --arg marker "${ACTIVE_MARKER}" '[.[] | select(.head.ref == $branch) | select((.body // "") | contains($marker))] | if length == 1 then .[0].number else empty end' <<<"${prs}")
           echo "pr_number=${pr_number}" >> "$GITHUB_OUTPUT"
@@ -97,9 +98,10 @@ jobs:
         if: github.event_name != 'workflow_dispatch'
         shell: bash
         run: |
-          grep -q "^STATUS: READY_FOR_ACCEPTANCE$" docs/AI-HANDOFF.md
-          grep -q "^SAFE_TO_CONTINUE: YES$" docs/AI-HANDOFF.md
-          grep -q "^OWNER_DECISION_REQUIRED: NO$" docs/AI-HANDOFF.md
+          state_file=docs/engineering/AI-RELEASE-STATE.md
+          grep -q "^STATUS: READY_FOR_ACCEPTANCE$" "$state_file"
+          grep -q "^SAFE_TO_CONTINUE: YES$" "$state_file"
+          grep -q "^OWNER_DECISION_REQUIRED: NO$" "$state_file"
       - name: Resolve acceptance runtime and deployed artifact
         env:
           GH_TOKEN: ${{ github.token }}
@@ -113,7 +115,8 @@ jobs:
         run: |
           set -euo pipefail
 
-          acceptance_runtime=$(sed -n 's/^ACCEPTANCE_RUNTIME:[[:space:]]*//p' docs/AI-HANDOFF.md | head -n 1)
+          state_file=docs/engineering/AI-RELEASE-STATE.md
+          acceptance_runtime=$(sed -n 's/^ACCEPTANCE_RUNTIME:[[:space:]]*//p' "$state_file" | head -n 1)
           if [[ "${acceptance_runtime}" == "LOCAL_HEAD" && "${GITHUB_EVENT_NAME}" != "workflow_dispatch" ]]; then
             echo "PLAYWRIGHT_QA_RUNTIME=local" >> "$GITHUB_ENV"
             echo "Exact-code acceptance runtime: local Vite server at PR head ${PR_HEAD_SHA}."
@@ -125,7 +128,7 @@ jobs:
             qa_url="${INPUT_QA_URL:-${FALLBACK_QA_URL}}"
           else
             frontend_sha=$(bash scripts/latest-frontend-artifact-sha.sh "${BASE_SHA}" "${PR_HEAD_SHA}")
-            acceptance_deployed_sha=$(sed -n 's/^ACCEPTANCE_DEPLOYED_SHA:[[:space:]]*//p' docs/AI-HANDOFF.md | head -n 1)
+            acceptance_deployed_sha=$(sed -n 's/^ACCEPTANCE_DEPLOYED_SHA:[[:space:]]*//p' "$state_file" | head -n 1)
 
             if [[ -n "${acceptance_deployed_sha}" && "${acceptance_deployed_sha}" != "NONE" && "${acceptance_deployed_sha}" != "${frontend_sha}" ]]; then
               echo "Requested reusable deployed frontend SHA: ${acceptance_deployed_sha}"
@@ -205,7 +208,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          if [[ "${FULL_BROWSER_AUDIT:-false}" != "true" ]] && ! grep -q "^CURRENT_CHECKPOINT: Issue #5" docs/AI-HANDOFF.md; then
+          state_file=docs/engineering/AI-RELEASE-STATE.md
+          if [[ "${FULL_BROWSER_AUDIT:-false}" != "true" ]] && ! grep -q "^CURRENT_CHECKPOINT: Issue #5" "$state_file"; then
             echo "Issue #5 full browser audit is not active for this acceptance run."
             exit 0
           fi
