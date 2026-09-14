@@ -7,7 +7,7 @@ Use this file for CURRENT STATUS, NEXT ACTION, BLOCKERS, and HANDOFFS.
 The longer guardrails, model guidance, prompts, and environment-switch rules remain in:
 
 - `docs/AI-EXECUTION-PLAN-2026-09-12.md`
-- `docs/AI-HANDOFF.md`
+- `docs/engineering/AI-RELEASE-STATE.md`
 - `docs/engineering/AGENT-OPERATIONS.md`
 
 Do not duplicate the entire execution plan here. Keep this file short enough that every agent can reread it cheaply.
@@ -39,9 +39,9 @@ content has been preserved.
 2. `AGENTS.md` is the universal startup contract.
 3. This controller is the human live-status, blocker, and next-action authority.
 4. The active GitHub Issue/PR supplies task-specific scope and acceptance.
-5. `docs/AI-HANDOFF.md` remains CI-required machine-readable release state. Keep
-   its path and top-level field contract, including `CURRENT_CHECKPOINT`, until
-   every workflow/script consumer is migrated atomically.
+5. `docs/engineering/AI-RELEASE-STATE.md` is the CI-required machine-readable
+   release-state contract. `docs/AI-HANDOFF.md` remains its field-compatible
+   inbound adapter, not a competing live-status narrative.
 
 Meta/Facebook remains intentionally deferred by the owner. Keep Facebook
 disabled and do not spend cycles on Meta unless the owner explicitly reopens it.
