@@ -1,5 +1,8 @@
 # Codex Work Prompt — Phase 2 Checkpoint 3
 
+> **Historical prompt — Phase 2 is complete.** Do not execute; use current
+> GitHub `main`, `AGENTS.md`, the controller, and active Issues/PRs.
+
 ## Offer Engine
 
 Phase 2 is active. Checkpoints 1 and 2 are accepted. Execute only Checkpoint 3 from `docs/PHASE-2-EXECUTION-PLAN.md`.
