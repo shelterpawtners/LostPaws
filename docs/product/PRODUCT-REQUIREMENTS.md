@@ -115,7 +115,7 @@ Acceptance expectations:
 - After responding, the shelter sees a concise, compelling, truthful explanation of the free ShelterPawtners shelter account, Digital Pet Passports, Shelter Report Cards, adoption support, guardian savings, continuity of information, and future insights, with an optional signup action.
 - SMS and automated social outreach remain later channels unless their consent, compliance, cost, and delivery requirements are approved.
 
-Detailed requirements are in [Festival MVP and adoption verification](FESTIVAL-MVP-AND-VERIFICATION.md).
+The original festival-launch requirements are in [Festival MVP and adoption verification](../archive/2026-mvp/retired-plans/FESTIVAL-MVP-AND-VERIFICATION.md) (historical -- superseded by shipped behavior; see `docs/product/DUAL-MARKETPLACE-RAVE-SHELTER-EXECUTION-PLAN.md` for current marketplace direction).
 
 ## Digital Pet Passport
 

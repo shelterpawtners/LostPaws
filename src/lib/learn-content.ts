@@ -6,7 +6,7 @@
  * Content rules that must hold for anything added here: describe planned
  * capability as planned, never state a savings figure, donation amount, or
  * partnership as fact, and never imply tax deductibility. See
- * docs/CONTENT-STANDARDS.md.
+ * docs/design/CONTENT-STANDARDS.md.
  */
 
 export type LearnAudience =

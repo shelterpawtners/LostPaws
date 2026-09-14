@@ -29,25 +29,24 @@ npm run build
 
 Development work is limited to `shelterpawtners-dev`. Production connection, project creation, DNS changes, and deployment require explicit user instruction.
 
-Human QA can use the branch-scoped Vercel Preview described in [Hosted shared-development QA](docs/HOSTED-QA.md). It uses only the shared development Supabase URL and publishable key; production remains untouched.
+Human QA can use the branch-scoped Vercel Preview described in [Hosted shared-development QA](docs/engineering/HOSTED-QA.md). It uses only the shared development Supabase URL and publishable key; production remains untouched.
 
 ## Architecture
 
-The frontend uses React, TypeScript, and Vite with a small custom CSS design system. Supabase provides PostgreSQL, authentication, storage, RLS, and APIs. Edge Functions will be added only for privileged workflows such as external adoption confirmation and email delivery. See [Architecture](docs/ARCHITECTURE.md) and [Security and privacy](docs/SECURITY-AND-PRIVACY.md).
+The frontend uses React, TypeScript, and Vite with a small custom CSS design system. Supabase provides PostgreSQL, authentication, storage, RLS, and APIs. Edge Functions will be added only for privileged workflows such as external adoption confirmation and email delivery. See [Architecture](docs/engineering/ARCHITECTURE.md) and [Security and privacy](docs/security/SECURITY-AND-PRIVACY.md).
 
 ## Documentation
 
 - [Documentation authority guide](docs/README.md): read order, live-status authority, and historical-document boundaries.
 - [Live project controller](docs/AI-CONTROLLER.md): current blockers, active lanes, and next actions.
-- [Product vision](docs/PRODUCT-VISION.md): mission, ecosystem value, and audiences.
-- [Product requirements](docs/PRODUCT-REQUIREMENTS.md): planned behavior and acceptance expectations.
-- [Marketplace research and savings strategy](docs/MARKETPLACE-RESEARCH.md): initial provider research, offer classifications, and curation standards.
-- [User roles](docs/USER-ROLES.md): multiple roles and scoped organization permissions.
-- [Brand design system](docs/BRAND-DESIGN-SYSTEM.md): visual principles and design workflow.
-- [Content standards](docs/CONTENT-STANDARDS.md): terminology, writing, and truthful claims.
-- [Architecture](docs/ARCHITECTURE.md): technical direction and engineering standards.
-- [Roadmap](docs/ROADMAP.md): MVP slices, later phases, approval gates, and human decisions.
+- [Product vision](docs/product/PRODUCT-VISION.md): mission, ecosystem value, and audiences.
+- [Product requirements](docs/product/PRODUCT-REQUIREMENTS.md): planned behavior and acceptance expectations.
+- [Marketplace research and savings strategy](docs/product/MARKETPLACE-RESEARCH.md): initial provider research, offer classifications, and curation standards.
+- [User roles](docs/product/USER-ROLES.md): multiple roles and scoped organization permissions.
+- [Brand design system](docs/design/BRAND-DESIGN-SYSTEM.md): visual principles and design workflow.
+- [Content standards](docs/design/CONTENT-STANDARDS.md): terminology, writing, and truthful claims.
+- [Architecture](docs/engineering/ARCHITECTURE.md): technical direction and engineering standards.
+- [Roadmap](docs/product/ROADMAP.md): MVP slices, later phases, approval gates, and human decisions.
 - [Decisions](docs/DECISIONS.md): durable architecture/product decisions and open owner gates.
-- [Phase 1 execution](docs/PHASE-1-EXECUTION.md): rebuild order, migrations, and remaining configuration.
-- [Security and privacy](docs/SECURITY-AND-PRIVACY.md): data protection and authorization requirements.
+- [Security and privacy](docs/security/SECURITY-AND-PRIVACY.md): data protection and authorization requirements.
 - [Project skill](.agents/skills/shelterpawtners/SKILL.md): task-specific document routing for Codex.

@@ -10,21 +10,22 @@ The delivery sequence is frozen and authoritative:
 4. **Impact + Giving + Financial Intelligence**
 5. **Integrations + Marketplace + Production Launch**
 
-The detailed authoritative phase specifications are:
+The detailed specification for each upcoming phase lives alongside this
+roadmap:
 
-- Phase 1: `docs/PHASE-1-EXECUTION.md` and `docs/PHASE-1-PROGRESS.md`
-- Phase 2: `docs/phases/PHASE-2.md`
-- Phase 3: `docs/phases/PHASE-3.md`
-- Phase 4: `docs/phases/PHASE-4.md`
-- Phase 5: `docs/phases/PHASE-5.md`
+- Phase 3: `docs/product/roadmap/PHASE-3.md`
+- Phase 4: `docs/product/roadmap/PHASE-4.md`
+- Phase 5: `docs/product/roadmap/PHASE-5.md`
+
+Phase 1 and Phase 2 are complete; their execution/progress records and
+original specification are historical evidence under
+`docs/archive/2026-mvp/checkpoints/` and are not read for current work.
 
 Newer explicit user decisions override older planning. Implemented repository architecture overrides stale architecture notes. Older festival-MVP slices, batch plans, and the former Phase 2–10 roadmap are superseded as execution authority. Their useful ideas remain reference material or backlog themes only and do not become active requirements unless explicitly re-approved.
 
 ## Current gate
 
-Phase 1 is engineering-complete and is the approved platform/data foundation baseline.
-
-Phase 2 is the next phase, but implementation remains inactive until the Phase 2 specification has been reconciled against the approved business-decision baseline and an execution checkpoint plan is reviewed.
+Phase 1 and Phase 2 are both complete and merged to `main` -- see `docs/AI-CONTROLLER.md` for current live status. Phase 3 is the next phase, gated behind `OD-002` (Phase 3 authorization) in `docs/DECISIONS.md`, which remains `BLOCKING`/`PENDING`.
 
 Production infrastructure, public DNS changes, production deployment, and replacing the current public website remain separately gated and require explicit authorization.
 
@@ -59,17 +60,16 @@ Established foundations include:
 - React, TypeScript, Vite, Supabase, role-aware routing, and accessible application foundations;
 - deterministic demo data and repeatable local database setup.
 
-Validation evidence in `docs/PHASE-1-PROGRESS.md` includes two clean local resets, two 9/9 pgTAP runs, 8/8 Playwright checks, passing `npm run check`, and passing `npm run build`.
+Validation evidence in `docs/archive/2026-mvp/checkpoints/PHASE-1-PROGRESS.md` (historical) includes two clean local resets, two 9/9 pgTAP runs, 8/8 Playwright checks, passing `npm run check`, and passing `npm run build`.
 
 A cloud or sandbox environment being unable to run Docker, Supabase reset, or browser preview does not invalidate stronger completed local validation.
 
 ## Phase 2 — Partner Marketplace MVP
 
-**Status: approved specification; not yet activated.**
+**Status: complete.** Original specification archived at
+`docs/archive/2026-mvp/checkpoints/PHASE-2.md` (historical evidence only).
 
-Canonical specification: `docs/phases/PHASE-2.md`.
-
-Primary outcome: real pet businesses and other eligible Partner organizations can join the ecosystem, create trustworthy public profiles, publish useful offers, support easy utilization/redemption, and participate in measurable shelter impact.
+Primary outcome, delivered: real pet businesses and other eligible Partner organizations can join the ecosystem, create trustworthy public profiles, publish useful offers, support easy utilization/redemption, and participate in measurable shelter impact.
 
 ### Approved Phase 2 business baseline
 
@@ -85,22 +85,11 @@ Primary outcome: real pet businesses and other eligible Partner organizations ca
 - A qualified giving/fundraising/payment provider must be researched before production charitable-money movement is implemented.
 - Launch operations focus on Michigan and especially Metro Detroit, while the architecture and MVP support nationwide and online participation from launch, including LostPaws/RAVE community participants and testers.
 
-### Phase 2 activation gate
-
-Before implementation begins:
-
-1. reconcile `docs/phases/PHASE-2.md` against `docs/DECISIONS.md`;
-2. resolve only remaining material decisions that affect schema, trust, financial meaning, or critical UX;
-3. research giving-provider options before implementing provider-dependent financial UX;
-4. define savings and redemption calculations before showing customer-facing verified totals;
-5. break Phase 2 into small Codex engineering checkpoints with explicit QA and acceptance gates;
-6. explicitly activate Phase 2.
-
 ## Phase 3 — Guardian + Shelter Passport MVP
 
-**Status: frozen planning specification; inactive until Phase 2 approval.**
+**Status: frozen planning specification; inactive until `OD-002` (Phase 3 authorization) is resolved.**
 
-Canonical specification: `docs/phases/PHASE-3.md`.
+Canonical specification: `docs/product/roadmap/PHASE-3.md`.
 
 Primary outcome: deliver the foundational pet lifecycle across shelter/import, shelter-authored history, adoption, secure transfer, Guardian claim, ongoing Digital Pet Passport continuity, and a Guardian-first path for pets not entering through shelters.
 
@@ -110,7 +99,7 @@ Do not pull Passport transfer or full shelter-created pet workflows backward int
 
 **Status: frozen planning specification; inactive until Phase 3 approval.**
 
-Canonical specification: `docs/phases/PHASE-4.md`.
+Canonical specification: `docs/product/roadmap/PHASE-4.md`.
 
 Primary outcome: convert trustworthy Partner, Guardian, shelter, transaction, adoption, savings, and giving data into persona-specific dashboards and an accounting-grade impact foundation.
 
@@ -120,7 +109,7 @@ Giving must continue to distinguish intent, accrual, external verification, sett
 
 **Status: frozen planning specification; inactive until Phase 4 approval.**
 
-Canonical specification: `docs/phases/PHASE-5.md`.
+Canonical specification: `docs/product/roadmap/PHASE-5.md`.
 
 Primary outcome: complete production authentication, email, approved marketplace/payment integrations, external connectors, LostPaws/RAVE launch experiences, security hardening, analytics, SEO, accessibility, monitoring, production environments, and launch validation.
 

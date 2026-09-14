@@ -613,7 +613,7 @@ Create/update:
 - `docs/ANNUAL-REPORTING.md`
 - `docs/GRANTS-AND-FUNDS.md`
 - `docs/B-CORP-IMPACT-READINESS.md`
-- `docs/FINANCIAL-LEDGER-AND-GIVING.md`
+- `docs/data/FINANCIAL-LEDGER-AND-GIVING.md`
 - decision log/security/roadmap/requirements
 
 ---

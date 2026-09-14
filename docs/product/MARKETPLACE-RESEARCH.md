@@ -62,7 +62,7 @@ Use a shared offer foundation with distinct channels:
 
 Rave Shelter partners may self-publish during the MVP. The platform must preserve organization attribution, audience and channel selection, terms, timestamps, reporting, edit and unpublish capability, team monitoring, and suspension controls. Registration or publication does not mean the partner is verified or officially affiliated with a named festival.
 
-See [Festival MVP and adoption verification](FESTIVAL-MVP-AND-VERIFICATION.md).
+See [Festival MVP and adoption verification](../archive/2026-mvp/retired-plans/FESTIVAL-MVP-AND-VERIFICATION.md) (historical -- this dated MVP snapshot has been superseded by shipped RAVE Shelter/LostPaws marketplace behavior; see `docs/product/DUAL-MARKETPLACE-RAVE-SHELTER-EXECUTION-PLAN.md` for current marketplace direction).
 
 ## MVP guardian experience
 
