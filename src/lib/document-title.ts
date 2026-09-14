@@ -14,6 +14,7 @@ const exactTitles: Record<string, string> = {
   "/lostpaws": "LostPaws — a RAVE Shelter initiative for Lost Lands",
   "/sevenstars": "Seven Star Shelters — Spread shelter love",
   "/marketplace": "Marketplace",
+  "/store": "Store",
   "/learn": "Learn how it works",
   "/learn/savings-explorer": "Savings explorer",
   "/faq": "Frequently asked questions",
@@ -43,6 +44,7 @@ export function titleForPath(pathname: string, learnTitle?: string): string {
   if (learnTitle) return `${learnTitle} | ${SUFFIX}`;
 
   if (path.startsWith("/offers/")) return `Offer details | ${SUFFIX}`;
+  if (path.startsWith("/store/")) return `Product details | ${SUFFIX}`;
   if (path.startsWith("/partners/")) return `Partner profile | ${SUFFIX}`;
   if (path.startsWith("/learn/")) return `Learn | ${SUFFIX}`;
 
