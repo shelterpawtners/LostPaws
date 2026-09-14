@@ -25,7 +25,7 @@ Repository-native agents/skills, Vercel/Supabase/Chrome DevTools setup guidance,
 
 Delivered:
 
-- `docs/CHATGPT-OPERATING-PROTOCOL.md` — source-of-truth order, role split, connected-tool routing, owner gates, cost controls, and coding-agent handoff contract.
+- `docs/engineering/AGENT-OPERATIONS.md` is now the canonical source for source-of-truth routing, autonomy, validation, cost controls, and coding-agent handoff details; `docs/CHATGPT-OPERATING-PROTOCOL.md` is retained as a compatibility adapter.
 - `docs/prompts/CHATGPT-SESSION-BOOTSTRAP.md` — reusable fresh-session startup that makes ChatGPT recover project state before asking the owner to reconstruct it.
 - current-work/handoff integration defining ChatGPT vs coding-agent vs deterministic-automation responsibilities.
 
