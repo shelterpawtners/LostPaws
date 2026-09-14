@@ -31,6 +31,16 @@ jobs:
           HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
         run: bash scripts/classify-change-impact.sh "$BASE_SHA" "$HEAD_SHA"
 
+  guardrails:
+    name: Authority drift + classifier regression
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Documentation authority drift check
+        run: bash scripts/check-doc-authority-drift.sh
+      - name: Change-impact classifier precedence regression test
+        run: bash scripts/test-classify-change-impact.sh
+
   docs-format:
     needs: classify
     if: needs.classify.outputs.docs_only == 'true'
@@ -71,12 +81,13 @@ jobs:
   ci-gate:
     name: CI Gate
     if: always()
-    needs: [classify, docs-format, web]
+    needs: [classify, guardrails, docs-format, web]
     runs-on: ubuntu-latest
     steps:
       - name: Require all applicable CI checks
         env:
           CLASSIFY: ${{ needs.classify.result }}
+          GUARDRAILS: ${{ needs.guardrails.result }}
           DOCS_ONLY: ${{ needs.classify.outputs.docs_only }}
           DOCS_RESULT: ${{ needs.docs-format.result }}
           WEB_REQUIRED: ${{ needs.classify.outputs.requires_web_ci }}
@@ -85,6 +96,7 @@ jobs:
         run: |
           set -euo pipefail
           [[ "$CLASSIFY" == "success" ]] || { echo "Change classification failed."; exit 1; }
+          [[ "$GUARDRAILS" == "success" ]] || { echo "Documentation authority drift / classifier regression check failed."; exit 1; }
           if [[ "$DOCS_ONLY" == "true" && "$DOCS_RESULT" != "success" ]]; then
             echo "Documentation formatting check did not pass."
             exit 1

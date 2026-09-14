@@ -26,6 +26,15 @@ package_json_changed=false
 
 for file in "${changed_files[@]}"; do
   case "${file}" in
+    .github/dependabot.yml|.github/instructions/*|.github/copilot-instructions.md|AGENTS.md|CLAUDE.md|.agents/*)
+      # Authority/instruction files must classify as workflow (broader CI)
+      # even though their paths also end in .md. This pattern must stay
+      # ahead of the generic docs/*|*.md|README* pattern below: bash `case`
+      # fires only the first matching arm, and every path here also matches
+      # `*.md`, so ordering is load-bearing, not cosmetic.
+      workflow=true
+      docs=true
+      ;;
     docs/*|*.md|README*)
       docs=true
       ;;
@@ -90,10 +99,6 @@ for file in "${changed_files[@]}"; do
       ;;
     .github/workflows/*|.github/actions/*|scripts/*)
       workflow=true
-      ;;
-    .github/dependabot.yml|.github/instructions/*|.github/copilot-instructions.md|AGENTS.md|CLAUDE.md|.agents/*)
-      workflow=true
-      docs=true
       ;;
     vercel.json)
       deployment=true
