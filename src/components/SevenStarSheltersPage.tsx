@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { EventSpotlight } from "./events/EventSpotlight";
 import "./SevenStarSheltersPage.css";
 
 const pillars = [
@@ -177,6 +178,8 @@ export function SevenStarSheltersPage() {
           </div>
         </div>
       </section>
+
+      <EventSpotlight match="Seven Star" heading="Seven Star Shelters event" />
 
       <section
         className="sevenStarsAmplify"

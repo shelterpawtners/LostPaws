@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { EventSpotlight } from "./events/EventSpotlight";
 import "./LostPawsActivation.css";
 
 /**
@@ -65,6 +66,8 @@ export function LostPawsActivation() {
           </div>
         </div>
       </section>
+
+      <EventSpotlight match="Lost Lands" heading="Lost Lands activation" />
 
       <section className="lpDoors" aria-labelledby="lp-doors-title">
         <div className="lpWrap">

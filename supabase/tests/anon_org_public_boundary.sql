@@ -23,7 +23,7 @@ select ok(
 );
 
 select ok(
-  has_function_privilege('anon','public.public_active_offers(uuid,public.market_channel)','execute'),
+  has_function_privilege('anon','public.public_active_offers(uuid,public.market_channel,uuid)','execute'),
   'anon can execute curated public_active_offers RPC'
 );
 

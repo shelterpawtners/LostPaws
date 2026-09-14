@@ -45,6 +45,7 @@ export function titleForPath(pathname: string, learnTitle?: string): string {
 
   if (path.startsWith("/offers/")) return `Offer details | ${SUFFIX}`;
   if (path.startsWith("/store/")) return `Product details | ${SUFFIX}`;
+  if (path.startsWith("/events/")) return `Event details | ${SUFFIX}`;
   if (path.startsWith("/partners/")) return `Partner profile | ${SUFFIX}`;
   if (path.startsWith("/learn/")) return `Learn | ${SUFFIX}`;
 

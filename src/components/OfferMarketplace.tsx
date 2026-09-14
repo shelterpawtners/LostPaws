@@ -49,8 +49,10 @@ const sortLabels: Record<SortKey, string> = {
 
 export function OfferMarketplace({
   organizationId,
+  eventId,
 }: {
   organizationId?: string;
+  eventId?: string;
 }) {
   const route = useParams();
   const location = useLocation();
@@ -60,6 +62,14 @@ export function OfferMarketplace({
     new URLSearchParams(location.search).get("channel"),
   );
   const rave = audience === "rave";
+  // The eventId prop (embedded use, e.g. on an event detail page) always
+  // wins. Otherwise the plain /marketplace page honors a ?event= link from a
+  // campaign/event page, same pattern as ?channel=.
+  const eventIdFromQuery =
+    !eventId && !organizationId && !offerId
+      ? new URLSearchParams(location.search).get("event") || undefined
+      : undefined;
+  const effectiveEventId = eventId || eventIdFromQuery;
   const [offers, setOffers] = useState<PublicOffer[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState("");
@@ -71,6 +81,7 @@ export function OfferMarketplace({
   const [viewMode, setViewMode] = useState<MarketplaceViewMode>("grid");
   const [channelFilterUnavailable, setChannelFilterUnavailable] =
     useState(false);
+  const [eventFilterUnavailable, setEventFilterUnavailable] = useState(false);
   // Filters collapse on a phone and stay open on a larger screen. A <details>
   // hides its own content when closed, so this cannot be done in CSS alone.
   const [filtersOpen, setFiltersOpen] = useState(
@@ -100,26 +111,39 @@ export function OfferMarketplace({
     setLoadError("");
     setStatus("");
     setChannelFilterUnavailable(false);
+    setEventFilterUnavailable(false);
     void (async () => {
       try {
         const channel = channelParamFromAudience(audience);
         let response = await client.rpc("public_active_offers", {
           p_organization_id: organizationId || null,
           p_channel: channel,
+          p_event_id: effectiveEventId || null,
         });
 
         // A deployment whose database has not yet applied the migration that
-        // added p_channel rejects the call outright, because the parameter
-        // itself is unknown there — so retry without it on any error, not only
-        // when a channel was requested. Only say filtering is unavailable when
-        // a filter was actually asked for.
+        // added a given parameter rejects the call outright, because the
+        // parameter itself is unknown there — so retry with progressively
+        // older signatures on any error, not only when that filter was
+        // requested. Only say a filter is unavailable when it was actually
+        // asked for.
         if (response.error) {
-          const fallback = await client.rpc("public_active_offers", {
+          const withoutEvent = await client.rpc("public_active_offers", {
             p_organization_id: organizationId || null,
+            p_channel: channel,
           });
-          if (!fallback.error) {
-            if (channel) setChannelFilterUnavailable(true);
-            response = fallback;
+          if (!withoutEvent.error) {
+            if (effectiveEventId) setEventFilterUnavailable(true);
+            response = withoutEvent;
+          } else {
+            const withoutChannel = await client.rpc("public_active_offers", {
+              p_organization_id: organizationId || null,
+            });
+            if (!withoutChannel.error) {
+              if (channel) setChannelFilterUnavailable(true);
+              if (effectiveEventId) setEventFilterUnavailable(true);
+              response = withoutChannel;
+            }
           }
         }
 
@@ -137,7 +161,7 @@ export function OfferMarketplace({
         setLoading(false);
       }
     })();
-  }, [organizationId, offerId, audience]);
+  }, [organizationId, offerId, audience, effectiveEventId]);
 
   const categories = useMemo(
     () =>
@@ -343,6 +367,38 @@ export function OfferMarketplace({
     );
   }
 
+  if (eventId) {
+    return (
+      <section
+        className="marketplaceEmbedded"
+        aria-labelledby="event-offers-heading"
+      >
+        <div className="marketplaceEmbeddedHeading">
+          <span className="eyebrow">Current offers</span>
+          <h2 id="event-offers-heading">Offers for this event</h2>
+        </div>
+        {eventFilterUnavailable && (
+          <p className="marketplaceFilterNotice" role="status">
+            Event filtering is not available on this deployment yet, so every
+            current offer is shown.
+          </p>
+        )}
+        {!offers.length ? (
+          <div className="marketplaceEmpty">
+            <h3>No offers are attached to this event yet.</h3>
+            <p>Check back as vendors publish event-specific listings.</p>
+          </div>
+        ) : (
+          <div className="marketplaceCardGrid marketplaceEmbeddedGrid">
+            {offers.map((offer) => (
+              <OfferCard key={offer.offer_id} offer={offer} concept="value" />
+            ))}
+          </div>
+        )}
+      </section>
+    );
+  }
+
   return (
     <section
       className={`marketplaceExperience marketplaceCompact marketplacePremium${rave ? " marketplaceRave" : ""}`}
@@ -391,6 +447,25 @@ export function OfferMarketplace({
       {channelFilterUnavailable && (
         <p className="marketplaceFilterNotice" role="status">
           Audience filtering is not available on this deployment yet, so every
+          current offer is shown.
+        </p>
+      )}
+
+      {eventIdFromQuery && !eventFilterUnavailable && (
+        <p className="marketplaceFilterNotice" role="status">
+          Showing offers for this event only.{" "}
+          <button
+            type="button"
+            className="marketCompactClear"
+            onClick={() => navigate(location.pathname)}
+          >
+            Clear event filter
+          </button>
+        </p>
+      )}
+      {eventIdFromQuery && eventFilterUnavailable && (
+        <p className="marketplaceFilterNotice" role="status">
+          Event filtering is not available on this deployment yet, so every
           current offer is shown.
         </p>
       )}

@@ -352,7 +352,9 @@ export function EventsPage({ session }: { session: Session | null }) {
                     <em>{eventAudienceLabels[item.audience]}</em>
                     <span>{item.category}</span>
                   </span>
-                  <h2>{item.title}</h2>
+                  <h2>
+                    <Link to={`/events/${item.id}`}>{item.title}</Link>
+                  </h2>
                   <p>{item.summary}</p>
                   <dl className="evCardMeta">
                     <div>

@@ -17,6 +17,7 @@ export type OfferTerms = {
   disclosure: string;
   channel: "pet" | "rave";
   applicability: "online" | "all_organization_locations" | "national";
+  event_id: string;
 };
 
 export const blankOffer: OfferTerms = {
@@ -38,6 +39,7 @@ export const blankOffer: OfferTerms = {
   disclosure: "",
   channel: "pet",
   applicability: "online",
+  event_id: "",
 };
 
 export const offerStatusLabel = (status: string) =>

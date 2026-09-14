@@ -9,8 +9,10 @@ type Offer = {
   title: string;
   status: string;
   current_version_id: string;
+  event_id: string | null;
   offer_versions: any[];
 };
+type EventOption = { id: string; title: string; starts_at: string | null };
 type ProfileState =
   "draft" | "published" | "unpublished" | "suspended" | "removed";
 export function OfferManager({ session }: { session: Session | null }) {
@@ -23,7 +25,19 @@ export function OfferManager({ session }: { session: Session | null }) {
     [status, setStatus] = useState(""),
     [profileState, setProfileState] = useState<ProfileState | "missing">(
       "missing",
-    );
+    ),
+    [events, setEvents] = useState<EventOption[]>([]);
+  useEffect(() => {
+    if (!db) return;
+    void db
+      .from("events")
+      .select("id,title,starts_at")
+      .eq("status", "active")
+      .not("published_at", "is", null)
+      .order("starts_at", { ascending: true, nullsFirst: false })
+      .limit(50)
+      .then(({ data }) => setEvents((data as EventOption[]) || []));
+  }, []);
   useEffect(() => {
     if (!db || !session) return;
     void db
@@ -43,7 +57,7 @@ export function OfferManager({ session }: { session: Session | null }) {
       db
         .from("offers")
         .select(
-          "id,title,status,current_version_id,offer_versions:offer_versions!offer_versions_offer_id_fkey(*)",
+          "id,title,status,current_version_id,event_id,offer_versions:offer_versions!offer_versions_offer_id_fkey(*)",
         )
         .eq("organization_id", org)
         .order("created_at", { ascending: false }),
@@ -104,6 +118,7 @@ export function OfferManager({ session }: { session: Session | null }) {
     setForm({
       ...blankOffer,
       ...v,
+      event_id: o.event_id || "",
       starts_at: v?.starts_at?.slice(0, 16) || "",
       ends_at: v?.ends_at?.slice(0, 16) || "",
       claim_window_days: String(v?.claim_window_days || 30),
@@ -283,6 +298,23 @@ export function OfferManager({ session }: { session: Session | null }) {
                 value={form.source_url}
                 onChange={(e) => set("source_url", e.target.value)}
               />
+            </label>
+            <label>
+              Attach to an event (optional)
+              <select
+                value={form.event_id}
+                onChange={(e) => set("event_id", e.target.value)}
+              >
+                <option value="">No specific event</option>
+                {events.map((ev) => (
+                  <option key={ev.id} value={ev.id}>
+                    {ev.title}
+                    {ev.starts_at
+                      ? ` — ${new Date(ev.starts_at).toLocaleDateString()}`
+                      : ""}
+                  </option>
+                ))}
+              </select>
             </label>
             <label>
               Disclosure
