@@ -1,5 +1,9 @@
 # Vercel + Marketplace + Footer Sprint
 
+> **Historical prompt — do not execute as current work.** Its deployment
+> instructions were superseded on current `main`; use current GitHub `main`,
+> `AGENTS.md`, the controller, and active Issues/PRs.
+
 Status: ACTIVE EXECUTION BRIEF
 
 ## Objective
