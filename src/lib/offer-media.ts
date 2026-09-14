@@ -26,7 +26,9 @@ function hostOf(value: string): string {
 /** A sensible default CTA label when the vendor has not set cta_label. */
 export function ctaLabelFor(destinationUrl: string | null): string {
   const host = destinationUrl ? hostOf(destinationUrl) : "";
-  if (host.endsWith("etsy.com")) return "Shop on Etsy";
+  // Exact match or a genuine subdomain only — endsWith("etsy.com") alone
+  // would also match a spoofed host like "evil-etsy.com".
+  if (host === "etsy.com" || host.endsWith(".etsy.com")) return "Shop on Etsy";
   if (host) return "Visit vendor store";
   return "View item";
 }
