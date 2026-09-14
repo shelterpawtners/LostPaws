@@ -8,7 +8,125 @@ STATUS_ISSUE="${STATUS_ISSUE:-12}"
 ACTIVE_MARKER="${ACTIVE_MARKER:-<!-- ai-active-build-pr -->}"
 QA_URL="${QA_URL:-}"
 STALE_MINUTES="${STALE_MINUTES:-60}"
+PAGES_WORKFLOW_FILE="${PAGES_WORKFLOW_FILE:-github-pages-staging.yml}"
+PAGES_LOOKBACK="${PAGES_LOOKBACK:-20}"
 STATUS_MARKER="<!-- ai-ops-live-status -->"
+
+# --- Deployment + post-deploy live-verification health for `main`. -----------
+# Computed unconditionally (not only when a build PR is active) because the
+# GitHub Pages Staging failure this section exists to catch (issues #180/#181)
+# went unnoticed across 8+ deploys precisely because nothing in this status
+# looked at main's own deployment health while the repo was otherwise idle.
+# Reads only public GitHub Actions run/job metadata: no secrets, no PII, no
+# marketing-copy/DOM assertions -- job conclusions only.
+pages_runs=$(gh api "repos/${REPO}/actions/workflows/${PAGES_WORKFLOW_FILE}/runs?branch=main&per_page=${PAGES_LOOKBACK}")
+latest_pages_run=$(jq -c '.workflow_runs | sort_by(.created_at) | last // empty' <<<"${pages_runs}")
+
+deploy_health="UNKNOWN"
+build_line="not run"
+deploy_line="not run"
+verify_line="not run"
+latest_failing_run_url=""
+last_good_verify_at=""
+
+job_conclusion_line() {
+  local jobs_json="$1"
+  local job_name="$2"
+  local job
+  job=$(jq -c --arg name "${job_name}" '[.jobs[] | select(.name == $name)] | last // empty' <<<"${jobs_json}")
+  if [[ -z "${job}" ]]; then
+    printf 'not run'
+    return
+  fi
+  local st conclusion url
+  st=$(jq -r '.status' <<<"${job}")
+  conclusion=$(jq -r '.conclusion // ""' <<<"${job}")
+  url=$(jq -r '.html_url' <<<"${job}")
+  if [[ "${st}" == "completed" ]]; then
+    printf '[%s](%s)' "${conclusion}" "${url}"
+  else
+    printf '[%s](%s)' "${st}" "${url}"
+  fi
+}
+
+if [[ -n "${latest_pages_run}" ]]; then
+  latest_run_id=$(jq -r '.id' <<<"${latest_pages_run}")
+  latest_run_url=$(jq -r '.html_url' <<<"${latest_pages_run}")
+  latest_run_status=$(jq -r '.status' <<<"${latest_pages_run}")
+
+  latest_jobs=$(gh api "repos/${REPO}/actions/runs/${latest_run_id}/jobs")
+  build_line=$(job_conclusion_line "${latest_jobs}" "build")
+  deploy_line=$(job_conclusion_line "${latest_jobs}" "deploy")
+  verify_line=$(job_conclusion_line "${latest_jobs}" "Verify live Pages site")
+
+  build_conclusion=$(jq -r '[.jobs[] | select(.name == "build")] | last | .conclusion // ""' <<<"${latest_jobs}")
+  deploy_conclusion=$(jq -r '[.jobs[] | select(.name == "deploy")] | last | .conclusion // ""' <<<"${latest_jobs}")
+  verify_conclusion=$(jq -r '[.jobs[] | select(.name == "Verify live Pages site")] | last | .conclusion // ""' <<<"${latest_jobs}")
+
+  if [[ "${latest_run_status}" != "completed" ]]; then
+    deploy_health="IN_PROGRESS"
+  elif [[ "${build_conclusion}" == "failure" || "${build_conclusion}" == "timed_out" || "${build_conclusion}" == "cancelled" ]]; then
+    deploy_health="FAILED_BUILD"
+    latest_failing_run_url="${latest_run_url}"
+  elif [[ "${deploy_conclusion}" == "failure" || "${deploy_conclusion}" == "timed_out" || "${deploy_conclusion}" == "cancelled" ]]; then
+    deploy_health="FAILED_DEPLOY"
+    latest_failing_run_url="${latest_run_url}"
+  elif [[ "${verify_conclusion}" == "failure" || "${verify_conclusion}" == "timed_out" || "${verify_conclusion}" == "cancelled" ]]; then
+    deploy_health="DEGRADED"
+    latest_failing_run_url="${latest_run_url}"
+  elif [[ "${verify_conclusion}" == "success" ]]; then
+    deploy_health="HEALTHY"
+  fi
+
+  # Bounded lookback (PAGES_LOOKBACK runs, default 20) for the most recent
+  # successful live-verification timestamp, so a currently-degraded deploy
+  # still shows Jim when it last actually worked rather than just "unknown".
+  while IFS= read -r run_id; do
+    [[ -z "${run_id}" ]] && continue
+    if [[ "${run_id}" == "${latest_run_id}" ]]; then
+      run_jobs="${latest_jobs}"
+    else
+      run_jobs=$(gh api "repos/${REPO}/actions/runs/${run_id}/jobs")
+    fi
+    found=$(jq -r '[.jobs[] | select(.name == "Verify live Pages site" and .conclusion == "success")] | last // empty' <<<"${run_jobs}")
+    if [[ -n "${found}" ]]; then
+      last_good_verify_at=$(jq -r '.completed_at' <<<"${found}")
+      break
+    fi
+  done < <(jq -r '.workflow_runs | sort_by(.created_at) | reverse | .[].id' <<<"${pages_runs}")
+fi
+
+deployment_banner=""
+case "${deploy_health}" in
+  DEGRADED)
+    deployment_banner=$'\n**\xE2\x9A\xA0 DEPLOYMENT DEGRADED -- `main` deployed successfully but live-site verification is failing.** See "Deployment & live verification" below.\n'
+    ;;
+  FAILED_BUILD)
+    deployment_banner=$'\n**\xE2\x9C\x97 DEPLOYMENT FAILED -- the GitHub Pages Staging build is failing on `main`.** See below.\n'
+    ;;
+  FAILED_DEPLOY)
+    deployment_banner=$'\n**\xE2\x9C\x97 DEPLOYMENT FAILED -- the GitHub Pages Staging deploy step is failing on `main`.** See below.\n'
+    ;;
+  UNKNOWN)
+    deployment_banner=$'\n**? DEPLOYMENT STATUS UNKNOWN -- no GitHub Pages Staging run found for `main` in the last '"${PAGES_LOOKBACK}"' runs.**\n'
+    ;;
+esac
+
+deployment_section=$(cat <<EOF
+
+## Deployment & live verification (\`main\`)
+
+| Signal | Current state |
+| --- | --- |
+| Deployment health | **${deploy_health}** |
+| Pages Staging — build | ${build_line} |
+| Pages Staging — deploy | ${deploy_line} |
+| Pages Staging — live verification | ${verify_line} |
+| Last successful live verification | ${last_good_verify_at:-not found in last ${PAGES_LOOKBACK} runs} |
+| Latest failing run | ${latest_failing_run_url:-none currently} |
+EOF
+)
+# ------------------------------------------------------------------------------
 
 prs=$(gh api "repos/${REPO}/pulls?state=open&base=main&per_page=100")
 active_prs=$(jq -c --arg marker "${ACTIVE_MARKER}" '[.[] | select((.body // "") | contains($marker))]' <<<"${prs}")
@@ -18,12 +136,13 @@ if [[ "${active_count}" == "0" ]]; then
   body=$(cat <<EOF
 ${STATUS_MARKER}
 ## LostPaws AI Ops — IDLE
-
+${deployment_banner}
 No open PR targeting \`main\` is currently marked as the active build lane.
 
 - No AI agent was invoked by this status update.
-- Native watchdog cadence: hourly.
+- Native watchdog cadence: hourly, plus event-driven refresh when GitHub Pages Staging completes.
 - Next action: open/mark the next bounded checkpoint PR when authorized.
+${deployment_section}
 EOF
 )
 else
@@ -31,10 +150,11 @@ else
     body=$(cat <<EOF
 ${STATUS_MARKER}
 ## LostPaws AI Ops — BLOCKED
-
+${deployment_banner}
 Found **${active_count}** open PRs carrying the active-build marker. Exactly one is allowed.
 
 No AI agent was invoked. Remove the duplicate marker before automated supervision continues.
+${deployment_section}
 EOF
 )
   else
@@ -117,7 +237,7 @@ EOF
     body=$(cat <<EOF
 ${STATUS_MARKER}
 ## LostPaws AI Ops — ${overall}
-
+${deployment_banner}
 | Signal | Current state |
 | --- | --- |
 | Phase | ${phase:-unknown} |
@@ -141,8 +261,9 @@ ${STATUS_MARKER}
 **Next expected action:** ${next_checkpoint:-read the current handoff}
 
 ${qa_line}
+${deployment_section}
 
-This status is derived from observable GitHub state. It does not claim that an AI process is literally running when the platform does not expose that signal. No AI agent was invoked to produce this update. Native watchdog cadence: **hourly**.
+This status is derived from observable GitHub state. It does not claim that an AI process is literally running when the platform does not expose that signal. No AI agent was invoked to produce this update. Native watchdog cadence: **hourly**, plus event-driven refresh when GitHub Pages Staging completes.
 EOF
 )
   fi

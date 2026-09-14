@@ -2,6 +2,15 @@ name: AI Ops Status
 
 on:
   workflow_dispatch:
+  workflow_run:
+    # Event-driven refresh: the status previously only updated on manual
+    # dispatch, so a deployment/live-verification regression (see #180/#181)
+    # could go unnoticed indefinitely between manual runs. GitHub Pages
+    # Staging only triggers from push-to-main/workflow_dispatch (never from
+    # a fork PR), so this run is always sourced from trusted main-branch
+    # automation.
+    workflows: ["GitHub Pages Staging"]
+    types: [completed]
 
 concurrency:
   group: ai-ops-status
