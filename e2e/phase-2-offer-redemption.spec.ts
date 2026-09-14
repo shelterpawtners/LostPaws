@@ -117,9 +117,9 @@ test.describe.serial("Phase 2 offer and redemption journey", () => {
     await page
       .getByRole("button", { name: "Publish profile", exact: true })
       .click();
-    await expect(
-      page.getByTestId("partner-profile-save-status"),
-    ).toContainText("Published.");
+    await expect(page.getByTestId("partner-profile-save-status")).toContainText(
+      "Published.",
+    );
 
     await page.goto("/partner/offers");
     const offerOrganization = page
@@ -144,6 +144,32 @@ test.describe.serial("Phase 2 offer and redemption journey", () => {
       .getByLabel("How customers use it")
       .fill("Show the private code at checkout.");
     await page.getByLabel("Per-user limit").fill("1");
+
+    // Issue #155: a non-https product link is rejected client-side before
+    // ever reaching the RPC.
+    await page
+      .getByLabel("Product / store link")
+      .fill("http://insecure.example.com/listing");
+    await page.getByRole("button", { name: "Save new version" }).click();
+    await expect(page.getByRole("status")).toContainText(
+      "Product/store link must be a valid https:// URL",
+    );
+
+    await page
+      .getByLabel("Product / store link")
+      .fill("https://www.etsy.com/listing/123456789/playwright-demo-item");
+    await page
+      .getByLabel("Product label override")
+      .fill("Playwright Demo Enamel Pin");
+    await page
+      .getByLabel("Call-to-action button text")
+      .fill("Shop the Etsy listing");
+    await page
+      .getByLabel("Product images")
+      .fill(
+        "https://images.example.invalid/pin-front.jpg\nhttps://images.example.invalid/pin-back.jpg",
+      );
+
     await page.getByRole("button", { name: "Preview" }).click();
     await expect(page.getByText("Preview · all pets")).toBeVisible();
     await page.getByRole("button", { name: "Save new version" }).click();
@@ -166,6 +192,23 @@ test.describe.serial("Phase 2 offer and redemption journey", () => {
     await expect(
       page.getByText("Demo only. One claim per guardian."),
     ).toBeVisible();
+
+    // Issue #155: the vendor's product link, label, CTA text, and gallery
+    // images all render on the public offer detail page.
+    await expect(page.getByText("Playwright Demo Enamel Pin")).toBeVisible();
+    const shopLink = page.getByRole("link", {
+      name: "Shop the Etsy listing",
+    });
+    await expect(shopLink).toHaveAttribute(
+      "href",
+      "https://www.etsy.com/listing/123456789/playwright-demo-item",
+    );
+    await expect(shopLink).toHaveAttribute("target", "_blank");
+    await expect(
+      page.getByText("ShelterPawtners does not process this purchase"),
+    ).toBeVisible();
+    await expect(page.locator(".marketOfferGallery img")).toHaveCount(1); // the second image is shown as the primary card image, not duplicated in the gallery
+
     await page.getByRole("button", { name: "Claim this offer" }).click();
     await expect(page.getByRole("status")).toContainText("Claim ready");
     redeemCode =

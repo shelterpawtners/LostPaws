@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import type { Session } from "@supabase/supabase-js";
 import { blankOffer, offerStatusLabel, type OfferTerms } from "../lib/offers";
+import { isSafeHttpsUrl } from "../lib/offer-media";
 import { supabase as db } from "../lib/supabase";
 
 type Org = { id: string; public_name: string };
@@ -10,6 +11,10 @@ type Offer = {
   status: string;
   current_version_id: string;
   event_id: string | null;
+  destination_url: string | null;
+  product_label: string | null;
+  cta_label: string | null;
+  image_urls: string[] | null;
   offer_versions: any[];
 };
 type EventOption = { id: string; title: string; starts_at: string | null };
@@ -57,7 +62,7 @@ export function OfferManager({ session }: { session: Session | null }) {
       db
         .from("offers")
         .select(
-          "id,title,status,current_version_id,event_id,offer_versions:offer_versions!offer_versions_offer_id_fkey(*)",
+          "id,title,status,current_version_id,event_id,destination_url,product_label,cta_label,image_urls,offer_versions:offer_versions!offer_versions_offer_id_fkey(*)",
         )
         .eq("organization_id", org)
         .order("created_at", { ascending: false }),
@@ -84,9 +89,30 @@ export function OfferManager({ session }: { session: Session | null }) {
     setForm((v) => ({ ...v, [key]: value }));
   async function save() {
     if (!db || !org) return;
+    const destinationUrl = form.destination_url.trim();
+    const imageUrls = form.image_urls_text
+      .split("\n")
+      .map((line) => line.trim())
+      .filter(Boolean);
+    if (!isSafeHttpsUrl(destinationUrl)) {
+      setStatus("Product/store link must be a valid https:// URL.");
+      return;
+    }
+    const badImage = imageUrls.find((url) => !isSafeHttpsUrl(url));
+    if (badImage) {
+      setStatus(
+        `Every product image must be an https:// URL. Check: ${badImage}`,
+      );
+      return;
+    }
+    const terms = {
+      ...form,
+      destination_url: destinationUrl,
+      image_urls: imageUrls,
+    };
     const args = selected
-      ? { p_offer_id: selected, p_terms: form }
-      : { p_organization_id: org, p_terms: form };
+      ? { p_offer_id: selected, p_terms: terms }
+      : { p_organization_id: org, p_terms: terms };
     const { data, error } = await db.rpc(
       selected ? "revise_partner_offer" : "create_partner_offer",
       args as any,
@@ -119,6 +145,10 @@ export function OfferManager({ session }: { session: Session | null }) {
       ...blankOffer,
       ...v,
       event_id: o.event_id || "",
+      destination_url: o.destination_url || "",
+      product_label: o.product_label || "",
+      cta_label: o.cta_label || "",
+      image_urls_text: (o.image_urls || []).join("\n"),
       starts_at: v?.starts_at?.slice(0, 16) || "",
       ends_at: v?.ends_at?.slice(0, 16) || "",
       claim_window_days: String(v?.claim_window_days || 30),
@@ -297,6 +327,41 @@ export function OfferManager({ session }: { session: Session | null }) {
                 type="url"
                 value={form.source_url}
                 onChange={(e) => set("source_url", e.target.value)}
+              />
+            </label>
+            <label>
+              Product / store link (Etsy or your own store, https only)
+              <input
+                type="url"
+                placeholder="https://www.etsy.com/listing/..."
+                value={form.destination_url}
+                onChange={(e) => set("destination_url", e.target.value)}
+              />
+            </label>
+            <label>
+              Product label override (optional)
+              <input
+                placeholder="Defaults to the offer title above"
+                value={form.product_label}
+                onChange={(e) => set("product_label", e.target.value)}
+              />
+            </label>
+            <label>
+              Call-to-action button text (optional)
+              <input
+                placeholder="Defaults to “Shop on Etsy” or “Visit vendor store”"
+                value={form.cta_label}
+                onChange={(e) => set("cta_label", e.target.value)}
+              />
+            </label>
+            <label className="fields-wide">
+              Product images (one https:// URL per line)
+              <textarea
+                placeholder={
+                  "https://images.example.com/photo-1.jpg\nhttps://images.example.com/photo-2.jpg"
+                }
+                value={form.image_urls_text}
+                onChange={(e) => set("image_urls_text", e.target.value)}
               />
             </label>
             <label>

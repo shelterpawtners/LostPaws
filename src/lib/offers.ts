@@ -18,6 +18,11 @@ export type OfferTerms = {
   channel: "pet" | "rave";
   applicability: "online" | "all_organization_locations" | "national";
   event_id: string;
+  destination_url: string;
+  product_label: string;
+  cta_label: string;
+  /** One HTTPS image URL per line; split into offers.image_urls on save. */
+  image_urls_text: string;
 };
 
 export const blankOffer: OfferTerms = {
@@ -40,6 +45,10 @@ export const blankOffer: OfferTerms = {
   channel: "pet",
   applicability: "online",
   event_id: "",
+  destination_url: "",
+  product_label: "",
+  cta_label: "",
+  image_urls_text: "",
 };
 
 export const offerStatusLabel = (status: string) =>

@@ -714,6 +714,9 @@ select:focus {
   margin-top: 22px;
   padding-top: 22px;
 }
+.fields-wide {
+  grid-column: 1 / -1;
+}
 .market {
   padding: 75px 0;
   background: linear-gradient(135deg, #f2edfa, #e9f8f6);
