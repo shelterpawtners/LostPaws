@@ -1,5 +1,10 @@
 # LostPaws Dev Loop v2
 
+> **Compatibility note:** This retained detailed dev-loop reference is superseded
+> for current operations by
+> [`engineering/AGENT-OPERATIONS.md`](engineering/AGENT-OPERATIONS.md). It does
+> not override `AGENTS.md`, `AI-CONTROLLER.md`, or the active GitHub Issue/PR.
+
 ## Purpose
 
 Dev Loop v2 is the operating model for fast, cost-controlled ShelterPawtners MVP delivery and design hardening.
