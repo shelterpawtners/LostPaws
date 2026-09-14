@@ -55,14 +55,6 @@ disabled and do not spend cycles on Meta unless the owner explicitly reopens it.
 3. Do not inspect or force Vercel for documentation-only commits. Inspect it at
    most once only when a product-affecting `main` commit awaits deployment.
 
-### External/manual item
-
-`www.shelterpawtners.com` canonical redirect remains a Vercel dashboard-only
-setting: **Settings → Domains → edit `www` → Redirect to
-`shelterpawtners.com`**. No DNS or repository workaround is authorized.
-
----
-
 ## HISTORICAL STATUS RECORD
 
 The dated detail below is retained as prior checkpoint evidence. It is not a
