@@ -2,7 +2,9 @@
 
 Status: **Phase-B planning artifact — no source documentation has been deleted or moved.**
 
-Scope: current `main` at `64b13cb30216a3dd04db485e935f609837169c4b`; generated for Issue #136 after Issue #141/PR #142 merged.
+Scope: originally generated for Issue #136 after Issue #141/PR #142 merged, against `main` at `64b13cb30216a3dd04db485e935f609837169c4b`; rebased onto `main` at `9b6253cb24dbb0eaa3d0fa2aa54677d171e3b576` without content changes to the ledger below.
+
+**2026-09-14 status note:** several `CONSOLIDATE → (planned)` destinations below have since been created on `main` through PRs #146–#166: `docs/engineering/AGENT-OPERATIONS.md`, `docs/README.md`, `docs/engineering/AI-RELEASE-STATE.md`, and `docs/prompts/README.md` all now exist. `docs/AI-CONTROLLER.md` was also rewritten to a short current-authority form in PR #167. Treat any row naming one of those files as `(planned)` as already landed; the disposition and rationale for the _source_ file it names still holds and this ledger is not being retroactively rewritten row-by-row to avoid losing the original audit trail. `docs/DECISIONS.md` and `docs/tasks/active/` remain not yet created. Every `REVIEW` row is still unresolved and still requires the inbound-reference check below before that file moves or is removed.
 
 ## Operating rules
 
