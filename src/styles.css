@@ -205,6 +205,16 @@ nav > a:not(.btn):hover {
   background: #f4f2fb;
   color: var(--purple);
 }
+.navGroupDivider {
+  margin: 4px 8px 0;
+  padding-top: 6px;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
 .menu {
   display: none;
   width: 44px;
@@ -772,6 +782,29 @@ select:focus {
   margin: 0;
   color: var(--muted);
 }
+.formStatus {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+.formStatus:empty {
+  display: none;
+}
+.formStatusError {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 14px 16px;
+  border: 1px solid #f3b4ab;
+  border-radius: 14px;
+  background: #fdecea;
+  color: var(--error);
+  font-weight: 700;
+}
+.formStatusError:focus {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
 .formPage {
   max-width: 600px;
 }
@@ -832,12 +865,18 @@ select:focus {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
   width: 38px;
   height: 38px;
   border-radius: 50%;
   background: linear-gradient(135deg, var(--purple), var(--teal));
   color: #fff;
   font-family: Outfit;
+}
+.guardianAvatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 .guardianAccountPanel {
   position: absolute;
@@ -1091,7 +1130,7 @@ footer {
 }
 .foot {
   display: grid;
-  grid-template-columns: 1.3fr 1fr 1fr 1fr;
+  grid-template-columns: 1.1fr repeat(5, 1fr);
   gap: 24px;
 }
 .foot b {
@@ -1102,6 +1141,15 @@ footer {
   color: #a9b2c4;
   font-size: 0.82rem;
   line-height: 1.4;
+}
+.footHeading {
+  display: block;
+  margin-bottom: 2px;
+  color: #7f8bab;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
 }
 .foot a {
   display: block;
@@ -1221,19 +1269,6 @@ header .guardianAccountMenu summary {
 header .guardianAccountPanel {
   color: var(--navy);
 }
-.navSignOut {
-  min-height: 40px;
-  padding: 9px 13px;
-  border: 1px solid #53627c;
-  border-radius: 11px;
-  background: transparent;
-  color: #f5f7ff;
-  font-weight: 800;
-}
-.navSignOut:hover {
-  border-color: #75e3d4;
-  color: #75e3d4;
-}
 .lostPawsFeature {
   padding: 42px 0;
   background:
@@ -1260,6 +1295,30 @@ header .guardianAccountPanel {
 }
 .lostPawsFeature small {
   color: #a9b2c4;
+}
+.lostPawsActivations {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 22px;
+  margin: 6px 0 16px;
+  padding: 0;
+  list-style: none;
+}
+.lostPawsActivations a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  color: #c7cedb;
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+.lostPawsActivations a:hover {
+  color: #75e3d4;
+}
+.lostPawsActivations svg {
+  width: 15px;
+  height: 15px;
 }
 .lostPawsRoadmap {
   display: flex;
@@ -1344,6 +1403,13 @@ header .guardianAccountPanel {
   .brand {
     font-size: 1.05rem;
   }
+  .foot {
+    grid-template-columns: 1fr 1fr 1fr;
+    row-gap: 20px;
+  }
+  .foot > div:first-child {
+    grid-column: 1 / -1;
+  }
 }
 @media (max-width: 700px) {
   .lostPawsFeatureCard {
@@ -1360,11 +1426,6 @@ header .guardianAccountPanel {
     position: static;
     width: 100%;
     margin-top: 8px;
-  }
-  .navSignOut {
-    width: 100%;
-    min-height: 44px;
-    text-align: left;
   }
 }
 .homeLearnLink {

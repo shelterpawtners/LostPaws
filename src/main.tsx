@@ -3,6 +3,7 @@ import {
   createContext,
   useContext,
   useEffect,
+  useRef,
   useState,
 } from "react";
 import { createRoot } from "react-dom/client";
@@ -222,6 +223,8 @@ function Header() {
               <Link to="/rave">RAVE Shelter mission</Link>
               <Link to="/lostpaws">LostPaws</Link>
               <Link to="/sevenstars">Seven Star Shelters</Link>
+              <span className="navGroupDivider">For vendors</span>
+              <Link to="/hero-vendor">Hero Vendor program</Link>
             </div>
           </details>
           <Link to="/events">Events</Link>
@@ -231,10 +234,7 @@ function Header() {
           {session ? (
             <>
               <Link to="/dashboard">My dashboard</Link>
-              <GuardianAccountMenu session={session} />
-              <button className="navSignOut" type="button" onClick={signOut}>
-                Sign out
-              </button>
+              <GuardianAccountMenu session={session} onSignOut={signOut} />
             </>
           ) : (
             <Link className="btn quiet" to="/login">
@@ -256,20 +256,40 @@ function Footer() {
           <p>Care, savings, and community supporting shelter adoption.</p>
         </div>
         <div>
-          <Link to="/store">Store</Link>
-          <Link to="/events">Events</Link>
+          <span className="footHeading">Learn</span>
           <Link to="/learn">Learn how it works</Link>
           <Link to="/faq">FAQ</Link>
-          <Link to="/support">Help &amp; support</Link>
           <Link to="/learn/savings-explorer">Savings explorer</Link>
-          <Link to="/hero-vendor">Hero Vendor program</Link>
+          <Link to="/events">Events</Link>
         </div>
         <div>
+          <span className="footHeading">Get started</span>
+          <Link to={accountRegistrationPath("guardian")}>Pet guardians</Link>
+          <Link to={accountRegistrationPath("shelter")}>
+            Shelters &amp; rescues
+          </Link>
+          <Link to={accountRegistrationPath("petbiz")}>PetBiz partners</Link>
+          <Link to={accountRegistrationPath("rave_vendor")}>
+            RAVE Shelter vendors
+          </Link>
+        </div>
+        <div>
+          <span className="footHeading">RAVE Shelter</span>
+          <Link to="/rave">RAVE Shelter mission</Link>
+          <Link to="/lostpaws">LostPaws</Link>
+          <Link to="/sevenstars">Seven Star Shelters</Link>
+          <Link to="/hero-vendor">Hero Vendor program</Link>
+          <Link to="/store">Store</Link>
+        </div>
+        <div>
+          <span className="footHeading">Support</span>
+          <Link to="/support">Help &amp; support</Link>
           <a href="mailto:contact@shelterpawtners.com">General questions</a>
           <a href="mailto:adoptions@shelterpawtners.com">Adoption support</a>
           <a href="mailto:petbiz@shelterpawtners.com">PetBiz and vendors</a>
         </div>
         <div>
+          <span className="footHeading">Legal</span>
           <a href={`${base}privacy`}>Privacy policy</a>
           <Link to="/terms">Terms of service</Link>
           <Link to="/data-deletion">Data deletion</Link>
@@ -288,6 +308,36 @@ function Page({ children }: { children: React.ReactNode }) {
       </main>
       <Footer />
     </>
+  );
+}
+// Every blocking form on the site rendered the same quiet <p role="status">
+// for both success and failure text, so an invalid password or a failed
+// submit looked identical to a neutral confirmation message. This makes a
+// failure visually unmistakable and moves screen-reader focus to it, without
+// changing the neutral/success case anywhere it is used today.
+function FormStatus({
+  message,
+  isError = false,
+}: {
+  message: string;
+  isError?: boolean;
+}) {
+  const ref = useRef<HTMLParagraphElement>(null);
+  const alert = isError && !!message;
+  useEffect(() => {
+    if (alert) ref.current?.focus();
+  }, [alert, message]);
+  return (
+    <p
+      ref={ref}
+      role={alert ? "alert" : "status"}
+      aria-live={alert ? "assertive" : "polite"}
+      aria-atomic="true"
+      tabIndex={alert ? -1 : undefined}
+      className={`formStatus${alert ? " formStatusError" : ""}`}
+    >
+      {message}
+    </p>
   );
 }
 // headingLevel keeps the document outline sequential: the cards sit under an
@@ -360,13 +410,11 @@ function Home() {
       <section className="lostPawsFeature">
         <div className="shell lostPawsFeatureCard">
           <div>
-            <span className="eyebrow">LostPaws × RAVE Shelter</span>
-            <h2>Rave with purpose. Shop with impact.</h2>
+            <span className="eyebrow">RAVE Shelter</span>
+            <h2>Our community initiative for shelter support, everywhere.</h2>
             <p className="lead">
               RAVE Shelter — Rewarding Adoption with Vendor Exclusives —
-              connects ravers, festival vendors, and shelter supporters.
-              LostPaws is the RAVE Shelter community initiative built
-              specifically for Lost Lands and the Excision festival family. Shop
+              connects ravers, festival vendors, and shelter supporters. Shop
               participating partners, save on useful products and merch, and
               help turn everyday spending into more support for shelter pets.
             </p>
@@ -378,6 +426,26 @@ function Home() {
                 Browse RAVE offers
               </Link>
             </div>
+            <ul
+              className="lostPawsActivations"
+              aria-label="RAVE Shelter activations"
+            >
+              <li>
+                <Link to="/lostpaws">
+                  LostPaws <ArrowRight />
+                </Link>
+              </li>
+              <li>
+                <Link to="/sevenstars">
+                  Seven Star Shelters <ArrowRight />
+                </Link>
+              </li>
+              <li>
+                <Link to="/events">
+                  Events <ArrowRight />
+                </Link>
+              </li>
+            </ul>
             <small>
               Independent community initiative. No festival affiliation or
               endorsement is implied.
@@ -503,11 +571,17 @@ function Register() {
 }
 function Signup({ c }: { c: (typeof choices)[number] }) {
   const [status, setStatus] = useState("");
+  const [statusIsError, setStatusIsError] = useState(false);
   const navigate = useNavigate();
+  function fail(message: string) {
+    setStatus(message);
+    setStatusIsError(true);
+  }
   async function submit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    setStatusIsError(false);
     if (!db) {
-      setStatus("The development connection will be added during deployment.");
+      fail("The development connection will be added during deployment.");
       return;
     }
     const fd = new FormData(e.currentTarget);
@@ -519,13 +593,14 @@ function Signup({ c }: { c: (typeof choices)[number] }) {
         data: { full_name: fd.get("name"), onboarding_type: c.kind },
       },
     });
-    if (error) return setStatus(error.message);
+    if (error) return fail(error.message);
     if (data.session) navigate(`/onboarding/${c.kind}`);
     else setStatus("Check your email to confirm your account, then sign in.");
   }
   async function google() {
+    setStatusIsError(false);
     if (!db)
-      return setStatus(
+      return fail(
         "The development connection will be added during deployment.",
       );
     localStorage.setItem("sp_kind", c.kind);
@@ -539,11 +614,12 @@ function Signup({ c }: { c: (typeof choices)[number] }) {
         ),
       },
     });
-    if (error) setStatus(error.message);
+    if (error) fail(error.message);
   }
   async function facebook() {
+    setStatusIsError(false);
     if (!db)
-      return setStatus(
+      return fail(
         "The development connection will be added during deployment.",
       );
     localStorage.setItem("sp_kind", c.kind);
@@ -557,7 +633,7 @@ function Signup({ c }: { c: (typeof choices)[number] }) {
         ),
       },
     });
-    if (error) setStatus("Facebook sign-in couldn't start. Please try again.");
+    if (error) fail("Facebook sign-in couldn't start. Please try again.");
   }
   const I = icons[c.kind];
   return (
@@ -622,9 +698,7 @@ function Signup({ c }: { c: (typeof choices)[number] }) {
           the Privacy Notice.
         </label>
         <button className="btn full">Create account</button>
-        <p role="status" aria-live="polite" aria-atomic="true">
-          {status}
-        </p>
+        <FormStatus message={status} isError={statusIsError} />
       </form>
     </div>
   );
@@ -1696,37 +1770,45 @@ function AppFoundation({ title, copy }: { title: string; copy: string }) {
 }
 function Login() {
   const [status, setStatus] = useState("");
+  const [statusIsError, setStatusIsError] = useState(false);
   const navigate = useNavigate();
+  function fail(message: string) {
+    setStatus(message);
+    setStatusIsError(true);
+  }
   async function login(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    if (!db) return setStatus("Development connection is unavailable.");
+    setStatusIsError(false);
+    if (!db) return fail("Development connection is unavailable.");
     const f = new FormData(e.currentTarget),
       { error } = await db.auth.signInWithPassword({
         email: String(f.get("email")),
         password: String(f.get("password")),
       });
-    if (error) return setStatus(error.message);
+    if (error) return fail(error.message);
     navigate("/dashboard", { replace: true });
   }
   async function google() {
-    if (!db) return setStatus("Development connection is unavailable.");
+    setStatusIsError(false);
+    if (!db) return fail("Development connection is unavailable.");
     const { error } = await db.auth.signInWithOAuth({
       provider: "google",
       options: {
         redirectTo: oauthReturnUrl(location.origin, import.meta.env.BASE_URL),
       },
     });
-    if (error) setStatus(error.message);
+    if (error) fail(error.message);
   }
   async function facebook() {
-    if (!db) return setStatus("Development connection is unavailable.");
+    setStatusIsError(false);
+    if (!db) return fail("Development connection is unavailable.");
     const { error } = await db.auth.signInWithOAuth({
       provider: "facebook",
       options: {
         redirectTo: oauthReturnUrl(location.origin, import.meta.env.BASE_URL),
       },
     });
-    if (error) setStatus("Facebook sign-in couldn't start. Please try again.");
+    if (error) fail("Facebook sign-in couldn't start. Please try again.");
   }
   return (
     <Page>
@@ -1776,9 +1858,7 @@ function Login() {
               />
             </label>
             <button className="btn full">Sign in</button>
-            <p role="status" aria-live="polite" aria-atomic="true">
-              {status}
-            </p>
+            <FormStatus message={status} isError={statusIsError} />
             <Link to="/forgot-password">Forgot your password?</Link>
             <Link to="/register">New here? Choose an account type</Link>
           </form>
@@ -1789,9 +1869,14 @@ function Login() {
 }
 function ForgotPassword() {
   const [status, setStatus] = useState("");
+  const [statusIsError, setStatusIsError] = useState(false);
   async function submit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    if (!db) return setStatus("Development connection is unavailable.");
+    if (!db) {
+      setStatus("Development connection is unavailable.");
+      setStatusIsError(true);
+      return;
+    }
     const email = String(new FormData(e.currentTarget).get("email"));
     const { error } = await db.auth.resetPasswordForEmail(email, {
       redirectTo: passwordRecoveryRedirectUrl(
@@ -1800,6 +1885,7 @@ function ForgotPassword() {
       ),
     });
     setStatus(recoveryRequestStatus(!!error));
+    setStatusIsError(!!error);
   }
   return (
     <Page>
@@ -1813,9 +1899,7 @@ function ForgotPassword() {
             <input name="email" type="email" required autoComplete="email" />
           </label>
           <button className="btn">Send recovery email</button>
-          <p role="status" aria-live="polite" aria-atomic="true">
-            {status}
-          </p>
+          <FormStatus message={status} isError={statusIsError} />
           <Link to="/login">Back to sign in</Link>
         </form>
       </section>
@@ -1824,16 +1908,26 @@ function ForgotPassword() {
 }
 function ResetPassword() {
   const [status, setStatus] = useState("");
+  const [statusIsError, setStatusIsError] = useState(false);
   const navigate = useNavigate();
   const { session, loading, recoverySession } = useAuth();
   async function submit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    if (!db) return setStatus("Development connection is unavailable.");
+    if (!db) {
+      setStatus("Development connection is unavailable.");
+      setStatusIsError(true);
+      return;
+    }
     const password = String(new FormData(e.currentTarget).get("password"));
     const { error } = await db.auth.updateUser({ password });
-    if (error) return setStatus(passwordUpdateStatus(true));
+    if (error) {
+      setStatus(passwordUpdateStatus(true));
+      setStatusIsError(true);
+      return;
+    }
     clearRecoverySession();
     setStatus(passwordUpdateStatus(false));
+    setStatusIsError(false);
     await db.auth.signOut();
     window.setTimeout(() => navigate("/login", { replace: true }), 700);
   }
@@ -1880,9 +1974,7 @@ function ResetPassword() {
             />
           </label>
           <button className="btn">Update password</button>
-          <p role="status" aria-live="polite" aria-atomic="true">
-            {status}
-          </p>
+          <FormStatus message={status} isError={statusIsError} />
         </form>
       </section>
     </Page>
@@ -1931,18 +2023,49 @@ function SupportRoute() {
     </Page>
   );
 }
-function GuardianAccountMenu({ session }: { session: Session | null }) {
+function GuardianAccountMenu({
+  session,
+  onSignOut,
+}: {
+  session: Session | null;
+  onSignOut: () => void;
+}) {
   const name =
     session?.user.user_metadata.full_name ||
     session?.user.email?.split("@")[0] ||
     "Member";
   const initial = name.trim().charAt(0).toUpperCase() || "S";
+  const [avatarUrl, setAvatarUrl] = useState("");
+
+  useEffect(() => {
+    const client = db;
+    if (!client || !session) {
+      setAvatarUrl("");
+      return;
+    }
+    let cancelled = false;
+    void client
+      .from("profiles")
+      .select("avatar_path")
+      .eq("id", session.user.id)
+      .single()
+      .then(async ({ data }) => {
+        if (cancelled || !data?.avatar_path) return;
+        const { data: signed } = await client.storage
+          .from("profile-avatars")
+          .createSignedUrl(data.avatar_path, 3600);
+        if (!cancelled) setAvatarUrl(signed?.signedUrl || "");
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [session]);
 
   return (
     <details className="guardianAccountMenu">
       <summary aria-label="Open account menu">
         <span className="guardianAvatar" aria-hidden="true">
-          {initial}
+          {avatarUrl ? <img src={avatarUrl} alt="" /> : initial}
         </span>
         <span>Account</span>
       </summary>
@@ -1953,6 +2076,9 @@ function GuardianAccountMenu({ session }: { session: Session | null }) {
         </div>
         <Link to="/dashboard">My dashboard</Link>
         <Link to="/support">Help &amp; support</Link>
+        <button type="button" className="accountSignOut" onClick={onSignOut}>
+          Sign out
+        </button>
       </div>
     </details>
   );

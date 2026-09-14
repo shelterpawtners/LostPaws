@@ -26,6 +26,7 @@ export async function signInPage(page: Page, email: string, password: string) {
 
 export async function signOutPage(page: Page) {
   await page.goto("/dashboard");
+  await page.getByRole("button", { name: "Open account menu" }).click();
   await page.getByRole("button", { name: "Sign out" }).click();
   await expect(page).toHaveURL(/\/$/);
 }

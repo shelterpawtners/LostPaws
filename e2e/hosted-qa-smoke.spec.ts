@@ -80,6 +80,7 @@ test.describe.serial("Hosted shared-dev smoke", () => {
     await expect(
       page.getByRole("link", { name: `Open ${petName}` }),
     ).toBeVisible();
+    await page.getByRole("button", { name: "Open account menu" }).click();
     await page.getByRole("button", { name: "Sign out" }).click();
     await expect(page).toHaveURL(/\/$/);
     await page.goto("/dashboard");
