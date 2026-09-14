@@ -1,5 +1,8 @@
 # Guardian dashboard existing-pet and multi-pet blocker fix
 
+> **Historical prompt — do not execute as current work.** Superseded by current
+> GitHub `main`, `AGENTS.md`, the controller, and active Issues/PRs.
+
 Status: Ready for Codex execution on `qa/guardian-registration-personas` / PR #2.
 
 ## Context
