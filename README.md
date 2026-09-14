@@ -37,6 +37,8 @@ The frontend uses React, TypeScript, and Vite with a small custom CSS design sys
 
 ## Documentation
 
+- [Documentation authority guide](docs/README.md): read order, live-status authority, and historical-document boundaries.
+- [Live project controller](docs/AI-CONTROLLER.md): current blockers, active lanes, and next actions.
 - [Product vision](docs/PRODUCT-VISION.md): mission, ecosystem value, and audiences.
 - [Product requirements](docs/PRODUCT-REQUIREMENTS.md): planned behavior and acceptance expectations.
 - [Marketplace research and savings strategy](docs/MARKETPLACE-RESEARCH.md): initial provider research, offer classifications, and curation standards.
