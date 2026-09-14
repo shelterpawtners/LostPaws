@@ -1,5 +1,8 @@
 # Phase 2 Checkpoint 2 — Final Completion Prompt
 
+> **Historical prompt — Phase 2 is complete.** Do not execute; use current
+> GitHub `main`, `AGENTS.md`, the controller, and active Issues/PRs.
+
 Checkpoint 2 is not yet accepted.
 
 Current remote baseline:
