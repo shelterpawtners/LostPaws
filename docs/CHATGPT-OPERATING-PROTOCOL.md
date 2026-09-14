@@ -3,7 +3,8 @@
 > **Authority note:** This retained protocol is supplemental operating guidance.
 > Start substantial work using [`AGENTS.md`](../AGENTS.md),
 > [`AI-CONTROLLER.md`](AI-CONTROLLER.md), and the active GitHub Issue/PR.
-> `AI-HANDOFF.md` is CI-required machine-readable state; `CURRENT-WORK.md` is a
+> `engineering/AI-RELEASE-STATE.md` is CI-required machine-readable state;
+> `AI-HANDOFF.md` and `CURRENT-WORK.md` are
 > compatibility/historical record, not live status. For current detailed
 > operations, use [`engineering/AGENT-OPERATIONS.md`](engineering/AGENT-OPERATIONS.md).
 
