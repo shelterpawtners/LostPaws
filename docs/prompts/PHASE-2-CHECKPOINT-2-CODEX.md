@@ -1,5 +1,8 @@
 # Codex Work Prompt — Phase 2 Checkpoint 2
 
+> **Historical prompt — Phase 2 is complete.** Do not execute; use current
+> GitHub `main`, `AGENTS.md`, the controller, and active Issues/PRs.
+
 ## Partner Profile + Public Directory
 
 Phase 2 is active. Checkpoint 1 is accepted. Execute only Checkpoint 2 from `docs/PHASE-2-EXECUTION-PLAN.md`.
