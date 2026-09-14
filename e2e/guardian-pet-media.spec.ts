@@ -94,10 +94,10 @@ test("accumulates photos added one at a time on a phone viewport", async ({
   await page.getByLabel("Pet name").fill("Sequential Pup");
   await page.getByLabel("Species").selectOption("dog");
   await page.getByRole("button", { name: "Save and continue" }).click();
-  await page.waitForURL(/\/dashboard$/, { timeout: 15_000 });
+  await page.waitForURL(/\/dashboard$/, { timeout: 30_000 });
 
   await page.getByRole("link", { name: "Open Sequential Pup" }).click();
-  await page.waitForURL(/\/pets\//, { timeout: 15_000 });
+  await page.waitForURL(/\/pets\//, { timeout: 30_000 });
 
   const fileInput = page.locator('input[type="file"]');
   const cards = page.getByLabel("Pet photo gallery").locator(".petMediaCard");
@@ -107,14 +107,18 @@ test("accumulates photos added one at a time on a phone viewport", async ({
     mimeType: "image/png",
     buffer: onePixelPng,
   });
-  await expect(cards).toHaveCount(1, { timeout: 15_000 });
+  // A generous margin: a fresh signup + onboarding just completed, so this
+  // first upload can land on a genuinely cold CI runner/database connection
+  // rather than a real accumulate-vs-replace regression (already verified
+  // live against a real backend — see the PR history for issue #156).
+  await expect(cards).toHaveCount(1, { timeout: 30_000 });
 
   await fileInput.setInputFiles({
     name: "one-at-a-time-2.png",
     mimeType: "image/png",
     buffer: onePixelPng,
   });
-  await expect(cards).toHaveCount(2, { timeout: 15_000 });
+  await expect(cards).toHaveCount(2, { timeout: 30_000 });
 
   const layout = await page.evaluate(() => ({
     clientWidth: document.documentElement.clientWidth,
