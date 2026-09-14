@@ -1,5 +1,11 @@
 # ChatGPT Operator Protocol
 
+> **Authority note:** This retained protocol is supplemental operating guidance.
+> Start substantial work using [`AGENTS.md`](../AGENTS.md),
+> [`AI-CONTROLLER.md`](AI-CONTROLLER.md), and the active GitHub Issue/PR.
+> `AI-HANDOFF.md` is CI-required machine-readable state; `CURRENT-WORK.md` is a
+> compatibility/historical record, not live status.
+
 ## Purpose
 
 Use ChatGPT as ShelterPawtners' product/operator/controller layer without duplicating coding work that is better handled by Copilot, Codex, or deterministic automation.
@@ -10,13 +16,14 @@ ChatGPT should reduce coordination cost, resolve ambiguity, operate connected sy
 
 For LostPaws work, resolve current state in this order:
 
-1. `docs/AI-HANDOFF.md` — exact checkpoint, safety state, accepted SHA, owner gates, and next action.
-2. `docs/CURRENT-WORK.md` — current product stage, priority, and operating model.
-3. `docs/AI-TOOLING-AND-DESIGN-ROADMAP.md` — tooling/design sequence and MVP/full-site roadmap.
-4. `AGENTS.md` and relevant `.github/instructions/**` — implementation and repository operating rules.
-5. Current GitHub issue/PR/workflow state — observable execution evidence.
-6. Vercel/Supabase connected state — deployment/backend evidence when relevant.
-7. Public web research — only for external/current facts, competitive research, standards, products, or documentation.
+1. Current GitHub `main` — implemented repository truth.
+2. `AGENTS.md` — implementation and repository operating rules.
+3. `docs/AI-CONTROLLER.md` — current human live status, blockers, and next actions.
+4. Active GitHub Issue/PR — task contract and observable execution evidence.
+5. Only the relevant canonical domain document — durable task-specific knowledge.
+6. `docs/AI-HANDOFF.md` — CI-required checkpoint/release state when the task needs it.
+7. Vercel/Supabase connected state — deployment/backend evidence when relevant.
+8. Public web research — only for external/current facts, competitive research, standards, products, or documentation.
 
 Do not answer a current repository-state question from memory when connected GitHub evidence is available.
 
@@ -113,9 +120,9 @@ Prefer primary documentation plus real user/community evidence where experience/
 
 For a fresh ChatGPT session doing LostPaws work:
 
-1. read `docs/AI-HANDOFF.md`;
-2. read `docs/CURRENT-WORK.md`;
-3. read the relevant roadmap/protocol/issue;
+1. refresh current GitHub `main`;
+2. read `AGENTS.md`, `docs/AI-CONTROLLER.md`, and the active Issue/PR;
+3. read only the relevant domain/protocol document and `AI-HANDOFF.md` when required by the task;
 4. inspect current PR/workflow state if execution is already in flight;
 5. identify the smallest next bounded action;
 6. execute it unless an owner gate is explicitly active.
@@ -150,7 +157,7 @@ Do not send broad prompts such as "make the Marketplace better" when the product
 
 ## Decision boundaries
 
-ChatGPT may proceed autonomously on reversible GREEN work already authorized in `CURRENT-WORK.md` and `AI-HANDOFF.md`.
+ChatGPT may proceed autonomously on reversible GREEN work authorized by the active Issue/PR, `AGENTS.md`, and the controller.
 
 Stop for owner approval on RED work, including:
 

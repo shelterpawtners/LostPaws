@@ -1,21 +1,27 @@
 # AI Operating Protocol
 
+> **Authority note:** This retained protocol contains detailed historical operating
+> context. It is not the default task-start document and must not override
+> [`AGENTS.md`](../AGENTS.md), [`AI-CONTROLLER.md`](AI-CONTROLLER.md), or the
+> active GitHub Issue/PR. `AI-HANDOFF.md` remains CI-required machine-readable
+> state; `CURRENT-WORK.md` remains an inbound-compatible historical record.
+
 ## Purpose
 
 Use GitHub as the coordination/control plane so ChatGPT, Codex, Copilot, Claude Code, CI, and the product owner do not depend on copying large prompts or completion reports between tools.
 
 ## Source-of-truth hierarchy
 
-1. **GitHub Issue** — task contract, scope, acceptance criteria, guardrails.
-2. **Repository code/docs** — implemented truth.
-3. **Pull request + CI** — review and verification evidence.
-4. **`docs/AUTONOMOUS-EXECUTION-POLICY.md`** — standing autonomy/escalation rules for invoked agents.
-5. **`docs/AI-HANDOFF.md`** — latest concise agent-to-agent baton.
-6. **`docs/CURRENT-WORK.md`** — current phase, priorities, and execution state.
-7. **`docs/OWNER-DECISION-BACKLOG.md`** — provisional owner preferences and true blocking decisions.
-8. **`docs/DECISION-LOG.md`** — durable approved/autonomous decisions.
+1. **Current GitHub `main`** — implemented repository truth.
+2. **`AGENTS.md`** — universal startup instructions and guardrails.
+3. **`docs/AI-CONTROLLER.md`** — human live status, blockers, and next actions.
+4. **Active GitHub Issue/PR** — task contract, scope, acceptance criteria, and newer owner direction.
+5. **Relevant canonical domain document** — durable task-specific knowledge.
+6. **Pull request + CI** — review and verification evidence.
+7. **`docs/AI-HANDOFF.md`** — CI-required machine-readable release state when the task needs it.
+8. **`docs/CURRENT-WORK.md`** — retained compatibility/historical record only.
 
-Do not create parallel planning documents when an authoritative file already exists. As of 2026-09-12 this is a hard cap: no new `docs/product/*` or other planning files without an explicit owner request — update `AI-HANDOFF.md`, `CURRENT-WORK.md`, or the existing controlling doc instead.
+Do not create parallel planning documents when an authoritative file already exists. Update the controller for human live status and preserve `AI-HANDOFF.md`'s CI field contract until all of its consumers migrate together.
 
 ## Branch policy
 
@@ -120,7 +126,7 @@ This rule overrides any older prompt wording that would otherwise cause an agent
 
 ## Standard task lifecycle
 
-1. ChatGPT reads `CURRENT-WORK.md`, `AI-HANDOFF.md`, relevant Issue/PR, owner-decision backlog, and CI state.
+1. ChatGPT reads current `main`, `AGENTS.md`, `AI-CONTROLLER.md`, the relevant Issue/PR, and only the needed domain/CI state.
 2. ChatGPT creates/updates one GitHub Issue with scope, acceptance criteria, guardrails, and the authorized range.
 3. One implementation agent (Copilot, Codex, or Claude) is assigned/invoked against the designated branch/PR.
 4. The implementation agent works autonomously under the execution policy and pushes completed work.
