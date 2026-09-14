@@ -1,5 +1,8 @@
 # Copilot QA Prompt — Phase 2 Checkpoint 1
 
+> **Historical prompt — Phase 2 is complete.** Do not execute; use current
+> GitHub `main`, `AGENTS.md`, the controller, and active Issues/PRs.
+
 ## Partner Organization Foundation
 
 Repository: `shelterpawtners/LostPaws`
