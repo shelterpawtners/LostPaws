@@ -76,6 +76,8 @@ import { GuardianProfileLite } from "./components/GuardianProfileLite";
 import { GuardianPetPassport } from "./components/GuardianPetPassport";
 import { SupportPage } from "./components/SupportPage";
 import { EventsPage } from "./components/events/EventsPage";
+import { StorePage } from "./components/store/StorePage";
+import { StoreProductDetail } from "./components/store/StoreProductDetail";
 import { RouteFocus } from "./components/RouteFocus";
 import { AdoptionVerificationResponder } from "./components/AdoptionVerificationResponder";
 import { RaveShelterMission } from "./components/RaveShelterMission";
@@ -213,6 +215,7 @@ function Header() {
           aria-label="Primary navigation"
         >
           <Link to="/marketplace">Marketplace</Link>
+          <Link to="/store">Store</Link>
           <details className="navGroup" key={location.pathname}>
             <summary>RAVE Shelter</summary>
             <div className="navGroupPanel">
@@ -253,6 +256,7 @@ function Footer() {
           <p>Care, savings, and community supporting shelter adoption.</p>
         </div>
         <div>
+          <Link to="/store">Store</Link>
           <Link to="/events">Events</Link>
           <Link to="/learn">Learn how it works</Link>
           <Link to="/faq">FAQ</Link>
@@ -2299,6 +2303,22 @@ function App() {
           }
         />
         <Route path="/marketplace" element={<Marketplace />} />
+        <Route
+          path="/store"
+          element={
+            <Page>
+              <StorePage />
+            </Page>
+          }
+        />
+        <Route
+          path="/store/:slug"
+          element={
+            <Page>
+              <StoreProductDetail />
+            </Page>
+          }
+        />
         <Route
           path="/learn"
           element={

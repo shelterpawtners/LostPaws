@@ -13,6 +13,7 @@ const routes = [
   "/lostpaws",
   "/sevenstars",
   "/marketplace",
+  "/store",
   "/learn",
   "/learn/passport",
   "/learn/savings-explorer",

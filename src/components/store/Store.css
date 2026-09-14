@@ -1,0 +1,355 @@
+.stPage {
+  --st-ink: #17213a;
+  --st-muted: #5f6b82;
+  --st-line: #dfe5ee;
+  --st-surface: #ffffff;
+  --st-tint: #f3f6ff;
+  --st-primary: #2a5fd6;
+  --st-accent: #e2762b;
+  color: var(--st-ink);
+}
+
+.stPage * {
+  box-sizing: border-box;
+}
+
+.stWrap {
+  width: min(1100px, calc(100% - 2rem));
+  margin: 0 auto;
+}
+
+.stEyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+  color: var(--st-primary);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.stEyebrow svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+.stHero {
+  padding: clamp(2.25rem, 5vw, 3.75rem) 0 clamp(1.5rem, 3vw, 2.25rem);
+  background:
+    radial-gradient(circle at 14% 20%, rgba(42, 95, 214, 0.1), transparent 40%),
+    radial-gradient(
+      circle at 86% 12%,
+      rgba(226, 118, 43, 0.1),
+      transparent 42%
+    ),
+    #fbfcff;
+}
+
+.stHero h1 {
+  max-width: 26ch;
+  margin: 0 0 0.85rem;
+  font-size: clamp(1.9rem, 5vw, 3rem);
+  line-height: 1.08;
+  letter-spacing: -0.03em;
+}
+
+.stLead {
+  max-width: 62ch;
+  margin: 0;
+  color: var(--st-muted);
+  font-size: clamp(1rem, 1.9vw, 1.15rem);
+  line-height: 1.6;
+}
+
+.stBody {
+  padding: clamp(1.75rem, 4vw, 2.75rem) 0 clamp(2.5rem, 5vw, 4rem);
+}
+
+.stFilters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.stFilters button {
+  min-height: 44px;
+  padding: 0.55rem 1rem;
+  border: 1px solid var(--st-line);
+  border-radius: 999px;
+  background: var(--st-surface);
+  color: var(--st-ink);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.stFilters button.active {
+  border-color: var(--st-primary);
+  background: var(--st-primary);
+  color: #fff;
+}
+
+.stFilters button:focus-visible {
+  outline: 3px solid #14b8a6;
+  outline-offset: 2px;
+}
+
+.stGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.1rem;
+  margin: 0 0 2.5rem;
+  padding: 0;
+  list-style: none;
+}
+
+.stCard {
+  border: 1px solid var(--st-line);
+  border-radius: 18px;
+  background: var(--st-surface);
+  overflow: hidden;
+}
+
+.stCardLink {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  color: inherit;
+  text-decoration: none;
+}
+
+.stCardLink:focus-visible {
+  outline: 3px solid #14b8a6;
+  outline-offset: -3px;
+}
+
+.stCardVisual,
+.stDetailVisual {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 160px;
+  background: var(--st-tint);
+  color: var(--st-primary);
+  font-size: 1.6rem;
+  font-weight: 800;
+}
+
+.stDetailVisual {
+  min-height: 240px;
+  border-radius: 18px;
+  margin-bottom: 1.25rem;
+}
+
+.stBadge {
+  position: absolute;
+  top: 0.75rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.stBadge svg {
+  width: 0.85rem;
+  height: 0.85rem;
+}
+
+.stBadgeFeatured {
+  left: 0.75rem;
+  background: var(--st-primary);
+  color: #fff;
+}
+
+.stBadgePromo {
+  right: 0.75rem;
+  background: var(--st-accent);
+  color: #fff;
+}
+
+.stCardBody {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  flex: 1;
+  padding: 1.1rem 1.25rem 1.3rem;
+}
+
+.stCardBrand {
+  color: var(--st-muted);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.stCardBody h2 {
+  margin: 0;
+  font-size: 1.1rem;
+  line-height: 1.25;
+}
+
+.stCardBody > p {
+  margin: 0;
+  color: var(--st-muted);
+  font-size: 0.92rem;
+  line-height: 1.5;
+  flex: 1;
+}
+
+.stCardMeta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-top: 0.35rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--st-line);
+}
+
+.stPrice {
+  font-size: 1.05rem;
+  font-weight: 800;
+}
+
+.stAvailability {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: var(--st-muted);
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.stAvailability svg {
+  width: 0.9rem;
+  height: 0.9rem;
+}
+
+.stEmpty {
+  padding: clamp(1.5rem, 4vw, 2.5rem);
+  border: 1px dashed var(--st-line);
+  border-radius: 18px;
+  background: var(--st-surface);
+  color: var(--st-muted);
+  line-height: 1.6;
+}
+
+.stMission {
+  padding: clamp(1.25rem, 3vw, 1.75rem);
+  border: 1px solid var(--st-line);
+  border-radius: 18px;
+  background: var(--st-tint);
+  margin-bottom: 1.5rem;
+}
+
+.stMission h2 {
+  margin: 0 0 0.5rem;
+  font-size: 1.1rem;
+}
+
+.stMission p {
+  margin: 0;
+  color: var(--st-ink);
+  font-size: 0.94rem;
+  line-height: 1.6;
+}
+
+.stComingSoonNote {
+  display: flex;
+  gap: 0.6rem;
+  margin: 0;
+  color: var(--st-muted);
+  font-size: 0.9rem;
+  line-height: 1.55;
+}
+
+.stComingSoonNote svg {
+  flex: none;
+  width: 1.1rem;
+  height: 1.1rem;
+  margin-top: 0.2rem;
+  color: var(--st-primary);
+}
+
+/* Product detail */
+
+.stBackLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 44px;
+  margin-bottom: 1.25rem;
+  color: var(--st-primary);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.stBackLink svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+.stDetail {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1.75rem;
+  max-width: 720px;
+}
+
+@media (min-width: 720px) {
+  .stDetail {
+    grid-template-columns: minmax(0, 320px) minmax(0, 1fr);
+    max-width: none;
+  }
+
+  .stDetailVisual {
+    margin-bottom: 0;
+  }
+}
+
+.stDetailBody {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.stDetailBody h1 {
+  margin: 0;
+  font-size: clamp(1.6rem, 4vw, 2.1rem);
+  line-height: 1.15;
+}
+
+.stDetailBody > .stPrice {
+  margin: 0.1rem 0 0;
+  font-size: 1.3rem;
+}
+
+.stDetailDescription {
+  margin: 0.5rem 0 0;
+  color: var(--st-ink);
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.stDetailBody .stComingSoonNote {
+  margin: 0.75rem 0;
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--st-line);
+  border-radius: 14px;
+  background: var(--st-tint);
+}
+
+.stDetailBody .stMission {
+  margin-bottom: 0;
+}
