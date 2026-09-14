@@ -8,7 +8,11 @@ Read the shared authority chain in this order:
 4. the active GitHub Issue/PR (or active task brief);
 5. only the domain document needed for the task.
 
-`docs/AI-HANDOFF.md` is a CI-required machine-readable release-state file, not a replacement for the controller. Preserve its current path and top-level fields, including `CURRENT_CHECKPOINT`; consult or update it only when the task's completion/acceptance/workflow contract requires it. Do not use `docs/CURRENT-WORK.md` as competing live status.
+`docs/engineering/AI-RELEASE-STATE.md` is the CI-required machine-readable
+release-state file, not a replacement for the controller. Consult or update it
+only when the task's completion/acceptance/workflow contract requires it, and
+keep the field-compatible `docs/AI-HANDOFF.md` adapter synchronized. Do not use
+`docs/CURRENT-WORK.md` as competing live status.
 
 Do not duplicate cross-agent policy here. Newer owner instructions and the authority chain above supersede stale historical plans.
 
@@ -16,4 +20,5 @@ When implementing, work through related GREEN/YELLOW defects in the same bounded
 
 Phase 2 remainder is authorized under current repository policy. Phase 3, production/DNS, paid infrastructure, material RED decisions, and merging remain owner-gated.
 
-Before completion or blockage, follow `AGENTS.md`'s completion contract, including the required `docs/AI-HANDOFF.md` update when applicable.
+Before completion or blockage, follow `AGENTS.md`'s completion contract,
+including the required release-state update when applicable.
