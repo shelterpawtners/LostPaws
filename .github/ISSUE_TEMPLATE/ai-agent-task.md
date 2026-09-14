@@ -19,7 +19,7 @@ assignees: []
 - [ ] Implementation meets the objective.
 - [ ] Required tests pass.
 - [ ] Relevant CI/hosted QA status is recorded.
-- [ ] `docs/AI-HANDOFF.md` is updated when the task requires its CI/workflow completion contract.
+- [ ] `docs/engineering/AI-RELEASE-STATE.md` and its compatible `docs/AI-HANDOFF.md` adapter are updated when the task requires their CI/workflow completion contract.
 - [ ] Final remote SHA is recorded.
 
 ## Testing level
@@ -46,12 +46,13 @@ Before changing code:
 
 1. Refresh current `main`; read `AGENTS.md`, `docs/AI-CONTROLLER.md`, and this Issue.
 2. Read `docs/engineering/AGENT-OPERATIONS.md` and only the relevant domain document.
-3. Read `docs/AI-HANDOFF.md` if completion/acceptance/workflow state is required.
+3. Read `docs/engineering/AI-RELEASE-STATE.md` if completion/acceptance/workflow state is required.
 4. Confirm current branch/remote state so newer work is preserved.
 
 ## Completion contract
 
-Before declaring complete, update `docs/AI-HANDOFF.md` with:
+Before declaring complete, update `docs/engineering/AI-RELEASE-STATE.md` and
+its compatible `docs/AI-HANDOFF.md` adapter with:
 
 - Issue/task
 - Agent
