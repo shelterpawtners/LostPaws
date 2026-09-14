@@ -1,5 +1,8 @@
 # Guardian pet-save bugfix and multi-role UX adjustment
 
+> **Historical prompt — do not execute as current work.** Superseded by current
+> GitHub `main`, `AGENTS.md`, the controller, and active Issues/PRs.
+
 Status: User-approved corrective work before Phase 2 Bundle A acceptance / next bundle.
 
 ## Context
