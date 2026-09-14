@@ -161,58 +161,7 @@ This section should remain educational/community-oriented until donation mechani
 
 ## 3. LLC / business verification preparation — owner action package
 
-### Goal
-
-Prepare one consistent legal-business identity for ShelterPawtners so Meta business verification, banking, vendor contracts, tax records, legal pages, and future platform accounts do not use conflicting names or addresses.
-
-### Recommended fastest sequence
-
-1. **Confirm the legal operating entity.**
-   - Decide whether ShelterPawtners will be the legal LLC name or whether another LLC will own/operate the ShelterPawtners brand.
-   - Do not submit Meta verification until this is clear.
-
-2. **Form/confirm the Michigan LLC.**
-   - If not already formed, file the Michigan domestic LLC formation through the official State of Michigan/LARA process.
-   - Use one legal name and one business mailing address consistently.
-
-3. **Obtain/confirm EIN.**
-   - Use the official IRS process; do not pay a third party merely to obtain an EIN.
-   - Preserve the EIN confirmation notice as part of the verification packet.
-
-4. **Create the verification packet.**
-   Keep one secure folder with:
-   - Articles of Organization / state registration evidence;
-   - EIN confirmation;
-   - exact legal business name;
-   - legal/business address;
-   - business phone;
-   - `shelterpawtners.com`;
-   - domain email address;
-   - owner/authorized representative information;
-   - any bank/utility/business evidence later requested by Meta or other providers.
-
-5. **Normalize public/company records.**
-   Before Meta submission, make sure legal name/address/contact information match wherever they appear in:
-   - Meta Business / Developer settings;
-   - website legal pages;
-   - Supabase/project business records where applicable;
-   - contracts/vendor onboarding;
-   - future banking/payment/giving-provider records.
-
-### Recommended operating structure to review with professional advisors
-
-Current product direction separates the charitable/mission side from the technology/data/business platform. Before formal filings multiply, owner should review whether the intended structure remains:
-
-- ShelterPawtners nonprofit/mission entity; and
-- a separate for-profit technology/data entity for the platform.
-
-This draft does **not** decide tax classification, nonprofit formation, ownership, S-corp election, charitable solicitation, or intercompany agreements. Those should be reviewed with a qualified attorney/CPA before relying on them.
-
-### Minimum decision needed from owner next
-
-**What exact legal entity name should Meta and the ShelterPawtners website ultimately identify as the operator/controller of the current application?**
-
-Until that is decided, engineering can continue and Meta stays disabled.
+**Moved to `docs/DECISIONS.md` as OD-005** (open legal/business gate) during the 2026-09-14 AI-first documentation migration. See that entry for the full preparatory checklist and current status — as of that migration, this item remains unresolved in the real world and does not block engineering or the documentation migration itself.
 
 ---
 
