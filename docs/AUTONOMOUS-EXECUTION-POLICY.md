@@ -1,5 +1,11 @@
 # Autonomous Execution Policy
 
+> **Authority note:** This retained policy supplies detailed GREEN/YELLOW/RED
+> guidance. For current work, read [`AGENTS.md`](../AGENTS.md),
+> [`AI-CONTROLLER.md`](AI-CONTROLLER.md), and the active GitHub Issue/PR first.
+> `AI-HANDOFF.md` remains CI-required machine-readable state; `CURRENT-WORK.md`
+> is not a live-status authority.
+
 ## Purpose
 
 Allow ChatGPT, GitHub Copilot, Codex, Claude Code, and future coding agents to advance ShelterPawtners/LostPaws work with minimal product-owner interruption while preserving explicit business, security, legal, privacy, financial, phase, and production gates.
@@ -129,21 +135,19 @@ Requirements:
 
 For every invoked coding task:
 
-1. Read `AGENTS.md`.
-2. Read `docs/CURRENT-WORK.md`.
-3. Read `docs/AI-OPERATING-PROTOCOL.md`.
-4. Read `docs/AUTONOMOUS-EXECUTION-POLICY.md`.
-5. Read `docs/AI-HANDOFF.md`.
-6. Read the active GitHub Issue/PR and relevant authoritative product/architecture/security docs.
-7. Confirm the active branch and preserve newer remote work.
-8. Implement the current authorized objective.
-9. Run the strongest relevant available tests/checks.
-10. Classify failures as application defect, test defect, environment/configuration defect, or owner decision.
-11. Fix GREEN/YELLOW in-scope defects autonomously and rerun validation.
-12. Continue through related in-scope blockers until the task's acceptance criteria are met or a RED/hard blocker is reached.
-13. Update `docs/OWNER-DECISION-BACKLOG.md` for unresolved YELLOW/RED decisions.
-14. Update `docs/AI-HANDOFF.md` before declaring completion or blockage.
-15. Do not merge unless explicitly authorized.
+1. Refresh current GitHub `main` and read `AGENTS.md`.
+2. Read `docs/AI-CONTROLLER.md` and the active GitHub Issue/PR.
+3. Read this policy and only the relevant authoritative product/architecture/security document.
+4. Read `docs/AI-HANDOFF.md` only when the task needs CI-required checkpoint or acceptance state.
+5. Confirm the active branch and preserve newer remote work.
+6. Implement the current authorized objective.
+7. Run the strongest relevant available tests/checks.
+8. Classify failures as application defect, test defect, environment/configuration defect, or owner decision.
+9. Fix GREEN/YELLOW in-scope defects autonomously and rerun validation.
+10. Continue through related in-scope blockers until the task's acceptance criteria are met or a RED/hard blocker is reached.
+11. Update `docs/OWNER-DECISION-BACKLOG.md` for unresolved YELLOW/RED decisions.
+12. Update `docs/AI-HANDOFF.md` before declaring completion or blockage.
+13. Merge only when the active Issue/PR or a newer owner directive explicitly authorizes that bounded, green change.
 
 ## Handoff status contract
 
