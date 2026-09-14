@@ -77,6 +77,8 @@ import { GuardianProfileLite } from "./components/GuardianProfileLite";
 import { GuardianPetPassport } from "./components/GuardianPetPassport";
 import { SupportPage } from "./components/SupportPage";
 import { EventsPage } from "./components/events/EventsPage";
+import { EventDetailPage } from "./components/events/EventDetailPage";
+import { EventAttendancePrompt } from "./components/events/EventAttendancePrompt";
 import { StorePage } from "./components/store/StorePage";
 import { StoreProductDetail } from "./components/store/StoreProductDetail";
 import { RouteFocus } from "./components/RouteFocus";
@@ -2015,6 +2017,14 @@ function EventsRoute() {
     </Page>
   );
 }
+function EventDetailRoute() {
+  const { session } = useAuth();
+  return (
+    <Page>
+      <EventDetailPage session={session} />
+    </Page>
+  );
+}
 function SupportRoute() {
   const { session } = useAuth();
   return (
@@ -2232,6 +2242,7 @@ function Dashboard() {
               ))}
             </div>
           )}
+          {kind === "guardian" && <EventAttendancePrompt session={session} />}
           {kind === "guardian" && <GuardianProfileLite session={session} />}
           <div className="nextCards">
             {kind !== "guardian" || (!petsLoading && pets.length === 0) ? (
@@ -2479,6 +2490,7 @@ function App() {
         />
         <Route path="/support" element={<SupportRoute />} />
         <Route path="/events" element={<EventsRoute />} />
+        <Route path="/events/:id" element={<EventDetailRoute />} />
         <Route
           path="/hero-vendor"
           element={

@@ -32,6 +32,7 @@ export type PublicOffer = {
   source_url: string | null;
   disclosure: string | null;
   applicability: string[];
+  event_id: string | null;
 };
 
 export type MarketplaceConcept = "value" | "trust" | "curated";

@@ -273,6 +273,19 @@
   line-height: 1.25;
 }
 
+.evCard h2 a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: inherit;
+  text-decoration: none;
+}
+
+.evCard h2 a:hover {
+  color: var(--ev-primary);
+  text-decoration: underline;
+}
+
 .evCard > p {
   margin: 0;
   color: var(--ev-muted);
@@ -348,4 +361,231 @@
   min-height: 44px;
   color: var(--ev-primary);
   font-weight: 600;
+}
+
+/* Event detail */
+
+.evBackLink {
+  display: flex;
+  width: fit-content;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 44px;
+  margin-bottom: 0.5rem;
+  color: var(--ev-primary);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.evBackLink svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+.evDetailMeta {
+  margin-top: 1.25rem;
+}
+
+.evDetailBody {
+  max-width: 65ch;
+  margin: 1rem 0 0;
+  line-height: 1.6;
+}
+
+.evAttendanceRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--ev-line);
+}
+
+.evAttendanceCount {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: var(--ev-muted);
+  font-weight: 700;
+}
+
+.evAttendanceCount svg {
+  width: 1.05rem;
+  height: 1.05rem;
+}
+
+.evAttendButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0.6rem 1.3rem;
+  border: 0;
+  border-radius: 999px;
+  background: var(--ev-primary);
+  color: #fff;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.evAttendButton.active {
+  background: var(--ev-teal);
+}
+
+.evAttendButton:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+.evVendorList {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.evVendorCard {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 1.1rem;
+  border: 1px solid var(--ev-line);
+  border-radius: 16px;
+  background: var(--ev-surface);
+}
+
+.evVendorRole {
+  color: var(--ev-primary);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.evVendorCard a {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  color: var(--ev-ink);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.evVendorContactHint {
+  color: var(--ev-muted);
+  font-size: 0.85rem;
+}
+
+.evOffersSection {
+  padding-top: 0;
+}
+
+/* Event spotlight (LostPaws / Seven Star Shelters pilot integration) */
+
+.evSpotlight {
+  /* Standalone tokens, not inherited from .evPage: this component is also
+     used embedded in /lostpaws and /sevenstars, which are not .evPage. */
+  --ev-ink: #17213a;
+  --ev-muted: #5f6b82;
+  --ev-line: #dfe5ee;
+  --ev-surface: #ffffff;
+  --ev-primary: #654ab7;
+  color: var(--ev-ink);
+  padding: clamp(1.5rem, 4vw, 2.5rem) 0;
+}
+
+.evSpotlightInner {
+  width: min(720px, calc(100% - 2rem));
+  margin: 0 auto;
+  padding: clamp(1.5rem, 4vw, 2rem);
+  border: 1px solid var(--ev-line);
+  border-radius: 20px;
+  background: var(--ev-surface);
+  box-shadow: 0 18px 50px rgba(29, 35, 68, 0.07);
+}
+
+.evSpotlightInner h2 {
+  margin: 0 0 0.5rem;
+  font-size: 1.4rem;
+}
+
+.evSpotlightInner h2 a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.evSpotlightInner h2 a:hover {
+  text-decoration: underline;
+}
+
+.evSpotlightInner > p {
+  margin: 0 0 1rem;
+  color: var(--ev-muted);
+  line-height: 1.55;
+}
+
+.evSpotlightMeta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.25rem;
+  margin-bottom: 1rem;
+  color: var(--ev-muted);
+  font-size: 0.9rem;
+}
+
+.evSpotlightMeta span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.evSpotlightLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 44px;
+  color: var(--ev-primary);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+/* Post-onboarding attendance prompt */
+
+.evAttendPrompt {
+  display: flex;
+  gap: 0.9rem;
+  margin: 1.25rem 0;
+  padding: 1.1rem 1.25rem;
+  border: 1px solid var(--ev-line);
+  border-radius: 16px;
+  background: var(--ev-tint);
+}
+
+.evAttendPrompt > svg {
+  flex: none;
+  width: 1.3rem;
+  height: 1.3rem;
+  margin-top: 0.15rem;
+  color: var(--ev-primary);
+}
+
+.evAttendPrompt p {
+  margin: 0 0 0.6rem;
+  font-weight: 600;
+}
+
+.evAttendPromptActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.evAttendPromptStatus {
+  margin-top: 0.5rem;
+  color: var(--ev-muted);
+  font-size: 0.85rem;
 }
