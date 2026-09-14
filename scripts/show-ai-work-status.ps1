@@ -1,6 +1,6 @@
 $ErrorActionPreference = "Continue"
 $repo = Split-Path -Parent $PSScriptRoot
-Write-Host "=== CURRENT WORK ==="
+Write-Host "=== CURRENT-WORK COMPATIBILITY RECORD ==="
 Get-Content (Join-Path $repo "docs\CURRENT-WORK.md")
 Write-Host ""
 Write-Host "=== GIT STATUS ==="

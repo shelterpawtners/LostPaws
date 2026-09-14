@@ -1,4 +1,18 @@
-# Current ShelterPawtners Work
+# Current ShelterPawtners Work (Compatibility Record)
+
+> This retained path preserves existing inbound links and legacy script output. It is
+> not the live project-status authority.
+>
+> For current blockers, active lanes, and next actions, read
+> [`AI-CONTROLLER.md`](AI-CONTROLLER.md). For the active task's scope and
+> acceptance criteria, read the current GitHub Issue or pull request. See
+> [`README.md`](README.md) for the documentation authority map.
+
+## Historical snapshot (2026-09-12)
+
+The content below is retained as historical execution context. It must not be
+used to infer the current phase, deployment status, auth-provider state, or
+owner decisions.
 
 ## Current sprint — 2026-09-12
 
