@@ -11,10 +11,10 @@ Load only the context required for the task:
 
 | Task                     | Canonical context                                                                           |
 | ------------------------ | ------------------------------------------------------------------------------------------- |
-| Brand/UI                 | `docs/BRAND-DESIGN-SYSTEM.md`, `docs/CONTENT-STANDARDS.md`                                  |
-| Feature/product behavior | `docs/PRODUCT-REQUIREMENTS.md`, `docs/USER-ROLES.md`, active phase spec                     |
-| Marketplace/savings      | `docs/PRODUCT-REQUIREMENTS.md`, `docs/MARKETPLACE-RESEARCH.md`, `docs/CONTENT-STANDARDS.md` |
-| Database/auth/RLS        | `docs/ARCHITECTURE.md`, `docs/SECURITY-AND-PRIVACY.md`, `docs/USER-ROLES.md`                |
+| Brand/UI                 | `docs/design/BRAND-DESIGN-SYSTEM.md`, `docs/design/CONTENT-STANDARDS.md`                                  |
+| Feature/product behavior | `docs/product/PRODUCT-REQUIREMENTS.md`, `docs/product/USER-ROLES.md`, active phase spec                     |
+| Marketplace/savings      | `docs/product/PRODUCT-REQUIREMENTS.md`, `docs/product/MARKETPLACE-RESEARCH.md`, `docs/design/CONTENT-STANDARDS.md` |
+| Database/auth/RLS        | `docs/engineering/ARCHITECTURE.md`, `docs/security/SECURITY-AND-PRIVACY.md`, `docs/product/USER-ROLES.md`                |
 | Shelter/transfer         | product requirements + roles + architecture + security/privacy                              |
 | Planning/phase           | `docs/AI-CONTROLLER.md`, active GitHub Issue/PR, and relevant roadmap/domain document       |
 

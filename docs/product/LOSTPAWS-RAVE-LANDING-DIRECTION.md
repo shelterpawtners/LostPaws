@@ -1,6 +1,6 @@
 # LostPaws / RAVE Shelter Landing Direction
 
-Status: OWNER-DIRECTION-LOCKED / IMPLEMENTATION IN PROGRESS
+Status: OWNER-DIRECTION-LOCKED / IMPLEMENTED — reference spec for `/lostpaws`; the artwork/copy rules and MVP acceptance checklist below remain the canonical reference for this page going forward.
 Issues: #96 (current implementation authority), #58 (superseded shell direction), #54
 
 ## Canonical destination

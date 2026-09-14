@@ -28,16 +28,22 @@ authority_files=(
 )
 
 # Nothing under docs/archive/ may be referenced from an authority-chain entry
-# point -- archive is evidence, never live instruction. Every doc formerly
-# checked here by a hardcoded "superseded" list is covered by this same
-# check once it is actually archived, so no separate list is needed.
+# point as if it were live -- archive is evidence, never live instruction. A
+# line that mentions an archived file's name is fine as long as that same
+# line also spells out the archive/ path (i.e. it is clearly pointing INTO
+# the archive, historical-record style); it only fails when the name shows
+# up with no archive/ qualifier, which is what a stale pre-archive routing
+# instruction looks like. Every doc formerly checked here by a hardcoded
+# "superseded" list is covered by this same check once it is archived, so
+# no separate list is needed.
 if [[ -d "docs/archive" ]]; then
   while IFS= read -r -d '' archived_file; do
     archived_name="$(basename "${archived_file}")"
     for authority_file in "${authority_files[@]}"; do
       [[ -f "${authority_file}" ]] || continue
-      if grep -q "${archived_name}" "${authority_file}"; then
-        echo "FAIL: ${authority_file} references archived doc ${archived_name} as if it were current authority" >&2
+      unqualified_hits="$(grep -F "${archived_name}" "${authority_file}" | grep -vF "archive/" || true)"
+      if [[ -n "${unqualified_hits}" ]]; then
+        echo "FAIL: ${authority_file} references archived doc ${archived_name} without an archive/ path, as if it were current authority" >&2
         fail=1
       fi
     done

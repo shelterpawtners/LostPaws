@@ -51,7 +51,7 @@ this PR's own final repo-normalization batch.
   branches with no PR record) were deleted: `build/festival-mvp`, 15
   `docs/*`/`feat/*`/`fix/*` branches, `ux/guardian-marketplace-launch-polish`,
   and `issue-58-lostpaws`. 11 branches with closed-but-unmerged PRs remain,
-  per `docs/BRANCH-CLEANUP-2026-09-11.md`'s own "kept for your review"
+  per `docs/archive/2026-mvp/checkpoints/BRANCH-CLEANUP-2026-09-11.md`'s own "kept for your review"
   judgment call — they were not touched and should not be deleted without a
   content review first.
 - Current product work already merged on `main` includes Store MVP, navigation

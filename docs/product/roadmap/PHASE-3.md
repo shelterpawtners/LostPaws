@@ -505,7 +505,7 @@ Deep financial/impact dashboard is Phase 4.
 
 # 23. SHELTER DATA STANDARDS
 
-Expand `docs/SHELTER-DATA-STANDARDS.md`.
+Expand `docs/data/SHELTER-DATA-STANDARDS.md`.
 
 Map canonical fields/events to industry reporting concepts.
 
@@ -559,8 +559,8 @@ Create/update:
 - `docs/PASSPORT-DATA-MODEL.md`
 - `docs/ADOPTION-AND-TRANSFER.md`
 - `docs/SHELTER-IMPORTS.md`
-- `docs/SHELTER-DATA-STANDARDS.md`
-- `docs/SECURITY-AND-PRIVACY.md`
+- `docs/data/SHELTER-DATA-STANDARDS.md`
+- `docs/security/SECURITY-AND-PRIVACY.md`
 - `docs/DECISION-LOG.md`
 - roadmap/requirements
 
