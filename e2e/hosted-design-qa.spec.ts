@@ -218,7 +218,7 @@ test.describe("Hosted public and branded-surface design QA", () => {
       });
     }
 
-    await page.getByRole("button", { name: "Open account menu" }).click();
+    await page.locator(".guardianAccountMenu summary").click();
     await page.getByRole("button", { name: "Sign out" }).click();
     await expect(page).toHaveURL(/\/$/);
 
