@@ -1,5 +1,8 @@
 # Overnight Claude + Work Execution Brief — 2026-09-12
 
+> **Historical prompt — do not execute as current work.** Superseded by current
+> GitHub `main`, `AGENTS.md`, the controller, and active Issues/PRs.
+
 Status: ACTIVE OVERNIGHT COORDINATION BRIEF
 
 ## Purpose
