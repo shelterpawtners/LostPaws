@@ -182,8 +182,16 @@ export function PetMediaGallery({
         primaryWarning = ` Primary photo could not be set: ${error.message}`;
     }
     setUploading(false);
+    const stillRemaining = Math.max(
+      MAX_PASSPORT_PHOTOS - (media.length + selected.length),
+      0,
+    );
+    const nudge =
+      stillRemaining > 0
+        ? ` Tap "Add photos" again to add up to ${stillRemaining} more.`
+        : "";
     setStatus(
-      `${selected.length} photo${selected.length === 1 ? "" : "s"} added.${primaryWarning}`,
+      `${selected.length} photo${selected.length === 1 ? "" : "s"} added.${nudge}${primaryWarning}`,
     );
     await loadMedia();
   }
