@@ -14,7 +14,51 @@ Do not duplicate the entire execution plan here. Keep this file short enough tha
 
 ---
 
-## CURRENT STATUS
+## CURRENT EXECUTION STATUS
+
+Updated 2026-09-14 from GitHub `main` at `8cfac51a10c04ac875fa468e1574cc25a2665373`.
+
+### Active lane
+
+Issue #136 documentation consolidation is active under its standing autonomous
+execution directive. The latest completed, non-destructive batches are:
+
+- PR #148: retained `docs/CURRENT-WORK.md` and its PowerShell callers as
+  inbound-compatible historical records instead of competing live status;
+- PR #149: aligned retained AI/operator protocol entry points with the canonical
+  startup chain.
+
+All required GitHub checks passed for both batches. Continue with small,
+dependency-aware documentation migrations only; do not move, archive, or delete
+files unless the migration evidence explicitly permits it and unique durable
+content has been preserved.
+
+### Authority and boundaries
+
+1. Current GitHub `main` is the implemented repository truth.
+2. `AGENTS.md` is the universal startup contract.
+3. This controller is the human live-status, blocker, and next-action authority.
+4. The active GitHub Issue/PR supplies task-specific scope and acceptance.
+5. `docs/AI-HANDOFF.md` remains CI-required machine-readable release state. Keep
+   its path and top-level field contract, including `CURRENT_CHECKPOINT`, until
+   every workflow/script consumer is migrated atomically.
+
+Meta/Facebook remains intentionally deferred by the owner. Keep Facebook
+disabled and do not spend cycles on Meta unless the owner explicitly reopens it.
+
+### Next safe actions
+
+1. Continue Issue #136's reviewed documentation migration sequence from current
+   `main`, using one focused PR and required checks at a time.
+2. Reconcile stale narrative authority through retained compatibility pointers
+   before considering any historical file move or archive.
+3. Do not inspect or force Vercel for documentation-only commits. Inspect it at
+   most once only when a product-affecting `main` commit awaits deployment.
+
+## HISTORICAL STATUS RECORD
+
+The dated detail below is retained as prior checkpoint evidence. It is not a
+source of current status, active authorization, or next actions.
 
 Updated 2026-09-12.
 
@@ -107,7 +151,7 @@ Retained historical branches still require reconciliation. Do not wholesale merg
 
 ---
 
-## NEXT ACTIONS
+## HISTORICAL NEXT ACTIONS
 
 ### Lane A — Work: non-Meta launch readiness
 
@@ -218,7 +262,7 @@ Prefer small recoverable checkpoints and parallel independent lanes over one gia
 
 ---
 
-## LATEST AGENT UPDATE
+## HISTORICAL AGENT UPDATES
 
 AGENT: CHATGPT_ADVISOR
 TIME: 2026-09-12 21:xx EDT
