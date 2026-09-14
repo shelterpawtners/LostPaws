@@ -13,7 +13,9 @@ This directory contains current project knowledge, operational state, and histor
 ## Authority boundaries
 
 - **Live human status:** `AI-CONTROLLER.md` is the source for current blockers, active lanes, and next actions.
-- **Machine-readable release state:** `AI-HANDOFF.md` is CI-required. Keep its path and existing top-level fields—including `CURRENT_CHECKPOINT`—until all workflow and script consumers are migrated together.
+- **Machine-readable release state:** `engineering/AI-RELEASE-STATE.md` is the
+  CI-required contract. `AI-HANDOFF.md` remains a field-compatible legacy
+  adapter for inbound links.
 - **Task-specific contract:** the active GitHub Issue/PR takes precedence for scope and acceptance.
 - **Durable knowledge:** use the relevant product, architecture, security/privacy, legal, support, data, design, or roadmap document.
 - **Detailed agent operations:** [`engineering/AGENT-OPERATIONS.md`](engineering/AGENT-OPERATIONS.md) is the canonical autonomy, validation, cost, and development-loop reference.
