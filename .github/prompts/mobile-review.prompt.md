@@ -1,6 +1,7 @@
 # Mobile / Responsive Review
 
-Read project instructions and `docs/CURRENT-WORK.md`.
+Read current `main`, `AGENTS.md`, `docs/AI-CONTROLLER.md`, and the active
+Issue/PR. Use only the relevant UI/domain guidance.
 
 Review the active-phase UI at approximately:
 
