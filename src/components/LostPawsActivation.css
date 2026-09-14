@@ -481,11 +481,9 @@
   }
 }
 
-
 /* The logo stays a first-party asset. Repeated, offset planes create the
    readable extrusion while the orbit exposes its depth without a third-party
    embed, watermark, or runtime dependency. */
-/* prettier-ignore */
 .lpLogoStage {
   width: min(100%, 720px);
   height: clamp(130px, 24vw, 265px);
@@ -494,7 +492,6 @@
   pointer-events: none;
 }
 
-/* prettier-ignore */
 .lpLogoOrbit {
   position: relative;
   width: 100%;
@@ -504,9 +501,7 @@
   will-change: transform;
 }
 
-/* prettier-ignore */
 .lpLogoDepth,
-/* prettier-ignore */
 .lpLogoFace {
   position: absolute;
   inset: 0;
@@ -517,7 +512,6 @@
   -webkit-backface-visibility: hidden;
 }
 
-/* prettier-ignore */
 .lpLogoDepth {
   filter: brightness(0.5) saturate(1.35) hue-rotate(8deg);
 }
@@ -527,13 +521,11 @@
   filter: drop-shadow(0 18px 14px rgba(0, 0, 0, 0.42));
 }
 
-/* prettier-ignore */
 .lpLogoBack {
   transform: rotateY(180deg) translateZ(14px);
   filter: brightness(0.5) saturate(1.3) hue-rotate(12deg);
 }
 
-/* prettier-ignore */
 @keyframes lp-logo-spin {
   from {
     transform: rotateX(-7deg) rotateY(0deg);
@@ -544,7 +536,6 @@
   }
 }
 
-/* prettier-ignore */
 @media (prefers-reduced-motion: reduce) {
   .lpLogoOrbit {
     animation: none;
@@ -552,7 +543,6 @@
   }
 }
 
-/* prettier-ignore */
 @media (max-width: 640px) {
   .lpLogoStage {
     height: clamp(112px, 34vw, 185px);
