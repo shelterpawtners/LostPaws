@@ -16,6 +16,7 @@ This directory contains current project knowledge, operational state, and histor
 - **Machine-readable release state:** `AI-HANDOFF.md` is CI-required. Keep its path and existing top-level fields—including `CURRENT_CHECKPOINT`—until all workflow and script consumers are migrated together.
 - **Task-specific contract:** the active GitHub Issue/PR takes precedence for scope and acceptance.
 - **Durable knowledge:** use the relevant product, architecture, security/privacy, legal, support, data, design, or roadmap document.
+- **Detailed agent operations:** [`engineering/AGENT-OPERATIONS.md`](engineering/AGENT-OPERATIONS.md) is the canonical autonomy, validation, cost, and development-loop reference.
 - **Historical material:** dated phase, launch, checkpoint, and completed-prompt files are evidence, not default startup instructions.
 
 ## Documentation changes
