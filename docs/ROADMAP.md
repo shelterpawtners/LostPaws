@@ -89,7 +89,7 @@ Primary outcome: real pet businesses and other eligible Partner organizations ca
 
 Before implementation begins:
 
-1. reconcile `docs/phases/PHASE-2.md` against `docs/DECISION-LOG.md`;
+1. reconcile `docs/phases/PHASE-2.md` against `docs/DECISIONS.md`;
 2. resolve only remaining material decisions that affect schema, trust, financial meaning, or critical UX;
 3. research giving-provider options before implementing provider-dependent financial UX;
 4. define savings and redemption calculations before showing customer-facing verified totals;
@@ -181,4 +181,4 @@ The following should remain explicit rather than being guessed during implementa
 - commercial affiliate/sponsorship agreements and disclosures before those programs become active;
 - production provider credentials, production infrastructure, DNS, and launch authorization.
 
-`docs/DECISION-LOG.md` is the canonical record when these are resolved.
+`docs/DECISIONS.md` is the canonical record when these are resolved.

@@ -140,7 +140,7 @@ Issue #125 / PR #126 established the current public product direction:
 
 On explicit owner instruction to resume:
 
-1. read `docs/CURRENT-WORK.md`, `docs/AI-OPERATING-PROTOCOL.md`, this file, and current GitHub issues;
+1. read `docs/AI-CONTROLLER.md`, `docs/engineering/AGENT-OPERATIONS.md`, this file, and current GitHub issues;
 2. inspect `main`, current deployment/runtime state, and latest CI evidence;
 3. do not resurrect historical branches or accepted slices without regression evidence;
 4. restart only the smallest required controller/automation, rather than re-enabling every previous automation by default;

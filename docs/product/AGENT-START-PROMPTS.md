@@ -7,8 +7,7 @@ Use these prompts only after the owner reviews the controlling execution plan.
 Read first:
 
 - `docs/engineering/AI-RELEASE-STATE.md` when completion/acceptance state is needed
-- `docs/CURRENT-WORK.md`
-- `docs/AI-OPERATING-PROTOCOL.md`
+- `docs/engineering/AGENT-OPERATIONS.md`
 - `docs/product/DUAL-MARKETPLACE-RAVE-SHELTER-EXECUTION-PLAN.md`
 - `docs/product/CODEX-CLAUDE-COLLABORATION-PROTOCOL.md`
 - GitHub Issue #125 and any newer controlling issue.
@@ -39,8 +38,7 @@ Before finishing: run relevant lint/tests/build/mobile QA, open a PR, attach vis
 Read first:
 
 - `docs/engineering/AI-RELEASE-STATE.md` when completion/acceptance state is needed
-- `docs/CURRENT-WORK.md`
-- `docs/AI-OPERATING-PROTOCOL.md`
+- `docs/engineering/AGENT-OPERATIONS.md`
 - `docs/product/DUAL-MARKETPLACE-RAVE-SHELTER-EXECUTION-PLAN.md`
 - `docs/product/CODEX-CLAUDE-COLLABORATION-PROTOCOL.md`
 - current schema/migrations/RPCs/tests.

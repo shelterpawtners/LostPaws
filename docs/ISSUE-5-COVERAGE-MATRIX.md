@@ -93,6 +93,6 @@ Accepted SHA: `62cba023a4946993ad44fcbd0ab4f7fdab856a52`.
 
 ## Acceptance interpretation
 
-A future capability is not a defect merely because its route is currently a foundation page. A blocker is broken or misleading behavior inside functionality that is already implemented/approved, incorrect persistence, authorization/RLS failure, duplicate state, false success, broken navigation, or another defect meeting `docs/QA-AUTOMATION-POLICY.md`.
+A future capability is not a defect merely because its route is currently a foundation page. A blocker is broken or misleading behavior inside functionality that is already implemented/approved, incorrect persistence, authorization/RLS failure, duplicate state, false success, broken navigation, or another defect meeting `docs/engineering/AGENT-OPERATIONS.md`.
 
 Issue #5 found no remaining release-readiness blocker within the implemented MVP after the fixes above. Production-domain routing and Phase 3 remain separate owner decisions.
