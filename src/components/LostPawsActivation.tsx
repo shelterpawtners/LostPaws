@@ -14,6 +14,7 @@ export function LostPawsActivation() {
   const heroFallback = `${base}brand/lostpaws-hero-16x9.png`;
   const logo = `${base}brand/lostpaws-logo.webp`;
   const logoFallback = `${base}brand/LostPaws Logo.png`;
+  const logoDepthLayers = Array.from({ length: 13 });
 
   return (
     <div className="lpPage">
@@ -30,6 +31,24 @@ export function LostPawsActivation() {
           </picture>
         </div>
         <div className="lpWrap lpHeroContent">
+          <div className="lpLogoStage" aria-hidden="true">
+            <div className="lpLogoOrbit">
+              {logoDepthLayers.map((_, index) => (
+                <img
+                  key={index}
+                  className="lpLogoDepth"
+                  src={logoFallback}
+                  alt=""
+                  style={{
+                    transform: `translateZ(${index * 2 - 12}px)`,
+                    opacity: 0.78 + index * 0.018,
+                  }}
+                />
+              ))}
+              <img className="lpLogoFace lpLogoBack" src={logoFallback} alt="" />
+              <img className="lpLogoFace" src={logoFallback} alt="" />
+            </div>
+          </div>
           <p className="lpKicker">A RAVE Shelter initiative for Lost Lands</p>
           <h1 id="lp-title">Shop the lot. Help the pack.</h1>
           <p className="lpLead">
