@@ -1,0 +1,21 @@
+# Canonical machine-readable release-state contract for repository
+# automation. This YAML file is the single writable source of truth.
+#
+# docs/engineering/AI-RELEASE-STATE.md and docs/AI-HANDOFF.md are GENERATED
+# from this file by `node scripts/release-state.mjs generate` and must never
+# be hand-edited -- scripts/check-doc-authority-drift.sh fails CI if either
+# one drifts from what regenerating this file would produce.
+#
+# To change release state: edit this file, then run
+# `node scripts/release-state.mjs generate` and commit the regenerated
+# Markdown files alongside it in the same change.
+
+STATUS: READY_FOR_ACCEPTANCE
+CURRENT_PHASE: "Repository normalization and non-owner-gated MVP closeout (Issues #136 and #107)"
+CURRENT_CHECKPOINT: "Issue #136 atomic release-state consumer migration is in validation."
+NEXT_CHECKPOINT: "Merge the validated atomic migration, then continue the remaining #136 cleanup sequence."
+OWNER_DECISION_REQUIRED: "NO"
+SAFE_TO_CONTINUE: "YES"
+ACCEPTED_CODE_SHA: "NONE"
+ACCEPTANCE_RUNTIME: "OWNER_RESUMED_2026_09_12"
+ACCEPTANCE_DEPLOYED_SHA: "NONE"

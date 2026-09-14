@@ -18,42 +18,30 @@ status.
 
 ## Current status
 
-Updated from GitHub `main` at `63eda574399c0544552e9f2a88cef3f8eeb7dbdc`, plus
-this PR's own final repo-normalization batch.
-
-- Issue #136 is **complete**. PRs #144, #146–#168 completed the authority
-  adapters, atomic release-state migration, historical-prompt disposition,
-  remaining active-entry cleanup, the file-by-file documentation migration
-  matrix (`docs/DOCUMENTATION-MIGRATION-MATRIX.md`), and this controller's own
-  rewrite to a short current-authority form. Evidence-based issue triage is
-  complete: #7, #152–#156 closed (implemented and merged); #10, #12, #48,
-  #54, #119 confirmed correctly classified as backlog/deferred/owner-gated
-  and left open with current triage comments. Phase C's historical-doc
-  retirement pass is done: the 10 dated Phase 2 checkpoint/execution docs the
-  matrix marked as zero-inbound-reference (`docs/PHASE-2-CHECKPOINT-*.md`,
-  `docs/PHASE-2-EXECUTION-PLAN.md`, `docs/AI-EXECUTION-PLAN-2026-09-12.md`,
-  `docs/LAUNCH-CONTROLLER-CHECKPOINT-2026-09-11.md`,
-  `docs/LAUNCH-PRE-CUTOVER-CHECKPOINT.md`) were removed from the working tree
-  after a fresh repo-wide reference re-check found nothing live pointing at
-  them; Git history remains the archive. Every other `REVIEW` row in the
-  matrix (Phase 1 files, `LAUNCH-*`, `LL4`–`LL6`, `CUTOVER-*`,
-  `MARKETPLACE-*`, etc.) is unchanged and still needs its own
-  inbound-reference check before it moves — that is intentionally out of
-  scope for #136's own definition of done and is future hygiene work, not a
-  blocker.
-- Issue #107 is **complete**. The `Protect Main` ruleset now also requires a
-  pull request for every change to `main` (`required_approving_review_count:
-0`, so the existing merge-when-green autonomous workflow is unaffected),
-  in addition to its existing deletion/non-fast-forward/CI Gate/Merge Gate
-  rules — none of which were weakened. 18 branches confirmed fully
-  merged/superseded (re-validated against current GitHub PR-merge state
-  immediately before deletion, including a fresh content check on the two
-  branches with no PR record) were deleted: `build/festival-mvp`, 15
-  `docs/*`/`feat/*`/`fix/*` branches, `ux/guardian-marketplace-launch-polish`,
-  and `issue-58-lostpaws`. 11 branches with closed-but-unmerged PRs remain,
-  per `docs/archive/2026-mvp/checkpoints/BRANCH-CLEANUP-2026-09-11.md`'s own "kept for your review"
-  judgment call — they were not touched and should not be deleted without a
-  content review first.
+- The **AI-first documentation and operations migration is complete**
+  (2026-09-14, PRs #172-#175 approximately — see the merge commits on
+  `main` for exact SHAs). `docs/` root now holds only `README.md`,
+  `AI-CONTROLLER.md`, `AI-HANDOFF.md`, and `DECISIONS.md`; every other
+  document moved into a domain subtree (`engineering/`, `product/`,
+  `security/`, `data/`, `design/`, alongside the existing `legal/` and
+  `support/`) or `docs/archive/2026-mvp/**`. `docs/engineering/state/release-state.yaml`
+  is now the single writable release-state authority;
+  `docs/engineering/AI-RELEASE-STATE.md` and this file's own sibling
+  `docs/AI-HANDOFF.md` are generated from it and drift-checked in CI
+  (`scripts/check-doc-authority-drift.sh`, `scripts/release-state.mjs check`).
+  A confirmed classifier bug (authority-chain file edits silently skipping
+  web CI) is fixed and regression-tested. See
+  `docs/archive/2026-mvp/retired-plans/DOCUMENTATION-MIGRATION-MATRIX.md`
+  and `docs/archive/2026-mvp/retired-plans/REPOSITORY-INFORMATION-ARCHITECTURE-PLAN.md`
+  for the full historical audit trail and planning record behind this
+  migration; both are archived now that the migration they scoped is done.
+- Issue #136 and Issue #107 (repository normalization, branch-protection
+  hardening) are **complete**, historically superseded by the migration
+  above for anything documentation-shaped. 18 stale branches were deleted
+  in #107; 11 branches with closed-but-unmerged PRs remain, per
+  `docs/archive/2026-mvp/checkpoints/BRANCH-CLEANUP-2026-09-11.md`'s own
+  "kept for your review" judgment call — not touched, and should not be
+  deleted without a content review first.
 - Current product work already merged on `main` includes Store MVP, navigation
   and UX polish, event attendance/event-scoped offers, and rich vendor media and
   external-commerce links. Do not reopen accepted behavior without regression
@@ -69,23 +57,24 @@ this PR's own final repo-normalization batch.
 
 ## Remaining closeout actions
 
-Repo-side Issue #136 / #107 cleanup is complete. What remains is intentionally
-non-blocking or owner-gated, not implementation work:
+Repo-side documentation/operations normalization is complete. What remains is
+intentionally non-blocking or owner-gated, not implementation work:
 
-1. `docs/DOCUMENTATION-MIGRATION-MATRIX.md`'s other `REVIEW` rows (Phase 1
-   files, `LAUNCH-*`, `LL4`–`LL6`, `CUTOVER-*`, `MARKETPLACE-*`, etc.) remain
-   for future hygiene passes, each needing its own inbound-reference check.
-   Not urgent; no live authority depends on them.
-2. #10's native GitHub-event → Work webhook gap, #12's dashboard re-scope,
+1. #10's native GitHub-event → Work webhook gap, #12's dashboard re-scope,
    and #48/#54's backlog items remain open by design — see their own triage
    comments.
-3. #119 (Meta/final legal publication) remains owner/legal-gated.
-4. **Recommended MVP freeze SHA: the merge commit of this PR.**
-   Everything currently authorized for MVP (Store, events, offer media, UX
-   polish, mobile audit, Admin QA Mode, owner-approved legal decisions, and
-   now full repo normalization) is merged, green, and live. `npm run check`
-   (lint/typecheck/50 unit tests) and `npm run build` both pass on the branch
-   that produced this update.
+2. #119 (Meta/final legal publication) remains owner/legal-gated.
+3. **OD-005** in `docs/DECISIONS.md`: the ShelterPawtners legal-entity/LLC
+   formation question is still genuinely unresolved in the real world —
+   confirm with the owner before any product surface asserts it as complete.
+4. `docs/engineering/TECHNICAL-DEBT.md` records the known frontend-bundle
+   and dead-legal-scaffolding debt found during the migration; neither
+   blocks anything, both are tracked there rather than in a dated status
+   narrative.
+5. **Recommended freeze SHA: the merge commit that lands the last of the
+   AI-first migration PRs.** `npm run check` (lint/typecheck/release-state
+   check/50 unit tests) and `npm run build` both pass on every migration
+   branch prior to merge.
 
 ## Boundaries
 

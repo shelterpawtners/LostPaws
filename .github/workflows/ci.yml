@@ -36,6 +36,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
       - name: Documentation authority drift check
         run: bash scripts/check-doc-authority-drift.sh
       - name: Change-impact classifier precedence regression test
