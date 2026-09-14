@@ -2,7 +2,7 @@
 
 ## Partner Marketplace MVP - Final Approved Specification
 
-Status: approved next-phase specification; inactive until Phase 2 is explicitly activated.
+Status: historical specification — Phase 2 is complete. See `docs/AI-CONTROLLER.md` for current status; do not treat this file as an active-work gate.
 
 Execute Phase 2: Partner Marketplace MVP for the ShelterPawtners `LostPaws` repository.
 
