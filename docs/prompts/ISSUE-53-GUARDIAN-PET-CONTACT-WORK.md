@@ -1,5 +1,8 @@
 # Work handoff — Issue #53 Guardian pet-contact correction
 
+> **Historical prompt — do not execute as current work.** Superseded by current
+> GitHub `main`, `AGENTS.md`, the controller, and active Issues/PRs.
+
 Use this when ChatGPT Work / a browser-capable coding environment is available. GitHub Copilot cloud-agent assignment was attempted on 2026-09-11 but GitHub rejected the session because the separate GitHub AI Credits pool was exhausted. Do not retry Copilot repeatedly until that budget changes.
 
 ## Start
