@@ -8,6 +8,7 @@ import {
   Tag,
 } from "lucide-react";
 import { eligibilityLabel } from "../lib/offers";
+import { ctaLabelFor, isSafeHttpsUrl } from "../lib/offer-media";
 
 export type PublicOffer = {
   offer_id: string;
@@ -33,6 +34,9 @@ export type PublicOffer = {
   disclosure: string | null;
   applicability: string[];
   event_id: string | null;
+  product_label: string | null;
+  cta_label: string | null;
+  image_urls: string[] | null;
 };
 
 export type MarketplaceConcept = "value" | "trust" | "curated";
@@ -93,16 +97,24 @@ export function OfferCard({
   const providerContext = external
     ? "Official third-party source"
     : "Published by a ShelterPawtners participant";
+  const primaryImage = offer.image_url || offer.image_urls?.[0] || null;
+  const safeDestination =
+    offer.destination_url && isSafeHttpsUrl(offer.destination_url)
+      ? offer.destination_url
+      : null;
+  const galleryImages = (offer.image_urls || []).filter(
+    (url) => url !== primaryImage && isSafeHttpsUrl(url),
+  );
 
   return (
     <article
       className={`offerCard marketOfferCard marketOfferCard-${concept} marketOfferCard-${offer.classification || "current"}${featured ? " marketOfferCard-featured" : ""}`}
     >
       <div className="marketOfferVisual">
-        {offer.image_url ? (
+        {primaryImage ? (
           <img
             className="marketOfferPhoto"
-            src={offer.image_url}
+            src={primaryImage}
             alt=""
             loading="lazy"
           />
@@ -171,6 +183,14 @@ export function OfferCard({
 
         {detailed && offer.details && <p>{offer.details}</p>}
 
+        {detailed && galleryImages.length > 0 && (
+          <div className="marketOfferGallery" aria-label="Product images">
+            {galleryImages.map((url) => (
+              <img key={url} src={url} alt="" loading="lazy" />
+            ))}
+          </div>
+        )}
+
         {detailed && (
           <div className="marketOfferDetailSections">
             {offer.eligibility && (
@@ -192,6 +212,25 @@ export function OfferCard({
 
         {offer.disclosure && detailed && (
           <p className="notice">{offer.disclosure}</p>
+        )}
+
+        {detailed && safeDestination && !external && (
+          <div className="marketOfferProductCta">
+            {offer.product_label && <b>{offer.product_label}</b>}
+            <a
+              className="btn marketOfferShopButton"
+              href={safeDestination}
+              target="_blank"
+              rel="noreferrer"
+            >
+              {offer.cta_label || ctaLabelFor(safeDestination)}{" "}
+              <ArrowUpRight aria-hidden="true" />
+            </a>
+            <p className="marketOfferCtaNote">
+              Opens the vendor's own store or listing. ShelterPawtners does not
+              process this purchase or verify the vendor's price.
+            </p>
+          </div>
         )}
 
         <div className="marketOfferFooter">

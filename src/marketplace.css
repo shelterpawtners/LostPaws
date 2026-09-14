@@ -512,6 +512,52 @@
   line-height: 1.6;
 }
 
+.marketOfferGallery {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.marketOfferGallery img {
+  width: 84px;
+  height: 84px;
+  border-radius: 10px;
+  object-fit: cover;
+  border: 1px solid #e1e6ee;
+}
+
+.marketOfferProductCta {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-start;
+  margin-top: 20px;
+  padding: 16px;
+  border: 1px solid #e1e6ee;
+  border-radius: 14px;
+  background: #f9fbfd;
+}
+
+.marketOfferProductCta > b {
+  font-family: Outfit;
+  font-size: 1rem;
+}
+
+.marketOfferShopButton {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.marketOfferCtaNote {
+  margin: 0;
+  color: #667086;
+  font-size: 0.75rem;
+  line-height: 1.5;
+}
+
 .marketOfferTrustNote {
   display: flex;
   gap: 8px;
