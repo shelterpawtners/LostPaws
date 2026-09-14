@@ -4,6 +4,10 @@ This is the canonical machine-readable release-state contract for repository
 automation. It is intentionally compact. Human live status, blockers, and next
 actions belong in [`../AI-CONTROLLER.md`](../AI-CONTROLLER.md).
 
+<!-- GENERATED FILE -- do not hand-edit. Source of truth is
+     docs/engineering/state/release-state.yaml. Regenerate with
+     `node scripts/release-state.mjs generate`. -->
+
 STATUS: READY_FOR_ACCEPTANCE
 CURRENT_PHASE: Repository normalization and non-owner-gated MVP closeout (Issues #136 and #107)
 CURRENT_CHECKPOINT: Issue #136 atomic release-state consumer migration is in validation.
@@ -22,5 +26,6 @@ The required top-level fields are `STATUS`, `CURRENT_PHASE`,
 `scripts/update-ai-ops-status.sh` parse this path directly.
 
 `docs/AI-HANDOFF.md` remains a field-compatible legacy adapter for inbound
-links and integrations. Keep its required fields synchronized in any state
-update until every external consumer has been explicitly retired.
+links and integrations. Its status block is generated from the same source
+(`docs/engineering/state/release-state.yaml`) and kept synchronized
+automatically; it is not independently hand-edited.

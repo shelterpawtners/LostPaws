@@ -59,6 +59,16 @@ if [[ -x "scripts/verify-ai-release-state-contract.sh" ]]; then
   fi
 fi
 
+# docs/engineering/state/release-state.yaml is the actual writable source of
+# truth; AI-RELEASE-STATE.md and AI-HANDOFF.md's status block are generated
+# from it. Fail if either generated file has drifted -- a hand-edit of the
+# generated Markdown, or a YAML change nobody regenerated from.
+if [[ -f "docs/engineering/state/release-state.yaml" ]]; then
+  if ! node scripts/release-state.mjs check; then
+    fail=1
+  fi
+fi
+
 if [[ "${fail}" -ne 0 ]]; then
   echo "Documentation authority drift check FAILED." >&2
   exit 1

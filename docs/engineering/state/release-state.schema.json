@@ -1,0 +1,39 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://shelterpawtners.github.io/LostPaws/docs/engineering/state/release-state.schema.json",
+  "title": "ShelterPawtners release-state contract",
+  "description": "Schema for docs/engineering/state/release-state.yaml. Validated by scripts/release-state.mjs.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "STATUS",
+    "CURRENT_PHASE",
+    "CURRENT_CHECKPOINT",
+    "NEXT_CHECKPOINT",
+    "OWNER_DECISION_REQUIRED",
+    "SAFE_TO_CONTINUE",
+    "ACCEPTED_CODE_SHA",
+    "ACCEPTANCE_RUNTIME",
+    "ACCEPTANCE_DEPLOYED_SHA"
+  ],
+  "properties": {
+    "STATUS": {
+      "type": "string",
+      "enum": ["IN_PROGRESS", "BLOCKED", "READY_FOR_ACCEPTANCE", "COMPLETE"]
+    },
+    "CURRENT_PHASE": { "type": "string", "minLength": 1 },
+    "CURRENT_CHECKPOINT": { "type": "string", "minLength": 1 },
+    "NEXT_CHECKPOINT": { "type": "string", "minLength": 1 },
+    "OWNER_DECISION_REQUIRED": { "type": "string", "enum": ["YES", "NO"] },
+    "SAFE_TO_CONTINUE": { "type": "string", "enum": ["YES", "NO"] },
+    "ACCEPTED_CODE_SHA": {
+      "type": "string",
+      "pattern": "^(NONE|[0-9a-f]{7,40})$"
+    },
+    "ACCEPTANCE_RUNTIME": { "type": "string", "minLength": 1 },
+    "ACCEPTANCE_DEPLOYED_SHA": {
+      "type": "string",
+      "pattern": "^(NONE|[0-9a-f]{7,40})$"
+    }
+  }
+}
