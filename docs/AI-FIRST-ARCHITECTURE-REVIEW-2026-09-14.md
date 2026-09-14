@@ -1,6 +1,6 @@
 # AI-First Architecture Review — 2026-09-14
 
-Status: **VERIFIED; PHASE 1 MERGED — Phases 2-8 (mass documentation restructure) remain owner/ChatGPT-gated.** See the verification addendum and migration manifest below/linked before relying on any specific claim in the original review body that follows — a small number of its conclusions were corrected after re-checking current `main`.
+Status: **VERIFIED; PHASE 1 GREEN, AWAITING OWNER MERGE — Phases 2-8 (mass documentation restructure) remain owner/ChatGPT-gated.** See the verification addendum and migration manifest below/linked before relying on any specific claim in the original review body that follows — a small number of its conclusions were corrected after re-checking current `main`.
 
 Branch: `architecture/ai-first-operating-model-review` (from `main` at `f684025`). Rollback baseline: tag `pre-ai-first-migration-2026-09-14` → `f684025`. Phase 1 safety PR: #172.
 
@@ -458,7 +458,7 @@ Branch `fix/classify-change-impact-authority-precedence`, PR #172:
 - Wired both new checks into a new, unconditional `guardrails` job in `ci.yml`, required by `CI Gate`.
 - Corrected `docs/phases/PHASE-2.md`'s stale status header in the same PR (a related GREEN-tier documentation fix, not a separate task).
 - Local validation: `npm run check` (lint, shell syntax, typecheck, 50 unit tests) green; both new scripts independently green.
-- See the PR/merge record for the exact merged SHA and CI evidence.
+- PR is `MERGEABLE` with every required and non-required check green (`CI Gate`, `Merge Gate`, `CodeQL`, the new `Authority drift + classifier regression` job, etc.); merge is blocked only by this session's own "Merge Without Review" auto-mode classifier, which requires the owner's manual click rather than an agent-initiated merge. See the PR for the exact merged SHA once that happens.
 
 ### Rollback baseline
 

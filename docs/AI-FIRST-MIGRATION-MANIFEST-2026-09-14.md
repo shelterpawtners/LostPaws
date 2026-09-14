@@ -1,6 +1,6 @@
 # AI-First Documentation Migration Manifest — Phases 2-8
 
-Status: **VERIFIED MANIFEST — execution not yet authorized.** Companion document to [`AI-FIRST-ARCHITECTURE-REVIEW-2026-09-14.md`](AI-FIRST-ARCHITECTURE-REVIEW-2026-09-14.md) and its verification addendum. Phase 1 (the classifier fix, drift check, and `docs/phases/PHASE-2.md` header correction) is already merged — see PR #172. Everything below is planned, verified against current `main`, and gated on a separate ChatGPT + owner go-ahead before any file moves.
+Status: **VERIFIED MANIFEST — execution not yet authorized.** Companion document to [`AI-FIRST-ARCHITECTURE-REVIEW-2026-09-14.md`](AI-FIRST-ARCHITECTURE-REVIEW-2026-09-14.md) and its verification addendum. Phase 1 (the classifier fix, drift check, and `docs/phases/PHASE-2.md` header correction) is complete and all-green in PR #172, awaiting the owner's merge click (blocked from auto-merge by this session's own tooling, not by any CI failure). Everything below is planned, verified against current `main`, and gated on a separate ChatGPT + owner go-ahead before any file moves.
 
 Target end state: **8-10 files directly under `docs/`** (the authority chain plus a small number of tool-required files), everything else moved to a domain subtree or `docs/archive/**`.
 
