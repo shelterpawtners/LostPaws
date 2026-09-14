@@ -4,10 +4,9 @@ Read:
 
 - `AGENTS.md`
 - `.github/copilot-instructions.md`
-- `docs/CURRENT-WORK.md`
-- the active phase specification
-- the active phase progress document
-- `docs/DECISION-LOG.md`
+- `docs/AI-CONTROLLER.md`
+- the active Issue/PR
+- only the relevant domain specification and decision-log entry
 
 Review only the most recently completed implementation checkpoint.
 
@@ -32,7 +31,8 @@ Fix bounded defects where intended behavior is already clear.
 
 Do not modify database schema unless a demonstrable defect requires it; if so, use a migration and explain why.
 
-Update the active progress document when a gate is genuinely completed.
+Update the controller or release-state contract only when the task's current
+Issue/PR requires it.
 
 Create a descriptive commit and summarize:
 

@@ -3,9 +3,10 @@
 > **Authority note:** This retained protocol contains detailed historical operating
 > context. It is not the default task-start document and must not override
 > [`AGENTS.md`](../AGENTS.md), [`AI-CONTROLLER.md`](AI-CONTROLLER.md), or the
-> active GitHub Issue/PR. `AI-HANDOFF.md` remains CI-required machine-readable
-> state; `CURRENT-WORK.md` remains an inbound-compatible historical record. For
-> current detailed operations, use [`engineering/AGENT-OPERATIONS.md`](engineering/AGENT-OPERATIONS.md).
+> active GitHub Issue/PR. `engineering/AI-RELEASE-STATE.md` is the canonical
+> machine-readable state; `AI-HANDOFF.md` and `CURRENT-WORK.md` are retained
+> compatibility/history records. For current detailed operations, use
+> [`engineering/AGENT-OPERATIONS.md`](engineering/AGENT-OPERATIONS.md).
 
 ## Purpose
 

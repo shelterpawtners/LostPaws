@@ -3,7 +3,8 @@
 > **Authority note:** This retained policy supplies detailed GREEN/YELLOW/RED
 > guidance. For current work, read [`AGENTS.md`](../AGENTS.md),
 > [`AI-CONTROLLER.md`](AI-CONTROLLER.md), and the active GitHub Issue/PR first.
-> `AI-HANDOFF.md` remains CI-required machine-readable state; `CURRENT-WORK.md`
+> `engineering/AI-RELEASE-STATE.md` is CI-required machine-readable state;
+> `AI-HANDOFF.md` and `CURRENT-WORK.md`
 > is not a live-status authority. For current detailed operations, use
 > [`engineering/AGENT-OPERATIONS.md`](engineering/AGENT-OPERATIONS.md).
 

@@ -16,7 +16,7 @@ Load only the context required for the task:
 | Marketplace/savings      | `docs/PRODUCT-REQUIREMENTS.md`, `docs/MARKETPLACE-RESEARCH.md`, `docs/CONTENT-STANDARDS.md` |
 | Database/auth/RLS        | `docs/ARCHITECTURE.md`, `docs/SECURITY-AND-PRIVACY.md`, `docs/USER-ROLES.md`                |
 | Shelter/transfer         | product requirements + roles + architecture + security/privacy                              |
-| Planning/phase           | `docs/CURRENT-WORK.md`, active phase spec/progress, `docs/ROADMAP.md`                       |
+| Planning/phase           | `docs/AI-CONTROLLER.md`, active GitHub Issue/PR, and relevant roadmap/domain document       |
 
 For active implementation also read the GitHub Issue/PR and
 `docs/engineering/AI-RELEASE-STATE.md` when completion/acceptance state is

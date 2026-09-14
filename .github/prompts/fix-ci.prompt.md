@@ -3,8 +3,9 @@
 Read:
 
 - `AGENTS.md`
-- `docs/CURRENT-WORK.md`
-- active phase specification
+- `docs/AI-CONTROLLER.md`
+- the active Issue/PR
+- only the relevant domain specification
 - current workflow files
 
 Inspect current CI failures and reproduce them locally where practical.
