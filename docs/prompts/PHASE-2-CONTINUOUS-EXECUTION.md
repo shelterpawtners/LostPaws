@@ -1,5 +1,8 @@
 # Phase 2 Continuous Execution Prompt
 
+> **Historical prompt — Phase 2 is complete.** Do not execute; use current
+> GitHub `main`, `AGENTS.md`, the controller, and active Issues/PRs.
+
 Use this prompt from VS Code/Codex to reduce manual handoffs while preserving ShelterPawtners product and safety gates.
 
 Repository: `shelterpawtners/LostPaws`
