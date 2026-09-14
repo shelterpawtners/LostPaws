@@ -1,5 +1,8 @@
 # Issue #11 Partner Profile Persistence Blocker
 
+> **Historical prompt — do not execute as current work.** Superseded by current
+> GitHub `main`, `AGENTS.md`, the controller, and active Issues/PRs.
+
 ## Symptom
 
 Persona QA run #39 fails in `e2e/phase-2-offer-redemption.spec.ts` after Partner profile draft save and browser reload.
