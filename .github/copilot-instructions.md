@@ -1,6 +1,6 @@
 # ShelterPawtners Copilot instructions
 
-Read current GitHub `main`, `AGENTS.md`, `docs/AI-CONTROLLER.md`, and the active Issue/PR first. Read `docs/AI-HANDOFF.md` only when its CI-required release state is relevant; use `docs/engineering/AGENT-OPERATIONS.md` for detailed operating rules and only the task-specific domain document needed.
+Read current GitHub `main`, `AGENTS.md`, `docs/AI-CONTROLLER.md`, and the active Issue/PR first. Read `docs/engineering/AI-RELEASE-STATE.md` only when its CI-required release state is relevant; use `docs/engineering/AGENT-OPERATIONS.md` for detailed operating rules and only the task-specific domain document needed.
 
 ## Current state and boundaries
 
@@ -33,6 +33,6 @@ Read current GitHub `main`, `AGENTS.md`, `docs/AI-CONTROLLER.md`, and the active
 
 ## Completion
 
-Run the strongest relevant deterministic tier, capture UI evidence for material visual changes when practical, preserve/strengthen tests, and update `docs/AI-HANDOFF.md` with exact evidence and `ACCEPTED_CODE_SHA`.
+Run the strongest relevant deterministic tier, capture UI evidence for material visual changes when practical, preserve/strengthen tests, and update the release-state contract and compatible adapter with exact evidence and `ACCEPTED_CODE_SHA`.
 
 Merge only when the active Issue/PR or newer owner direction explicitly authorizes the bounded, green change.

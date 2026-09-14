@@ -13,7 +13,7 @@ Own implementation quality, reusable component structure, tokens, responsive beh
 
 ## Before coding
 
-Read current `main`, `AGENTS.md`, `docs/AI-CONTROLLER.md`, the active Issue/PR, relevant frontend instructions, and applicable project skills. Read `docs/engineering/AGENT-OPERATIONS.md` for detailed operating rules and `AI-HANDOFF.md` only when its CI/workflow state is needed.
+Read current `main`, `AGENTS.md`, `docs/AI-CONTROLLER.md`, the active Issue/PR, relevant frontend instructions, and applicable project skills. Read `docs/engineering/AGENT-OPERATIONS.md` for detailed operating rules and `docs/engineering/AI-RELEASE-STATE.md` only when CI/workflow state is needed.
 
 For material visual work, require or establish:
 
