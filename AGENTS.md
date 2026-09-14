@@ -24,7 +24,11 @@ Read only the context needed for the task, in this order:
 4. the active GitHub Issue/PR (or active task brief);
 5. at most one relevant canonical domain document.
 
-`docs/AI-HANDOFF.md` is a separate CI-required machine-readable release-state file. Preserve its current path and top-level field contract, including `CURRENT_CHECKPOINT`. Read it when a task needs completion/acceptance/workflow state; do not treat it or `docs/CURRENT-WORK.md` as a competing human live-status narrative.
+`docs/engineering/AI-RELEASE-STATE.md` is the CI-required machine-readable
+release-state file. Read or update it only when a task needs
+completion/acceptance/workflow state. `docs/AI-HANDOFF.md` is its
+field-compatible legacy adapter for inbound links; neither it nor
+`docs/CURRENT-WORK.md` is competing human live-status narrative.
 
 Do not load unrelated historical files just for completeness.
 
@@ -75,7 +79,9 @@ When impact is uncertain, classify conservatively and run the broader determinis
 
 ## Completion contract
 
-Before completing/blocking a meaningful task, update `docs/AI-HANDOFF.md`.
+Before completing/blocking a meaningful task that has a workflow/acceptance
+contract, update `docs/engineering/AI-RELEASE-STATE.md` and its compatible
+`docs/AI-HANDOFF.md` adapter together.
 
 Required top-level fields:
 
