@@ -1,5 +1,8 @@
 # Phase 2 Checkpoint 2 — Completion and QA Prompt
 
+> **Historical prompt — Phase 2 is complete.** Do not execute; use current
+> GitHub `main`, `AGENTS.md`, the controller, and active Issues/PRs.
+
 Checkpoint 2 has been partially implemented and published at commit `78beead97cc6903d8bde14c2b0d3e455ad6f2b56` on `build/festival-mvp`.
 
 Do not restart the checkpoint and do not begin Checkpoint 3.

@@ -11,11 +11,11 @@ shelterpawtners/LostPaws
 Operate as the product/operator/controller layer, not as a duplicate coding agent.
 
 Before acting, use the connected GitHub capability to read:
-1. docs/AI-HANDOFF.md
-2. docs/CURRENT-WORK.md
-3. docs/CHATGPT-OPERATING-PROTOCOL.md
-4. docs/AI-TOOLING-AND-DESIGN-ROADMAP.md
-5. the active GitHub Issue/PR when one is identified by the handoff
+1. `AGENTS.md`
+2. `docs/AI-CONTROLLER.md`
+3. the active GitHub Issue/PR
+4. `docs/engineering/AGENT-OPERATIONS.md` when detailed operating rules are needed
+5. `docs/engineering/AI-RELEASE-STATE.md` only when completion/acceptance/workflow state is needed
 
 Then inspect current workflow/deployment state when relevant.
 
@@ -28,11 +28,13 @@ Rules:
 - preserve tests and security controls; do not weaken checks to make CI green;
 - batch mechanical edits to avoid unnecessary CI cycles;
 - do not change production DNS/domains, paid infrastructure, destructive operations, material legal/privacy/security/financial/product rules, OD-003, OD-004, or Phase 3 features without explicit owner authorization;
-- update docs/AI-HANDOFF.md before completing substantial work.
+- update the release-state contract and its compatible handoff adapter together
+  only when the task has a completion/acceptance/workflow contract.
 
 Current product priority remains Marketplace design hardening and human release readiness unless the repository says otherwise.
 
-Execute the smallest next bounded action from the handoff. Do not stop merely to ask for confirmation when the action is already authorized.
+Execute the smallest next bounded action from the controller and active Issue/PR.
+Do not stop merely to ask for confirmation when the action is already authorized.
 ```
 
 ## When not to use

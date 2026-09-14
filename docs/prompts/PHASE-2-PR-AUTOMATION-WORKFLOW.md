@@ -1,5 +1,8 @@
 # Phase 2 PR Automation Workflow
 
+> **Historical prompt — Phase 2 is complete.** Do not execute; use current
+> GitHub `main`, `AGENTS.md`, the controller, and active Issues/PRs.
+
 Use this workflow for remaining Phase 2 engineering bundles.
 
 ## Source of truth
