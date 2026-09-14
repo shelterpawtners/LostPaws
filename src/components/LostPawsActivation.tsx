@@ -45,7 +45,11 @@ export function LostPawsActivation() {
                   }}
                 />
               ))}
-              <img\n                className="lpLogoFace lpLogoBack"\n                src={logoFallback}\n                alt=""\n              />
+              <img
+                className="lpLogoFace lpLogoBack"
+                src={logoFallback}
+                alt=""
+              />
               <img className="lpLogoFace" src={logoFallback} alt="" />
             </div>
           </div>
