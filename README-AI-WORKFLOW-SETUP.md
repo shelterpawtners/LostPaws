@@ -10,7 +10,6 @@ This file is a human-facing pointer only. It is not an authority source and shou
 - `docs/engineering/AI-RELEASE-STATE.md` is CI-required machine-readable
   release state, not the live narrative; `docs/AI-HANDOFF.md` is its
   field-compatible legacy adapter.
-- `docs/CURRENT-WORK.md` is a retained inbound-compatible historical record.
 - `docs/engineering/AGENT-OPERATIONS.md` defines detailed autonomy, validation, and cost-efficient AI use.
 - Follow the controller and active Issue for current authorization; do not infer it from this historical pointer.
 

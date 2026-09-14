@@ -11,8 +11,7 @@ Read the shared authority chain in this order:
 `docs/engineering/AI-RELEASE-STATE.md` is the CI-required machine-readable
 release-state file, not a replacement for the controller. Consult or update it
 only when the task's completion/acceptance/workflow contract requires it, and
-keep the field-compatible `docs/AI-HANDOFF.md` adapter synchronized. Do not use
-`docs/CURRENT-WORK.md` as competing live status.
+keep the field-compatible `docs/AI-HANDOFF.md` adapter synchronized.
 
 Do not duplicate cross-agent policy here. Newer owner instructions and the authority chain above supersede stale historical plans.
 

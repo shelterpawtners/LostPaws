@@ -27,8 +27,8 @@ Read only the context needed for the task, in this order:
 `docs/engineering/AI-RELEASE-STATE.md` is the CI-required machine-readable
 release-state file. Read or update it only when a task needs
 completion/acceptance/workflow state. `docs/AI-HANDOFF.md` is its
-field-compatible legacy adapter for inbound links; neither it nor
-`docs/CURRENT-WORK.md` is competing human live-status narrative.
+field-compatible legacy adapter for inbound links, not a competing
+human live-status narrative.
 
 Do not load unrelated historical files just for completeness.
 

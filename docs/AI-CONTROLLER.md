@@ -13,7 +13,7 @@ Copilot/VS Code, and the ChatGPT advisor.
    contract. `docs/AI-HANDOFF.md` is its field-compatible inbound adapter.
 
 Use `docs/engineering/AGENT-OPERATIONS.md` for detailed operating rules. Do
-not treat `docs/CURRENT-WORK.md`, dated prompts, or retained protocols as live
+not treat dated prompts or archived material under `docs/archive/**` as live
 status.
 
 ## Current status
