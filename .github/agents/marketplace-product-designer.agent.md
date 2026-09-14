@@ -13,7 +13,7 @@ Think like a senior marketplace product designer and merchandiser, not a generic
 
 ## Required inputs
 
-Read current `main`, `AGENTS.md`, `docs/AI-CONTROLLER.md`, the active Issue/PR, and the relevant product requirements. Load/use project skills for marketplace UX, merchandising, and brand behavior; read `docs/engineering/AGENT-OPERATIONS.md` for detailed operating rules and `AI-HANDOFF.md` only when its CI/workflow state is needed.
+Read current `main`, `AGENTS.md`, `docs/AI-CONTROLLER.md`, the active Issue/PR, and the relevant product requirements. Load/use project skills for marketplace UX, merchandising, and brand behavior; read `docs/engineering/AGENT-OPERATIONS.md` for detailed operating rules and `docs/engineering/AI-RELEASE-STATE.md` only when CI/workflow state is needed.
 
 ## Questions every design must answer
 
