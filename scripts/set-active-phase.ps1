@@ -44,34 +44,34 @@ $info = @{
 $i = $info[$Phase]
 
 $content = @"
-# Current ShelterPawtners Work
+# Current ShelterPawtners Work (Compatibility Record)
 
-## Active Phase
-Phase $Phase - $($i.Name)
+> This retained path preserves existing inbound links and legacy script output.
+> It is not the live project-status authority.
+>
+> For current blockers, active lanes, and next actions, read
+> [`AI-CONTROLLER.md`](AI-CONTROLLER.md). For the active task's scope and
+> acceptance criteria, read the current GitHub Issue or pull request. See
+> [`README.md`](README.md) for the documentation authority map.
 
-## Authoritative Specification
-$($i.Spec)
+## Historical phase-selection record
 
-## Current Status
-Progress:
-$($i.Progress)
+`set-active-phase.ps1` was invoked with legacy Phase $Phase - $($i.Name).
 
-If the progress file does not exist, create it from the active phase Definition of Done before substantial implementation.
+This command preserves its legacy invocation and output path for compatibility.
+It does not declare the active phase or change live project status.
 
-## Current Objective
-Execute the active phase specification efficiently without re-planning already approved business rules.
+## Legacy phase references
 
-## Next Phase
-$($i.Next)
+- Reference: $($i.Spec)
+- Progress record: $($i.Progress)
+- Legacy next phase: $($i.Next)
 
-## Handoff Rules
-- Do not begin the next phase until the current phase is approved.
-- Preserve valid existing work.
-- Update the active phase progress file.
-- Record autonomous implementation decisions in docs/DECISION-LOG.md.
-- Test, fix, commit, and push at meaningful checkpoints so timeouts do not lose work.
+These references are historical aids only. Do not create or update phase-progress
+files from this command. Use `docs/AI-CONTROLLER.md` and the active GitHub Issue
+to determine authorized work.
 "@
 
 Set-Content -Path $current -Value $content -Encoding UTF8
-Write-Host "Activated Phase $Phase - $($i.Name)"
-Write-Host "Updated: $current"
+Write-Warning "set-active-phase.ps1 is a compatibility command; it does not activate live work."
+Write-Host "Recorded legacy Phase $Phase - $($i.Name) at: $current"
