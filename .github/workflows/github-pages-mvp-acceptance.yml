@@ -291,9 +291,12 @@ jobs:
             await page.locator('#main').waitFor({ state: 'visible', timeout: 15000 });
 
             if (viewport.name === 'mobile') {
-              await page.getByRole('button', { name: 'Open menu' }).click();
+              const mobileNavButton = page.getByRole('button', { name: 'Open menu' });
+              await mobileNavButton.waitFor({ state: 'visible', timeout: 10000 });
+              await mobileNavButton.click();
             }
             const accountMenu = page.locator('.guardianAccountMenu');
+            await accountMenu.locator('summary').waitFor({ state: 'visible', timeout: 10000 });
             await accountMenu.locator('summary').click();
             const helpLink = accountMenu.getByRole('link', { name: 'Help & support' });
             await helpLink.waitFor({ state: 'visible', timeout: 10000 });
@@ -307,9 +310,13 @@ jobs:
             }
 
             if (viewport.name === 'mobile') {
-              await page.getByRole('button', { name: 'Open menu' }).click();
+              const mobileNavButton = page.getByRole('button', { name: 'Open menu' });
+              await mobileNavButton.waitFor({ state: 'visible', timeout: 10000 });
+              await mobileNavButton.click();
             }
-            await page.getByRole('button', { name: 'Sign out' }).click();
+            const signOutButton = page.getByRole('button', { name: 'Sign out' });
+            await signOutButton.waitFor({ state: 'visible', timeout: 10000 });
+            await signOutButton.click();
             await page.waitForURL(/\/LostPaws\/?$/, { timeout: 15000 });
             await page.goto(`${process.env.SITE_URL}/dashboard`, { waitUntil: 'networkidle' });
             await page.waitForURL(/\/LostPaws\/login$/, { timeout: 15000 });
