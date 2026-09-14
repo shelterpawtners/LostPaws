@@ -6,7 +6,8 @@ Use deterministic native automation for repeatable work. Spend AI credits only w
 
 GitHub Actions is the **zero-AI control plane**. No workflow may automatically invoke Copilot, Codex, Claude, or another coding agent.
 
-See `docs/DEV-LOOP-V2.md` for the complete operating model.
+This retained reference is superseded for current detailed operations by
+[`engineering/AGENT-OPERATIONS.md`](engineering/AGENT-OPERATIONS.md).
 
 ## Execution-surface priority
 
