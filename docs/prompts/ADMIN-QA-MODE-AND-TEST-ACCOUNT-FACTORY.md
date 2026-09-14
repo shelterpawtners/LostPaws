@@ -1,5 +1,8 @@
 # Admin QA Mode + Test Account Factory
 
+> **Historical prompt — do not execute as current work.** Superseded by current
+> GitHub `main`, `AGENTS.md`, the controller, and active Issues/PRs.
+
 Implement GitHub Issue #7 on the existing `qa/guardian-registration-personas` branch. Do not start Phase 2 Checkpoint 5 or Phase 3.
 
 ## Objective
