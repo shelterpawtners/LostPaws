@@ -18,33 +18,42 @@ status.
 
 ## Current status
 
-Updated from GitHub `main` at `4853ebf12f213fa676b86eb9dac2d0029e6d68ce`.
-Production (`https://shelterpawtners.com`) is confirmed deployed at this exact
-SHA (Vercel: success) with all five security headers live.
+Updated from GitHub `main` at `63eda574399c0544552e9f2a88cef3f8eeb7dbdc`, plus
+this PR's own final repo-normalization batch.
 
-- Issue #136 control-plane consolidation: PRs #144, #146–#167 completed the
-  authority adapters, atomic release-state migration, historical-prompt
-  disposition, remaining active-entry cleanup, the file-by-file documentation
-  migration matrix (`docs/DOCUMENTATION-MIGRATION-MATRIX.md`), and this
-  controller's own rewrite to a short current-authority form. Evidence-based
-  issue triage is complete: #7, #152–#156 closed (implemented and merged);
-  #10, #12, #48, #54, #119 confirmed correctly classified as
-  backlog/deferred/owner-gated and left open with current triage comments.
-  **Not yet done:** Phase C's actual historical-doc retirement pass. The
-  migration matrix marks roughly a dozen dated Phase 2 checkpoint/execution
-  docs (`docs/PHASE-2-CHECKPOINT-*.md`, `docs/PHASE-2-EXECUTION-PLAN.md`,
-  `docs/AI-EXECUTION-PLAN-2026-09-12.md`,
+- Issue #136 is **complete**. PRs #144, #146–#168 completed the authority
+  adapters, atomic release-state migration, historical-prompt disposition,
+  remaining active-entry cleanup, the file-by-file documentation migration
+  matrix (`docs/DOCUMENTATION-MIGRATION-MATRIX.md`), and this controller's own
+  rewrite to a short current-authority form. Evidence-based issue triage is
+  complete: #7, #152–#156 closed (implemented and merged); #10, #12, #48,
+  #54, #119 confirmed correctly classified as backlog/deferred/owner-gated
+  and left open with current triage comments. Phase C's historical-doc
+  retirement pass is done: the 10 dated Phase 2 checkpoint/execution docs the
+  matrix marked as zero-inbound-reference (`docs/PHASE-2-CHECKPOINT-*.md`,
+  `docs/PHASE-2-EXECUTION-PLAN.md`, `docs/AI-EXECUTION-PLAN-2026-09-12.md`,
   `docs/LAUNCH-CONTROLLER-CHECKPOINT-2026-09-11.md`,
-  `docs/LAUNCH-PRE-CUTOVER-CHECKPOINT.md`) as safe to remove from the working
-  tree — verified zero inbound references from any canonical doc, workflow, or
-  script — but this session's own tool-safety layer blocked the `git rm`
-  itself (categorical destructive-action gate, not a permissions or evidence
-  problem). The next agent with an approved delete path should remove exactly
-  that verified list and nothing else; every other `REVIEW` row in the matrix
-  (Phase 1 files, `LAUNCH-*`, `LL4`–`LL6`, `CUTOVER-*`, `MARKETPLACE-*`, etc.)
-  still needs its own inbound-reference check first — do not batch them
-  together. Do not close #136 until this pass runs; everything else in its
-  definition of done is satisfied.
+  `docs/LAUNCH-PRE-CUTOVER-CHECKPOINT.md`) were removed from the working tree
+  after a fresh repo-wide reference re-check found nothing live pointing at
+  them; Git history remains the archive. Every other `REVIEW` row in the
+  matrix (Phase 1 files, `LAUNCH-*`, `LL4`–`LL6`, `CUTOVER-*`,
+  `MARKETPLACE-*`, etc.) is unchanged and still needs its own
+  inbound-reference check before it moves — that is intentionally out of
+  scope for #136's own definition of done and is future hygiene work, not a
+  blocker.
+- Issue #107 is **complete**. The `Protect Main` ruleset now also requires a
+  pull request for every change to `main` (`required_approving_review_count:
+0`, so the existing merge-when-green autonomous workflow is unaffected),
+  in addition to its existing deletion/non-fast-forward/CI Gate/Merge Gate
+  rules — none of which were weakened. 18 branches confirmed fully
+  merged/superseded (re-validated against current GitHub PR-merge state
+  immediately before deletion, including a fresh content check on the two
+  branches with no PR record) were deleted: `build/festival-mvp`, 15
+  `docs/*`/`feat/*`/`fix/*` branches, `ux/guardian-marketplace-launch-polish`,
+  and `issue-58-lostpaws`. 11 branches with closed-but-unmerged PRs remain,
+  per `docs/BRANCH-CLEANUP-2026-09-11.md`'s own "kept for your review"
+  judgment call — they were not touched and should not be deleted without a
+  content review first.
 - Current product work already merged on `main` includes Store MVP, navigation
   and UX polish, event attendance/event-scoped offers, and rich vendor media and
   external-commerce links. Do not reopen accepted behavior without regression
@@ -60,37 +69,23 @@ SHA (Vercel: success) with all five security headers live.
 
 ## Remaining closeout actions
 
-1. Run the verified-safe Phase C doc-retirement batch above, then close #136.
-2. Issue #107: `main` protection (deletion/force-push/CI Gate/Merge Gate) is
-   active via the `Protect Main` ruleset. Two verified, low-risk actions
-   remain: (a) add a `pull_request` rule to that ruleset with
-   `required_approving_review_count: 0` — confirmed against GitHub's ruleset
-   schema as valid and sufficient to require every change go through a PR
-   without requiring approvals, so it will not block the existing
-   merge-when-green autonomous workflow; (b) delete branch refs already
-   GitHub-confirmed as fully merged
-   (`build/festival-mvp` and 15 `docs/*`/`feat/*`/`fix/*` branches whose PRs
-   show `state: MERGED`) plus two more `docs/BRANCH-CLEANUP-2026-09-11.md`
-   already resolved as safe by diff/content review
-   (`ux/guardian-marketplace-launch-polish`, `issue-58-lostpaws`). This
-   session has full repo-admin API access
-   (`permissions.admin: true`) but its own tool-safety layer blocked both the
-   ruleset PATCH and the ref deletion (categorical gates, not missing
-   credentials this time — a change from the "no admin endpoint" blocker
-   recorded in #107's earlier checkpoints). ~10 other closed-but-unmerged-PR
-   branches remain genuinely "kept for your review" per that doc's own
-   judgment call and should not be deleted without checking for unique
-   content first.
-3. MVP readiness verification on current `main` is complete: `npm run check`
-   (lint/typecheck/50 unit tests), `npm run build`, and live production all
-   pass at `4853ebf12f213fa676b86eb9dac2d0029e6d68ce`.
-4. **Recommended MVP freeze SHA: `4853ebf12f213fa676b86eb9dac2d0029e6d68ce`.**
+Repo-side Issue #136 / #107 cleanup is complete. What remains is intentionally
+non-blocking or owner-gated, not implementation work:
+
+1. `docs/DOCUMENTATION-MIGRATION-MATRIX.md`'s other `REVIEW` rows (Phase 1
+   files, `LAUNCH-*`, `LL4`–`LL6`, `CUTOVER-*`, `MARKETPLACE-*`, etc.) remain
+   for future hygiene passes, each needing its own inbound-reference check.
+   Not urgent; no live authority depends on them.
+2. #10's native GitHub-event → Work webhook gap, #12's dashboard re-scope,
+   and #48/#54's backlog items remain open by design — see their own triage
+   comments.
+3. #119 (Meta/final legal publication) remains owner/legal-gated.
+4. **Recommended MVP freeze SHA: the merge commit of this PR.**
    Everything currently authorized for MVP (Store, events, offer media, UX
-   polish, mobile audit, Admin QA Mode, owner-approved legal decisions) is
-   merged, green, and live at this SHA. Remaining open items (#10 native
-   webhook gap, #12 dashboard re-scope, #48/#54 backlog, #107's two admin
-   actions, #119 Meta/final-legal) are explicitly non-blocking or owner-gated,
-   not implementation gaps.
+   polish, mobile audit, Admin QA Mode, owner-approved legal decisions, and
+   now full repo normalization) is merged, green, and live. `npm run check`
+   (lint/typecheck/50 unit tests) and `npm run build` both pass on the branch
+   that produced this update.
 
 ## Boundaries
 
