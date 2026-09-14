@@ -10,7 +10,7 @@ ShelterPawtners/LostPaws is in active MVP design hardening and release-readiness
 - **Phase 3 feature development is not authorized.**
 - `main` is the canonical application branch and the Vercel production branch.
 - Use one short-lived branch -> one bounded PR -> `main` for new work.
-- Do not auto-merge unless the owner explicitly approves that specific merge.
+- For an already owner-approved, bounded, non-destructive PR with required checks green, merge it yourself when tool access exists; do not send routine merge steps back to the owner. Require owner action only when the merge is not already approved or crosses a material RED boundary.
 - Do not modify ShelterPawtners production DNS, create paid infrastructure, perform destructive migrations, weaken RLS, expose secrets, or cross a material legal/privacy/security/financial/product RED boundary without owner approval.
 - Newer explicit owner decisions and the live handoff supersede stale historical planning text.
 
@@ -41,6 +41,8 @@ Use one bounded Issue -> one short-lived branch -> one PR -> one acceptance boun
 
 ## Autonomous behavior
 
+- Default to acting, not instructing: if the agent has the required tool/access and the action is safe, simple, reversible, and within approved scope, execute it instead of asking the owner to click, type, merge, or perform the same action manually.
+- Ask the owner to act only when explicit owner judgment/approval is genuinely required, the available tools cannot perform the action, or the action crosses a RED boundary.
 - **GREEN:** decide, implement, test, and continue.
 - **YELLOW:** choose the safest reversible assumption, document it when material, and continue.
 - **RED:** finish safely separable work, record the blocker, update the handoff, and stop narrowly.
