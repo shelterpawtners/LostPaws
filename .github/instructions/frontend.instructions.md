@@ -16,7 +16,7 @@ applyTo: "src/**"
 
 For material customer-facing UI work:
 
-1. read `docs/AI-TOOLING-AND-DESIGN-ROADMAP.md`;
+1. read `docs/engineering/AGENT-OPERATIONS.md`;
 2. use the relevant `.github/skills/` guidance, especially brand, Marketplace UX/merchandising, and responsive visual QA;
 3. establish the primary user task and content hierarchy before styling;
 4. prefer code-first concepts and hosted previews over duplicate mockup artifacts;

@@ -3,10 +3,12 @@
 Status: CANONICAL  
 Owner: Repository operations  
 Last reviewed: 2026-09-14  
-Supersedes: Detailed operational authority in `AI-OPERATING-PROTOCOL.md`,
+Supersedes: detailed operational authority formerly in `AI-OPERATING-PROTOCOL.md`,
 `AUTONOMOUS-EXECUTION-POLICY.md`, `CHATGPT-OPERATING-PROTOCOL.md`,
-`DEV-LOOP-V2.md`, and `AI-COST-AND-TESTING-GOVERNANCE.md`. Those paths remain
-as compatibility references until inbound references are migrated.
+`DEV-LOOP-V2.md`, `AI-COST-AND-TESTING-GOVERNANCE.md`, and
+`QA-AUTOMATION-POLICY.md`. All six are archived under
+`../archive/2026-mvp/retired-protocols/` as historical evidence; their
+durable content is fully represented here.
 
 ## Purpose and authority
 
@@ -105,6 +107,30 @@ poll or force deployment for documentation-only changes.
 
 GitHub Pages remains the normal staging/QA surface. Do not alter production DNS,
 providers, Supabase/RLS, secrets, or data without explicit authority.
+
+## Continuous next-action handoff
+
+Never end a work cycle in an ambiguous state. At every checkpoint, failure
+report, PR review, or chat handoff:
+
+- State what you are doing next, and what any other active agent should do
+  next, if anything.
+- State exactly what the owner should do next, if anything. If nothing,
+  say so explicitly rather than leaving it implicit.
+- When owner action is necessary, give the exact command, click path, or
+  prompt needed, in prerequisite order -- never show a dependent action
+  before the prerequisite it needs, and confirm the prerequisite's expected
+  successful result so the owner knows it is safe to continue.
+- If the next step is something you can perform with available tools,
+  perform it before replying rather than announcing that it should happen.
+  Do not end on "I will check" or "I will verify" when the check can be
+  completed in the current turn.
+- If there is more than one valid path, present a recommended default plus
+  compact options (numbered or one-character) rather than an open-ended
+  question, and always allow a free-form response.
+- A response that reports status without either performing the next
+  available action or giving an exact next action is a dead end -- do not
+  produce one.
 
 ## Completion record
 
