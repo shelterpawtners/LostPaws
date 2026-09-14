@@ -61,10 +61,11 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          status=$(sed -n 's/^STATUS:[[:space:]]*//p' docs/AI-HANDOFF.md | head -n 1)
-          owner=$(sed -n 's/^OWNER_DECISION_REQUIRED:[[:space:]]*//p' docs/AI-HANDOFF.md | head -n 1)
-          safe=$(sed -n 's/^SAFE_TO_CONTINUE:[[:space:]]*//p' docs/AI-HANDOFF.md | head -n 1)
-          accepted_sha=$(sed -n 's/^ACCEPTED_CODE_SHA:[[:space:]]*//p' docs/AI-HANDOFF.md | head -n 1)
+          state_file=docs/engineering/AI-RELEASE-STATE.md
+          status=$(sed -n 's/^STATUS:[[:space:]]*//p' "$state_file" | head -n 1)
+          owner=$(sed -n 's/^OWNER_DECISION_REQUIRED:[[:space:]]*//p' "$state_file" | head -n 1)
+          safe=$(sed -n 's/^SAFE_TO_CONTINUE:[[:space:]]*//p' "$state_file" | head -n 1)
+          accepted_sha=$(sed -n 's/^ACCEPTED_CODE_SHA:[[:space:]]*//p' "$state_file" | head -n 1)
           if [[ "$status" != "COMPLETE" ]]; then
             echo "Checkpoint is not COMPLETE; Merge Gate is informational during implementation/acceptance."
             exit 0
