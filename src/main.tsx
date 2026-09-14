@@ -409,7 +409,10 @@ function Home() {
           </div>
         </div>
       </section>
-      <section className="lostPawsFeature">
+      <section
+        className="lostPawsFeature"
+        data-testid="home-rave-shelter-teaser"
+      >
         <div className="shell lostPawsFeatureCard">
           <div>
             <span className="eyebrow">RAVE Shelter</span>
