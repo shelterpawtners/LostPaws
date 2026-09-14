@@ -8,7 +8,7 @@ The longer guardrails, model guidance, prompts, and environment-switch rules rem
 
 - `docs/AI-EXECUTION-PLAN-2026-09-12.md`
 - `docs/AI-HANDOFF.md`
-- `docs/AI-OPERATING-PROTOCOL.md`
+- `docs/engineering/AGENT-OPERATIONS.md`
 
 Do not duplicate the entire execution plan here. Keep this file short enough that every agent can reread it cheaply.
 

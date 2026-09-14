@@ -4,7 +4,7 @@
 
 Collect reversible product-owner preferences and true blocking decisions so coding agents can keep moving without interrupting Jim for every small choice.
 
-Use this file with `docs/AUTONOMOUS-EXECUTION-POLICY.md`.
+Use this file with `docs/engineering/AGENT-OPERATIONS.md`.
 
 ## Rules
 

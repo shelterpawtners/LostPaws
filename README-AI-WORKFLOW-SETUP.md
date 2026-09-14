@@ -9,8 +9,7 @@ This file is a human-facing pointer only. It is not an authority source and shou
 - `docs/AI-CONTROLLER.md` and the active GitHub Issue define current human live status and work.
 - `docs/AI-HANDOFF.md` is CI-required machine-readable release state, not the live narrative.
 - `docs/CURRENT-WORK.md` is a retained inbound-compatible historical record.
-- `docs/AUTONOMOUS-EXECUTION-POLICY.md` defines GREEN/YELLOW/RED behavior.
-- `docs/AI-COST-AND-TESTING-GOVERNANCE.md` defines cost-efficient use of AI vs native automation.
+- `docs/engineering/AGENT-OPERATIONS.md` defines detailed autonomy, validation, and cost-efficient AI use.
 - Follow the controller and active Issue for current authorization; do not infer it from this historical pointer.
 
 Do not use the old bootstrap/install instructions or old phase-activation commands as current authority. They were part of initial repository setup and are superseded by the live repo state.

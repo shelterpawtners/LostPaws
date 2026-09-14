@@ -10,9 +10,8 @@ Current product-planning documents for the next ShelterPawtners / RAVE Shelter s
 
 These documents should be read with:
 
-- `docs/AI-HANDOFF.md`
-- `docs/CURRENT-WORK.md`
-- `docs/AI-OPERATING-PROTOCOL.md`
-- the active GitHub issues/PRs.
+- current GitHub `main`, `AGENTS.md`, and `docs/AI-CONTROLLER.md`;
+- the active GitHub Issue/PR;
+- `docs/engineering/AGENT-OPERATIONS.md` when detailed operating rules are needed.
 
 If an older document conflicts with the controlling execution plan on RAVE Shelter / LostPaws positioning, the newer owner-directed execution plan controls until superseded by a later explicit owner decision.

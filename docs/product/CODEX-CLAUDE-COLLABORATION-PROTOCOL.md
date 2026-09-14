@@ -15,11 +15,10 @@ Use multiple coding agents in parallel without duplicate implementation, merge c
 5. Database migrations are sequential and owned by one agent at a time.
 6. If both agents need a shared high-churn file such as `src/main.tsx`, assign routing/integration ownership to one agent and have the other build isolated components/modules.
 7. Each agent must read:
-   - `docs/AI-HANDOFF.md`
-   - `docs/CURRENT-WORK.md`
-   - `docs/AI-OPERATING-PROTOCOL.md`
+   - current GitHub `main`, `AGENTS.md`, and `docs/AI-CONTROLLER.md`
+   - the controlling GitHub issue for its track
+   - `docs/engineering/AGENT-OPERATIONS.md` when detailed operating rules are needed
    - `docs/product/DUAL-MARKETPLACE-RAVE-SHELTER-EXECUTION-PLAN.md`
-   - the controlling GitHub issue for its track.
 8. Each agent must update handoff/current-work notes before finishing substantial work.
 9. Do not redraw or alter owner-approved brand assets.
 10. Do not weaken tests, RLS, auth boundaries, or legal/financial guardrails to make a PR easier to merge.
