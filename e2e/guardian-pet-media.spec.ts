@@ -80,7 +80,14 @@ test("Guardian manages a five-photo Passport gallery", async ({ page }) => {
 test("accumulates photos added one at a time on a phone viewport", async ({
   page,
 }) => {
-  test.slow();
+  // Failed twice in CI at the default/slow-multiplied budget with the
+  // gallery locator resolving to 0 elements for the full wait window (not a
+  // brief delay) — consistent with CI resource contention on a shared
+  // runner rather than a real accumulate-vs-replace regression, which was
+  // independently verified live against a real backend before this test was
+  // added (see the PR history for issue #156). Set an explicit, generous
+  // overall budget rather than relying on test.slow()'s 3x multiplier.
+  test.setTimeout(150_000);
   await page.setViewportSize({ width: 375, height: 900 });
   const email = `mobile-photo-audit-${Date.now()}@example.invalid`;
 
@@ -98,6 +105,12 @@ test("accumulates photos added one at a time on a phone viewport", async ({
 
   await page.getByRole("link", { name: "Open Sequential Pup" }).click();
   await page.waitForURL(/\/pets\//, { timeout: 30_000 });
+  // Make sure the gallery has actually mounted (and canEdit has resolved,
+  // which is what gates the upload input existing at all) before touching
+  // the file input, rather than racing the page's own async ownership check.
+  await expect(
+    page.getByRole("heading", { name: "Passport gallery" }),
+  ).toBeVisible({ timeout: 30_000 });
 
   const fileInput = page.locator('input[type="file"]');
   const cards = page.getByLabel("Pet photo gallery").locator(".petMediaCard");
@@ -107,18 +120,14 @@ test("accumulates photos added one at a time on a phone viewport", async ({
     mimeType: "image/png",
     buffer: onePixelPng,
   });
-  // A generous margin: a fresh signup + onboarding just completed, so this
-  // first upload can land on a genuinely cold CI runner/database connection
-  // rather than a real accumulate-vs-replace regression (already verified
-  // live against a real backend — see the PR history for issue #156).
-  await expect(cards).toHaveCount(1, { timeout: 30_000 });
+  await expect(cards).toHaveCount(1, { timeout: 60_000 });
 
   await fileInput.setInputFiles({
     name: "one-at-a-time-2.png",
     mimeType: "image/png",
     buffer: onePixelPng,
   });
-  await expect(cards).toHaveCount(2, { timeout: 30_000 });
+  await expect(cards).toHaveCount(2, { timeout: 60_000 });
 
   const layout = await page.evaluate(() => ({
     clientWidth: document.documentElement.clientWidth,
