@@ -4,7 +4,8 @@
 > guidance. For current work, read [`AGENTS.md`](../AGENTS.md),
 > [`AI-CONTROLLER.md`](AI-CONTROLLER.md), and the active GitHub Issue/PR first.
 > `AI-HANDOFF.md` remains CI-required machine-readable state; `CURRENT-WORK.md`
-> is not a live-status authority.
+> is not a live-status authority. For current detailed operations, use
+> [`engineering/AGENT-OPERATIONS.md`](engineering/AGENT-OPERATIONS.md).
 
 ## Purpose
 

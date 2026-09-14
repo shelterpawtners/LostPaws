@@ -4,7 +4,8 @@
 > Start substantial work using [`AGENTS.md`](../AGENTS.md),
 > [`AI-CONTROLLER.md`](AI-CONTROLLER.md), and the active GitHub Issue/PR.
 > `AI-HANDOFF.md` is CI-required machine-readable state; `CURRENT-WORK.md` is a
-> compatibility/historical record, not live status.
+> compatibility/historical record, not live status. For current detailed
+> operations, use [`engineering/AGENT-OPERATIONS.md`](engineering/AGENT-OPERATIONS.md).
 
 ## Purpose
 
