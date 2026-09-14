@@ -1,13 +1,24 @@
-# AI Handoff
+# AI Handoff — legacy compatibility adapter
+
+> Canonical machine-readable release state is now
+> [`docs/engineering/AI-RELEASE-STATE.md`](engineering/AI-RELEASE-STATE.md).
+> This retained path preserves the same required fields for inbound compatibility;
+> it is not the human live-status authority.
 
 STATUS: READY_FOR_ACCEPTANCE
-CURRENT_PHASE: Vercel deployment simplification (issue #138) — merged and confirmed working
-CURRENT_CHECKPOINT: PR #140 merged to `main` as squash commit `0eeb75f`. Retired the custom Ignored Build Step (`scripts/vercel-ignore-build.sh`, its regression suite, `[deploy]`/`[skip deploy]` conventions) that PR #137 had just fixed one bug in — an explicit owner decision to prefer reliability over build-skip optimization for MVP, refined beyond issue #138's literal "deploy every push": production `main` always deploys, but routine feature/docs/agent branches should not automatically consume Vercel Preview deployments either. Implemented with Vercel's own native `vercel.json` `git.deploymentEnabled` config (`{"**": false, "main": true}`) instead of custom shell logic — verified against current official Vercel docs first, not guessed. `scripts/classify-change-impact.sh` and `scripts/latest-frontend-artifact-sha.sh` are untouched (six other GitHub Actions workflows depend on the former). **Confirmed working on the merge commit itself**: GitHub's commit-status API shows `Vercel: success, "Deployment has completed"` for `0eeb75f` — not canceled — and PR #140's own CI run (a non-`main` branch) shows no Vercel check at all, confirming previews are correctly suppressed for routine branches. `main`'s CI Gate and GitHub Pages Staging are both green on `0eeb75f`.
-NEXT_CHECKPOINT: None required. Optional: confirm `shelterpawtners.com` has aliased to the new deployment (cosmetic/DNS-propagation check only, not a code gate).
+CURRENT_PHASE: Repository normalization and non-owner-gated MVP closeout (Issues #136 and #107)
+CURRENT_CHECKPOINT: Issue #136 atomic release-state consumer migration is in validation.
+NEXT_CHECKPOINT: Merge the validated atomic migration, then continue the remaining #136 cleanup sequence.
 OWNER_DECISION_REQUIRED: NO
 SAFE_TO_CONTINUE: YES
-ACCEPTED_PRODUCT_SHA: 0eeb75fcf2e91fa42b27b19bf09143c98690a52a
+ACCEPTED_CODE_SHA: NONE
 ACCEPTANCE_RUNTIME: OWNER_RESUMED_2026_09_12
+ACCEPTANCE_DEPLOYED_SHA: NONE
+
+## Retained historical record
+
+The dated detail below is historical evidence only. It is not a current
+instruction, release state, or live-status authority.
 
 Owner has also authorized Claude Code to merge PRs going forward without asking each time (2026-09-12), superseding the earlier merge-approval-per-PR default for this agent.
 
