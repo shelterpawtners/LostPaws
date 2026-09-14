@@ -8,7 +8,7 @@ test.describe("LostPaws and RAVE Shelter mission flow", () => {
 
     await expect(
       page.getByRole("heading", {
-        name: "Rave with purpose. Shop with impact.",
+        name: "Our community initiative for shelter support, everywhere.",
       }),
     ).toBeVisible();
 
@@ -55,14 +55,15 @@ test.describe("LostPaws and RAVE Shelter mission flow", () => {
 
     const menu = page.locator(".menu");
     await menu.click();
-    await expect(page.getByRole("link", { name: "Marketplace" })).toBeVisible();
-    await page.getByText("RAVE Shelter", { exact: true }).click();
-    await expect(page.getByRole("link", { name: "LostPaws" })).toBeVisible();
+    const nav = page.getByRole("navigation", { name: "Primary navigation" });
+    await expect(nav.getByRole("link", { name: "Marketplace" })).toBeVisible();
+    await nav.getByText("RAVE Shelter", { exact: true }).click();
+    await expect(nav.getByRole("link", { name: "LostPaws" })).toBeVisible();
     await expect(
-      page.getByRole("link", { name: "RAVE Shelter mission", exact: true }),
+      nav.getByRole("link", { name: "RAVE Shelter mission", exact: true }),
     ).toBeVisible();
     await expect(
-      page.getByRole("link", { name: "Seven Star Shelters" }),
+      nav.getByRole("link", { name: "Seven Star Shelters" }),
     ).toBeVisible();
   });
 });
