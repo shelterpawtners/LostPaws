@@ -15,9 +15,9 @@ and development-loop rules. For every meaningful task, first read current GitHub
 `main`, `AGENTS.md`, `docs/AI-CONTROLLER.md`, the active Issue/PR, and only the
 domain document needed for that task.
 
-`AI-CONTROLLER.md` is the human live-status authority. `AI-HANDOFF.md` is a
-CI-required machine-readable release-state file; preserve its path and required
-top-level fields until all workflow and script consumers migrate together.
+`AI-CONTROLLER.md` is the human live-status authority.
+`AI-RELEASE-STATE.md` is the CI-required machine-readable release-state file.
+`AI-HANDOFF.md` is its field-compatible legacy adapter for inbound links.
 
 ## Operating model
 
@@ -108,7 +108,9 @@ providers, Supabase/RLS, secrets, or data without explicit authority.
 
 ## Completion record
 
-When the task requires `AI-HANDOFF.md`, preserve its required top-level fields:
+When the task requires release-state changes, update
+`AI-RELEASE-STATE.md` and the compatible `AI-HANDOFF.md` adapter together. The
+required top-level fields are:
 `STATUS`, `CURRENT_PHASE`, `CURRENT_CHECKPOINT`, `NEXT_CHECKPOINT`,
 `OWNER_DECISION_REQUIRED`, `SAFE_TO_CONTINUE`, and `ACCEPTED_CODE_SHA`.
 Use `ACCEPTED_CODE_SHA: NONE` until deterministic acceptance exists; at
