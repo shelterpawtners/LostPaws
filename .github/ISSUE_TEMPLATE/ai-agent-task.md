@@ -19,7 +19,7 @@ assignees: []
 - [ ] Implementation meets the objective.
 - [ ] Required tests pass.
 - [ ] Relevant CI/hosted QA status is recorded.
-- [ ] `docs/AI-HANDOFF.md` is updated before completion.
+- [ ] `docs/AI-HANDOFF.md` is updated when the task requires its CI/workflow completion contract.
 - [ ] Final remote SHA is recorded.
 
 ## Testing level
@@ -37,16 +37,16 @@ Choose the minimum useful level:
 - Do not expose secrets or credentials.
 - Do not change production DNS or production Supabase without explicit approval.
 - Do not add paid infrastructure without approval.
-- Do not merge unless explicitly authorized.
+- Merge only when the active Issue/PR or newer owner direction explicitly authorizes it.
 - Do not begin Phase 2 Checkpoint 5 or Phase 3 unless explicitly authorized.
 
 ## Agent start instructions
 
 Before changing code:
 
-1. Read `docs/CURRENT-WORK.md`.
-2. Read `docs/AI-OPERATING-PROTOCOL.md`.
-3. Read `docs/AI-HANDOFF.md`.
+1. Refresh current `main`; read `AGENTS.md`, `docs/AI-CONTROLLER.md`, and this Issue.
+2. Read `docs/engineering/AGENT-OPERATIONS.md` and only the relevant domain document.
+3. Read `docs/AI-HANDOFF.md` if completion/acceptance/workflow state is required.
 4. Confirm current branch/remote state so newer work is preserved.
 
 ## Completion contract

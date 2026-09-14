@@ -1,6 +1,6 @@
 # ShelterPawtners Copilot instructions
 
-Read `AGENTS.md` first, then only the active Issue/PR, `docs/AI-HANDOFF.md`, `docs/CURRENT-WORK.md`, `docs/AI-TOOLING-AND-DESIGN-ROADMAP.md` when relevant, and task-specific architecture/product/security/design files.
+Read current GitHub `main`, `AGENTS.md`, `docs/AI-CONTROLLER.md`, and the active Issue/PR first. Read `docs/AI-HANDOFF.md` only when its CI-required release state is relevant; use `docs/engineering/AGENT-OPERATIONS.md` for detailed operating rules and only the task-specific domain document needed.
 
 ## Current state and boundaries
 
@@ -35,4 +35,4 @@ Read `AGENTS.md` first, then only the active Issue/PR, `docs/AI-HANDOFF.md`, `do
 
 Run the strongest relevant deterministic tier, capture UI evidence for material visual changes when practical, preserve/strengthen tests, and update `docs/AI-HANDOFF.md` with exact evidence and `ACCEPTED_CODE_SHA`.
 
-Never merge without explicit owner authority.
+Merge only when the active Issue/PR or newer owner direction explicitly authorizes the bounded, green change.
