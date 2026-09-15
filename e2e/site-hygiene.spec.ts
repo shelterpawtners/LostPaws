@@ -32,20 +32,25 @@ const routes = [
   "/forgot-password",
   "/directory",
 ];
+const responsiveWidths = [375, 390, 414, 768];
 
 test.describe("site hygiene", () => {
   for (const route of routes) {
-    test(`${route} stays inside a 390px viewport`, async ({ page }) => {
-      await page.setViewportSize({ width: 390, height: 900 });
-      await page.goto(route);
-      await page.locator("#main").waitFor({ state: "visible" });
-      const { scroll, client } = await page.evaluate(() => ({
-        scroll: document.documentElement.scrollWidth,
-        client: document.documentElement.clientWidth,
-      }));
-      expect(scroll, `${route} overflows horizontally`).toBeLessThanOrEqual(
-        client + 1,
-      );
+    test(`${route} stays inside each responsive viewport`, async ({ page }) => {
+      test.slow();
+      for (const width of responsiveWidths) {
+        await page.setViewportSize({ width, height: 900 });
+        await page.goto(route);
+        await page.locator("#main").waitFor({ state: "visible" });
+        const { scroll, client } = await page.evaluate(() => ({
+          scroll: document.documentElement.scrollWidth,
+          client: document.documentElement.clientWidth,
+        }));
+        expect(
+          scroll,
+          `${route} overflows horizontally at ${width}px`,
+        ).toBeLessThanOrEqual(client + 1);
+      }
     });
   }
 

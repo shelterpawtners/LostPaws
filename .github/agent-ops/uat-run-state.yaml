@@ -4,9 +4,13 @@
 # the claim/release protocol this file supports.
 
 schema_version: 1
-updated: "2026-09-15T10:40:37Z"
+updated: "2026-09-15T10:44:59Z"
 
-active_claims: []
+active_claims:
+  - item: uat-194
+    agent: codex
+    branch: chore/uat-194-design-system
+    claimed_at: "2026-09-15T10:44:59Z"
 
 completed:
   - item: uat-193
