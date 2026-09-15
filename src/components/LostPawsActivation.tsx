@@ -38,7 +38,7 @@ export function LostPawsActivation() {
           </p>
           <div className="lpActions">
             <Link className="lpButton lpPrimary" to="/marketplace?channel=rave">
-              Shop participating offers
+              Browse participating offers
             </Link>
             <Link
               className="lpButton lpSecondary"

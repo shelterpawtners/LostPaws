@@ -463,7 +463,7 @@ function Home() {
             <h2>Our community initiative for shelter support, everywhere.</h2>
             <p className="lead">
               RAVE Shelter — Rewarding Adoption with Vendor Exclusives —
-              connects ravers, festival vendors, and shelter supporters. Shop
+              connects ravers, festival vendors, and shelter supporters. Browse
               participating partners, save on useful products and merch, and
               help turn everyday spending into more support for shelter pets.
             </p>

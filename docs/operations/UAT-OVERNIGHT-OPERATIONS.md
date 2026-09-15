@@ -151,12 +151,12 @@ Everything in `docs/engineering/AGENT-OPERATIONS.md`'s RED section applies
 unchanged. Sprint-specific RED triggers to stop narrowly on rather than
 assume:
 
-- Rewriting the official RAVE Shelter brand tagline ("Rave with purpose.
-  Shop with impact.") or any wording documented in
-  `docs/design/BRAND-DESIGN-SYSTEM.md` / `CONTENT-STANDARDS.md` — UAT-20
-  flagged this as touching an established, cross-referenced brand asset;
-  narrower page-local copy that does not touch the documented tagline
-  itself is not blocked by this.
+- Rewriting wording documented in `docs/design/BRAND-DESIGN-SYSTEM.md` /
+  `CONTENT-STANDARDS.md` without a recorded owner decision. (The RAVE
+  Shelter tagline itself was previously RED here per UAT-20's flag; the
+  owner approved the "Shop" -> "Browse" replacement on 2026-09-15 on
+  issue #201, so that specific rewrite is no longer blocked — this
+  boundary now applies to any _other_ undocumented brand-wording change.)
 - Any change implying a savings figure, donation amount, partnership, or
   verification claim that isn't already substantiated in the repository.
 - Any change to email/auth infrastructure (SPF/DKIM/DMARC, Resend
