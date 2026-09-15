@@ -176,13 +176,27 @@ items:
     uat_ids: [UAT-8]
     journey: both
     priority: P2
-    owner: unassigned
-    status: ready
+    owner: claude
+    status: done
     depends_on: []
     conflict_files: []
     branch: null
     pr: null
-    note: "Owner wants deliverability improved before Wednesday night if safe. Diagnose only (SPF/DKIM/DMARC/Resend config); do NOT make production DNS/provider changes without stopping narrowly for owner approval -- that step is RED, not this diagnosis."
+    note: "Diagnosed 2026-09-15 (comment on #196): live DNS check found SPF and DKIM both present/correct for the Resend Auth-mail subdomain (auth.shelterpawtners.com), but DMARC missing entirely (no record at _dmarc.auth.shelterpawtners.com or _dmarc.shelterpawtners.com) -- the likely cause of spam-folder placement despite successful delivery. Email templates reviewed and are clean (no spam-trigger content, nothing to fix there). Recommended exact DMARC TXT record posted on #196 for owner action -- split to uat-196c, owner-gated (RED: production DNS write)."
+
+  - id: uat-196c
+    issue: 196
+    title: "Add DMARC TXT record for shelterpawtners.com (owner DNS action)"
+    uat_ids: [UAT-8]
+    journey: both
+    priority: P2
+    owner: owner
+    status: blocked
+    depends_on: []
+    conflict_files: []
+    branch: null
+    pr: null
+    note: "RED: production DNS write, requires owner action at the DNS provider (SiteGround). Add TXT record at _dmarc.shelterpawtners.com with value: v=DMARC1; p=none; rua=mailto:dmarc-reports@shelterpawtners.com; adkim=r; aspf=r; -- p=none is monitor-only, does not affect existing Microsoft 365 mail routing. Exact record and rationale posted on #196."
 
   - id: uat-197
     issue: 197
