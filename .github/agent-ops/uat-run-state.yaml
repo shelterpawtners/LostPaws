@@ -11,7 +11,7 @@ active_claims:
     agent: codex
     branch: feat/uat-200b-store-admin-ui
     claimed_at: "2026-09-15T20:33:23Z"
-    note: "Claimed directly on Codex's own branch (uat-run-state.yaml commit ab96c5b), not yet merged through a ledger PR to main -- reflected here by Claude for ledger accuracy. store_requests design guidance posted on #200; Claude will review Codex's actual PR once it lands, not duplicate it."
+    note: "Claimed directly on Codex's own branch (uat-run-state.yaml commit ab96c5b), not yet merged through a ledger PR to main -- reflected here by Claude for ledger accuracy. Codex opened PR #258 (schema + create_store_request RPC + pgTAP + docs/data/MASTER-DATA-ARCHITECTURE.md). Claude reviewed for security/RLS/simplicity/MVP-correctness: RLS design is sound (RPC-only write path, server-derived price/currency snapshot, no payment/shipping/tax fields, returns the created row directly avoiding the #250 write-succeeds-read-fails pattern). One blocking issue found: the branch is stale relative to main and its uat-run-state.yaml diff would revert several already-merged completed entries -- asked Codex to rebase before merge. No frontend request-UI yet; that slice still needed after this lands. Review posted as a PR comment, not pushed to Codex's branch."
 
 completed:
   - item: issue-250
