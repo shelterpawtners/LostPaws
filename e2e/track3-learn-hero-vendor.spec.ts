@@ -99,15 +99,19 @@ test.describe("Track 3 Learn, FAQ, Hero Vendor, and savings explorer", () => {
     await expect(page.getByText(/third-party giving processor/)).toBeVisible();
 
     await page.goto("/faq");
-    await expect(
-      page.getByText("Will my business's giving be tax deductible?"),
-    ).toBeVisible();
+    const givingQuestion = page.getByText(
+      "Will my business's giving be tax deductible?",
+    );
+    await expect(givingQuestion).toBeVisible();
+    await givingQuestion.click();
     await expect(page.getByText(/we are not a tax authority/)).toBeVisible();
   });
 
   test("faq refuses to state a savings average", async ({ page }) => {
     await page.goto("/faq");
-    await expect(page.getByText("How much will I save?")).toBeVisible();
+    const savingsQuestion = page.getByText("How much will I save?");
+    await expect(savingsQuestion).toBeVisible();
+    await savingsQuestion.click();
     await expect(
       page.getByText(/We do not publish a savings average/),
     ).toBeVisible();
