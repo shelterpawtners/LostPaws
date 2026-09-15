@@ -66,6 +66,7 @@ YAML — is the coordination bus. Each agent independently polls it; neither
 agent blocks on the other.
 
 **Claude owns:**
+
 - `/lostpaws` funnel architecture and copy decisions bounded by `AGENTS.md`'s
   no-fabrication rule.
 - Auth/navigation integration (`src/main.tsx` — `Signup()`, `Login()`,
@@ -76,6 +77,7 @@ agent blocks on the other.
   verification.
 
 **Codex owns (well-bounded, low-collision):**
+
 - Isolated UI components not in `src/main.tsx`.
 - Mobile/responsive corrections.
 - Accessibility fixes (focus order, aria labels, contrast).
@@ -215,18 +217,20 @@ Once this operating layer exists, resuming work should not require
 re-deriving any of the above. Use:
 
 **Claude:**
+
 > Resume ShelterPawtners autonomous UAT operations from AGENTS.md,
 > docs/AI-CONTROLLER.md, docs/operations/UAT-OVERNIGHT-OPERATIONS.md, and
 > .github/agent-ops/uat-queue.yaml. Pull the highest-priority ready Claude
 > task and continue until blocked.
 
 **Codex:**
+
 > Resume ShelterPawtners autonomous UAT operations from AGENTS.md,
 > docs/operations/UAT-OVERNIGHT-OPERATIONS.md, and
 > .github/agent-ops/uat-queue.yaml. Pull the highest-priority ready Codex
 > task and continue until blocked.
 
-If a future session finds that Codex *can* be natively triggered by a
+If a future session finds that Codex _can_ be natively triggered by a
 GitHub event (a webhook or App gets installed), update the "Claude / Codex
 division of responsibility" section above to reflect the lower-complexity
 mechanism and drop the manual-launcher instruction for whichever side

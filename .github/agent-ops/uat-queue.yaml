@@ -190,7 +190,13 @@ items:
     owner: codex
     status: ready
     depends_on: []
-    conflict_files: ["src/components/OfferMarketplace.tsx", "src/components/events/EventsPage.tsx", "src/main.tsx", "src/lib/document-title.ts"]
+    conflict_files:
+      [
+        "src/components/OfferMarketplace.tsx",
+        "src/components/events/EventsPage.tsx",
+        "src/main.tsx",
+        "src/lib/document-title.ts",
+      ]
     branch: null
     pr: null
 
@@ -216,7 +222,12 @@ items:
     owner: owner
     status: blocked
     depends_on: []
-    conflict_files: ["src/components/RaveShelterMission.tsx", "docs/design/BRAND-DESIGN-SYSTEM.md", "docs/design/CONTENT-STANDARDS.md"]
+    conflict_files:
+      [
+        "src/components/RaveShelterMission.tsx",
+        "docs/design/BRAND-DESIGN-SYSTEM.md",
+        "docs/design/CONTENT-STANDARDS.md",
+      ]
     branch: null
     pr: null
 
