@@ -20,7 +20,7 @@ completed:
     agent: claude
     pr: 241
     merged_sha: "9953ba2"
-    staging_verified: false
+    staging_verified: true
     completed_at: "2026-09-15T18:24:00Z"
     note: "Schema/RLS foundation only, deliberately narrow: public.store_products table + RLS (public read of active products, platform_admin-only read of drafts and all writes, matching the existing public.events/private.is_platform_admin() pattern) plus pgTAP RLS coverage. Explicitly NOT in this slice: migrating StorePage/StoreProductDetail off the static src/store/catalog.ts, or an admin editing UI -- both flagged as separate follow-up work in the PR description."
   - item: uat-204
