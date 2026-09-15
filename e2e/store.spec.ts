@@ -69,11 +69,11 @@ test.describe("Store", () => {
     await expect(page).toHaveURL(/\/store$/);
   });
 
-  test("Store is reachable from primary navigation", async ({ page }) => {
+  test("Swag is reachable from primary navigation", async ({ page }) => {
     await page.goto("/");
     await page
       .getByRole("navigation", { name: "Primary navigation" })
-      .getByRole("link", { name: "Store", exact: true })
+      .getByRole("link", { name: "Swag", exact: true })
       .click();
     await expect(page).toHaveURL(/\/store$/);
   });
