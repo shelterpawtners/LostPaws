@@ -433,7 +433,7 @@ items:
 
   - id: issue-250
     issue: 250
-    title: "P0: RAVE Vendor offers do not persist/load/publish reliably to Marketplace"
+    title: "P0: RAVE Vendor offers do not persist/load/publish reliably to Marketplace -- UI-side fix slice"
     uat_ids: []
     journey: vendor
     priority: P0
@@ -443,4 +443,18 @@ items:
     conflict_files: ["src/components/OfferManager.tsx"]
     branch: fix/issue-250-vendor-offer-persistence
     pr: 254
-    note: "Owner-reproduced P0 launch blocker. Root cause: hosted Supabase is missing migrations 20260914050000/20260914060000 (confirmed live via a read-only public_active_offers call) -- no CI/CD pushes migrations to the hosted project, so this needs owner/ops action (supabase db push or manual SQL), posted on #250 with exact files. All code-fixable UX issues shipped regardless: real error surfacing, no list-wipe on reload failure, optimistic save/publish updates, specific publish-result text, View in Marketplace link, a related nullable-field controlled-input bug in edit(). Full e2e regression added."
+    note: "Code-fixable UX slice only, merged and staging-verified: real error surfacing, no list-wipe on reload failure, optimistic save/publish updates, specific publish-result text, View in Marketplace link, a related nullable-field controlled-input bug in edit(). Full e2e regression added. Does NOT close the parent issue -- see issue-250b for the still-open root cause. #250 was reopened after auto-closing prematurely from this PR's description."
+
+  - id: issue-250b
+    issue: 250
+    title: "P0: apply 4 missing hosted-Supabase migrations (20260912150000, 20260914050000, 20260914060000, 20260915190000) and re-verify full vendor lifecycle"
+    uat_ids: []
+    journey: vendor
+    priority: P0
+    owner: owner
+    status: blocked
+    depends_on: []
+    conflict_files: []
+    branch: null
+    pr: null
+    note: "RED: production DNS/DB write, requires owner (or ops access holder) to run supabase db push against the hosted project (jukmlmryykcnjtpblbja), or apply the four migration files' SQL directly. Corrected finding 2026-09-15: the actually-deployed checkpoint is 20260912130000, one migration earlier than first thought -- 20260912150000 (offer image/category columns) is also missing, not just the two Issue #154/#155 migrations, plus tonight's own 20260915190000 (store_products, also needed for Codex's store_requests work). Full production-safety review (all four are purely additive: new tables, nullable/defaulted columns, function body swaps with unchanged signatures, drop+recreate of an already-proven-safe overload pattern used 3x in this codebase's history) plus the exact apply/verify/rollback procedure posted on #250. Claude will not apply this. Once applied: re-verify the full real vendor lifecycle (create -> save draft -> reload -> edit -> publish -> appears in Marketplace -> reopen published offer -> edit again -> pause/resume) against the actual hosted public_active_offers RPC, not local/CI data, before this issue can close."
