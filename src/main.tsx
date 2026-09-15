@@ -1180,7 +1180,9 @@ function PartnerOrganizationOnboarding({ kind }: { kind: PartnerKind }) {
               </button>
             </div>
             <div className="panel">
-              <h2>How is this business related?</h2>
+              <h2>
+                Is this a new business, or part of one you already manage?
+              </h2>
               <div className="relationshipOptions">
                 <label>
                   <input
@@ -1239,7 +1241,9 @@ function PartnerOrganizationOnboarding({ kind }: { kind: PartnerKind }) {
             <button className="btn" disabled={submitting}>
               {submitting
                 ? "Creating your business…"
-                : "Create a separate business"}
+                : visibleMatches.length
+                  ? "None of these — create a new business"
+                  : "Create my business"}
             </button>
             <p role="status" aria-live="polite" aria-atomic="true">
               {status}
