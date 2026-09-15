@@ -4,16 +4,18 @@
 # the claim/release protocol this file supports.
 
 schema_version: 1
-updated: "2026-09-15T16:23:26Z"
+updated: "2026-09-15T16:33:55Z"
 
-active_claims:
-  - item: uat-199
-    agent: codex
-    branch: fix/uat-199-safe-ux-slice
-    claimed_at: "2026-09-15T16:23:26Z"
-    note: "Safe slice only: src/main.tsx reserved for Claude’s uat-195 work."
+active_claims: []
 
 completed:
+  - item: uat-199-safe-slice
+    agent: codex
+    pr: 225
+    merged_sha: "86db68b18d9d6b336e5b5a86f6d4c690323f987d"
+    staging_verified: true
+    completed_at: "2026-09-15T16:33:55Z"
+    note: "UAT-2 and UAT-17 complete; UAT-29 document title complete. Header/footer label remains queued behind Claude’s active src/main.tsx work."
   - item: uat-194
     agent: codex
     pr: 222
