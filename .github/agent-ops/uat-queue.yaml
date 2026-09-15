@@ -163,12 +163,12 @@ items:
     journey: vendor
     priority: P1
     owner: unassigned
-    status: ready
+    status: done
     depends_on: []
     conflict_files: []
     branch: null
     pr: null
-    note: "Owner direction: stay conservative/high-confidence; gather concrete test-case evidence before broadening matching behavior. Do not weaken/broaden matching without evidence."
+    note: "Evidence recorded 2026-09-15: authenticated Partner B entering exact seeded organization name Demo PetBiz A receives one explainable candidate and only request/claim/dismiss choices; no membership or ownership is granted. Existing DB/RLS contract separately proves anonymous callers are denied and a candidate lookup creates no membership. Conservative exact-signal policy retained; no behavior change warranted."
 
   - id: uat-196b
     issue: 196
