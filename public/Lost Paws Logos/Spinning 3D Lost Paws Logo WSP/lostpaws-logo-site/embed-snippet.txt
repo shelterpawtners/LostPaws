@@ -1,0 +1,5 @@
+<!-- Paste where the logo should appear. Host the three files together:
+     LostPaws 3D Logo - Embed.html, three-d-stage.js, uploads/LostPaws Logo - Green - HERO LOGO.png -->
+<iframe src="C:\Users\jimwa\Documents\GitHub\LostPaws\public\Lost Paws Logos\Spinning 3D Lost Paws Logo WSP\lostpaws-logo-site\uploads\LostPaws Logo - Green - HERO LOGO.png"
+        style="width:100%;max-width:720px;aspect-ratio:3/2;border:0;background:transparent"
+        allowtransparency="true" loading="lazy" title="Lost Paws"></iframe>

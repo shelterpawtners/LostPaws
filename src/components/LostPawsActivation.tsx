@@ -10,10 +10,10 @@ import "./LostPawsActivation.css";
  */
 export function LostPawsActivation() {
   const base = import.meta.env.BASE_URL;
-  const hero = `${base}brand/lostpaws-hero-16x9.webp`;
-  const heroFallback = `${base}brand/lostpaws-hero-16x9.png`;
-  const logo = `${base}brand/lostpaws-logo.webp`;
-  const logoFallback = `${base}brand/LostPaws Logo.png`;
+  const hero = `${base}Lost Paws Logos/LostPaws Logo/lostpaws-hero-16x9.webp`;
+  const heroFallback = `${base}Lost Paws Logos/LostPaws Logo/lostpaws-hero-16x9.png`;
+  const logo = `${base}Lost Paws Logos/LostPaws Logo/lostpaws-logo.webp`;
+  const logoFallback = `${base}Lost Paws Logos/LostPaws Logo/LostPaws Logo.png`;
 
   return (
     <div className="lpPage">

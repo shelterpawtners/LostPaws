@@ -200,7 +200,7 @@ function Header() {
     <header>
       <div className="shell head">
         <Link className="brand" to="/">
-          <img src="/brand/shelterpawtners.png" alt="" />
+          <img src="/brand/ShelterPawtners/shelterpawtners.png" alt="" />
           ShelterPawtners
         </Link>
         <button
