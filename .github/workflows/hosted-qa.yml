@@ -191,6 +191,10 @@ jobs:
       - name: Run hosted golden paths
         run: npm run test:e2e:hosted
       - name: Run hosted design QA
+        # Independent suite: a failure in the golden-paths step above (e.g.
+        # the known, pre-existing hosted-seed-data issue #215) must not hide
+        # whether this unrelated suite passes.
+        if: ${{ !cancelled() }}
         run: npx playwright test e2e/hosted-design-qa.spec.ts
       - name: Upload hosted design QA evidence
         if: always()
@@ -201,6 +205,10 @@ jobs:
           if-no-files-found: warn
           retention-days: 7
       - name: Run Issue 5 browser audit
+        # Same reasoning: this suite (including the Issue #250 vendor
+        # lifecycle regression) must run and report its own result
+        # independent of any earlier step's outcome.
+        if: ${{ !cancelled() }}
         env:
           FULL_BROWSER_AUDIT: ${{ inputs.full_browser_audit }}
         shell: bash
