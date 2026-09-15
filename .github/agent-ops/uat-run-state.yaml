@@ -4,9 +4,13 @@
 # the claim/release protocol this file supports.
 
 schema_version: 1
-updated: "2026-09-15T16:45:00Z"
+updated: "2026-09-15T17:16:27Z"
 
-active_claims: []
+active_claims:
+  - item: uat-199b
+    agent: codex
+    branch: chore/uat-199b-swag-navigation
+    claimed_at: "2026-09-15T17:16:27Z"
 
 completed:
   - item: uat-199
