@@ -273,6 +273,12 @@
   text-underline-offset: 0.22em;
 }
 
+.lpHeroTextLink {
+  margin-top: 1.1rem;
+  color: var(--lp-cyan);
+  text-decoration: underline;
+}
+
 .lpMovement {
   background:
     radial-gradient(
