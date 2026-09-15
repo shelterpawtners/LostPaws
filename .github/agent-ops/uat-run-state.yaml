@@ -4,15 +4,22 @@
 # the claim/release protocol this file supports.
 
 schema_version: 1
-updated: "2026-09-15T18:15:00Z"
+updated: "2026-09-15T18:25:00Z"
 
 active_claims:
-  - item: uat-202a
+  - item: uat-203
     agent: claude
-    branch: feat/loading-states-back-to-top
-    claimed_at: "2026-09-15T17:50:00Z"
+    branch: feat/uat-203-guardian-ux-review
+    claimed_at: "2026-09-15T18:20:00Z"
 
 completed:
+  - item: uat-202a
+    agent: claude
+    pr: 234
+    merged_sha: "30912fd"
+    staging_verified: false
+    completed_at: "2026-09-15T17:59:30Z"
+    note: "Global BackToTop button (fixed, appears after ~480px scroll, keyboard-focusable, reduced-motion aware) plus a shared LoadingState spinner component swapped into ~10 previously bare-text data-fetch loading states across Guardian/Partner/Events components."
   - item: uat-196a
     agent: codex
     pr: 233

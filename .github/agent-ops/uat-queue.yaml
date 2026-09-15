@@ -297,12 +297,12 @@ items:
     uat_ids: [UAT-38, UAT-39]
     journey: none
     priority: P2
-    owner: unassigned
-    status: ready
+    owner: claude
+    status: done
     depends_on: []
     conflict_files: []
-    branch: null
-    pr: null
+    branch: feat/loading-states-back-to-top
+    pr: 234
     note: "OWNER DECISION 2026-09-15 (comment on #202): both desirable, do before MVP if inexpensive/safe. Floating contact button (UAT-40) stays deferred -- do not include it here."
 
   - id: uat-202
