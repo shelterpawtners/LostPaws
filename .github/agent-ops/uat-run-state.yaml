@@ -43,7 +43,7 @@ completed:
     agent: claude
     pr: 211
     merged_sha: "65a2ec8b75447eabf335f93fc99ae92bb9fd5d53"
-    staging_verified: pending
+    staging_verified: true
     completed_at: "2026-09-15T07:35:00Z"
 
 blockers: []
