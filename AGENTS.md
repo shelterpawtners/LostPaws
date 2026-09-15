@@ -53,6 +53,19 @@ Use one bounded Issue -> one short-lived branch -> one PR -> one acceptance boun
 - Fix related in-scope GREEN/YELLOW defects before declaring completion.
 - Never weaken a valid test merely to make CI green.
 
+### Continuous execution contract
+
+This contract is mandatory for Codex Work, Claude Code, Copilot, and any other coding agent operating under this repository.
+
+- A **checkpoint, status summary, claim, commit, PR creation, CI start, merge, staging verification, or queue update is not a stopping point** by itself.
+- After claiming an approved task, continue through the entire safe loop: **implement -> validate -> PR -> resolve CI -> merge when authorized/green -> verify -> update durable state -> refresh `main` -> claim the next safe ready task**.
+- Do not voluntarily return control to the owner merely to report that work has started, a branch was created, CI is running, a PR is open, a merge completed, or another agent is inactive.
+- If CI is running, keep ownership of the task. Monitor/resolve it and merge when green. If there is genuinely independent, non-conflicting approved work that can be performed safely without jeopardizing the active branch/PR, continue that work rather than idling.
+- If one item is owner-blocked or RED, record the exact blocker and immediately continue with the highest-priority independent safe item. A blocked item does not block the sprint.
+- Stop voluntarily only when **all** remaining work is RED/owner-blocked/deferred, required access is unavailable and no independent safe work remains, or a platform/session/runtime limit actually terminates execution.
+- If the platform/session is about to end, write enough durable GitHub state (claim, branch, PR/issue note, next action) that a fresh session can resume without rediscovery. A platform-imposed stop is not task completion.
+- Keep end-of-turn narration short. Prefer doing the next safe action over producing a long progress report.
+
 ## Product and design invariants
 
 - React + TypeScript + Vite + Tailwind + Supabase remain the core stack.
