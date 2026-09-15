@@ -337,6 +337,24 @@
   gap: 0.6rem;
 }
 
+.stRequestForm {
+  display: grid;
+  gap: 0.8rem;
+  margin-top: 1.5rem;
+  padding: 1.25rem;
+  border: 1px solid var(--line, #d9d9e3);
+  border-radius: 0.75rem;
+}
+.stRequestForm label {
+  display: grid;
+  gap: 0.35rem;
+  font-weight: 600;
+}
+.stRequestForm input,
+.stRequestForm textarea {
+  width: 100%;
+}
+
 .stDetailBody h1 {
   margin: 0;
   font-size: clamp(1.6rem, 4vw, 2.1rem);
