@@ -225,7 +225,7 @@ function Header() {
           aria-label="Primary navigation"
         >
           <Link to="/marketplace">Marketplace</Link>
-          <Link to="/store">Store</Link>
+          <Link to="/store">Swag</Link>
           <details className="navGroup" key={location.pathname}>
             <summary>RAVE Shelter</summary>
             <div className="navGroupPanel">
@@ -287,7 +287,7 @@ function Footer() {
           <Link to="/lostpaws">LostPaws</Link>
           <Link to="/sevenstars">Seven Star Shelters</Link>
           <Link to="/hero-vendor">Hero Vendor program</Link>
-          <Link to="/store">Store</Link>
+          <Link to="/store">Swag</Link>
         </div>
         <div>
           <span className="footHeading">Support</span>
