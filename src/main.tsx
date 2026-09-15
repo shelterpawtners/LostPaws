@@ -479,11 +479,6 @@ function Home() {
               aria-label="RAVE Shelter activations"
             >
               <li>
-                <Link to="/lostpaws">
-                  LostPaws <ArrowRight />
-                </Link>
-              </li>
-              <li>
                 <Link to="/sevenstars">
                   Seven Star Shelters <ArrowRight />
                 </Link>
@@ -501,19 +496,18 @@ function Home() {
           </div>
           <aside
             className="lostPawsRoadmap"
-            aria-label="How RAVE Shelter works"
+            aria-label="LostPaws for Lost Lands"
           >
-            <Music2 />
-            <span className="eyebrow">The simple idea</span>
-            <h3>Shop. Save. Help shelter pets.</h3>
+            <PawPrint />
+            <span className="eyebrow">Lost Lands community</span>
+            <h3>LostPaws: our Lost Lands initiative</h3>
             <p>
-              Participating partners create useful value for the community while
-              supporting the shelter mission. Our giving roadmap also lets
-              Guardians pass eligible savings forward as those tools come
-              online.
+              Same RAVE Shelter mission, built for the Lost Lands and Excision
+              festival family — gear and art from vendors who put part of every
+              sale behind shelter pets.
             </p>
-            <Link to="/register?type=rave_vendor">
-              Vendors: join RAVE Shelter <ArrowRight />
+            <Link to="/lostpaws">
+              Explore LostPaws <ArrowRight />
             </Link>
           </aside>
         </div>
