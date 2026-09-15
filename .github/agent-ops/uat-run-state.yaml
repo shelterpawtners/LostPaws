@@ -4,15 +4,18 @@
 # the claim/release protocol this file supports.
 
 schema_version: 1
-updated: "2026-09-15T08:30:00Z"
+updated: "2026-09-15T10:40:37Z"
 
-active_claims:
-  - item: uat-193
-    agent: codex
-    branch: fix/uat-193-mobile-funnel-audit
-    claimed_at: "2026-09-15T08:30:00Z"
+active_claims: []
 
 completed:
+  - item: uat-193
+    agent: codex
+    pr: 219
+    merged_sha: "1f12728677e733d52110f78c7c098195bf7dab4d"
+    staging_verified: true
+    completed_at: "2026-09-15T10:40:37Z"
+    note: "Mobile funnel audit regression coverage added; GitHub CI and merge gate green. GitHub Pages staging status was HEALTHY with successful build, deploy, and live verification."
   - item: uat-186
     agent: claude
     pr: 204
