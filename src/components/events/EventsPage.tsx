@@ -198,7 +198,17 @@ export function EventsPage({ session }: { session: Session | null }) {
               <h2>Add an event</h2>
               <div className="evFormGrid">
                 <label>
-                  <span>Who is it for?</span>
+                  <span>
+                    Who is it for?
+                    <span
+                      className="fieldHelp"
+                      role="img"
+                      aria-label="Audience help: choose pet for pet-centered events, human for music and community events, or both when both audiences are welcome."
+                      title="Choose pet for pet-centered events, human for music and community events, or both when both audiences are welcome."
+                    >
+                      ?
+                    </span>
+                  </span>
                   <select
                     value={form.audience}
                     onChange={(e) =>
@@ -285,7 +295,17 @@ export function EventsPage({ session }: { session: Session | null }) {
                   />
                 </label>
                 <label>
-                  <span>Hosting organization</span>
+                  <span>
+                    Hosting organization
+                    <span
+                      className="fieldHelp"
+                      role="img"
+                      aria-label="Hosting organization help: select your organization when it hosts the event; leave this blank for a community event."
+                      title="Select your organization when it hosts the event; leave this blank for a community event."
+                    >
+                      ?
+                    </span>
+                  </span>
                   <select
                     value={form.organizationId}
                     onChange={(e) =>
