@@ -737,6 +737,30 @@ select:focus {
   font-size: 0.8rem;
   font-weight: 800;
 }
+.textButton:hover {
+  color: var(--navy);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+.role:hover,
+.filters button:hover {
+  border-color: #aa99dc;
+  background: #f0ecfb;
+}
+.notFoundPage {
+  max-width: 680px;
+  padding-top: clamp(4rem, 10vw, 8rem);
+  padding-bottom: clamp(4rem, 10vw, 8rem);
+  text-align: center;
+}
+.notFoundPage > svg {
+  width: 3rem;
+  height: 3rem;
+  color: var(--purple);
+}
+.notFoundPage .actions {
+  justify-content: center;
+}
 .relationshipOptions {
   display: grid;
   gap: 11px;
