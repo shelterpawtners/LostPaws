@@ -20,7 +20,7 @@ test.describe("LostPaws and RAVE Shelter mission flow", () => {
     await expect(
       page.getByRole("heading", {
         level: 1,
-        name: /Rave with purpose\. Shop with impact\./,
+        name: /Rave with purpose\. Browse with impact\./,
       }),
     ).toBeVisible();
   });

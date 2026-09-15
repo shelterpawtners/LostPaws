@@ -43,9 +43,9 @@ Do not jump from requirements directly to finished pages. A compiling page is no
 
 RAVE Shelter means **Rewarding Adoption with Vendor Exclusives**.
 
-Approved tagline (2026-09-12 owner direction, supersedes the earlier "Deals for ravers" tagline):
+Approved tagline (2026-09-15 owner direction, supersedes the earlier "Deals for ravers" and "Rave with purpose. Shop with impact." taglines — owner does not want "Shop" used in ShelterPawtners/RAVE Shelter messaging where it can conflict with the shelter/adoption mission):
 
-> Rave with purpose. Shop with impact.
+> Rave with purpose. Browse with impact.
 
 RAVE Shelter should bridge the ShelterPawtners iridescent purple, blue, and teal palette with the bolder music-community energy of LostPaws. It should feel mature, premium, energetic, and credible. Use original sound, connection, heart, shelter, exchange, or event geometry rather than cartoon animals or generic paw-print clip art.
 
