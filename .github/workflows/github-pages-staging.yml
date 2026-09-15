@@ -55,7 +55,24 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          # Vite's `base` config (set to /LostPaws for this build) already
+          # base-prefixes every root-absolute asset path it processes: all
+          # .js (anything built from import.meta.env.BASE_URL, e.g.
+          # `${base}brand/...`), all .css (url(/brand/...) is rewritten at
+          # build time too), and dist/index.html itself. Rewriting any of
+          # those again here double-prefixes them
+          # (-> /LostPaws/LostPaws/brand/...), 404ing the asset. It would
+          # also corrupt index.html's absolute production og:image URL
+          # (https://shelterpawtners.com/brand/social-card.png), which must
+          # never get a /LostPaws segment injected into it.
+          #
+          # Only genuinely unprocessed static HTML in public/ (copied
+          # as-is, outside Vite's build pipeline -- currently
+          # rave-vendors.html) still needs a manual rewrite.
           while IFS= read -r file; do
+            case "$file" in
+              */index.html | *.js | *.css) continue ;;
+            esac
             sed -i 's#/brand/#/LostPaws/brand/#g' "$file"
           done < <(grep -RIl '/brand/' dist || true)
 

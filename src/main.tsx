@@ -193,6 +193,7 @@ function Header() {
   const { session } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
+  const base = import.meta.env.BASE_URL;
   useEffect(() => setO(false), [location.pathname, location.search]);
   async function signOut() {
     navigate("/", { replace: true });
@@ -202,7 +203,10 @@ function Header() {
     <header>
       <div className="shell head">
         <Link className="brand" to="/">
-          <img src="/brand/ShelterPawtners/shelterpawtners.png" alt="" />
+          <img
+            src={`${base}brand/ShelterPawtners/shelterpawtners.png`}
+            alt=""
+          />
           ShelterPawtners
         </Link>
         <button
