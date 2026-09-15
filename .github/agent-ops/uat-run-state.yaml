@@ -4,9 +4,13 @@
 # the claim/release protocol this file supports.
 
 schema_version: 1
-updated: "2026-09-15T08:05:00Z"
+updated: "2026-09-15T08:30:00Z"
 
-active_claims: []
+active_claims:
+  - item: uat-193
+    agent: codex
+    branch: fix/uat-193-mobile-funnel-audit
+    claimed_at: "2026-09-15T08:30:00Z"
 
 completed:
   - item: uat-186
