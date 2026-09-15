@@ -99,6 +99,7 @@ test("accumulates photos added one at a time on a phone viewport", async ({
   await page
     .getByLabel("Password", { exact: true })
     .fill("Audit-only-Password9!");
+  await page.getByLabel("Confirm password").fill("Audit-only-Password9!");
   await page.getByLabel(/I agree to the Terms/).check();
   await page.getByRole("button", { name: "Create account" }).click();
 

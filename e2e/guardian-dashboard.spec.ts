@@ -87,6 +87,7 @@ test.describe("Guardian pet-centric dashboard", () => {
     await page
       .getByLabel("Password", { exact: true })
       .fill(registrationPassword);
+    await page.getByLabel("Confirm password").fill(registrationPassword);
     await page.getByRole("checkbox").check();
     await page.getByRole("button", { name: "Create account" }).click();
     await expect(page).toHaveURL(/\/onboarding\/guardian$/);
