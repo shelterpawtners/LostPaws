@@ -135,12 +135,12 @@ items:
     uat_ids: [UAT-33, UAT-34, UAT-35, UAT-37]
     journey: none
     priority: P2
-    owner: codex
-    status: ready
+    owner: codex+claude
+    status: done
     depends_on: []
     conflict_files: []
-    branch: null
-    pr: null
+    branch: feat/uat-195-tier-one
+    pr: 226
 
   - id: uat-196
     issue: 196
@@ -188,15 +188,28 @@ items:
     journey: none
     priority: P3
     owner: codex
-    status: ready
+    status: done
     depends_on: []
     conflict_files:
       [
         "src/components/OfferMarketplace.tsx",
         "src/components/events/EventsPage.tsx",
-        "src/main.tsx",
         "src/lib/document-title.ts",
       ]
+    branch: fix/uat-199-safe-ux-slice
+    pr: 225
+    note: "UAT-2 and UAT-17 complete. UAT-29 partial: /store page title done, header/footer nav label rename (Store -> Swag) deferred to uat-199b, since src/main.tsx was reserved for uat-195 at the time. Now unblocked."
+
+  - id: uat-199b
+    issue: 199
+    title: "Rename Store nav label to Swag (remaining UAT-29 piece)"
+    uat_ids: [UAT-29]
+    journey: none
+    priority: P3
+    owner: unassigned
+    status: ready
+    depends_on: []
+    conflict_files: ["src/main.tsx"]
     branch: null
     pr: null
 

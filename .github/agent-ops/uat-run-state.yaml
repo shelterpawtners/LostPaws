@@ -4,21 +4,24 @@
 # the claim/release protocol this file supports.
 
 schema_version: 1
-updated: "2026-09-15T16:35:00Z"
+updated: "2026-09-15T16:45:00Z"
 
-active_claims:
-  - item: uat-199
-    agent: codex
-    branch: fix/uat-199-safe-ux-slice
-    claimed_at: "2026-09-15T16:23:26Z"
-    note: "Safe slice only: src/main.tsx reserved for Claude’s uat-195 work."
+active_claims: []
 
 completed:
+  - item: uat-199
+    agent: codex
+    pr: 225
+    merged_sha: "86db68b18d9d6b336e5b5a86f6d4c690323f987d"
+    staging_verified: true
+    completed_at: "2026-09-15T16:40:00Z"
+    note: "UAT-2 and UAT-17 complete. UAT-29 partial (store page title done, nav label rename deferred to uat-199b, now unblocked since uat-195 released src/main.tsx)."
   - item: uat-195
     agent: codex+claude
     pr: 226
-    staging_verified: pending
-    completed_at: "2026-09-15T16:35:00Z"
+    merged_sha: "93069567ee7bcd23bf60aee3a2425801a72c91f0"
+    staging_verified: true
+    completed_at: "2026-09-15T16:45:00Z"
     note: "Codex completed UAT-34 (404 page), UAT-35 (FAQ accordion), and UAT-37 (hover states) then its session ended before opening a PR or implementing UAT-33 (confirm modals) or claiming/releasing this item properly. Claude picked up the same branch, merged current main in (the branch predated Claude's home-page LostPaws spotlight change and would have reverted it -- resolved), implemented UAT-33 (window.confirm guards on: dismiss candidate, pause/archive an offer, unpublish a partner profile, confirm a redemption -- no 'revoke membership' UI exists yet to guard), fixed two e2e tests broken by the new confirm dialogs plus two more broken by the FAQ accordion (answers now collapsed by default, tests needed to click the question first), and merged as #226."
   - item: uat-194
     agent: codex
