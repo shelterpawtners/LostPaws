@@ -176,7 +176,7 @@ jobs:
             await page.getByText('A RAVE Shelter initiative for Lost Lands', { exact: true }).waitFor({ state: 'visible', timeout: 10000 });
             await page.getByRole('heading', { name: 'Gear that gives back to the pack.' }).waitFor({ state: 'visible', timeout: 10000 });
             const lostPawsLinks = [
-              ['Shop participating offers', '/marketplace?channel=rave'],
+              ['Browse participating offers', '/marketplace?channel=rave'],
               ['Join as a vendor', '/register?type=rave_vendor'],
               ['Register a shelter', '/register?type=shelter'],
               ['See the full RAVE Shelter mission', '/rave'],
