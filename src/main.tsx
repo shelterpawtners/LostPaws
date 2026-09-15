@@ -84,6 +84,7 @@ import { EventAttendancePrompt } from "./components/events/EventAttendancePrompt
 import { StorePage } from "./components/store/StorePage";
 import { StoreProductDetail } from "./components/store/StoreProductDetail";
 import { RouteFocus } from "./components/RouteFocus";
+import { BackToTop } from "./components/BackToTop";
 import { AdoptionVerificationResponder } from "./components/AdoptionVerificationResponder";
 import { RaveShelterMission } from "./components/RaveShelterMission";
 import { SevenStarSheltersPage } from "./components/SevenStarSheltersPage";
@@ -2417,6 +2418,7 @@ function App() {
     <>
       <DocumentTitle />
       <RouteFocus />
+      <BackToTop />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/rave" element={<RaveMissionPage />} />

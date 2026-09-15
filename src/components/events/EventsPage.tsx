@@ -14,6 +14,7 @@ import {
   type EventAudienceFilter,
   type PublicEvent,
 } from "../../lib/events";
+import { LoadingState } from "../LoadingState";
 import "./Events.css";
 
 type ManageableOrg = { organization_id: string; public_name: string };
@@ -385,9 +386,7 @@ export function EventsPage({ session }: { session: Session | null }) {
           )}
 
           {loading ? (
-            <p className="evEmpty" role="status">
-              Loading events…
-            </p>
+            <LoadingState>Loading events…</LoadingState>
           ) : loadError ? (
             <p className="evEmpty">{loadError}</p>
           ) : events.length === 0 ? (

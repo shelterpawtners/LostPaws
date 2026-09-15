@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { BadgeCheck, ShieldCheck } from "lucide-react";
 import { supabase as db } from "../lib/supabase";
+import { LoadingState } from "./LoadingState";
 
 type VerificationContext = {
   shelter_name: string;
@@ -71,7 +72,7 @@ export function AdoptionVerificationResponder() {
     return (
       <section className="section shell narrow formPage">
         <div className="panel">
-          <p role="status">Checking secure verification link…</p>
+          <LoadingState>Checking secure verification link…</LoadingState>
         </div>
       </section>
     );

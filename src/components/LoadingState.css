@@ -1,0 +1,30 @@
+.loadingState {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 18px;
+  color: var(--muted-text, #5f6b82);
+}
+
+.loadingStateSpinner {
+  width: 20px;
+  height: 20px;
+  flex: none;
+  border: 3px solid var(--border, #dfe5ee);
+  border-top-color: var(--primary, #654ab7);
+  border-radius: 50%;
+  animation: loadingStateSpin 900ms linear infinite;
+}
+
+@keyframes loadingStateSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .loadingStateSpinner {
+    animation-duration: 2.2s;
+  }
+}
