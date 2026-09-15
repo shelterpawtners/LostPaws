@@ -30,7 +30,7 @@ export function RaveShelterMission() {
               RAVE Shelter — Rewarding Adoption with Vendor Exclusives
             </p>
             <h1 id="rsm-title">
-              Rave with purpose. <span>Shop with impact.</span>
+              Rave with purpose. <span>Browse with impact.</span>
             </h1>
             <p className="rsmLead">
               Festival gear, art, and everyday finds from vendors who put part
@@ -41,7 +41,7 @@ export function RaveShelterMission() {
                 className="rsmButton rsmPrimary"
                 to="/marketplace?channel=rave"
               >
-                Shop RAVE Shelter offers
+                Browse RAVE Shelter offers
               </Link>
               <Link
                 className="rsmButton rsmSecondary"

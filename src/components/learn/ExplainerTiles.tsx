@@ -29,7 +29,7 @@ const tiles = [
   },
   {
     Icon: HandHeart,
-    title: "Shop with impact",
+    title: "Choose with impact",
     body: "Choose businesses that put part of their margin behind shelter pets.",
   },
   {

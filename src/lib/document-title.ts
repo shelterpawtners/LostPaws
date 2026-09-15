@@ -10,7 +10,7 @@ const SUFFIX = "ShelterPawtners";
 
 const exactTitles: Record<string, string> = {
   "/": "ShelterPawtners — Care, savings, and community for shelter pets",
-  "/rave": "RAVE Shelter — Rave with purpose. Shop with impact.",
+  "/rave": "RAVE Shelter — Rave with purpose. Browse with impact.",
   "/lostpaws": "LostPaws — a RAVE Shelter initiative for Lost Lands",
   "/sevenstars": "Seven Star Shelters — Spread shelter love",
   "/marketplace": "Marketplace",

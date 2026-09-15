@@ -144,13 +144,13 @@ export function SevenStarSheltersPage() {
           <div className="sevenStarsPathGrid">
             <article>
               <p className="sevenStarsPathTag">For ravers</p>
-              <h3>Shop with purpose.</h3>
+              <h3>Browse with purpose.</h3>
               <p>
                 Discover festival-relevant offers, save money, and support
                 shelter-minded businesses.
               </p>
               <Link to="/marketplace?channel=rave">
-                Shop RAVE offers <span aria-hidden="true">→</span>
+                Explore RAVE offers <span aria-hidden="true">→</span>
               </Link>
             </article>
             <article>
@@ -225,7 +225,7 @@ export function SevenStarSheltersPage() {
             </article>
             <article>
               <span>02</span>
-              <h3>Shop or share</h3>
+              <h3>Browse or share</h3>
               <p>
                 Discover participating offers or tell someone about the mission.
               </p>
