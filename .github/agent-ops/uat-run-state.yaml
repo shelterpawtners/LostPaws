@@ -4,9 +4,14 @@
 # the claim/release protocol this file supports.
 
 schema_version: 1
-updated: "2026-09-15T10:56:14Z"
+updated: "2026-09-15T16:23:26Z"
 
-active_claims: []
+active_claims:
+  - item: uat-199
+    agent: codex
+    branch: fix/uat-199-safe-ux-slice
+    claimed_at: "2026-09-15T16:23:26Z"
+    note: "Safe slice only: src/main.tsx reserved for Claude’s uat-195 work."
 
 completed:
   - item: uat-194

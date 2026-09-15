@@ -27,6 +27,7 @@ const filters: { value: EventAudienceFilter; label: string }[] = [
 export function EventsPage({ session }: { session: Session | null }) {
   const [audience, setAudience] = useState<EventAudienceFilter>("all");
   const [events, setEvents] = useState<PublicEvent[]>([]);
+  const [draftEvents, setDraftEvents] = useState<PublicEvent[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState("");
   const [orgs, setOrgs] = useState<ManageableOrg[]>([]);
@@ -79,6 +80,27 @@ export function EventsPage({ session }: { session: Session | null }) {
   useEffect(() => {
     void load();
   }, [load]);
+
+  const loadDraftEvents = useCallback(async () => {
+    if (!db || !session) {
+      setDraftEvents([]);
+      return;
+    }
+    const { data } = await db
+      .from("events")
+      .select(
+        "id,organization_id,audience,category,title,summary,details,service_area,is_online,starts_at,ends_at,status,published_at",
+      )
+      .eq("created_by", session.user.id)
+      .neq("status", "active")
+      .order("starts_at", { ascending: true, nullsFirst: false })
+      .limit(30);
+    setDraftEvents((data as PublicEvent[]) ?? []);
+  }, [session]);
+
+  useEffect(() => {
+    void loadDraftEvents();
+  }, [loadDraftEvents]);
 
   useEffect(() => {
     if (!db || !session) return;
@@ -143,6 +165,7 @@ export function EventsPage({ session }: { session: Session | null }) {
     );
     setForm((current) => ({ ...current, title: "", summary: "" }));
     void load();
+    void loadDraftEvents();
   }
 
   return (
@@ -341,6 +364,24 @@ export function EventsPage({ session }: { session: Session | null }) {
                 {status}
               </p>
             </form>
+          )}
+
+          {session && draftEvents.length > 0 && (
+            <section className="evDrafts" aria-labelledby="my-draft-events">
+              <h2 id="my-draft-events">Your draft events</h2>
+              <p>
+                These are saved but not public yet. Publishing controls are
+                coming next.
+              </p>
+              <ul>
+                {draftEvents.map((item) => (
+                  <li key={item.id}>
+                    <strong>{item.title}</strong>
+                    <span>{item.category}</span>
+                  </li>
+                ))}
+              </ul>
+            </section>
           )}
 
           {loading ? (

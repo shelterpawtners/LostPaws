@@ -219,6 +219,47 @@
   font-size: 0.92rem;
 }
 
+.evDrafts {
+  margin: 0 0 1.75rem;
+  padding: 1.2rem;
+  border: 1px solid var(--ev-line);
+  border-radius: 18px;
+  background: var(--ev-tint);
+}
+
+.evDrafts h2,
+.evDrafts p {
+  margin: 0;
+}
+
+.evDrafts p {
+  margin-top: 0.4rem;
+  color: var(--ev-muted);
+}
+
+.evDrafts ul {
+  display: grid;
+  gap: 0.6rem;
+  margin: 1rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.evDrafts li {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.75rem;
+  border: 1px solid var(--ev-line);
+  border-radius: 12px;
+  background: var(--ev-surface);
+}
+
+.evDrafts li span {
+  color: var(--ev-muted);
+  font-size: 0.9rem;
+}
+
 /* Listing */
 
 .evGrid {
