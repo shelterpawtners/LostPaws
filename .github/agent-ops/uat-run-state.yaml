@@ -4,15 +4,18 @@
 # the claim/release protocol this file supports.
 
 schema_version: 1
-updated: "2026-09-15T10:44:59Z"
+updated: "2026-09-15T10:56:14Z"
 
-active_claims:
-  - item: uat-194
-    agent: codex
-    branch: chore/uat-194-design-system
-    claimed_at: "2026-09-15T10:44:59Z"
+active_claims: []
 
 completed:
+  - item: uat-194
+    agent: codex
+    pr: 222
+    merged_sha: "358d9b0feb94c14c546df5627a79eadfa3678f88"
+    staging_verified: true
+    completed_at: "2026-09-15T10:56:14Z"
+    note: "UAT-21/22/23 and remaining UAT-24 coverage completed; all CI, Persona QA, Hosted QA, and GitHub Pages MVP Acceptance checks green."
   - item: uat-193
     agent: codex
     pr: 219
