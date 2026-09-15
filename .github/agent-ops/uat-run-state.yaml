@@ -4,22 +4,17 @@
 # the claim/release protocol this file supports.
 
 schema_version: 1
-updated: "2026-09-15T06:56:00Z"
+updated: "2026-09-15T07:05:00Z"
 
-active_claims:
+active_claims: []
+
+completed:
   - item: uat-186
     agent: claude
-    branch: fix/uat-186-vendor-onboarding-save
     pr: 204
-    claimed_at: "2026-09-15T06:56:00Z"
-
-completed: []
-# completed:
-#   - item: uat-186
-#     agent: claude
-#     pr: 203
-#     merged_sha: "abc1234"
-#     completed_at: "2026-09-15T01:00:00Z"
+    merged_sha: "841a823bb9e2dd3c2bcf97605957172a74bb443e"
+    staging_verified: true
+    completed_at: "2026-09-15T07:05:00Z"
 
 blockers: []
 # blockers:
