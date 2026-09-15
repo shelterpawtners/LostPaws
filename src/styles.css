@@ -551,6 +551,9 @@ nav > a:not(.btn):hover {
   box-shadow: var(--shadow);
 }
 .signup aside {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   padding: 45px;
   background: linear-gradient(145deg, #eef8f7, #f1ebfb);
 }
