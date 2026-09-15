@@ -393,3 +393,21 @@ items:
     branch: null
     pr: null
     note: "OWNER DIRECTION 2026-09-15 (comment on #56): explicitly NOT required for current MVP launch. Immediate post-MVP priority: FAQ/self-service first, then an AI Support Orchestrator for triage/routine handling, human escalation mandatory for security/privacy/destructive/account-ownership ambiguity. Tracked for roadmap continuity only -- do not start during this sprint."
+
+  - id: uat-206
+    issue: null
+    title: "Final /lostpaws production review (mobile + desktop)"
+    uat_ids: []
+    journey: guardian
+    priority: P1
+    owner: claude
+    status: done
+    depends_on: []
+    conflict_files:
+      [
+        "src/components/LostPawsActivation.tsx",
+        "src/components/LostPawsActivation.css",
+      ]
+    branch: fix/lostpaws-guardian-cta
+    pr: 245
+    note: "Owner direction 2026-09-15: final production-quality review of /lostpaws (QR landing flow, branding/images, Guardian path, RAVE Vendor path, navigation/back behavior, responsive layout, JS/image errors). Found and fixed one real gap: no Guardian/Pet Passport CTA anywhere in the campaign body. Everything else verified clean."
