@@ -277,14 +277,33 @@ items:
     title: "Admin store management architecture decision"
     uat_ids: [UAT-19]
     journey: none
+    priority: P2
+    owner: claude
+    status: done
+    depends_on: [uat-197, uat-201]
+    conflict_files: []
+    branch: feat/uat-200-store-products-schema
+    pr: 241
+    note: "OWNER DECISION 2026-09-15 (comment on #200): approved -- build database-backed editable Store/Swag catalog. Schema/RLS foundation slice done: public.store_products + RLS matching the existing public.events/private.is_platform_admin() pattern, pgTAP coverage. Remaining implementation split to uat-200b."
+
+  - id: uat-200b
+    issue: 200
+    title: "Wire StorePage/StoreProductDetail to public.store_products and build the admin editing UI"
+    uat_ids: [UAT-19]
+    journey: none
     priority: P3
     owner: unassigned
-    status: deferred
-    depends_on: [uat-197, uat-197b, uat-201]
-    conflict_files: []
+    status: ready
+    depends_on: [uat-200, uat-197b]
+    conflict_files:
+      [
+        "src/components/store/StorePage.tsx",
+        "src/components/store/StoreProductDetail.tsx",
+        "src/store/catalog.ts",
+      ]
     branch: null
     pr: null
-    note: "OWNER DECISION 2026-09-15 (comment on #200): approved -- build database-backed editable Store/Swag catalog (Supabase schema, RLS/admin auth, migration from the typed catalog.ts, validation, tests) so offers/products are editable live without code deploys. Sequencing: finish current visible Store/Swag page+image polish and copy fixes FIRST; do not let this architecture work block that. Design/implement after."
+    note: "Migrate the storefront's read path off the static src/store/catalog.ts onto the new public.store_products table (seed migration for the 9 existing products), and build a platform_admin-only editing UI (create/edit/publish/unpublish products, matching the OfferManager pattern for form + list). Waits on uat-197b (owner's apparel-image mapping decisions) so the seed migration doesn't have to guess at unresolved product images."
 
   - id: uat-201
     issue: 201
