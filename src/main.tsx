@@ -85,6 +85,7 @@ import { StorePage } from "./components/store/StorePage";
 import { StoreProductDetail } from "./components/store/StoreProductDetail";
 import { RouteFocus } from "./components/RouteFocus";
 import { BackToTop } from "./components/BackToTop";
+import { LoadingState } from "./components/LoadingState";
 import { AdoptionVerificationResponder } from "./components/AdoptionVerificationResponder";
 import { RaveShelterMission } from "./components/RaveShelterMission";
 import { SevenStarSheltersPage } from "./components/SevenStarSheltersPage";
@@ -1009,6 +1010,7 @@ function PartnerOrganizationOnboarding({ kind }: { kind: PartnerKind }) {
     return (
       <Page>
         <section className="section shell narrow">
+          <Link to="/dashboard">← Back to your dashboard</Link>
           <span className="eyebrow">{choice.title} setup</span>
           <h1>This onboarding is already complete.</h1>
           <p className="lead">
@@ -1028,6 +1030,7 @@ function PartnerOrganizationOnboarding({ kind }: { kind: PartnerKind }) {
   return (
     <Page>
       <section className="section shell partnerOnboarding">
+        <Link to="/dashboard">← Back to your dashboard</Link>
         <span className="eyebrow">{choice.title} setup</span>
         <h1>Start with your business details.</h1>
         <p className="lead">
@@ -1472,6 +1475,7 @@ function StandardOnboard({ kind: k }: { kind: "guardian" | "shelter" }) {
   return (
     <Page>
       <section className="section shell narrow">
+        <Link to="/dashboard">← Back to your dashboard</Link>
         <span className="eyebrow">{c.title} setup</span>
         <h1>
           {k === "guardian"
@@ -2278,13 +2282,16 @@ function Dashboard() {
           <span className="eyebrow">{phaseOneRoleLabels[active]}</span>
           <h2>
             {kind === "guardian"
-              ? pets.length
+              ? petsLoading || pets.length
                 ? "Your pets"
                 : "Your pet journey starts here"
               : kind === "shelter"
                 ? "Build your shelter presence"
                 : "Manage your organization"}
           </h2>
+          {kind === "guardian" && petsLoading && (
+            <LoadingState>Loading your pets…</LoadingState>
+          )}
           {kind === "guardian" && pets.length > 0 && (
             <div className="guardianPets" aria-label="Your pets">
               {pets.map((pet) => (
