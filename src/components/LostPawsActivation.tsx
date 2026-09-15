@@ -31,7 +31,7 @@ export function LostPawsActivation() {
         </div>
         <div className="lpWrap lpHeroContent">
           <p className="lpKicker">A RAVE Shelter initiative for Lost Lands</p>
-          <h1 id="lp-title">Shop the lot. Help the pack.</h1>
+          <h1 id="lp-title">Gear that gives back to the pack.</h1>
           <p className="lpLead">
             Gear and art from Lost Lands vendors who put part of every sale
             behind shelter pets.
@@ -99,7 +99,8 @@ export function LostPawsActivation() {
           <div>
             <p className="lpKicker">Where this sits</p>
             <h2 id="lp-movement-title">
-              LostPaws is for Lost Lands. RAVE Shelter is the whole thing.
+              LostPaws is for Lost Lands. RAVE Shelter is the platform behind
+              it.
             </h2>
             <p>
               Other festivals get their own activations, not the LostPaws name.

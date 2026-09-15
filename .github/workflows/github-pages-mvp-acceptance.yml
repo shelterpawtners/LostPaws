@@ -174,7 +174,7 @@ jobs:
 
             await page.goto(`${process.env.SITE_URL}/lostpaws`, { waitUntil: 'networkidle' });
             await page.getByText('A RAVE Shelter initiative for Lost Lands', { exact: true }).waitFor({ state: 'visible', timeout: 10000 });
-            await page.getByRole('heading', { name: 'Shop the lot. Help the pack.' }).waitFor({ state: 'visible', timeout: 10000 });
+            await page.getByRole('heading', { name: 'Gear that gives back to the pack.' }).waitFor({ state: 'visible', timeout: 10000 });
             const lostPawsLinks = [
               ['Shop participating offers', '/marketplace?channel=rave'],
               ['Join as a vendor', '/register?type=rave_vendor'],
