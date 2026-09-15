@@ -4,15 +4,9 @@
 # the claim/release protocol this file supports.
 
 schema_version: 1
-updated: "2026-09-15T07:35:00Z"
+updated: "2026-09-15T08:05:00Z"
 
-active_claims:
-  - item: uat-190
-    agent: claude
-    branch: null
-    pr: null
-    claimed_at: "2026-09-15T07:35:00Z"
-    note: "Reassigned from codex — no Codex activity across the sprint so far (checked via gh pr list); picking up to avoid idling per docs/operations/UAT-OVERNIGHT-OPERATIONS.md. Codex may still claim a different ready item at any time."
+active_claims: []
 
 completed:
   - item: uat-186
@@ -45,6 +39,13 @@ completed:
     merged_sha: "65a2ec8b75447eabf335f93fc99ae92bb9fd5d53"
     staging_verified: true
     completed_at: "2026-09-15T07:35:00Z"
+  - item: uat-190
+    agent: claude
+    pr: 213
+    merged_sha: "533306c5f2ba8c079eac972d0ad472fc52606279"
+    staging_verified: pending
+    completed_at: "2026-09-15T08:05:00Z"
+    note: "Caught and fixed a real gap: the new required Confirm password field broke 4 e2e registration helpers that only filled Password, matching what a real user would hit if they missed the second field. Also fixed a separate, unrelated bug found in this window: STATUS: IN_PROGRESS in release-state.yaml (set during initial control-plane setup) was silently skipping the real Persona/Hosted QA suites on every prior merge this sprint -- fixed in #214, retroactively re-validated uat-186/189/191/192/187 against main via workflow_dispatch (persona: pass; hosted: one pre-existing, unrelated hosted-environment data issue filed as #215)."
 
 blockers: []
 # blockers:
