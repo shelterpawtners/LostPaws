@@ -11,6 +11,10 @@ active_claims:
     agent: claude
     branch: feat/loading-states-back-to-top
     claimed_at: "2026-09-15T17:50:00Z"
+  - item: uat-203
+    agent: claude
+    branch: feat/uat-203-guardian-ux-review
+    claimed_at: "2026-09-15T18:20:00Z"
 
 completed:
   - item: uat-196a
