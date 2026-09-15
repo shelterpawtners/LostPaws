@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import { supabase as db } from "../lib/supabase";
 import { DealMomentEditor } from "./DealMomentEditor";
+import { LoadingState } from "./LoadingState";
 import "../guardian-social.css";
 
 type GuardianActivity = {
@@ -105,7 +106,7 @@ export function GuardianActivityTimeline({
       </div>
 
       {loading ? (
-        <p role="status">Loading your activity…</p>
+        <LoadingState>Loading your activity…</LoadingState>
       ) : items.length ? (
         <ol className="guardianTimelineList">
           {items.map((item) => (

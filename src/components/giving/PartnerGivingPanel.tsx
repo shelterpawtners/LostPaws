@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { HandHeart, ShieldCheck } from "lucide-react";
 import { supabase as db } from "../../lib/supabase";
+import { LoadingState } from "../LoadingState";
 import "./Giving.css";
 
 type CommitmentKind =
@@ -136,7 +137,7 @@ export function PartnerGivingPanel({
     void load();
   }
 
-  if (loading) return <p role="status">Loading your giving details…</p>;
+  if (loading) return <LoadingState>Loading your giving details…</LoadingState>;
 
   return (
     <section className="givingPanel" aria-labelledby="giving-panel-title">

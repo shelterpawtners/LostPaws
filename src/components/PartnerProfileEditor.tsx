@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { PartnerGivingPanel } from "./giving/PartnerGivingPanel";
 import type { Session } from "@supabase/supabase-js";
 import { supabase as db } from "../lib/supabase";
+import { LoadingState } from "./LoadingState";
 import {
   isHttpUrl,
   partnerBusinessModels,
@@ -343,9 +344,7 @@ export function PartnerProfileEditor({ session }: { session: Session | null }) {
           </select>
         </label>
         {loadingProfile && (
-          <p role="status" aria-live="polite">
-            Loading saved profile details…
-          </p>
+          <LoadingState>Loading saved profile details…</LoadingState>
         )}
         <fieldset disabled={saving || loadingProfile || loadingSetup || !id}>
           <div className="fields">

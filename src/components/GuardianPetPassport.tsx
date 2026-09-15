@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import type { Session } from "@supabase/supabase-js";
 import { ShieldCheck } from "lucide-react";
 import { supabase as db } from "../lib/supabase";
+import { LoadingState } from "./LoadingState";
 import { GuardianAdoptionVerification } from "./GuardianAdoptionVerification";
 import { PetMediaGallery } from "./PetMediaGallery";
 
@@ -117,7 +118,7 @@ export function GuardianPetPassport({
     <section className="section shell narrow petDetail">
       <Link to="/dashboard">← Back to your pets</Link>
       {loading ? (
-        <p role="status">Loading pet Passport…</p>
+        <LoadingState>Loading pet Passport…</LoadingState>
       ) : pet ? (
         <>
           <div className="panel passportLead">

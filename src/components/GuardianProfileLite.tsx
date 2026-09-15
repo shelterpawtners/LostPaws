@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import type { Session } from "@supabase/supabase-js";
 import { Camera, UserRound } from "lucide-react";
 import { supabase as db } from "../lib/supabase";
+import { LoadingState } from "./LoadingState";
 import { GuardianActivityTimeline } from "./GuardianActivityTimeline";
 import { GuardianGivingHistory } from "./giving/GuardianGivingHistory";
 import "../guardian-profile-lite.css";
@@ -143,7 +144,7 @@ export function GuardianProfileLite({ session }: { session: Session | null }) {
           They are not published on your pet Passport or Marketplace profile.
         </p>
         {loading ? (
-          <p role="status">Loading your profile…</p>
+          <LoadingState>Loading your profile…</LoadingState>
         ) : (
           <form className="detail" onSubmit={save}>
             <div className="guardianProfileIdentity">

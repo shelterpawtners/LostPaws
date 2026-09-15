@@ -8,6 +8,7 @@ import {
   Trash2,
 } from "lucide-react";
 import { supabase as db } from "../lib/supabase";
+import { LoadingState } from "./LoadingState";
 import "../guardian-social.css";
 
 type PetMedia = {
@@ -285,7 +286,7 @@ export function PetMediaGallery({
       </div>
 
       {loading ? (
-        <p role="status">Loading pet photos…</p>
+        <LoadingState>Loading pet photos…</LoadingState>
       ) : media.length ? (
         <div className="petMediaGrid" aria-label="Pet photo gallery">
           {media.map((item, index) => (

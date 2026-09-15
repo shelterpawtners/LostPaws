@@ -18,6 +18,7 @@ import {
   type PublicEvent,
 } from "../../lib/events";
 import { OfferMarketplace } from "../OfferMarketplace";
+import { LoadingState } from "../LoadingState";
 import "./Events.css";
 
 type ParticipantOrg = {
@@ -117,9 +118,7 @@ export function EventDetailPage({ session }: { session: Session | null }) {
       <div className="evPage">
         <section className="evBody">
           <div className="evWrap">
-            <p className="evEmpty" role="status">
-              Loading event…
-            </p>
+            <LoadingState>Loading event…</LoadingState>
           </div>
         </section>
       </div>

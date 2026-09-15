@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import type { Session } from "@supabase/supabase-js";
 import { BadgeCheck, Clock3, Send } from "lucide-react";
 import { supabase as db } from "../lib/supabase";
+import { LoadingState } from "./LoadingState";
 
 type Verification = {
   id: string;
@@ -136,7 +137,7 @@ export function GuardianAdoptionVerification({
       </p>
 
       {loading ? (
-        <p role="status">Loading adoption verification…</p>
+        <LoadingState>Loading adoption verification…</LoadingState>
       ) : verification?.status === "confirmed" ? (
         <div className="notice">
           <BadgeCheck />

@@ -4,25 +4,29 @@
 # the claim/release protocol this file supports.
 
 schema_version: 1
-updated: "2026-09-15T17:48:00Z"
+updated: "2026-09-15T18:15:00Z"
 
-active_claims: []
+active_claims:
+  - item: uat-202a
+    agent: claude
+    branch: feat/loading-states-back-to-top
+    claimed_at: "2026-09-15T17:50:00Z"
 
 completed:
   - item: uat-196a
     agent: codex
-    pr: "PENDING"
-    merged_sha: "PENDING"
-    staging_verified: false
+    pr: 233
+    merged_sha: "bcfce0d"
+    staging_verified: true
     completed_at: "2026-09-15T17:48:00Z"
     note: "Concrete evidence only; no matching-policy change. Existing Playwright path signs in as Partner B, enters exact seeded Demo PetBiz A, observes the candidate and safe request/claim/dismiss actions. Existing database/RLS contract verifies anonymous denial and no membership creation. Local organization-matching unit checks passed (16 tests); browser assertion skipped locally because Supabase Playwright credentials are absent."
   - item: uat-201
     agent: claude
     pr: 231
-    merged_sha: "PENDING"
-    staging_verified: false
-    completed_at: "2026-09-15T17:45:00Z"
-    note: "Full site Shop->Browse copy sweep per owner decision on #201 (avoid the word 'Shop' brand-wide). Updated RaveShelterMission tagline/CTA, home page, LostPawsActivation, SevenStarSheltersPage (3 spots, one renamed to 'Explore' instead of 'Browse' to avoid colliding with a pre-existing nearby 'Browse RAVE offers' link -- caught by e2e/seven-star-shelters.spec.ts), ExplainerTiles, rave-vendors.html, document-title.ts, plus BRAND-DESIGN-SYSTEM.md/CONTENT-STANDARDS.md/UAT-OVERNIGHT-OPERATIONS.md doc updates. Found and fixed a second bug during CI watch: .github/workflows/github-pages-mvp-acceptance.yml's public-release-matrix job had two independent link-text assertion arrays (raveLinks and lostPawsLinks) checking the old copy; only raveLinks had been updated in the original PR, so the acceptance job timed out waiting for 'Shop participating offers' which no longer renders. Fixed in a follow-up commit on the same PR branch. Will update merged_sha and staging_verified once CI is green and merge completes."
+    merged_sha: "28f6164"
+    staging_verified: true
+    completed_at: "2026-09-15T17:52:00Z"
+    note: "Full site Shop->Browse copy sweep per owner decision on #201 (avoid the word 'Shop' brand-wide). Updated RaveShelterMission tagline/CTA, home page, LostPawsActivation, SevenStarSheltersPage (3 spots, one renamed to 'Explore' instead of 'Browse' to avoid colliding with a pre-existing nearby 'Browse RAVE offers' link -- caught by e2e/seven-star-shelters.spec.ts), ExplainerTiles, rave-vendors.html, document-title.ts, plus BRAND-DESIGN-SYSTEM.md/CONTENT-STANDARDS.md/UAT-OVERNIGHT-OPERATIONS.md doc updates. Found and fixed a second bug during CI watch: .github/workflows/github-pages-mvp-acceptance.yml's public-release-matrix job had two independent link-text assertion arrays (raveLinks and lostPawsLinks) checking the old copy; only raveLinks had been updated in the original PR, so the acceptance job timed out waiting for 'Shop participating offers' which no longer renders. Fixed in a follow-up commit on the same PR branch (1bbf442). CI green, merged, GitHub Pages staging deploy verified healthy."
   - item: uat-199b
     agent: codex
     pr: 229
