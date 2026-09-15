@@ -63,7 +63,6 @@ export function OfferManager({ session }: { session: Session | null }) {
   }, [session]);
   const load = () => {
     if (!db || !org) return;
-    setOffersLoading(true);
     void Promise.all([
       db
         .from("offers")
@@ -91,7 +90,18 @@ export function OfferManager({ session }: { session: Session | null }) {
       setOffersLoading(false);
     });
   };
-  useEffect(load, [org]);
+  useEffect(() => {
+    // Only show the sidebar's loading spinner for the initial fetch (or a
+    // switch to a different organization). save()/action() call load()
+    // directly afterward to silently refresh the list -- re-arming this on
+    // every refresh flashed the whole list to a spinner after every publish/
+    // pause/duplicate/archive, and briefly showed two simultaneous status
+    // regions (this spinner plus the action's own "complete" message).
+    if (!org) return;
+    setOffersLoading(true);
+    load();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [org]);
   const set = (key: keyof OfferTerms, value: string) =>
     setForm((v) => ({ ...v, [key]: value }));
   async function save() {
