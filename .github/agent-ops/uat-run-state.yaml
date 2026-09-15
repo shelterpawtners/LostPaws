@@ -7,12 +7,19 @@ schema_version: 1
 updated: "2026-09-15T18:25:00Z"
 
 active_claims:
-  - item: uat-203
+  - item: uat-204
     agent: claude
-    branch: feat/uat-203-guardian-ux-review
-    claimed_at: "2026-09-15T18:20:00Z"
+    branch: feat/uat-204-vendor-offer-ux
+    claimed_at: "2026-09-15T18:10:00Z"
 
 completed:
+  - item: uat-203
+    agent: claude
+    pr: 236
+    merged_sha: "7918891"
+    staging_verified: false
+    completed_at: "2026-09-15T18:07:06Z"
+    note: "Added a back-to-dashboard link on all Guardian/shelter/vendor onboarding forms (previously only the browser back button worked), fixed a dashboard content flash where a returning Guardian with pets briefly saw the empty-state heading before the pets query resolved, and consolidated with Codex's independent fix for the same underlying loading-state gap (#235, closed in favor of this PR) -- upgraded to the shared LoadingState spinner and corrected an unscoped getByRole('status') regression test that collided with GuardianProfileLite's own status region on the same page."
   - item: uat-202a
     agent: claude
     pr: 234
