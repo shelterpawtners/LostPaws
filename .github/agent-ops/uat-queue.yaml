@@ -1,0 +1,245 @@
+# UAT sprint work queue — durable backlog derived from Issue #183, re-ranked
+# by Guardian/Vendor funnel impact per docs/operations/UAT-OVERNIGHT-OPERATIONS.md.
+#
+# This file is the backlog (what exists and its priority). Live claims and
+# in-progress state live in uat-run-state.yaml, not here.
+#
+# status values: ready | blocked | deferred | done
+# owner values: claude | codex | unassigned | owner (needs a human decision)
+
+schema_version: 1
+source_of_truth_issue: 183
+last_rebuilt: "2026-09-15"
+
+items:
+  - id: uat-186
+    issue: 186
+    title: "Vendor onboarding form silently fails to save"
+    uat_ids: [UAT-9, UAT-18]
+    journey: vendor
+    priority: P0
+    owner: claude
+    status: ready
+    depends_on: []
+    conflict_files: ["src/main.tsx"]
+    branch: null
+    pr: null
+
+  - id: uat-187
+    issue: 187
+    title: "RAVE vendor signup screen off-center"
+    uat_ids: [UAT-5]
+    journey: vendor
+    priority: P0
+    owner: unassigned
+    status: ready
+    depends_on: []
+    conflict_files: ["src/styles.css", "src/main.tsx"]
+    branch: null
+    pr: null
+
+  - id: uat-188
+    issue: 188
+    title: "Regenerate favicon/apple-touch-icon/social-card from real logo"
+    uat_ids: [UAT-31, UAT-14]
+    journey: both
+    priority: P0
+    owner: codex
+    status: ready
+    depends_on: []
+    conflict_files: ["public/brand/", "index.html"]
+    branch: null
+    pr: null
+
+  - id: uat-189
+    issue: 189
+    title: "/lostpaws copy cleanup: awkward wording + local Shop->Adopt tilt"
+    uat_ids: [UAT-1, UAT-20-partial]
+    journey: both
+    priority: P1
+    owner: claude
+    status: ready
+    depends_on: []
+    conflict_files: ["src/components/LostPawsActivation.tsx"]
+    branch: null
+    pr: null
+
+  - id: uat-190
+    issue: 190
+    title: "Password show/hide toggle + confirm-password field"
+    uat_ids: [UAT-6, UAT-7]
+    journey: both
+    priority: P1
+    owner: codex
+    status: ready
+    depends_on: []
+    conflict_files: ["src/main.tsx"]
+    branch: null
+    pr: null
+
+  - id: uat-191
+    issue: 191
+    title: "Sign-in/sign-up flow consolidation"
+    uat_ids: [UAT-25, UAT-26, UAT-27, UAT-28]
+    journey: both
+    priority: P1
+    owner: claude
+    status: ready
+    depends_on: []
+    conflict_files: ["src/main.tsx"]
+    branch: null
+    pr: null
+
+  - id: uat-192
+    issue: 192
+    title: "Vendor onboarding form wording clarity"
+    uat_ids: [UAT-11, UAT-12]
+    journey: vendor
+    priority: P1
+    owner: claude
+    status: blocked
+    depends_on: [uat-186]
+    conflict_files: ["src/main.tsx"]
+    branch: null
+    pr: null
+
+  - id: uat-193
+    issue: 193
+    title: "Mobile-first audit — /lostpaws + signup/onboarding pages"
+    uat_ids: [UAT-24-funnel-slice]
+    journey: both
+    priority: P1
+    owner: codex
+    status: ready
+    depends_on: []
+    conflict_files: []
+    branch: null
+    pr: null
+
+  - id: uat-194
+    issue: 194
+    title: "Sitewide design-system pass: button fill, status text, tooltips, remaining mobile audit"
+    uat_ids: [UAT-21, UAT-22, UAT-23, UAT-24-remainder]
+    journey: none
+    priority: P2
+    owner: codex
+    status: ready
+    depends_on: []
+    conflict_files: ["src/styles.css"]
+    branch: null
+    pr: null
+
+  - id: uat-195
+    issue: 195
+    title: "Professional-site Tier 1: confirm modals, 404 page, FAQ accordion, hover audit"
+    uat_ids: [UAT-33, UAT-34, UAT-35, UAT-37]
+    journey: none
+    priority: P2
+    owner: codex
+    status: ready
+    depends_on: []
+    conflict_files: []
+    branch: null
+    pr: null
+
+  - id: uat-196
+    issue: 196
+    title: "Non-code verification: email deliverability, footer mailboxes, Assisted Matching test, signup differentiation intent"
+    uat_ids: [UAT-4, UAT-8, UAT-10, UAT-13, UAT-36]
+    journey: mixed
+    priority: P2
+    owner: owner
+    status: blocked
+    depends_on: []
+    conflict_files: []
+    branch: null
+    pr: null
+
+  - id: uat-197
+    issue: 197
+    title: "Store/marketplace product photography"
+    uat_ids: [UAT-3, UAT-15, UAT-30]
+    journey: none
+    priority: P3
+    owner: unassigned
+    status: deferred
+    depends_on: []
+    conflict_files: []
+    branch: null
+    pr: null
+
+  - id: uat-198
+    issue: 198
+    title: "Marketplace offer image auto-fetch (own feature slice)"
+    uat_ids: [UAT-16]
+    journey: none
+    priority: P3
+    owner: unassigned
+    status: deferred
+    depends_on: []
+    conflict_files: []
+    branch: null
+    pr: null
+
+  - id: uat-199
+    issue: 199
+    title: "Misc non-funnel content/UX fixes"
+    uat_ids: [UAT-2, UAT-17, UAT-29]
+    journey: none
+    priority: P3
+    owner: codex
+    status: ready
+    depends_on: []
+    conflict_files:
+      [
+        "src/components/OfferMarketplace.tsx",
+        "src/components/events/EventsPage.tsx",
+        "src/main.tsx",
+        "src/lib/document-title.ts",
+      ]
+    branch: null
+    pr: null
+
+  - id: uat-200
+    issue: 200
+    title: "Admin store management architecture decision"
+    uat_ids: [UAT-19]
+    journey: none
+    priority: P3
+    owner: owner
+    status: blocked
+    depends_on: []
+    conflict_files: []
+    branch: null
+    pr: null
+
+  - id: uat-201
+    issue: 201
+    title: "Full brand-tagline copy pivot (Shop -> Adopt) remainder"
+    uat_ids: [UAT-20-remainder]
+    journey: none
+    priority: P3
+    owner: owner
+    status: blocked
+    depends_on: []
+    conflict_files:
+      [
+        "src/components/RaveShelterMission.tsx",
+        "docs/design/BRAND-DESIGN-SYSTEM.md",
+        "docs/design/CONTENT-STANDARDS.md",
+      ]
+    branch: null
+    pr: null
+
+  - id: uat-202
+    issue: 202
+    title: "Deferred professional-site checklist, Tiers 2-4"
+    uat_ids: [UAT-38, UAT-39, UAT-40, UAT-41, UAT-42, UAT-43, UAT-44, UAT-45]
+    journey: none
+    priority: P3
+    owner: unassigned
+    status: deferred
+    depends_on: []
+    conflict_files: []
+    branch: null
+    pr: null

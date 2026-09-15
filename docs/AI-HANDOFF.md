@@ -5,10 +5,10 @@
 > This retained path preserves the same required fields for inbound compatibility;
 > it is not the human live-status authority.
 
-STATUS: READY_FOR_ACCEPTANCE
-CURRENT_PHASE: Repository normalization and non-owner-gated MVP closeout (Issues #136 and #107)
-CURRENT_CHECKPOINT: Issue #136 atomic release-state consumer migration is in validation.
-NEXT_CHECKPOINT: Merge the validated atomic migration, then continue the remaining #136 cleanup sequence.
+STATUS: IN_PROGRESS
+CURRENT_PHASE: Post-MVP UAT sprint (Issue #183): autonomous Claude/Codex overnight execution on the Guardian and Raver Vendor QR->/lostpaws signup funnels
+CURRENT_CHECKPOINT: UAT control plane established (docs/operations/UAT-OVERNIGHT-OPERATIONS.md, .github/agent-ops/uat-queue.yaml, .github/agent-ops/uat-run-state.yaml) with 17 work-packet issues (#186-#202) tracing all 45 UAT-N items from #183; Codex re-authorized for this sprint.
+NEXT_CHECKPOINT: Merge P0 funnel fixes (Issues #186, #187, #188), verify staging health, then continue P1 queue items.
 OWNER_DECISION_REQUIRED: NO
 SAFE_TO_CONTINUE: YES
 ACCEPTED_CODE_SHA: NONE
@@ -161,3 +161,23 @@ Never:
 - auto-close/fix support cases solely from AI suggestions;
 - bypass privacy/P0/P1 human escalation;
 - wholesale-merge historical branches or create another long-lived release/integration branch.
+
+## UAT overnight sprint kickoff — 2026-09-15
+
+Owner directed a move from chat-driven UAT triage to autonomous
+Claude + Codex execution against `docs/operations/UAT-OVERNIGHT-OPERATIONS.md`
+and `.github/agent-ops/uat-queue.yaml`, converting the 45 items already
+collected in Issue #183 into 17 traceable GitHub work-packet issues
+(#186-#202). **This explicitly supersedes the 2026-09-12 "Codex is
+paused/out of scope" line above** — Codex is re-authorized for this sprint,
+working the `owner: codex` items in `uat-queue.yaml` independently, per the
+division of responsibility documented in
+`docs/operations/UAT-OVERNIGHT-OPERATIONS.md`. Verified before setup: no
+GitHub App installation, no repository webhooks, and no Codex-aware GitHub
+Actions workflow exist in this repo, so there is no native cross-agent
+trigger — GitHub Issues/branches/PRs and the queue YAML are the
+coordination bus, polled independently by each agent.
+
+`uat/post-mvp` is retired as an implementation branch (its one pending
+commit merged to `main` via PR #185); new UAT-sprint work branches from
+`main` per one-short-lived-branch-per-issue policy.
