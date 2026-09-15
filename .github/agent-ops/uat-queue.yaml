@@ -149,24 +149,68 @@ items:
     journey: mixed
     priority: P2
     owner: owner
-    status: blocked
+    status: done
     depends_on: []
     conflict_files: []
     branch: null
     pr: null
+    note: "OWNER DECISION 2026-09-15 (comment on #196): footer mailboxes real but unmonitored, not a blocker, extend to AI-first level-zero support post-MVP per #56 (not required for launch). Email deliverability not a hard blocker but diagnose+fix safely if possible before Wednesday night -> split to uat-196b. Assisted Matching stays conservative, needs test evidence before broadening -> split to uat-196a."
+
+  - id: uat-196a
+    issue: 196
+    title: "Test Assisted Matching with concrete cases to determine signal vs. noise"
+    uat_ids: [UAT-10]
+    journey: vendor
+    priority: P1
+    owner: unassigned
+    status: ready
+    depends_on: []
+    conflict_files: []
+    branch: null
+    pr: null
+    note: "Owner direction: stay conservative/high-confidence; gather concrete test-case evidence before broadening matching behavior. Do not weaken/broaden matching without evidence."
+
+  - id: uat-196b
+    issue: 196
+    title: "Diagnose confirmation-email deliverability (SPF/DKIM/DMARC/SMTP) -- diagnosis only, no DNS/provider changes"
+    uat_ids: [UAT-8]
+    journey: both
+    priority: P2
+    owner: unassigned
+    status: ready
+    depends_on: []
+    conflict_files: []
+    branch: null
+    pr: null
+    note: "Owner wants deliverability improved before Wednesday night if safe. Diagnose only (SPF/DKIM/DMARC/Resend config); do NOT make production DNS/provider changes without stopping narrowly for owner approval -- that step is RED, not this diagnosis."
 
   - id: uat-197
     issue: 197
     title: "Store/marketplace product photography"
     uat_ids: [UAT-3, UAT-15, UAT-30]
     journey: none
-    priority: P3
-    owner: unassigned
-    status: deferred
+    priority: P1
+    owner: claude
+    status: done
     depends_on: []
-    conflict_files: []
+    conflict_files: ["src/store/catalog.ts", "src/components/store/Store.css"]
+    branch: fix/store-product-images
+    pr: 230
+    note: "OWNER DECISION 2026-09-15 (comment on #197): real images exist, map now, high priority. Mapped the 3 unambiguous sticker products (brand marks = the sticker design). The 6 apparel/merch products (2 tees, hoodie, tote, pin) have no suitable asset -- see the ambiguous-mapping comment posted on #197 for owner confirmation. Follow-up split to uat-197b once owner responds."
+
+  - id: uat-197b
+    issue: 197
+    title: "Map remaining Store apparel/merch product images (owner input needed)"
+    uat_ids: [UAT-3, UAT-15, UAT-30]
+    journey: none
+    priority: P2
+    owner: owner
+    status: blocked
+    depends_on: []
+    conflict_files: ["src/store/catalog.ts"]
     branch: null
     pr: null
+    note: "Blocked on owner confirmation: which asset (if any) for Shelter Pawtners Classic Tee, RAVE Shelter Hoodie, Shelter Pawtners Tote Bag, LostPaws Enamel Pin (no suitable asset exists for any of these four); and which of the two QR-embedded LostPaws tee print designs, if either, is appropriate as a website product photo for LostPaws Festival Tee. See comment on #197."
 
   - id: uat-198
     issue: 198
@@ -180,6 +224,7 @@ items:
     conflict_files: []
     branch: null
     pr: null
+    note: "OWNER DECISION 2026-09-15 (comment on #198): approved as a high-value near-end nice-to-have, not a funnel blocker. Reuse the existing security-reviewed proposal (docs/product/OFFER-LINK-PREVIEW-PROPOSAL.md), keep SSRF/sanitization protections, prefer official metadata/open-graph over scraping. Schedule near the end of this sprint, after current visible polish."
 
   - id: uat-199
     issue: 199
@@ -206,12 +251,12 @@ items:
     uat_ids: [UAT-29]
     journey: none
     priority: P3
-    owner: unassigned
-    status: ready
+    owner: codex
+    status: done
     depends_on: []
     conflict_files: ["src/main.tsx"]
-    branch: null
-    pr: null
+    branch: chore/uat-199b-swag-navigation
+    pr: 229
 
   - id: uat-200
     issue: 200
@@ -219,21 +264,22 @@ items:
     uat_ids: [UAT-19]
     journey: none
     priority: P3
-    owner: owner
-    status: blocked
-    depends_on: []
+    owner: unassigned
+    status: deferred
+    depends_on: [uat-197, uat-197b, uat-201]
     conflict_files: []
     branch: null
     pr: null
+    note: "OWNER DECISION 2026-09-15 (comment on #200): approved -- build database-backed editable Store/Swag catalog (Supabase schema, RLS/admin auth, migration from the typed catalog.ts, validation, tests) so offers/products are editable live without code deploys. Sequencing: finish current visible Store/Swag page+image polish and copy fixes FIRST; do not let this architecture work block that. Design/implement after."
 
   - id: uat-201
     issue: 201
-    title: "Full brand-tagline copy pivot (Shop -> Adopt) remainder"
+    title: "Full brand-tagline copy pivot (Shop -> Browse) remainder"
     uat_ids: [UAT-20-remainder]
     journey: none
-    priority: P3
-    owner: owner
-    status: blocked
+    priority: P1
+    owner: claude
+    status: done
     depends_on: []
     conflict_files:
       [
@@ -241,13 +287,28 @@ items:
         "docs/design/BRAND-DESIGN-SYSTEM.md",
         "docs/design/CONTENT-STANDARDS.md",
       ]
+    branch: feat/brand-shop-to-adopt-copy
+    pr: 231
+    note: "OWNER DECISION 2026-09-15 (comment on #201): avoid 'Shop' in ShelterPawtners/RAVE Shelter messaging sitewide. Replaced the tagline with 'Rave with purpose. Browse with impact.' and every other live 'Shop'-branded string sitewide; updated the two canonical brand docs. Proposed wording, not necessarily final -- owner may want to revise."
+
+  - id: uat-202a
+    issue: 202
+    title: "Loading states + back-to-top button (approved Tier 2 items)"
+    uat_ids: [UAT-38, UAT-39]
+    journey: none
+    priority: P2
+    owner: unassigned
+    status: ready
+    depends_on: []
+    conflict_files: []
     branch: null
     pr: null
+    note: "OWNER DECISION 2026-09-15 (comment on #202): both desirable, do before MVP if inexpensive/safe. Floating contact button (UAT-40) stays deferred -- do not include it here."
 
   - id: uat-202
     issue: 202
-    title: "Deferred professional-site checklist, Tiers 2-4"
-    uat_ids: [UAT-38, UAT-39, UAT-40, UAT-41, UAT-42, UAT-43, UAT-44, UAT-45]
+    title: "Deferred professional-site checklist, remainder (floating contact, newsletter, analytics, cookie banner, dark mode, scroll progress, search, print)"
+    uat_ids: [UAT-40, UAT-41, UAT-42, UAT-43, UAT-44, UAT-45]
     journey: none
     priority: P3
     owner: unassigned
@@ -256,3 +317,46 @@ items:
     conflict_files: []
     branch: null
     pr: null
+    note: "OWNER DECISION 2026-09-15 (comment on #202): floating contact not needed now. Newsletter/analytics/cookie banner deferred until the corresponding email/analytics/privacy choices are intentionally made. Dark mode/scroll progress/search/print stylesheet deferred/skip for MVP unless unusually cheap."
+
+  - id: uat-203
+    issue: null
+    title: "Guardian UX/dashboard final usability and polish review"
+    uat_ids: []
+    journey: guardian
+    priority: P1
+    owner: unassigned
+    status: ready
+    depends_on: []
+    conflict_files: ["src/main.tsx"]
+    branch: null
+    pr: null
+    note: "Owner direction 2026-09-15: final usability/polish pass on navigation, forms, pet management, dashboard clarity, mobile behavior, obvious next actions. Fix real issues found; do not hide/remove any existing feature without owner approval (HARD RULE) -- fix, document, or escalate instead."
+
+  - id: uat-204
+    issue: null
+    title: "RAVE Vendor UX verification: create/edit/manage offers during an event"
+    uat_ids: []
+    journey: vendor
+    priority: P1
+    owner: unassigned
+    status: ready
+    depends_on: []
+    conflict_files: ["src/components/OfferManager.tsx"]
+    branch: null
+    pr: null
+    note: "Owner direction 2026-09-15: verify vendors can easily create, edit, manage, and understand offers during a live event. Fix real issues found; do not hide/remove any existing feature without owner approval."
+
+  - id: uat-205
+    issue: 56
+    title: "Support OS: agent-first level-zero customer service (post-MVP)"
+    uat_ids: []
+    journey: none
+    priority: P3
+    owner: unassigned
+    status: deferred
+    depends_on: []
+    conflict_files: []
+    branch: null
+    pr: null
+    note: "OWNER DIRECTION 2026-09-15 (comment on #56): explicitly NOT required for current MVP launch. Immediate post-MVP priority: FAQ/self-service first, then an AI Support Orchestrator for triage/routine handling, human escalation mandatory for security/privacy/destructive/account-ownership ambiguity. Tracked for roadmap continuity only -- do not start during this sprint."
