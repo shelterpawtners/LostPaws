@@ -22,8 +22,8 @@ items:
     status: ready
     depends_on: []
     conflict_files: ["src/main.tsx"]
-    branch: null
-    pr: null
+    branch: fix/uat-186-vendor-onboarding-save
+    pr: 204
 
   - id: uat-187
     issue: 187

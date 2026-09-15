@@ -866,6 +866,18 @@ function PartnerOrganizationOnboarding({ kind }: { kind: PartnerKind }) {
     form.state,
     session,
   ]);
+  useEffect(() => {
+    if (!db || !session || resolvedOrganizationId) return;
+    const hasContent = Object.values(form).some(
+      (value) => typeof value === "string" && value.trim().length > 0,
+    );
+    if (!hasContent) return;
+    const timer = window.setTimeout(() => {
+      saveDraft();
+    }, 800);
+    return () => window.clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [form, session, resolvedOrganizationId]);
   async function request(
     candidate: OrganizationCandidate,
     type: "membership" | "ownership_claim",

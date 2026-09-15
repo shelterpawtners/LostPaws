@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import type { Session } from "@supabase/supabase-js";
 import { blankOffer, offerStatusLabel, type OfferTerms } from "../lib/offers";
 import { isSafeHttpsUrl } from "../lib/offer-media";
@@ -31,7 +32,8 @@ export function OfferManager({ session }: { session: Session | null }) {
     [profileState, setProfileState] = useState<ProfileState | "missing">(
       "missing",
     ),
-    [events, setEvents] = useState<EventOption[]>([]);
+    [events, setEvents] = useState<EventOption[]>([]),
+    [orgsLoaded, setOrgsLoaded] = useState(false);
   useEffect(() => {
     if (!db) return;
     void db
@@ -54,6 +56,7 @@ export function OfferManager({ session }: { session: Session | null }) {
         const x = (data || []).map((r: any) => r.organizations).filter(Boolean);
         setOrgs(x);
         setOrg(x[0]?.id || "");
+        setOrgsLoaded(true);
       });
   }, [session]);
   const load = () => {
@@ -158,6 +161,26 @@ export function OfferManager({ session }: { session: Session | null }) {
       per_user_limit: v?.per_user_limit ? String(v.per_user_limit) : "",
       per_pet_limit: v?.per_pet_limit ? String(v.per_pet_limit) : "",
     });
+  }
+  if (orgsLoaded && orgs.length === 0) {
+    return (
+      <section className="section shell formPage">
+        <span className="eyebrow">Partner offers</span>
+        <h1>Finish setting up your business first.</h1>
+        <p className="lead">
+          Offers belong to a business account, and you don't have one yet.
+          Complete onboarding, then come back here to create your first offer.
+        </p>
+        <div className="actions">
+          <Link className="btn" to="/onboarding/rave_vendor">
+            Complete RAVE vendor setup
+          </Link>
+          <Link className="btn quiet" to="/onboarding/petbiz">
+            Complete pet business setup
+          </Link>
+        </div>
+      </section>
+    );
   }
   return (
     <section className="section shell formPage">
