@@ -267,14 +267,16 @@ export function OfferManager({ session }: { session: Session | null }) {
               />
             </label>
             <label>
-              Eligibility
-              <span
-                className="fieldHelp"
-                role="img"
-                aria-label="Eligibility help: choose enhanced only when the offer has a separate benefit for eligible shelter pets."
-                title="Choose enhanced only when the offer has a separate benefit for eligible shelter pets."
-              >
-                ?
+              <span>
+                Eligibility
+                <span
+                  className="fieldHelp"
+                  role="img"
+                  aria-label="Eligibility help: choose enhanced only when the offer has a separate benefit for eligible shelter pets."
+                  title="Choose enhanced only when the offer has a separate benefit for eligible shelter pets."
+                >
+                  ?
+                </span>
               </span>
               <select
                 value={form.eligibility_kind}
@@ -287,14 +289,16 @@ export function OfferManager({ session }: { session: Session | null }) {
               </select>
             </label>
             <label>
-              Where it applies
-              <span
-                className="fieldHelp"
-                role="img"
-                aria-label="Where it applies help: choose where a Guardian can use this offer."
-                title="Choose where a Guardian can use this offer."
-              >
-                ?
+              <span>
+                Where it applies
+                <span
+                  className="fieldHelp"
+                  role="img"
+                  aria-label="Where it applies help: choose where a Guardian can use this offer."
+                  title="Choose where a Guardian can use this offer."
+                >
+                  ?
+                </span>
               </span>
               <select
                 value={form.applicability}
@@ -421,14 +425,16 @@ export function OfferManager({ session }: { session: Session | null }) {
               </select>
             </label>
             <label>
-              Disclosure
-              <span
-                className="fieldHelp"
-                role="img"
-                aria-label="Disclosure help: add any material condition a Guardian should know before using the offer."
-                title="Add any material condition a Guardian should know before using the offer."
-              >
-                ?
+              <span>
+                Disclosure
+                <span
+                  className="fieldHelp"
+                  role="img"
+                  aria-label="Disclosure help: add any material condition a Guardian should know before using the offer."
+                  title="Add any material condition a Guardian should know before using the offer."
+                >
+                  ?
+                </span>
               </span>
               <textarea
                 value={form.disclosure}
