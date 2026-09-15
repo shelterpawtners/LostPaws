@@ -430,3 +430,17 @@ items:
     branch: feat/uat-200b-store-admin-ui
     pr: null
     note: "OWNER DIRECTION 2026-09-15: not full ecommerce tonight -- one real Swag item, publicly requestable, using the new public/Store/ assets (PR #248), with a minimal Supabase request-intake flow (product -> Request item -> minimal form -> success, no payment/checkout/shipping/tax). Codex owns implementation on feat/uat-200b-store-admin-ui. Claude posted a recommended store_requests schema/RLS design on #200 (write-only public insert, platform_admin-only read/manage, no price/payment/shipping fields) for Codex to build against, and will do design + final cross-surface review once Codex's PR is up. Claude must not duplicate these files."
+
+  - id: issue-250
+    issue: 250
+    title: "P0: RAVE Vendor offers do not persist/load/publish reliably to Marketplace"
+    uat_ids: []
+    journey: vendor
+    priority: P0
+    owner: claude
+    status: done
+    depends_on: []
+    conflict_files: ["src/components/OfferManager.tsx"]
+    branch: fix/issue-250-vendor-offer-persistence
+    pr: 254
+    note: "Owner-reproduced P0 launch blocker. Root cause: hosted Supabase is missing migrations 20260914050000/20260914060000 (confirmed live via a read-only public_active_offers call) -- no CI/CD pushes migrations to the hosted project, so this needs owner/ops action (supabase db push or manual SQL), posted on #250 with exact files. All code-fixable UX issues shipped regardless: real error surfacing, no list-wipe on reload failure, optimistic save/publish updates, specific publish-result text, View in Marketplace link, a related nullable-field controlled-input bug in edit(). Full e2e regression added."
