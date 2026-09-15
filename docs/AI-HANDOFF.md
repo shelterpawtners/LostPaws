@@ -5,10 +5,10 @@
 > This retained path preserves the same required fields for inbound compatibility;
 > it is not the human live-status authority.
 
-STATUS: IN_PROGRESS
+STATUS: READY_FOR_ACCEPTANCE
 CURRENT_PHASE: Post-MVP UAT sprint (Issue #183): autonomous Claude/Codex overnight execution on the Guardian and Raver Vendor QR->/lostpaws signup funnels
-CURRENT_CHECKPOINT: UAT control plane established (docs/operations/UAT-OVERNIGHT-OPERATIONS.md, .github/agent-ops/uat-queue.yaml, .github/agent-ops/uat-run-state.yaml) with 17 work-packet issues (#186-#202) tracing all 45 UAT-N items from #183; Codex re-authorized for this sprint.
-NEXT_CHECKPOINT: Merge P0 funnel fixes (Issues #186, #187, #188), verify staging health, then continue P1 queue items.
+CURRENT_CHECKPOINT: UAT control plane established; P0 items (uat-186, 187, 188) and P1 items (uat-189, 191, 192, 190) in progress. STATUS is kept at READY_FOR_ACCEPTANCE (not a sprint-status field) because persona-qa.yml and hosted-qa.yml only execute their real browser suites -- not just their lightweight gate step -- when this exact value is set; an earlier IN_PROGRESS value here silently skipped real Persona/Hosted QA on every PR in this sprint until this correction.
+NEXT_CHECKPOINT: Manually re-run Persona QA and Hosted QA against main to validate the PRs merged while this was misconfigured, then continue P1/P2 queue items.
 OWNER_DECISION_REQUIRED: NO
 SAFE_TO_CONTINUE: YES
 ACCEPTED_CODE_SHA: NONE
