@@ -4,11 +4,30 @@
 # the claim/release protocol this file supports.
 
 schema_version: 1
-updated: "2026-09-15T20:50:00Z"
+updated: "2026-09-15T21:35:00Z"
 
-active_claims: []
+active_claims:
+  - item: uat-207
+    agent: codex
+    branch: feat/uat-200b-store-admin-ui
+    claimed_at: "2026-09-15T20:33:23Z"
+    note: "Claimed directly on Codex's own branch (uat-run-state.yaml commit ab96c5b), not yet merged through a ledger PR to main -- reflected here by Claude for ledger accuracy. store_requests design guidance posted on #200; Claude will review Codex's actual PR once it lands, not duplicate it."
 
 completed:
+  - item: uat-196c
+    agent: owner
+    pr: null
+    merged_sha: null
+    staging_verified: true
+    completed_at: "2026-09-15T21:20:00Z"
+    note: "Owner added the recommended DMARC TXT record directly at the DNS provider. Live re-check confirms _dmarc.shelterpawtners.com now publishes exactly v=DMARC1; p=none; rua=mailto:dmarc-reports@shelterpawtners.com; adkim=r; aspf=r; -- matches the record posted on #196. No app-side change; DNS-only."
+  - item: chore-owner-store-images
+    agent: owner
+    pr: 248
+    merged_sha: "fa75221"
+    staging_verified: false
+    completed_at: "2026-09-15T21:25:00Z"
+    note: "Owner-authored commit (real product photography for Store/Swag under public/Store/Stickers/ and public/Store/Tshirts/), synced to origin by Claude since it existed only in the local working copy. Partially resolves uat-197b (see its note) and unblocks uat-207's single-item request flow."
   - item: uat-206
     agent: claude
     pr: 245
