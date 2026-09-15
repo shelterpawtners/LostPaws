@@ -4,6 +4,7 @@ import type { Session } from "@supabase/supabase-js";
 import { blankOffer, offerStatusLabel, type OfferTerms } from "../lib/offers";
 import { isSafeHttpsUrl } from "../lib/offer-media";
 import { supabase as db } from "../lib/supabase";
+import { LoadingState } from "./LoadingState";
 
 type Org = { id: string; public_name: string };
 type Offer = {
@@ -33,7 +34,8 @@ export function OfferManager({ session }: { session: Session | null }) {
       "missing",
     ),
     [events, setEvents] = useState<EventOption[]>([]),
-    [orgsLoaded, setOrgsLoaded] = useState(false);
+    [orgsLoaded, setOrgsLoaded] = useState(false),
+    [offersLoading, setOffersLoading] = useState(true);
   useEffect(() => {
     if (!db) return;
     void db
@@ -61,6 +63,7 @@ export function OfferManager({ session }: { session: Session | null }) {
   }, [session]);
   const load = () => {
     if (!db || !org) return;
+    setOffersLoading(true);
     void Promise.all([
       db
         .from("offers")
@@ -85,6 +88,7 @@ export function OfferManager({ session }: { session: Session | null }) {
         (profileResult.data?.publication_status as ProfileState | undefined) ||
           "missing",
       );
+      setOffersLoading(false);
     });
   };
   useEffect(load, [org]);
@@ -171,6 +175,13 @@ export function OfferManager({ session }: { session: Session | null }) {
       per_pet_limit: v?.per_pet_limit ? String(v.per_pet_limit) : "",
     });
   }
+  if (!orgsLoaded) {
+    return (
+      <section className="section shell formPage">
+        <LoadingState>Loading your business…</LoadingState>
+      </section>
+    );
+  }
   if (orgsLoaded && orgs.length === 0) {
     return (
       <section className="section shell formPage">
@@ -226,17 +237,26 @@ export function OfferManager({ session }: { session: Session | null }) {
           >
             New offer
           </button>
-          {offers.map((o) => (
-            <button className="role" key={o.id} onClick={() => edit(o)}>
-              {o.title} ·{" "}
-              {offerStatusLabel(
-                (
-                  o.offer_versions.find((x) => x.id === o.current_version_id) ||
-                  {}
-                ).status || o.status,
-              )}
-            </button>
-          ))}
+          {offersLoading ? (
+            <LoadingState>Loading your offers…</LoadingState>
+          ) : (
+            offers.map((o) => (
+              <button
+                className={selected === o.id ? "role active" : "role"}
+                key={o.id}
+                onClick={() => edit(o)}
+              >
+                {o.title} ·{" "}
+                {offerStatusLabel(
+                  (
+                    o.offer_versions.find(
+                      (x) => x.id === o.current_version_id,
+                    ) || {}
+                  ).status || o.status,
+                )}
+              </button>
+            ))
+          )}
         </aside>
         <div className="panel">
           <div className="fields">
