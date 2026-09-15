@@ -123,11 +123,11 @@ items:
     journey: none
     priority: P2
     owner: codex
-    status: ready
+    status: done
     depends_on: []
     conflict_files: ["src/styles.css"]
-    branch: null
-    pr: null
+    branch: chore/uat-194-design-system
+    pr: 222
 
   - id: uat-195
     issue: 195
