@@ -186,8 +186,6 @@ jobs:
             [[ -n "${PLAYWRIGHT_BASE_URL:-}" ]] || { echo "Missing hosted QA setting: PLAYWRIGHT_BASE_URL" >&2; exit 1; }
           fi
           [[ "$PLAYWRIGHT_SUPABASE_URL" =~ ^https://jukmlmryykcnjtpblbja\.supabase\.co/?$ ]]
-      - name: Install design QA dependencies
-        run: bash scripts/install-design-qa-deps.sh
       - name: Install Chromium
         run: bash scripts/install-playwright-chromium.sh
       - name: Run hosted golden paths

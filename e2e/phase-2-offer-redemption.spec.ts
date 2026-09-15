@@ -208,6 +208,19 @@ test.describe.serial("Phase 2 offer and redemption journey", () => {
     await page
       .getByLabel("How customers use it")
       .fill("Show the code at checkout.");
+    await page
+      .getByLabel("Product images")
+      .fill("https://images.example.invalid/journey-check.jpg");
+    const eventSelect = page.getByLabel("Attach to an event (optional)");
+    const eventOption = eventSelect
+      .locator("option")
+      .filter({ hasText: "Demo Saturday Adoption Day" });
+    const hasSeededEvent = (await eventOption.count()) > 0;
+    let selectedEventId = "";
+    if (hasSeededEvent) {
+      selectedEventId = (await eventOption.getAttribute("value")) || "";
+      await eventSelect.selectOption(selectedEventId);
+    }
     await page.getByRole("button", { name: "Save new version" }).click();
     await expect(page.getByRole("status")).toContainText(
       "Saved as a new draft version",
@@ -221,7 +234,8 @@ test.describe.serial("Phase 2 offer and redemption journey", () => {
     await expect(draftButton).toBeVisible();
     await expect(draftButton).toHaveClass(/active/);
 
-    // Reload: the draft must still be there and still editable.
+    // Reload: the draft, its image URL, and its event attachment must all
+    // still be there and still editable -- not just the title.
     await page.reload();
     await offerOrganization.selectOption(partnerOrganizationId);
     await expect(
@@ -232,6 +246,14 @@ test.describe.serial("Phase 2 offer and redemption journey", () => {
       .filter({ hasText: journeyOfferTitle })
       .click();
     await expect(page.getByLabel("Title")).toHaveValue(journeyOfferTitle);
+    await expect(page.getByLabel("Product images")).toHaveValue(
+      "https://images.example.invalid/journey-check.jpg",
+    );
+    if (hasSeededEvent) {
+      await expect(
+        page.getByLabel("Attach to an event (optional)"),
+      ).toHaveValue(selectedEventId);
+    }
 
     // Edit the draft, then publish.
     await page
@@ -263,6 +285,16 @@ test.describe.serial("Phase 2 offer and redemption journey", () => {
     await page.goto(offerHref!);
     await expect(page.getByText(journeyOfferTitle).first()).toBeVisible();
 
+    // Event linkage must actually affect the public read path, not just
+    // round-trip through the edit form: an event-scoped Marketplace view
+    // should surface this offer too.
+    if (hasSeededEvent) {
+      await page.goto(`/marketplace?event=${selectedEventId}`);
+      await expect(
+        page.locator(".offerCard", { hasText: journeyOfferTitle }),
+      ).toBeVisible();
+    }
+
     // Returning to Offer Manager: still there, still editable/manageable.
     await page.goto("/partner/offers");
     await offerOrganization.selectOption(partnerOrganizationId);
@@ -273,7 +305,32 @@ test.describe.serial("Phase 2 offer and redemption journey", () => {
     await expect(publishedButton).toContainText("Published");
     await publishedButton.click();
     await expect(page.getByLabel("Title")).toHaveValue(journeyOfferTitle);
-    await expect(page.getByRole("button", { name: "Pause" })).toBeVisible();
+
+    // Pause must actually remove it from the public Marketplace, and Resume
+    // must actually bring it back -- not just toggle a label. Pause is
+    // guarded by a window.confirm(), which Playwright auto-dismisses unless
+    // told otherwise.
+    page.once("dialog", (dialog) => dialog.accept());
+    await page.getByRole("button", { name: "Pause" }).click();
+    await expect(page.getByRole("status")).toContainText("pause complete");
+    await expect(publishedButton).toContainText("Paused");
+    await page.goto("/marketplace");
+    await expect(
+      page.locator(".offerCard", { hasText: journeyOfferTitle }),
+    ).toHaveCount(0);
+
+    await page.goto("/partner/offers");
+    await offerOrganization.selectOption(partnerOrganizationId);
+    await publishedButton.click();
+    await page.getByRole("button", { name: "Resume" }).click();
+    await expect(page.getByRole("status")).toContainText(
+      "Published. Now visible in Marketplace.",
+    );
+    await expect(publishedButton).toContainText("Published");
+    await page.goto("/marketplace");
+    await expect(
+      page.locator(".offerCard", { hasText: journeyOfferTitle }),
+    ).toBeVisible();
   });
 
   test("Guardian sees current terms, claims the exact offer, and sees Pending activity", async ({
