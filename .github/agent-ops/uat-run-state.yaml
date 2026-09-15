@@ -17,7 +17,7 @@ completed:
     agent: codex
     pr: 233
     merged_sha: "bcfce0d"
-    staging_verified: false
+    staging_verified: true
     completed_at: "2026-09-15T17:48:00Z"
     note: "Concrete evidence only; no matching-policy change. Existing Playwright path signs in as Partner B, enters exact seeded Demo PetBiz A, observes the candidate and safe request/claim/dismiss actions. Existing database/RLS contract verifies anonymous denial and no membership creation. Local organization-matching unit checks passed (16 tests); browser assertion skipped locally because Supabase Playwright credentials are absent."
   - item: uat-201
