@@ -43,9 +43,16 @@ completed:
     agent: claude
     pr: 213
     merged_sha: "533306c5f2ba8c079eac972d0ad472fc52606279"
-    staging_verified: pending
+    staging_verified: true
     completed_at: "2026-09-15T08:05:00Z"
     note: "Caught and fixed a real gap: the new required Confirm password field broke 4 e2e registration helpers that only filled Password, matching what a real user would hit if they missed the second field. Also fixed a separate, unrelated bug found in this window: STATUS: IN_PROGRESS in release-state.yaml (set during initial control-plane setup) was silently skipping the real Persona/Hosted QA suites on every prior merge this sprint -- fixed in #214, retroactively re-validated uat-186/189/191/192/187 against main via workflow_dispatch (persona: pass; hosted: one pre-existing, unrelated hosted-environment data issue filed as #215)."
+  - item: uat-188
+    agent: claude
+    pr: 217
+    merged_sha: "83350b8eafebe0e379f9092da9bd83f5bb8b2b68"
+    staging_verified: pending
+    completed_at: "2026-09-15T08:20:00Z"
+    note: "Reassigned from codex — no Codex activity across the entire sprint. All P0 items now complete."
 
 blockers: []
 # blockers:

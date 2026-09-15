@@ -44,12 +44,12 @@ items:
     uat_ids: [UAT-31, UAT-14]
     journey: both
     priority: P0
-    owner: codex
-    status: ready
+    owner: claude
+    status: done
     depends_on: []
     conflict_files: ["public/brand/", "index.html"]
-    branch: null
-    pr: null
+    branch: fix/uat-188-regen-brand-icons
+    pr: 217
 
   - id: uat-189
     issue: 189
