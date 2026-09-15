@@ -50,7 +50,7 @@ completed:
     agent: claude
     pr: 217
     merged_sha: "83350b8eafebe0e379f9092da9bd83f5bb8b2b68"
-    staging_verified: pending
+    staging_verified: true
     completed_at: "2026-09-15T08:20:00Z"
     note: "Reassigned from codex — no Codex activity across the entire sprint. All P0 items now complete."
 
