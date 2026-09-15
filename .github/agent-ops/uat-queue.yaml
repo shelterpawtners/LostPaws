@@ -353,13 +353,13 @@ items:
     uat_ids: []
     journey: vendor
     priority: P1
-    owner: unassigned
-    status: ready
+    owner: claude
+    status: done
     depends_on: []
     conflict_files: ["src/components/OfferManager.tsx"]
-    branch: null
-    pr: null
-    note: "Owner direction 2026-09-15: verify vendors can easily create, edit, manage, and understand offers during a live event. Fix real issues found; do not hide/remove any existing feature without owner approval."
+    branch: feat/uat-204-vendor-offer-ux
+    pr: 238
+    note: "Owner direction 2026-09-15: verify vendors can easily create, edit, manage, and understand offers during a live event. Code review of OfferManager found and fixed two real gaps: no loading indicator anywhere (silently blank org/offer list, indistinguishable from 'zero offers'), and no visual indication of which offer is currently selected for editing. Checked all e2e specs touching /partner/offers for locator collisions before merging. Same scope caveat as uat-203: code review, not a full live click-through (local Supabase lacks seeded demo data)."
 
   - id: uat-205
     issue: 56
