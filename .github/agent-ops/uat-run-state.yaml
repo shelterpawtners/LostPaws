@@ -6,18 +6,21 @@
 schema_version: 1
 updated: "2026-09-15T18:25:00Z"
 
-active_claims:
-  - item: uat-204
-    agent: claude
-    branch: feat/uat-204-vendor-offer-ux
-    claimed_at: "2026-09-15T18:10:00Z"
+active_claims: []
 
 completed:
+  - item: uat-204
+    agent: claude
+    pr: 238
+    merged_sha: "402f3c7"
+    staging_verified: false
+    completed_at: "2026-09-15T18:20:00Z"
+    note: "Added a top-level LoadingState while organization membership resolves and one in the offer list while offers load (OfferManager previously had no loading indicator anywhere), plus selected-offer 'active' highlighting matching the existing dashboard role-list pattern, so a vendor juggling several offers during a live event can see which one they're editing."
   - item: uat-203
     agent: claude
     pr: 236
     merged_sha: "7918891"
-    staging_verified: false
+    staging_verified: true
     completed_at: "2026-09-15T18:07:06Z"
     note: "Added a back-to-dashboard link on all Guardian/shelter/vendor onboarding forms (previously only the browser back button worked), fixed a dashboard content flash where a returning Guardian with pets briefly saw the empty-state heading before the pets query resolved, and consolidated with Codex's independent fix for the same underlying loading-state gap (#235, closed in favor of this PR) -- upgraded to the shared LoadingState spinner and corrected an unscoped getByRole('status') regression test that collided with GuardianProfileLite's own status region on the same page."
   - item: uat-202a
