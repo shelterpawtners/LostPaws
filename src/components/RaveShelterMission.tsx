@@ -19,7 +19,7 @@ export function RaveShelterMission() {
   const base = import.meta.env.BASE_URL;
   // Mark-only lockup: the full lockup bakes in the tagline, which the h1
   // already says, so the hero would print the same sentence twice.
-  const raveLogo = `${base}brand/rave-shelter-logo-mark.svg`;
+  const raveLogo = `${base}brand/RAVE Shelter/rave-shelter-logo-mark.svg`;
 
   return (
     <div className="rsmPage">

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>LostPaws 3D Logo — embed</title>
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.184.0/build/three.module.js",
+    "three/addons/controls/OrbitControls.js": "https://unpkg.com/three@0.184.0/examples/jsm/controls/OrbitControls.js",
+    "three/addons/exporters/OBJExporter.js": "https://unpkg.com/three@0.184.0/examples/jsm/exporters/OBJExporter.js",
+    "three/addons/exporters/GLTFExporter.js": "https://unpkg.com/three@0.184.0/examples/jsm/exporters/GLTFExporter.js"
+  },
+  "integrity": {
+    "https://unpkg.com/three@0.184.0/build/three.module.js": "sha384-8FCZ1eVO6it4+pbec2aDtnTrwjWXZLJRC+MAGCIPDgsYnUrl/E0A2YlF8ioMKI/J",
+    "https://unpkg.com/three@0.184.0/build/three.core.js": "sha384-dw2ooPewaEIrAgl6oFDBmmBWCE9oW9LxRGcfwZ0hLvEprzo202wXl7vCYHRlSnOT",
+    "https://unpkg.com/three@0.184.0/examples/jsm/controls/OrbitControls.js": "sha384-4rziNxOBZKQ69i+w+f89KJ55TCYquwchVbByQwmaOeIOXdOU2PLDn3kOfXHwIJC9",
+    "https://unpkg.com/three@0.184.0/examples/jsm/exporters/OBJExporter.js": "sha384-nbwtoZENJD3Vq+ACK0CuGQdPMuDWHkamC2KJD70EV5nfg6jQjfppKOea07YJN+N3",
+    "https://unpkg.com/three@0.184.0/examples/jsm/exporters/GLTFExporter.js": "sha384-VofkvpG6HERhFCYbsUOHeNXBCqID2nfqkQqnVzE1jc/oPcz+qJ13ADdXH08hE+cQ"
+  }
+}
+</script>
+<style>html,body{margin:0;height:100%;background:transparent}three-d-stage:not(:defined){visibility:hidden}three-d-stage{display:block;width:100%;height:100%}</style>
+</head>
+<body>
+<three-d-stage name="lostpaws-logo" background="transparent"></three-d-stage>
+<script src="./three-d-stage.js"></script>
+
+<script type="module">
+const stage = document.querySelector('three-d-stage');
+const { THREE } = await stage.ready;
+
+// Build from the real artwork: the PNG's alpha is the letter silhouette,
+// its pixels are the face texture. Depth = stacked alpha-cut slices.
+const SRC = './uploads/LostPaws Logo - Green - HERO LOGO.png';
+const img = await new Promise((res,rej)=>{ const i=new Image(); i.onload=()=>res(i); i.onerror=rej; i.src=SRC; });
+const W = 3.0, Hh = W*img.height/img.width, D = 0.34, SLICES = 48;
+
+const faceTex = new THREE.Texture(img); faceTex.colorSpace = THREE.SRGBColorSpace; faceTex.anisotropy = 8; faceTex.needsUpdate = true;
+
+// darker copy for the extrusion body so the sides read as bevelled stone
+const cv = document.createElement('canvas'); cv.width = img.width; cv.height = img.height;
+const cx = cv.getContext('2d'); cx.drawImage(img,0,0);
+cx.globalCompositeOperation = 'source-atop'; cx.fillStyle = 'rgba(10,6,24,0.55)'; cx.fillRect(0,0,cv.width,cv.height);
+const sideTex = new THREE.CanvasTexture(cv); sideTex.colorSpace = THREE.SRGBColorSpace;
+
+const faceMat = new THREE.MeshStandardMaterial({ map: faceTex, transparent: false, alphaTest: 0.5, roughness: 0.45, metalness: 0, emissive: 0xffffff, emissiveMap: faceTex, emissiveIntensity: 0.35 }); faceMat.name = 'logo_face';
+const sideMat = new THREE.MeshStandardMaterial({ map: sideTex, alphaTest: 0.5, roughness: 0.7, metalness: 0, side: THREE.DoubleSide }); sideMat.name = 'logo_side';
+
+const model = new THREE.Group(); model.name = 'lostpaws';
+const plane = new THREE.PlaneGeometry(W, Hh);
+for (let i = 0; i < SLICES; i++) {
+  const z = -D/2 + (i/(SLICES-1))*D;
+  const isFace = i === SLICES-1, isBack = i === 0;
+  const m = new THREE.Mesh(plane, (isFace||isBack) ? faceMat : sideMat);
+  m.position.z = z; if (isBack) m.rotation.y = Math.PI;
+  m.name = isFace ? 'face_front' : isBack ? 'face_back' : 'slice_'+i;
+  model.add(m);
+}
+model.position.y = Hh/2;
+stage.setObject(model);
+// clean transparent embed: no toolbar/hint, no ground shadow, no orbit input
+stage._toolbar.style.display='none'; stage.shadowRoot.querySelector('.note').style.display='none';
+stage.style.setProperty('--stage-bg','transparent');
+stage._scene.traverse(o=>{ if(o.isMesh && o.material.isShadowMaterial) o.visible=false; });
+stage._controls.enabled=false;
+
+// Spin: one full turn forward, then rewind back, on a loop (ease in/out at the turnarounds).
+const SPIN_SECONDS = 6;
+const ease = t => t<0.5 ? 2*t*t : 1-Math.pow(-2*t+2,2)/2;
+let t0 = performance.now();
+(function spin(){
+  const t=(performance.now()-t0)/1000;
+  const cycle=(t/SPIN_SECONDS)%2;                       // 0..2
+  const fwd = cycle<1 ? ease(cycle) : 1-ease(cycle-1);  // 0→1 then 1→0
+  model.rotation.y = fwd*Math.PI*2;
+  model.position.y = Hh/2 + Math.sin(t*1.3)*0.04;
+  model.rotation.x = Math.sin(t*0.9)*0.04;
+  requestAnimationFrame(spin);
+})();
+</script>
+</body>
+</html>
