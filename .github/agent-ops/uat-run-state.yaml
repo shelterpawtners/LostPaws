@@ -4,7 +4,7 @@
 # the claim/release protocol this file supports.
 
 schema_version: 1
-updated: "2026-09-15T07:05:00Z"
+updated: "2026-09-15T07:15:00Z"
 
 active_claims: []
 
@@ -15,6 +15,18 @@ completed:
     merged_sha: "841a823bb9e2dd3c2bcf97605957172a74bb443e"
     staging_verified: true
     completed_at: "2026-09-15T07:05:00Z"
+  - item: uat-189
+    agent: claude
+    pr: 206
+    merged_sha: "7f67d97094f49f091c0a805ec720940065937f5f"
+    staging_verified: true
+    completed_at: "2026-09-15T07:12:00Z"
+  - item: uat-192
+    agent: claude
+    pr: 207
+    merged_sha: "29d3002dda8f17dfb413e5e1a68642bdc38e9e39"
+    staging_verified: true
+    completed_at: "2026-09-15T07:15:00Z"
 
 blockers: []
 # blockers:
