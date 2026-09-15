@@ -4,14 +4,14 @@
 # the claim/release protocol this file supports.
 
 schema_version: 1
-updated: "2026-09-15T00:00:00Z"
+updated: "2026-09-15T06:56:00Z"
 
-active_claims: []
-# active_claims:
-#   - item: uat-186
-#     agent: claude
-#     branch: fix/uat-186-vendor-onboarding-save
-#     claimed_at: "2026-09-15T00:00:00Z"
+active_claims:
+  - item: uat-186
+    agent: claude
+    branch: fix/uat-186-vendor-onboarding-save
+    pr: 204
+    claimed_at: "2026-09-15T06:56:00Z"
 
 completed: []
 # completed:
