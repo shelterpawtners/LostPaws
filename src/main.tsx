@@ -950,6 +950,12 @@ function PartnerOrganizationOnboarding({ kind }: { kind: PartnerKind }) {
   }
   async function dismiss(candidate: OrganizationCandidate) {
     if (!db || !session) return;
+    if (
+      !window.confirm(
+        `Mark "${candidate.public_name}" as not your business? You can request access to it again later if this was a mistake.`,
+      )
+    )
+      return;
     const id = draftId || (await saveDraft());
     if (!id) return;
     const { error } = await db.from("organization_candidate_dismissals").upsert(

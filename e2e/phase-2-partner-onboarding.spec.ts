@@ -72,6 +72,7 @@ test.describe("Phase 2 checkpoint 1 partner organization onboarding", () => {
     await expect(
       page.getByRole("button", { name: "Claim review" }),
     ).toBeVisible();
+    page.once("dialog", (dialog) => dialog.accept());
     await page.getByRole("button", { name: "Not my business" }).click();
     await expect(page.getByText("Marked as not my business")).toBeVisible();
     await expect(page.getByLabel("Public business name")).toHaveValue(

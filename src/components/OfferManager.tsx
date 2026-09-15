@@ -128,6 +128,15 @@ export function OfferManager({ session }: { session: Session | null }) {
   }
   async function action(name: string, id = selected) {
     if (!db || !id) return;
+    if (
+      (name === "pause" || name === "archive") &&
+      !window.confirm(
+        name === "pause"
+          ? "Pause this offer? Guardians won't be able to claim it until you resume it."
+          : "Archive this offer? It will no longer be shown or editable as an active offer.",
+      )
+    )
+      return;
     const { error } = await db.rpc(
       name === "duplicate"
         ? "duplicate_partner_offer"

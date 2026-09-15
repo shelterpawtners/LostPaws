@@ -44,6 +44,12 @@ export function RedemptionFlow() {
   }, [params.code]);
   async function confirm() {
     if (!db || !claim) return;
+    if (
+      !window.confirm(
+        "Confirm this redemption? This marks the code as used and cannot be undone.",
+      )
+    )
+      return;
     const attribution: Record<string, string> = {};
     if (referenceAmountMinor.trim())
       attribution.retail_amount_minor = referenceAmountMinor.trim();
