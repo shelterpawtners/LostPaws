@@ -32,11 +32,11 @@ items:
     journey: vendor
     priority: P0
     owner: claude
-    status: ready
+    status: done
     depends_on: []
     conflict_files: ["src/styles.css", "src/main.tsx"]
-    branch: null
-    pr: null
+    branch: fix/uat-187-signup-layout-balance
+    pr: 211
 
   - id: uat-188
     issue: 188
@@ -70,7 +70,7 @@ items:
     uat_ids: [UAT-6, UAT-7]
     journey: both
     priority: P1
-    owner: codex
+    owner: claude
     status: ready
     depends_on: []
     conflict_files: ["src/main.tsx"]
