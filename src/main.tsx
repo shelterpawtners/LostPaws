@@ -1,6 +1,3 @@
-Warning: truncated output (original token count: 22233)
-Total output lines: 2708
-
 import {
   StrictMode,
   createContext,
@@ -1222,7 +1219,252 @@ function PartnerOrganizationOnboarding({ kind }: { kind: PartnerKind }) {
                   setForm((current) => ({
                     ...current,
                     additionalLocations: [
-  …2233 tokens truncated…rganization and listing saved.",
+                      ...current.additionalLocations,
+                      { street: "", city: "", state: "", postal: "" },
+                    ],
+                  }))
+                }
+              >
+                Add another location
+              </button>
+            </div>
+            <div className="panel">
+              <h2>
+                Is this a new business, or part of one you already manage?
+              </h2>
+              <div className="relationshipOptions">
+                <label>
+                  <input
+                    type="radio"
+                    checked={form.relationship === "independent"}
+                    onChange={() => update("relationship", "independent")}
+                  />
+                  Independent business
+                </label>
+                <label>
+                  <input
+                    type="radio"
+                    checked={form.relationship === "corporate_child"}
+                    onChange={() => update("relationship", "corporate_child")}
+                  />
+                  A location or child of an organization I already manage
+                </label>
+                <label>
+                  <input
+                    type="radio"
+                    checked={form.relationship === "franchise"}
+                    onChange={() => update("relationship", "franchise")}
+                  />
+                  An independent franchise or brand relationship
+                </label>
+              </div>
+              {form.relationship !== "independent" && (
+                <label className="relationshipSelect">
+                  {form.relationship === "corporate_child"
+                    ? "Organization you manage"
+                    : "Brand or organization to relate"}
+                  <select
+                    value={form.parentId}
+                    onChange={(event) => update("parentId", event.target.value)}
+                  >
+                    <option value="">Choose after reviewing matches</option>
+                    {form.relationship === "corporate_child"
+                      ? parents.map((item) => (
+                          <option key={item.id} value={item.id}>
+                            {item.public_name}
+                          </option>
+                        ))
+                      : visibleMatches.map((item) => (
+                          <option
+                            key={item.organization_id}
+                            value={item.organization_id}
+                          >
+                            {item.public_name}
+                            {item.city ? ` — ${item.city}` : ""}
+                          </option>
+                        ))}
+                  </select>
+                </label>
+              )}
+            </div>
+            <button className="btn" disabled={submitting}>
+              {submitting
+                ? "Creating your business…"
+                : visibleMatches.length
+                  ? "None of these — create a new business"
+                  : "Create my business"}
+            </button>
+            <p role="status" aria-live="polite" aria-atomic="true">
+              {status}
+            </p>
+          </form>
+          <aside
+            className="matchPanel"
+            aria-label="Possible organization matches"
+          >
+            <span className="eyebrow">Assisted matching</span>
+            <h2>Possible matches</h2>
+            <p aria-live="polite">
+              {visibleMatches.length
+                ? "Review these before creating a new business."
+                : "Add a name plus a website, phone, or location to check for possible matches."}
+            </p>
+            {visibleMatches.map((candidate) => (
+              <article className="candidate" key={candidate.organization_id}>
+                <h3>{candidate.public_name}</h3>
+                {(candidate.city || candidate.state_province) && (
+                  <p>
+                    {[candidate.city, candidate.state_province]
+                      .filter(Boolean)
+                      .join(", ")}
+                  </p>
+                )}
+                <small>
+                  {organizationMatchSummary(candidate.match_reasons)}
+                </small>
+                <div className="candidateActions">
+                  <button
+                    type="button"
+                    className="btn quiet"
+                    onClick={() => request(candidate, "membership")}
+                  >
+                    Request access
+                  </button>
+                  <button
+                    type="button"
+                    className="textButton"
+                    onClick={() => request(candidate, "ownership_claim")}
+                  >
+                    Claim review
+                  </button>
+                  <button
+                    type="button"
+                    className="textButton"
+                    onClick={() => dismiss(candidate)}
+                  >
+                    Not my business
+                  </button>
+                </div>
+              </article>
+            ))}
+          </aside>
+        </div>
+      </section>
+    </Page>
+  );
+}
+function Onboard() {
+  const k = useLocation().pathname.split("/").pop() as Kind;
+  if (k === "petbiz" || k === "rave_vendor")
+    return <PartnerOrganizationOnboarding kind={k} />;
+  return <StandardOnboard kind={k} />;
+}
+function StandardOnboard({ kind: k }: { kind: "guardian" | "shelter" }) {
+  const c = choices.find((x) => x.kind === k) || choices[0];
+  const navigate = useNavigate();
+  const [adopted, setAdopted] = useState(false),
+    [status, setStatus] = useState(""),
+    [saving, setSaving] = useState(false);
+  const [guardianSubmissionId] = useState(() => crypto.randomUUID());
+  async function save(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    if (!db) return setStatus("Development connection is unavailable.");
+    const f = new FormData(e.currentTarget);
+    if (saving) return;
+    setSaving(true);
+    setStatus("Saving…");
+    let user;
+    try {
+      const { data, error } = await db.auth.getUser();
+      if (error) throw error;
+      user = data.user;
+    } catch {
+      setSaving(false);
+      return setStatus(
+        "Unable to verify your session. Check your connection and try again.",
+      );
+    }
+    if (!user) {
+      setSaving(false);
+      return setStatus("Please sign in before saving.");
+    }
+    if (k === "guardian") {
+      const { error } = await db.rpc("save_guardian_onboarding_pet", {
+        p_submission_id: guardianSubmissionId,
+        p_name: String(f.get("name") || ""),
+        p_species: String(f.get("species") || ""),
+        p_adopted: adopted,
+        p_shelter_name: adopted ? String(f.get("shelter_name") || "") : null,
+        p_shelter_email: adopted
+          ? String(f.get("shelter_email") || "") || null
+          : null,
+        p_shelter_phone: adopted
+          ? String(f.get("shelter_phone") || "") || null
+          : null,
+        p_shelter_social: adopted
+          ? String(f.get("shelter_social") || "") || null
+          : null,
+        p_adoption_date: adopted
+          ? String(f.get("adoption_date") || "") || null
+          : null,
+        p_adoption_name: adopted
+          ? String(f.get("adoption_name") || "") || null
+          : null,
+      });
+      if (error) {
+        setSaving(false);
+        return setStatus(`Unable to save your pet. ${error.message}`);
+      }
+      setStatus(
+        adopted
+          ? "Pet saved. Adoption confirmation is submitted."
+          : "Pet Passport started.",
+      );
+      window.setTimeout(() => navigate("/dashboard"), 700);
+      return;
+    }
+    const orgType =
+      k === "shelter"
+        ? "shelter"
+        : k === "rave_vendor"
+          ? "rave_vendor"
+          : "pet_business";
+    const organizationTypeCode =
+      k === "shelter"
+        ? "shelter"
+        : k === "rave_vendor"
+          ? "community_partner"
+          : "pet_business";
+    const { data: org, error } = await db
+      .from("organizations")
+      .insert({
+        created_by: user.id,
+        organization_type: orgType,
+        organization_type_code: organizationTypeCode,
+        public_name: f.get("name"),
+        public_email: f.get("email") || null,
+        instagram_handle: f.get("instagram") || null,
+        status: k === "shelter" ? "submitted" : "active",
+      })
+      .select("id")
+      .single();
+    if (error || !org) {
+      setSaving(false);
+      return setStatus(error?.message || "Unable to save organization.");
+    }
+    const { error: mError } = await db.from("organization_memberships").insert({
+      organization_id: org.id,
+      user_id: user.id,
+      role: "owner",
+    });
+    if (mError) {
+      setSaving(false);
+      return setStatus(mError.message);
+    }
+    setStatus(
+      k === "shelter"
+        ? "Shelter registration submitted."
+        : "Organization and listing saved.",
     );
     window.setTimeout(() => navigate("/dashboard"), 700);
   }
