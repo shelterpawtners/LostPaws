@@ -22,6 +22,92 @@ type Offer = {
 type EventOption = { id: string; title: string; starts_at: string | null };
 type ProfileState =
   "draft" | "published" | "unpublished" | "suspended" | "removed";
+
+/**
+ * Builds (or updates) the local Offer entry for a just-saved draft/revision
+ * without waiting on a server reload. Issue #250: a vendor whose save
+ * succeeded but whose subsequent list reload failed (e.g. a stale schema
+ * cache, a transient read error) saw their offer vanish from the sidebar
+ * entirely, indistinguishable from the save itself having failed. The RPC
+ * response already carries everything needed to render the row correctly,
+ * so the sidebar no longer depends on a second round-trip succeeding.
+ */
+function applyOptimisticSave(
+  current: Offer[],
+  offerId: string,
+  versionId: string,
+  terms: OfferTerms,
+  destinationUrl: string,
+  imageUrls: string[],
+): Offer[] {
+  const version = {
+    id: versionId,
+    status: "draft",
+    title: terms.title,
+    summary: terms.summary,
+    details: terms.details,
+    terms: terms.terms,
+    eligibility_kind: terms.eligibility_kind,
+    starts_at: terms.starts_at ? `${terms.starts_at}:00` : null,
+    ends_at: terms.ends_at ? `${terms.ends_at}:00` : null,
+    claim_window_days: Number(terms.claim_window_days) || 30,
+    availability_limit: terms.availability_limit
+      ? Number(terms.availability_limit)
+      : null,
+    per_user_limit: terms.per_user_limit ? Number(terms.per_user_limit) : null,
+    per_pet_limit: terms.per_pet_limit ? Number(terms.per_pet_limit) : null,
+    redemption_instructions: terms.redemption_instructions,
+    source_url: terms.source_url,
+    disclosure: terms.disclosure,
+  };
+  const base: Offer = {
+    id: offerId,
+    title: terms.title,
+    status: "draft",
+    current_version_id: versionId,
+    event_id: terms.event_id || null,
+    destination_url: destinationUrl || null,
+    product_label: terms.product_label || null,
+    cta_label: terms.cta_label || null,
+    image_urls: imageUrls,
+    offer_versions: [version],
+  };
+  const existingIndex = current.findIndex((o) => o.id === offerId);
+  if (existingIndex === -1) return [base, ...current];
+  const updated = [...current];
+  updated[existingIndex] = {
+    ...base,
+    // revise_partner_offer does not touch offers.status server-side --
+    // only the new version starts as "draft". Publishing/pausing an
+    // already-live offer's status happens separately via action().
+    status: current[existingIndex].status,
+    offer_versions: [...current[existingIndex].offer_versions, version],
+  };
+  return updated;
+}
+
+/** Optimistically reflects a publish/pause/resume/archive result locally,
+ * same reasoning as applyOptimisticSave: the action already told us the new
+ * state, so the sidebar shouldn't have to wait on (or fail because of) a
+ * follow-up reload to show it. */
+function applyOptimisticStatus(
+  current: Offer[],
+  offerId: string,
+  offerStatus: string,
+  versionStatus: string,
+): Offer[] {
+  return current.map((o) =>
+    o.id === offerId
+      ? {
+          ...o,
+          status: offerStatus,
+          offer_versions: o.offer_versions.map((v) =>
+            v.id === o.current_version_id ? { ...v, status: versionStatus } : v,
+          ),
+        }
+      : o,
+  );
+}
 export function OfferManager({ session }: { session: Session | null }) {
   const [orgs, setOrgs] = useState<Org[]>([]),
     [org, setOrg] = useState(""),
@@ -35,7 +121,9 @@ export function OfferManager({ session }: { session: Session | null }) {
     ),
     [events, setEvents] = useState<EventOption[]>([]),
     [orgsLoaded, setOrgsLoaded] = useState(false),
-    [offersLoading, setOffersLoading] = useState(true);
+    [offersLoading, setOffersLoading] = useState(true),
+    [loadError, setLoadError] = useState(""),
+    [liveOfferId, setLiveOfferId] = useState("");
   useEffect(() => {
     if (!db) return;
     void db
@@ -78,9 +166,17 @@ export function OfferManager({ session }: { session: Session | null }) {
         .maybeSingle(),
     ]).then(([offerResult, profileResult]) => {
       if (offerResult.error) {
-        setOffers([]);
-        setStatus("Unable to load your offers. Please try again.");
+        // Issue #250: never wipe an already-visible list on a reload
+        // failure -- that made a successful save look like it had vanished.
+        // Surface the real Postgres/PostgREST error instead of a generic
+        // message so a genuine schema/permission problem is diagnosable
+        // instead of indistinguishable from "you have no offers."
+        setLoadError(
+          offerResult.error.message ||
+            "Unable to load your offers from the server.",
+        );
       } else {
+        setLoadError("");
         setOffers((offerResult.data || []) as any);
       }
       setProfileState(
@@ -99,6 +195,7 @@ export function OfferManager({ session }: { session: Session | null }) {
     // regions (this spinner plus the action's own "complete" message).
     if (!org) return;
     setOffersLoading(true);
+    setLoadError("");
     load();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [org]);
@@ -134,11 +231,31 @@ export function OfferManager({ session }: { session: Session | null }) {
       selected ? "revise_partner_offer" : "create_partner_offer",
       args as any,
     );
-    setStatus(error ? error.message : "Saved as a new draft version.");
-    if (!error) {
-      if (!selected) setSelected(data as string);
-      load();
+    if (error) {
+      setStatus(error.message);
+      return;
     }
+    // create_partner_offer returns the new offer id; revise_partner_offer
+    // returns the new version id (the offer id is already `selected`). A
+    // brand-new offer has no real version id to reference yet, so a locally
+    // generated one is used purely as an internal key -- it is superseded
+    // the moment the reload below succeeds.
+    const offerId = selected || (data as string);
+    const versionId = selected ? (data as string) : crypto.randomUUID();
+    setStatus("Saved as a new draft version.");
+    setOffers((current) =>
+      applyOptimisticSave(
+        current,
+        offerId,
+        versionId,
+        form,
+        destinationUrl,
+        imageUrls,
+      ),
+    );
+    if (!selected) setSelected(offerId);
+    setLiveOfferId("");
+    load();
   }
   async function action(name: string, id = selected) {
     if (!db || !id) return;
@@ -151,7 +268,7 @@ export function OfferManager({ session }: { session: Session | null }) {
       )
     )
       return;
-    const { error } = await db.rpc(
+    const { data, error } = await db.rpc(
       name === "duplicate"
         ? "duplicate_partner_offer"
         : "set_partner_offer_state",
@@ -159,7 +276,38 @@ export function OfferManager({ session }: { session: Session | null }) {
         ? { p_offer_id: id }
         : { p_offer_id: id, p_action: name },
     );
-    setStatus(error ? error.message : `${name} complete.`);
+    if (error) {
+      setStatus(error.message);
+      load();
+      return;
+    }
+    if (name === "duplicate") {
+      setStatus("Duplicate created as a new draft.");
+    } else {
+      // set_partner_offer_state returns the version's new status directly
+      // (published/scheduled/paused/archived/expired) -- using it instead of
+      // a generic "<action> complete." gives the vendor the exact rule that
+      // fired (e.g. a future start date produces "scheduled", not
+      // "published", per Issue #250's required publish-result clarity).
+      const versionStatus = data as string;
+      const offerStatus =
+        versionStatus === "published" || versionStatus === "scheduled"
+          ? "active"
+          : versionStatus === "paused"
+            ? "suspended"
+            : "expired";
+      setStatus(
+        versionStatus === "published"
+          ? "Published. Now visible in Marketplace."
+          : versionStatus === "scheduled"
+            ? "Scheduled -- will publish automatically at the start date."
+            : `${name} complete.`,
+      );
+      setOffers((current) =>
+        applyOptimisticStatus(current, id, offerStatus, versionStatus),
+      );
+      setLiveOfferId(versionStatus === "published" ? id : "");
+    }
     load();
   }
   function edit(o: Offer) {
@@ -167,9 +315,26 @@ export function OfferManager({ session }: { session: Session | null }) {
     const v =
       o.offer_versions.find((x) => x.id === o.current_version_id) ||
       o.offer_versions[0];
+    setLiveOfferId(
+      o.status === "active" && v?.status === "published" ? o.id : "",
+    );
     setForm({
       ...blankOffer,
       ...v,
+      // Several offer_versions text columns are nullable in the database
+      // (details, terms, redemption_instructions, source_url, disclosure),
+      // so a real reload can hand back null for any of them. Every field
+      // bound to a controlled text input/textarea must default to "", not
+      // null -- otherwise React flips the input from controlled to
+      // uncontrolled (a console warning today, an input that silently stops
+      // taking keystrokes on some browsers if it recurs).
+      title: v?.title || "",
+      summary: v?.summary || "",
+      details: v?.details || "",
+      terms: v?.terms || "",
+      redemption_instructions: v?.redemption_instructions || "",
+      source_url: v?.source_url || "",
+      disclosure: v?.disclosure || "",
       event_id: o.event_id || "",
       destination_url: o.destination_url || "",
       product_label: o.product_label || "",
@@ -242,11 +407,29 @@ export function OfferManager({ session }: { session: Session | null }) {
             className="btn quiet"
             onClick={() => {
               setSelected("");
+              setLiveOfferId("");
               setForm(blankOffer);
             }}
           >
             New offer
           </button>
+          {loadError && (
+            <div className="notice" role="alert">
+              <b>Your list couldn&apos;t refresh.</b> {loadError}
+              {offers.length > 0 &&
+                " Offers you already had loaded are still shown below and are not affected."}
+              <button
+                type="button"
+                className="textButton"
+                onClick={() => {
+                  setOffersLoading(true);
+                  load();
+                }}
+              >
+                Retry
+              </button>
+            </div>
+          )}
           {offersLoading ? (
             <LoadingState>Loading your offers…</LoadingState>
           ) : (
@@ -511,6 +694,11 @@ export function OfferManager({ session }: { session: Session | null }) {
                 >
                   Archive
                 </button>
+                {liveOfferId === selected && (
+                  <Link className="btn" to={`/offers/${selected}`}>
+                    View in Marketplace
+                  </Link>
+                )}
               </>
             )}
           </div>
