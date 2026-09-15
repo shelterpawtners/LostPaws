@@ -424,15 +424,32 @@
   background: var(--learn-surface);
 }
 
-.learnFaqItem dt {
-  margin-bottom: 0.45rem;
+.learnFaqItem summary {
+  cursor: pointer;
   font-size: 1.02rem;
   font-weight: 700;
   line-height: 1.35;
+  list-style: none;
 }
 
-.learnFaqItem dd {
-  margin: 0;
+.learnFaqItem summary::-webkit-details-marker {
+  display: none;
+}
+
+.learnFaqItem summary::after {
+  float: right;
+  color: var(--learn-primary);
+  content: "+";
+  font-size: 1.25rem;
+  line-height: 1;
+}
+
+.learnFaqItem[open] summary::after {
+  content: "−";
+}
+
+.learnFaqItem p {
+  margin: 0.65rem 0 0;
   color: var(--learn-muted);
   line-height: 1.6;
 }

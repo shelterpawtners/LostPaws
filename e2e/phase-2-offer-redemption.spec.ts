@@ -246,6 +246,7 @@ test.describe.serial("Phase 2 offer and redemption journey", () => {
       .getByLabel("Partner customer attestation")
       .selectOption("new_to_business");
 
+    page.once("dialog", (dialog) => dialog.accept());
     await page.getByRole("button", { name: "Confirm utilization" }).click();
     const status = page.getByRole("status");
     await expect(status).toContainText("Utilization confirmed");

@@ -61,14 +61,14 @@ export function FaqPage() {
             ))}
           </div>
 
-          <dl className="learnFaqList">
+          <div className="learnFaqList">
             {visible.map((entry) => (
-              <div className="learnFaqItem" key={entry.question}>
-                <dt>{entry.question}</dt>
-                <dd>{entry.answer}</dd>
-              </div>
+              <details className="learnFaqItem" key={entry.question}>
+                <summary>{entry.question}</summary>
+                <p>{entry.answer}</p>
+              </details>
             ))}
-          </dl>
+          </div>
 
           {visible.length === 0 && (
             <p className="learnFaqEmpty">

@@ -192,6 +192,13 @@ export function PartnerProfileEditor({ session }: { session: Session | null }) {
     );
   async function save(publish = false, unpublish = false) {
     if (!db || !id || saving || loadingProfile) return;
+    if (
+      unpublish &&
+      !window.confirm(
+        "Unpublish your business profile? Guardians won't be able to find it in the directory until you publish it again.",
+      )
+    )
+      return;
     const invalidSocial = Object.values(socials).some((url) => {
       if (!url.trim()) return false;
       return !isHttpUrl(url);

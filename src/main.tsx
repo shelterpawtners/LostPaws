@@ -87,6 +87,7 @@ import { RouteFocus } from "./components/RouteFocus";
 import { AdoptionVerificationResponder } from "./components/AdoptionVerificationResponder";
 import { RaveShelterMission } from "./components/RaveShelterMission";
 import { SevenStarSheltersPage } from "./components/SevenStarSheltersPage";
+import { NotFoundPage } from "./components/NotFoundPage";
 import {
   AdminQaMode,
   AdminQaNavLink,
@@ -949,6 +950,12 @@ function PartnerOrganizationOnboarding({ kind }: { kind: PartnerKind }) {
   }
   async function dismiss(candidate: OrganizationCandidate) {
     if (!db || !session) return;
+    if (
+      !window.confirm(
+        `Mark "${candidate.public_name}" as not your business? You can request access to it again later if this was a mistake.`,
+      )
+    )
+      return;
     const id = draftId || (await saveDraft());
     if (!id) return;
     const { error } = await db.from("organization_candidate_dismissals").upsert(
@@ -2673,7 +2680,14 @@ function App() {
             }
           />
         ))}
-        <Route path="*" element={<Navigate to="/" />} />
+        <Route
+          path="*"
+          element={
+            <Page>
+              <NotFoundPage />
+            </Page>
+          }
+        />
       </Routes>
     </>
   );
