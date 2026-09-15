@@ -6,7 +6,11 @@
 schema_version: 1
 updated: "2026-09-15T18:25:00Z"
 
-active_claims: []
+active_claims:
+  - item: uat-204
+    agent: claude
+    branch: feat/uat-204-vendor-offer-ux
+    claimed_at: "2026-09-15T18:10:00Z"
 
 completed:
   - item: uat-203
