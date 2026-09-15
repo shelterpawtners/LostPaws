@@ -188,7 +188,7 @@ items:
     journey: none
     priority: P3
     owner: codex
-    status: ready
+    status: partial
     depends_on: []
     conflict_files:
       [
@@ -197,8 +197,8 @@ items:
         "src/main.tsx",
         "src/lib/document-title.ts",
       ]
-    branch: null
-    pr: null
+    branch: fix/uat-199-safe-ux-slice
+    pr: 225
 
   - id: uat-200
     issue: 200
