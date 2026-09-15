@@ -27,6 +27,31 @@ async function signIn(page: Page, email: string, password: string) {
 test.describe("Guardian pet-centric dashboard", () => {
   test.describe.configure({ timeout: 60_000 });
 
+  test("Guardian dashboard announces pet loading before the next action is chosen", async ({
+    page,
+  }) => {
+    let releaseGuardianships!: () => void;
+    const guardianshipsResponse = new Promise<void>((resolve) => {
+      releaseGuardianships = resolve;
+    });
+    await page.route("**/rest/v1/guardianships*", async (route) => {
+      await guardianshipsResponse;
+      await route.continue();
+    });
+
+    await signIn(page, "guardian-a@example.invalid", "Demo-only-Guardian-A!");
+    // Scoped by exact text rather than role: the dashboard also renders
+    // GuardianProfileLite inline, which has its own role="status" loading
+    // paragraph, so an unscoped getByRole("status") is ambiguous here.
+    await expect(
+      page.getByText("Loading your pets…", { exact: true }),
+    ).toBeVisible();
+    releaseGuardianships();
+    await expect(
+      page.getByRole("link", { name: "Open Demo Pet A" }),
+    ).toBeVisible();
+  });
+
   test("Guardian with two active pets sees and can select both", async ({
     page,
   }) => {
