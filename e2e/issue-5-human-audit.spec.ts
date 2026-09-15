@@ -45,7 +45,9 @@ async function createPartnerOffer(page: Page, title: string) {
     "Saved as a new draft version",
   );
   await page.getByRole("button", { name: "Publish or schedule" }).click();
-  await expect(page.getByRole("status")).toContainText("publish complete");
+  await expect(page.getByRole("status")).toContainText(
+    "Published. Now visible in Marketplace.",
+  );
 }
 
 function adminQaBanner(page: Page) {

@@ -3,6 +3,7 @@ import { expect, test, type Page } from "@playwright/test";
 
 const runSuffix = `${Date.now()}-${Math.random().toString(16).slice(2)}`;
 const offerTitle = `Playwright welcome offer ${runSuffix}`;
+const journeyOfferTitle = `Playwright persistence check ${runSuffix}`;
 const partnerOrganizationName = `Playwright real Partner ${runSuffix}`;
 
 test.describe.serial("Phase 2 offer and redemption journey", () => {
@@ -177,7 +178,102 @@ test.describe.serial("Phase 2 offer and redemption journey", () => {
       "Saved as a new draft version",
     );
     await page.getByRole("button", { name: "Publish or schedule" }).click();
-    await expect(page.getByRole("status")).toContainText("publish complete");
+    await expect(page.getByRole("status")).toContainText(
+      "Published. Now visible in Marketplace.",
+    );
+    await expect(
+      page.getByRole("link", { name: "View in Marketplace" }),
+    ).toBeVisible();
+  });
+
+  test("Issue #250: vendor offer survives reload, publishes clearly, appears live in Marketplace, and stays editable", async ({
+    page,
+  }) => {
+    await signIn(page, "partner-admin@example.invalid", "Demo-only-Partner!");
+    await page.goto("/partner/offers");
+    const offerOrganization = page
+      .locator("aside.rolePanel")
+      .getByRole("combobox")
+      .first();
+    await expect(offerOrganization).toContainText(partnerOrganizationName, {
+      timeout: 15_000,
+    });
+    await offerOrganization.selectOption(partnerOrganizationId);
+
+    await page.getByLabel("Title").fill(journeyOfferTitle);
+    await page
+      .getByLabel("Short description")
+      .fill("Persistence regression check.");
+    await page.getByLabel("Terms and conditions").fill("Demo only.");
+    await page
+      .getByLabel("How customers use it")
+      .fill("Show the code at checkout.");
+    await page.getByRole("button", { name: "Save new version" }).click();
+    await expect(page.getByRole("status")).toContainText(
+      "Saved as a new draft version",
+    );
+
+    // The draft must appear immediately, selected, without depending on a
+    // second round-trip succeeding.
+    const draftButton = page
+      .getByRole("button")
+      .filter({ hasText: journeyOfferTitle });
+    await expect(draftButton).toBeVisible();
+    await expect(draftButton).toHaveClass(/active/);
+
+    // Reload: the draft must still be there and still editable.
+    await page.reload();
+    await offerOrganization.selectOption(partnerOrganizationId);
+    await expect(
+      page.getByRole("button").filter({ hasText: journeyOfferTitle }),
+    ).toBeVisible();
+    await page
+      .getByRole("button")
+      .filter({ hasText: journeyOfferTitle })
+      .click();
+    await expect(page.getByLabel("Title")).toHaveValue(journeyOfferTitle);
+
+    // Edit the draft, then publish.
+    await page
+      .getByLabel("Short description")
+      .fill("Persistence regression check, revised.");
+    await page.getByRole("button", { name: "Save new version" }).click();
+    await expect(page.getByRole("status")).toContainText(
+      "Saved as a new draft version",
+    );
+    await page.getByRole("button", { name: "Publish or schedule" }).click();
+    await expect(page.getByRole("status")).toContainText(
+      "Published. Now visible in Marketplace.",
+    );
+    const marketplaceLink = page.getByRole("link", {
+      name: "View in Marketplace",
+    });
+    await expect(marketplaceLink).toBeVisible();
+    const offerHref = await marketplaceLink.getAttribute("href");
+    expect(offerHref).toBeTruthy();
+
+    // The public Marketplace read path must show it live, immediately --
+    // no second manual step, no separate sync.
+    await page.goto("/marketplace");
+    await expect(
+      page.locator(".offerCard", { hasText: journeyOfferTitle }),
+    ).toBeVisible();
+
+    // The direct "View in Marketplace" link resolves to the live offer.
+    await page.goto(offerHref!);
+    await expect(page.getByText(journeyOfferTitle).first()).toBeVisible();
+
+    // Returning to Offer Manager: still there, still editable/manageable.
+    await page.goto("/partner/offers");
+    await offerOrganization.selectOption(partnerOrganizationId);
+    const publishedButton = page
+      .getByRole("button")
+      .filter({ hasText: journeyOfferTitle });
+    await expect(publishedButton).toBeVisible();
+    await expect(publishedButton).toContainText("Published");
+    await publishedButton.click();
+    await expect(page.getByLabel("Title")).toHaveValue(journeyOfferTitle);
+    await expect(page.getByRole("button", { name: "Pause" })).toBeVisible();
   });
 
   test("Guardian sees current terms, claims the exact offer, and sees Pending activity", async ({
