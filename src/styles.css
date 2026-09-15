@@ -244,6 +244,15 @@ nav > a:not(.btn):hover {
   border: 1px solid var(--line);
   box-shadow: none;
 }
+.btn.google {
+  background: #4285f4;
+  color: #fff;
+  border: 0;
+  box-shadow: none;
+}
+.btn.google:hover {
+  background: #3367d6;
+}
 .full {
   width: 100%;
 }

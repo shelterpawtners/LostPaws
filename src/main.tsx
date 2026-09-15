@@ -231,7 +231,6 @@ function Header() {
           </details>
           <Link to="/events">Events</Link>
           <Link to="/learn">Learn</Link>
-          {!session && <Link to="/register">Join</Link>}
           {session && <AdminQaNavLink />}
           {session ? (
             <>
@@ -659,27 +658,6 @@ function Signup({ c }: { c: (typeof choices)[number] }) {
       <form onSubmit={submit}>
         <Link to="/register">← Choose another account type</Link>
         <h2>Create your free account</h2>
-        <button
-          className="btn quiet full"
-          type="button"
-          onClick={google}
-          disabled={!googleAuthEnabled}
-        >
-          {googleAuthEnabled
-            ? "Continue with Google"
-            : "Google sign-in coming soon"}
-        </button>
-        <button
-          className="btn quiet full"
-          type="button"
-          onClick={facebook}
-          disabled={!facebookAuthEnabled}
-        >
-          {facebookAuthEnabled
-            ? "Continue with Facebook"
-            : "Facebook sign-in coming soon"}
-        </button>
-        <hr />
         <label>
           Full name
           <input name="name" required autoComplete="name" />
@@ -704,6 +682,27 @@ function Signup({ c }: { c: (typeof choices)[number] }) {
         </label>
         <button className="btn full">Create account</button>
         <FormStatus message={status} isError={statusIsError} />
+        <hr />
+        <button
+          className="btn google full"
+          type="button"
+          onClick={google}
+          disabled={!googleAuthEnabled}
+        >
+          {googleAuthEnabled
+            ? "Continue with Google"
+            : "Google sign-in coming soon"}
+        </button>
+        <button
+          className="btn quiet full"
+          type="button"
+          onClick={facebook}
+          disabled={!facebookAuthEnabled}
+        >
+          {facebookAuthEnabled
+            ? "Continue with Facebook"
+            : "Facebook sign-in coming soon"}
+        </button>
       </form>
     </div>
   );
@@ -1844,8 +1843,25 @@ function Login() {
             </p>
           </aside>
           <form onSubmit={login}>
+            <label>
+              Email address
+              <input name="email" required type="email" autoComplete="email" />
+            </label>
+            <label>
+              Password
+              <input
+                name="password"
+                required
+                type="password"
+                autoComplete="current-password"
+              />
+            </label>
+            <button className="btn full">Sign in</button>
+            <FormStatus message={status} isError={statusIsError} />
+            <Link to="/forgot-password">Forgot your password?</Link>
+            <hr />
             <button
-              className="btn quiet full"
+              className="btn google full"
               type="button"
               onClick={google}
               disabled={!googleAuthEnabled}
@@ -1864,26 +1880,15 @@ function Login() {
                 ? "Continue with Facebook"
                 : "Facebook sign-in coming soon"}
             </button>
-            <hr />
-            <label>
-              Email address
-              <input name="email" required type="email" autoComplete="email" />
-            </label>
-            <label>
-              Password
-              <input
-                name="password"
-                required
-                type="password"
-                autoComplete="current-password"
-              />
-            </label>
-            <button className="btn full">Sign in</button>
-            <FormStatus message={status} isError={statusIsError} />
-            <Link to="/forgot-password">Forgot your password?</Link>
-            <Link to="/register">New here? Choose an account type</Link>
           </form>
         </div>
+      </section>
+      <section className="section shell narrow">
+        <div className="center">
+          <span className="eyebrow">New here?</span>
+          <h2>Choose an account type</h2>
+        </div>
+        <Cards headingLevel={3} />
       </section>
     </Page>
   );
