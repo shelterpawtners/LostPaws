@@ -21,6 +21,8 @@ import {
 import {
   ArrowRight,
   BadgeCheck,
+  Eye,
+  EyeOff,
   HeartHandshake,
   Menu,
   MessageCircle,
@@ -341,6 +343,43 @@ function FormStatus({
     </p>
   );
 }
+function PasswordField({
+  label,
+  name,
+  required = false,
+  minLength,
+  autoComplete,
+}: {
+  label: string;
+  name: string;
+  required?: boolean;
+  minLength?: number;
+  autoComplete?: string;
+}) {
+  const [visible, setVisible] = useState(false);
+  return (
+    <label>
+      {label}
+      <span className="passwordField">
+        <input
+          name={name}
+          type={visible ? "text" : "password"}
+          required={required}
+          minLength={minLength}
+          autoComplete={autoComplete}
+        />
+        <button
+          type="button"
+          className="passwordToggle"
+          onClick={() => setVisible((v) => !v)}
+          aria-label={visible ? "Hide password" : "Show password"}
+        >
+          {visible ? <EyeOff /> : <Eye />}
+        </button>
+      </span>
+    </label>
+  );
+}
 // headingLevel keeps the document outline sequential: the cards sit under an
 // h2 on home but directly under the h1 on /register.
 function Cards({ headingLevel = 3 }: { headingLevel?: 2 | 3 }) {
@@ -589,6 +628,8 @@ function Signup({ c }: { c: (typeof choices)[number] }) {
       return;
     }
     const fd = new FormData(e.currentTarget);
+    if (fd.get("password") !== fd.get("password_confirm"))
+      return fail("Passwords don't match.");
     const { data, error } = await db.auth.signUp({
       email: String(fd.get("email")),
       password: String(fd.get("password")),
@@ -666,16 +707,20 @@ function Signup({ c }: { c: (typeof choices)[number] }) {
           Email address
           <input name="email" required type="email" autoComplete="email" />
         </label>
-        <label>
-          Password
-          <input
-            name="password"
-            required
-            type="password"
-            minLength={8}
-            autoComplete="new-password"
-          />
-        </label>
+        <PasswordField
+          label="Password"
+          name="password"
+          required
+          minLength={8}
+          autoComplete="new-password"
+        />
+        <PasswordField
+          label="Confirm password"
+          name="password_confirm"
+          required
+          minLength={8}
+          autoComplete="new-password"
+        />
         <label className="check">
           <input required type="checkbox" />I agree to the Terms and acknowledge
           the Privacy Notice.
@@ -1847,15 +1892,12 @@ function Login() {
               Email address
               <input name="email" required type="email" autoComplete="email" />
             </label>
-            <label>
-              Password
-              <input
-                name="password"
-                required
-                type="password"
-                autoComplete="current-password"
-              />
-            </label>
+            <PasswordField
+              label="Password"
+              name="password"
+              required
+              autoComplete="current-password"
+            />
             <button className="btn full">Sign in</button>
             <FormStatus message={status} isError={statusIsError} />
             <Link to="/forgot-password">Forgot your password?</Link>
@@ -1989,16 +2031,13 @@ function ResetPassword() {
         <form className="panel" onSubmit={submit}>
           <span className="eyebrow">Account recovery</span>
           <h1>Choose a new password</h1>
-          <label>
-            New password
-            <input
-              name="password"
-              type="password"
-              minLength={8}
-              required
-              autoComplete="new-password"
-            />
-          </label>
+          <PasswordField
+            label="New password"
+            name="password"
+            required
+            minLength={8}
+            autoComplete="new-password"
+          />
           <button className="btn">Update password</button>
           <FormStatus message={status} isError={statusIsError} />
         </form>

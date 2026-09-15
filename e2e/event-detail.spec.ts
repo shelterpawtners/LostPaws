@@ -65,7 +65,10 @@ test.describe("Event detail page", () => {
     await page.goto("/register?type=guardian");
     await page.getByLabel("Full name").fill("Event Attendance Tester");
     await page.getByLabel("Email address").fill(email);
-    await page.getByLabel("Password").fill("Attendance-only-9!");
+    await page
+      .getByLabel("Password", { exact: true })
+      .fill("Attendance-only-9!");
+    await page.getByLabel("Confirm password").fill("Attendance-only-9!");
     await page.getByLabel(/I agree to the Terms/).check();
     await page.getByRole("button", { name: "Create account" }).click();
     await page.waitForURL(/\/onboarding\/guardian$/, { timeout: 15_000 });
