@@ -58,11 +58,11 @@ items:
     journey: both
     priority: P1
     owner: claude
-    status: ready
+    status: done
     depends_on: []
     conflict_files: ["src/components/LostPawsActivation.tsx"]
-    branch: null
-    pr: null
+    branch: chore/uat-189-lostpaws-copy
+    pr: 206
 
   - id: uat-190
     issue: 190
@@ -97,11 +97,11 @@ items:
     journey: vendor
     priority: P1
     owner: claude
-    status: ready
+    status: done
     depends_on: []
     conflict_files: ["src/main.tsx"]
-    branch: null
-    pr: null
+    branch: chore/uat-192-onboarding-wording
+    pr: 207
 
   - id: uat-193
     issue: 193
