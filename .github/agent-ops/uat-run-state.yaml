@@ -4,11 +4,18 @@
 # the claim/release protocol this file supports.
 
 schema_version: 1
-updated: "2026-09-15T18:25:00Z"
+updated: "2026-09-15T20:50:00Z"
 
 active_claims: []
 
 completed:
+  - item: uat-206
+    agent: claude
+    pr: 245
+    merged_sha: "a695717"
+    staging_verified: true
+    completed_at: "2026-09-15T20:45:00Z"
+    note: "Final production review of /lostpaws on mobile and desktop (owner-directed launch check). Found one real gap: no direct Guardian/Pet Passport entry point anywhere in the campaign body (only vendor and shelter lanes, plus a marketplace browse link) despite docs/product/LOSTPAWS-RAVE-LANDING-DIRECTION.md explicitly calling for one. Added a text-link CTA matching the page's existing style. Everything else checked clean: QR-landing cold visit, hero artwork, navigation/back behavior, responsive layout, zero JS/image errors -- verified with a live browser pass on staging plus local Playwright suites (issue-125-rave-lostpaws-mobile, site-hygiene, phase-1-accessibility)."
   - item: fix-offer-manager-status-ambiguity
     agent: claude
     pr: 242
