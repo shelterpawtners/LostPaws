@@ -325,13 +325,13 @@ items:
     uat_ids: []
     journey: guardian
     priority: P1
-    owner: unassigned
-    status: ready
+    owner: claude
+    status: done
     depends_on: []
     conflict_files: ["src/main.tsx"]
-    branch: null
-    pr: null
-    note: "Owner direction 2026-09-15: final usability/polish pass on navigation, forms, pet management, dashboard clarity, mobile behavior, obvious next actions. Fix real issues found; do not hide/remove any existing feature without owner approval (HARD RULE) -- fix, document, or escalate instead."
+    branch: feat/uat-203-guardian-ux-review
+    pr: 236
+    note: "Owner direction 2026-09-15: final usability/polish pass on navigation, forms, pet management, dashboard clarity, mobile behavior, obvious next actions. Code-level review found and fixed two real gaps: no way back to the dashboard from any onboarding form, and a dashboard content flash for returning Guardians. Scope note: this was a code + static-CSS review, not a full live authenticated click-through -- local Supabase lacks seeded demo data to sign in and exercise flows in a browser here (same pre-existing local-environment gap as issue #215), so dashboard/passport/media-gallery mobile CSS was checked by reading the responsive rules rather than by visually clicking through on a phone viewport. No further issues found in the reviewed code; re-open or file a follow-up if a live pass surfaces something this review could not."
 
   - id: uat-204
     issue: null
