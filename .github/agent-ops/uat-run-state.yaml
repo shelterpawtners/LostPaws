@@ -18,7 +18,7 @@ completed:
     agent: claude
     pr: 254
     merged_sha: "a30a118"
-    staging_verified: false
+    staging_verified: true
     completed_at: "2026-09-15T21:55:00Z"
     note: "P0 launch blocker: vendor offer save/publish looked like it silently failed (list wiped to empty + generic error). Root cause: the hosted Supabase project is missing migrations 20260914050000 and 20260914060000 -- confirmed live via a read-only, unauthenticated call to public_active_offers returning the pre-155 column shape. No CI/CD path pushes migrations to the hosted project; this needs owner/ops action (supabase db push or manual SQL), posted in detail on #250. Shipped everything fixable in code regardless: load() no longer wipes the list or hides the real error on a reload failure; save()/action() apply an optimistic local update from the RPC response so a save/publish is visible immediately and survives a reload failure; publish result text is now specific (published vs scheduled); added a View in Marketplace link; fixed a related latent null-into-controlled-input bug in edit(). New e2e regression covers the full required journey. No RLS changes."
   - item: uat-196c
