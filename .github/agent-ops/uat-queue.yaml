@@ -71,11 +71,11 @@ items:
     journey: both
     priority: P1
     owner: claude
-    status: ready
+    status: done
     depends_on: []
     conflict_files: ["src/main.tsx"]
-    branch: null
-    pr: null
+    branch: feat/uat-190-password-ux
+    pr: 213
 
   - id: uat-191
     issue: 191
