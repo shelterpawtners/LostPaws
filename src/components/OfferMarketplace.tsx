@@ -41,7 +41,7 @@ type MarketplaceViewMode = "grid" | "list";
 type SortKey = "ending" | "newest" | "provider" | "title";
 
 const sortLabels: Record<SortKey, string> = {
-  ending: "Ending soonest",
+  ending: "Ending first",
   newest: "Newest",
   provider: "Provider A–Z",
   title: "Title A–Z",
