@@ -47,6 +47,12 @@ export function LostPawsActivation() {
               Join as a vendor
             </Link>
           </div>
+          <Link
+            className="lpTextLink lpHeroTextLink"
+            to="/register?type=guardian"
+          >
+            Have a pet? Start a free Digital Pet Passport
+          </Link>
         </div>
       </section>
 
