@@ -4,15 +4,32 @@
 # the claim/release protocol this file supports.
 
 schema_version: 1
-updated: "2026-09-15T17:16:27Z"
+updated: "2026-09-15T17:45:00Z"
 
-active_claims:
-  - item: uat-199b
-    agent: codex
-    branch: chore/uat-199b-swag-navigation
-    claimed_at: "2026-09-15T17:16:27Z"
+active_claims: []
 
 completed:
+  - item: uat-201
+    agent: claude
+    pr: 231
+    merged_sha: "PENDING"
+    staging_verified: false
+    completed_at: "2026-09-15T17:45:00Z"
+    note: "Full site Shop->Browse copy sweep per owner decision on #201 (avoid the word 'Shop' brand-wide). Updated RaveShelterMission tagline/CTA, home page, LostPawsActivation, SevenStarSheltersPage (3 spots, one renamed to 'Explore' instead of 'Browse' to avoid colliding with a pre-existing nearby 'Browse RAVE offers' link -- caught by e2e/seven-star-shelters.spec.ts), ExplainerTiles, rave-vendors.html, document-title.ts, plus BRAND-DESIGN-SYSTEM.md/CONTENT-STANDARDS.md/UAT-OVERNIGHT-OPERATIONS.md doc updates. Found and fixed a second bug during CI watch: .github/workflows/github-pages-mvp-acceptance.yml's public-release-matrix job had two independent link-text assertion arrays (raveLinks and lostPawsLinks) checking the old copy; only raveLinks had been updated in the original PR, so the acceptance job timed out waiting for 'Shop participating offers' which no longer renders. Fixed in a follow-up commit on the same PR branch. Will update merged_sha and staging_verified once CI is green and merge completes."
+  - item: uat-199b
+    agent: codex
+    pr: 229
+    merged_sha: "cf1ad8c"
+    staging_verified: true
+    completed_at: "2026-09-15T17:20:00Z"
+    note: "Store navigation labels renamed to Swag, unblocked after uat-195 released src/main.tsx. Codex's own PR, reviewed and merged clean."
+  - item: uat-197
+    agent: claude
+    pr: 230
+    merged_sha: "674ed03"
+    staging_verified: true
+    completed_at: "2026-09-15T17:10:00Z"
+    note: "Mapped real brand assets to 3 Store sticker products (shelterpawtners-logo-sticker, lostpaws-sticker-pack, rave-shelter-sticker) and fixed .stCardVisual/.stDetailVisual image sizing (object-fit: contain, max-height) which was rendering images hard-clipped. 6 apparel/merch products left unmapped -- no suitable existing asset; exact filename/product pairs needing owner confirmation split out as uat-197b and posted to Issue #197."
   - item: uat-199
     agent: codex
     pr: 225
