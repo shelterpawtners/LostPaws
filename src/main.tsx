@@ -87,6 +87,7 @@ import { RouteFocus } from "./components/RouteFocus";
 import { AdoptionVerificationResponder } from "./components/AdoptionVerificationResponder";
 import { RaveShelterMission } from "./components/RaveShelterMission";
 import { SevenStarSheltersPage } from "./components/SevenStarSheltersPage";
+import { NotFoundPage } from "./components/NotFoundPage";
 import {
   AdminQaMode,
   AdminQaNavLink,
@@ -2679,7 +2680,14 @@ function App() {
             }
           />
         ))}
-        <Route path="*" element={<Navigate to="/" />} />
+        <Route
+          path="*"
+          element={
+            <Page>
+              <NotFoundPage />
+            </Page>
+          }
+        />
       </Routes>
     </>
   );
