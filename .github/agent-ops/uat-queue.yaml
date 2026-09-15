@@ -191,12 +191,12 @@ items:
     journey: both
     priority: P2
     owner: owner
-    status: blocked
+    status: done
     depends_on: []
     conflict_files: []
     branch: null
     pr: null
-    note: "RED: production DNS write, requires owner action at the DNS provider (SiteGround). Add TXT record at _dmarc.shelterpawtners.com with value: v=DMARC1; p=none; rua=mailto:dmarc-reports@shelterpawtners.com; adkim=r; aspf=r; -- p=none is monitor-only, does not affect existing Microsoft 365 mail routing. Exact record and rationale posted on #196."
+    note: "RESOLVED 2026-09-15: live DNS re-check confirms _dmarc.shelterpawtners.com now publishes exactly the recommended record (v=DMARC1; p=none; rua=mailto:dmarc-reports@shelterpawtners.com; adkim=r; aspf=r;). Owner added it. No further action -- monitor-only policy, no Microsoft 365 mail impact."
 
   - id: uat-197
     issue: 197
@@ -217,14 +217,14 @@ items:
     title: "Map remaining Store apparel/merch product images (owner input needed)"
     uat_ids: [UAT-3, UAT-15, UAT-30]
     journey: none
-    priority: P2
+    priority: P3
     owner: owner
     status: blocked
     depends_on: []
     conflict_files: ["src/store/catalog.ts"]
     branch: null
     pr: null
-    note: "Blocked on owner confirmation: which asset (if any) for Shelter Pawtners Classic Tee, RAVE Shelter Hoodie, Shelter Pawtners Tote Bag, LostPaws Enamel Pin (no suitable asset exists for any of these four); and which of the two QR-embedded LostPaws tee print designs, if either, is appropriate as a website product photo for LostPaws Festival Tee. See comment on #197."
+    note: "PARTIAL EVIDENCE 2026-09-15: owner committed real Store photography under public/Store/Stickers/ and public/Store/Tshirts/ (PR #248) -- resolves the LostPaws Festival Tee ambiguity (LostPaws Dino Tshirt Final.png reads as the intended print) and gives sticker candidates. RAVE Shelter Hoodie, Shelter Pawtners Tote Bag, and LostPaws Enamel Pin still have no dedicated product photo (only logo-mark assets). Superseded in priority by the owner's narrower launch requirement: one real Swag item publicly requestable tonight (uat-207/store_requests, Codex-owned) does not need the full 9-product catalog resolved. Full apparel/merch mapping remains open, not blocking tonight's launch."
 
   - id: uat-198
     issue: 198
@@ -411,3 +411,22 @@ items:
     branch: fix/lostpaws-guardian-cta
     pr: 245
     note: "Owner direction 2026-09-15: final production-quality review of /lostpaws (QR landing flow, branding/images, Guardian path, RAVE Vendor path, navigation/back behavior, responsive layout, JS/image errors). Found and fixed one real gap: no Guardian/Pet Passport CTA anywhere in the campaign body. Everything else verified clean."
+
+  - id: uat-207
+    issue: 200
+    title: "One real Swag item publicly requestable (store_requests intake flow)"
+    uat_ids: []
+    journey: none
+    priority: P1
+    owner: codex
+    status: ready
+    depends_on: []
+    conflict_files:
+      [
+        "src/store/catalog.ts",
+        "src/components/store/StorePage.tsx",
+        "src/components/store/StoreProductDetail.tsx",
+      ]
+    branch: feat/uat-200b-store-admin-ui
+    pr: null
+    note: "OWNER DIRECTION 2026-09-15: not full ecommerce tonight -- one real Swag item, publicly requestable, using the new public/Store/ assets (PR #248), with a minimal Supabase request-intake flow (product -> Request item -> minimal form -> success, no payment/checkout/shipping/tax). Codex owns implementation on feat/uat-200b-store-admin-ui. Claude posted a recommended store_requests schema/RLS design on #200 (write-only public insert, platform_admin-only read/manage, no price/payment/shipping fields) for Codex to build against, and will do design + final cross-surface review once Codex's PR is up. Claude must not duplicate these files."
