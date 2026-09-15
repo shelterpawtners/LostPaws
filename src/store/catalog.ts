@@ -8,6 +8,8 @@
  * StoreProductDetail already render.
  */
 
+const base = import.meta.env.BASE_URL;
+
 export type StoreBrand = "ShelterPawtners" | "LostPaws" | "RAVE Shelter";
 
 export type StoreCategory = "stickers" | "apparel" | "merch";
@@ -60,6 +62,7 @@ export const storeProducts: StoreProduct[] = [
       "A weatherproof die-cut sticker with the Shelter Pawtners mark.",
     description:
       "A durable, weatherproof vinyl sticker featuring the Shelter Pawtners logo. Built for laptops, water bottles, and pet-gear cases.",
+    imageUrl: `${base}brand/ShelterPawtners/shelterpawtners.png`,
     priceMinor: 400,
     currency: "USD",
     category: "stickers",
@@ -74,6 +77,7 @@ export const storeProducts: StoreProduct[] = [
       "A three-sticker pack celebrating the LostPaws initiative.",
     description:
       "Three coordinated die-cut stickers featuring LostPaws artwork, sized for gear, cases, and pet carriers.",
+    imageUrl: `${base}Lost Paws Logos/LostPaws Logo/LostPaws Logo.png`,
     priceMinor: 600,
     currency: "USD",
     category: "stickers",
@@ -87,6 +91,7 @@ export const storeProducts: StoreProduct[] = [
       "A single sticker for the RAVE Shelter community initiative.",
     description:
       "A vinyl sticker with the RAVE Shelter mark, made for festival gear, water bottles, and totes.",
+    imageUrl: `${base}brand/RAVE Shelter/rave-shelter-logo-mark.svg`,
     priceMinor: 400,
     currency: "USD",
     category: "stickers",
