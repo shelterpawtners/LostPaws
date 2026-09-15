@@ -7,6 +7,11 @@ schema_version: 1
 updated: "2026-09-15T21:35:00Z"
 
 active_claims:
+  - item: issue-250
+    agent: claude
+    branch: fix/issue-250-vendor-offer-persistence
+    claimed_at: "2026-09-15T21:45:00Z"
+    note: "P0 launch blocker (owner-reported): vendor offer save/publish/Marketplace-visibility failure. Investigating end-to-end, src/components/OfferManager.tsx read path."
   - item: uat-207
     agent: codex
     branch: feat/uat-200b-store-admin-ui
