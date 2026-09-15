@@ -611,6 +611,34 @@ select:focus {
   outline: 3px solid #7854ce22;
   border-color: #7854ce;
 }
+.passwordField {
+  position: relative;
+  display: block;
+}
+.passwordField input {
+  width: 100%;
+  padding-right: 44px;
+}
+.passwordToggle {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 44px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  background: none;
+  color: var(--muted);
+  cursor: pointer;
+}
+.passwordToggle svg {
+  width: 20px;
+  height: 20px;
+}
+.passwordToggle:hover {
+  color: var(--navy);
+}
 .check {
   display: flex;
   align-items: start;

@@ -9,7 +9,9 @@ const onePixelPng = Buffer.from(
 async function signIn(page: Page) {
   await page.goto("/login");
   await page.getByLabel("Email address").fill("guardian-a@example.invalid");
-  await page.getByLabel("Password").fill("Demo-only-Guardian-A!");
+  await page
+    .getByLabel("Password", { exact: true })
+    .fill("Demo-only-Guardian-A!");
   await page.getByRole("button", { name: "Sign in" }).click();
   await expect(page).toHaveURL(/\/dashboard$/);
 }
@@ -94,7 +96,9 @@ test("accumulates photos added one at a time on a phone viewport", async ({
   await page.goto("/register?type=guardian");
   await page.getByLabel("Full name").fill("Mobile Audit Guardian");
   await page.getByLabel("Email address").fill(email);
-  await page.getByLabel("Password").fill("Audit-only-Password9!");
+  await page
+    .getByLabel("Password", { exact: true })
+    .fill("Audit-only-Password9!");
   await page.getByLabel(/I agree to the Terms/).check();
   await page.getByRole("button", { name: "Create account" }).click();
 

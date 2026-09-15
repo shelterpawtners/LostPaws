@@ -19,7 +19,7 @@ function client() {
 async function signIn(page: Page, email: string, password: string) {
   await page.goto("/login");
   await page.getByLabel("Email address").fill(email);
-  await page.getByLabel("Password").fill(password);
+  await page.getByLabel("Password", { exact: true }).fill(password);
   await page.getByRole("button", { name: "Sign in" }).click();
   await expect(page).toHaveURL(/\/dashboard$/);
 }
@@ -84,7 +84,9 @@ test.describe("Guardian pet-centric dashboard", () => {
     await page.goto("/register?type=guardian");
     await page.getByLabel("Full name").fill("Empty Guardian");
     await page.getByLabel("Email address").fill(email);
-    await page.getByLabel("Password").fill(registrationPassword);
+    await page
+      .getByLabel("Password", { exact: true })
+      .fill(registrationPassword);
     await page.getByRole("checkbox").check();
     await page.getByRole("button", { name: "Create account" }).click();
     await expect(page).toHaveURL(/\/onboarding\/guardian$/);

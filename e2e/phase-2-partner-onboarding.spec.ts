@@ -51,7 +51,9 @@ test.describe("Phase 2 checkpoint 1 partner organization onboarding", () => {
 
     await page.goto("/login");
     await page.getByLabel("Email address").fill("partner-b@example.invalid");
-    await page.getByLabel("Password").fill("Demo-only-Partner-B!");
+    await page
+      .getByLabel("Password", { exact: true })
+      .fill("Demo-only-Partner-B!");
     await page.getByRole("button", { name: "Sign in" }).click();
     await expect(page).toHaveURL(/\/dashboard$/);
 

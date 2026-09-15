@@ -28,7 +28,7 @@ async function register(
   await page.goto(`/register?type=${persona}`);
   await page.getByLabel("Full name").fill(`QA ${persona}`);
   await page.getByLabel("Email address").fill(email);
-  await page.getByLabel("Password").fill(password);
+  await page.getByLabel("Password", { exact: true }).fill(password);
   await page.getByRole("checkbox").check();
   await page.getByRole("button", { name: "Create account" }).click();
   await expect(page).toHaveURL(new RegExp(`/onboarding/${persona}$`));
