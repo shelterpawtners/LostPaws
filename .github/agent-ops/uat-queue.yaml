@@ -110,11 +110,11 @@ items:
     journey: both
     priority: P1
     owner: codex
-    status: ready
+    status: done
     depends_on: []
     conflict_files: []
-    branch: null
-    pr: null
+    branch: fix/uat-193-mobile-funnel-audit
+    pr: 219
 
   - id: uat-194
     issue: 194
