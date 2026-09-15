@@ -4,14 +4,15 @@
 # the claim/release protocol this file supports.
 
 schema_version: 1
-updated: "2026-09-15T07:25:00Z"
+updated: "2026-09-15T07:35:00Z"
 
 active_claims:
-  - item: uat-187
+  - item: uat-190
     agent: claude
     branch: null
     pr: null
-    claimed_at: "2026-09-15T07:25:00Z"
+    claimed_at: "2026-09-15T07:35:00Z"
+    note: "Reassigned from codex — no Codex activity across the sprint so far (checked via gh pr list); picking up to avoid idling per docs/operations/UAT-OVERNIGHT-OPERATIONS.md. Codex may still claim a different ready item at any time."
 
 completed:
   - item: uat-186
@@ -36,8 +37,14 @@ completed:
     agent: claude
     pr: 209
     merged_sha: "c4b264dbf76b17fb5d02be59274350adfe912404"
-    staging_verified: pending
+    staging_verified: true
     completed_at: "2026-09-15T07:25:00Z"
+  - item: uat-187
+    agent: claude
+    pr: 211
+    merged_sha: "65a2ec8b75447eabf335f93fc99ae92bb9fd5d53"
+    staging_verified: true
+    completed_at: "2026-09-15T07:35:00Z"
 
 blockers: []
 # blockers:
