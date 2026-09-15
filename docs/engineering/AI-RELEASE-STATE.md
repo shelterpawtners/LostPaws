@@ -8,10 +8,10 @@ actions belong in [`../AI-CONTROLLER.md`](../AI-CONTROLLER.md).
      docs/engineering/state/release-state.yaml. Regenerate with
      `node scripts/release-state.mjs generate`. -->
 
-STATUS: READY_FOR_ACCEPTANCE
-CURRENT_PHASE: Repository normalization and non-owner-gated MVP closeout (Issues #136 and #107)
-CURRENT_CHECKPOINT: Issue #136 atomic release-state consumer migration is in validation.
-NEXT_CHECKPOINT: Merge the validated atomic migration, then continue the remaining #136 cleanup sequence.
+STATUS: IN_PROGRESS
+CURRENT_PHASE: Post-MVP UAT sprint (Issue #183): autonomous Claude/Codex overnight execution on the Guardian and Raver Vendor QR->/lostpaws signup funnels
+CURRENT_CHECKPOINT: UAT control plane established (docs/operations/UAT-OVERNIGHT-OPERATIONS.md, .github/agent-ops/uat-queue.yaml, .github/agent-ops/uat-run-state.yaml) with 17 work-packet issues (#186-#202) tracing all 45 UAT-N items from #183; Codex re-authorized for this sprint.
+NEXT_CHECKPOINT: Merge P0 funnel fixes (Issues #186, #187, #188), verify staging health, then continue P1 queue items.
 OWNER_DECISION_REQUIRED: NO
 SAFE_TO_CONTINUE: YES
 ACCEPTED_CODE_SHA: NONE
