@@ -25,7 +25,7 @@ completed:
     agent: owner
     pr: 248
     merged_sha: "fa75221"
-    staging_verified: false
+    staging_verified: true
     completed_at: "2026-09-15T21:25:00Z"
     note: "Owner-authored commit (real product photography for Store/Swag under public/Store/Stickers/ and public/Store/Tshirts/), synced to origin by Claude since it existed only in the local working copy. Partially resolves uat-197b (see its note) and unblocks uat-207's single-item request flow."
   - item: uat-206
