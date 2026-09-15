@@ -1,0 +1,29 @@
+# Live execution ledger for the UAT sprint. Machine state only — not prose.
+# Claim an item here before branching; release it (move to completed) as the
+# last step after merge. See docs/operations/UAT-OVERNIGHT-OPERATIONS.md for
+# the claim/release protocol this file supports.
+
+schema_version: 1
+updated: "2026-09-15T00:00:00Z"
+
+active_claims: []
+# active_claims:
+#   - item: uat-186
+#     agent: claude
+#     branch: fix/uat-186-vendor-onboarding-save
+#     claimed_at: "2026-09-15T00:00:00Z"
+
+completed: []
+# completed:
+#   - item: uat-186
+#     agent: claude
+#     pr: 203
+#     merged_sha: "abc1234"
+#     completed_at: "2026-09-15T01:00:00Z"
+
+blockers: []
+# blockers:
+#   - item: uat-196
+#     agent: claude
+#     reason: "needs owner answer on email deliverability infra"
+#     recorded_at: "2026-09-15T00:00:00Z"
