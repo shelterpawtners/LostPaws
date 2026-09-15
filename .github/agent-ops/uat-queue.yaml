@@ -19,7 +19,7 @@ items:
     journey: vendor
     priority: P0
     owner: claude
-    status: ready
+    status: done
     depends_on: []
     conflict_files: ["src/main.tsx"]
     branch: fix/uat-186-vendor-onboarding-save
@@ -97,8 +97,8 @@ items:
     journey: vendor
     priority: P1
     owner: claude
-    status: blocked
-    depends_on: [uat-186]
+    status: ready
+    depends_on: []
     conflict_files: ["src/main.tsx"]
     branch: null
     pr: null
