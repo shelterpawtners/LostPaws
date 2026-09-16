@@ -247,7 +247,9 @@
 
 .evDrafts li {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
+  align-items: center;
   gap: 1rem;
   padding: 0.75rem;
   border: 1px solid var(--ev-line);
@@ -258,6 +260,76 @@
 .evDrafts li span {
   color: var(--ev-muted);
   font-size: 0.9rem;
+}
+
+.evMyEventInfo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.evMyEventActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.evStatusBadge {
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  background: var(--ev-tint);
+  color: var(--ev-primary);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.evStatusBadgeLive {
+  background: #0f8a5f;
+  color: #fff;
+}
+
+.evEditButton,
+.evPublishButton,
+.evUnpublishButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-height: 38px;
+  padding: 0.4rem 0.9rem;
+  border: 1px solid var(--ev-line);
+  border-radius: 999px;
+  background: var(--ev-surface);
+  color: var(--ev-ink);
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.evEditButton svg {
+  width: 0.9rem;
+  height: 0.9rem;
+}
+
+.evPublishButton {
+  border-color: #0f8a5f;
+  background: #0f8a5f;
+  color: #fff;
+}
+
+.evUnpublishButton {
+  border-color: var(--ev-line);
+  color: var(--ev-muted);
+}
+
+.evEditButton:disabled,
+.evPublishButton:disabled,
+.evUnpublishButton:disabled {
+  opacity: 0.6;
+  cursor: wait;
 }
 
 /* Listing */
