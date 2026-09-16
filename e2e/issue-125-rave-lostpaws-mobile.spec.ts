@@ -27,7 +27,7 @@ test.describe("Issue #125 RAVE Shelter and LostPaws launch surfaces", () => {
     ).toBeVisible();
     await expect(
       page.getByRole("heading", {
-        name: "Gear that gives back to the pack.",
+        name: "Discover vendors that support shelter adoption.",
       }),
     ).toBeVisible();
     await expect(page.locator(".rsmPage")).toHaveCount(0);
