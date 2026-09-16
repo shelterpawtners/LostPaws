@@ -11,11 +11,11 @@
 # Markdown files alongside it in the same change.
 
 STATUS: READY_FOR_ACCEPTANCE
-CURRENT_PHASE: "Post-MVP UAT sprint (Issue #183): autonomous Claude/Codex overnight execution on the Guardian and Raver Vendor QR->/lostpaws signup funnels"
-CURRENT_CHECKPOINT: "UAT control plane established; P0 items (uat-186, 187, 188) and P1 items (uat-189, 191, 192, 190) in progress. STATUS is kept at READY_FOR_ACCEPTANCE (not a sprint-status field) because persona-qa.yml and hosted-qa.yml only execute their real browser suites -- not just their lightweight gate step -- when this exact value is set; an earlier IN_PROGRESS value here silently skipped real Persona/Hosted QA on every PR in this sprint until this correction."
-NEXT_CHECKPOINT: "Manually re-run Persona QA and Hosted QA against main to validate the PRs merged while this was misconfigured, then continue P1/P2 queue items."
+CURRENT_PHASE: "Launch stabilization (Issue #273): owner UAT-driven hardening of returning business management, event-linked offers, LostPaws messaging, and Swag requestability"
+CURRENT_CHECKPOINT: "P0-A returning vendor/business lifecycle is merged in PR #275 and P0-B Event->Offer republish clarity/regression is merged in PR #277. Active umbrella Issue #273 remains open for LostPaws messaging, all-product Swag requestability/autofill, and any remaining hosted verification. STATUS intentionally remains READY_FOR_ACCEPTANCE so Persona QA and Hosted QA execute their real browser suites."
+NEXT_CHECKPOINT: "Complete and verify Issue #273 remaining items: record P0-B hosted verification if still pending, ship LostPaws landing messaging, then all-product Swag requestability with logged-in autofill; merge green authorized PRs and finish with the real hosted stabilization acceptance chain."
 OWNER_DECISION_REQUIRED: "NO"
 SAFE_TO_CONTINUE: "YES"
 ACCEPTED_CODE_SHA: "NONE"
-ACCEPTANCE_RUNTIME: "OWNER_RESUMED_2026_09_12"
+ACCEPTANCE_RUNTIME: "OWNER_UAT_2026_09_15"
 ACCEPTANCE_DEPLOYED_SHA: "NONE"
