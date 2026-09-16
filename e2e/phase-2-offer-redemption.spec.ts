@@ -476,4 +476,68 @@ test.describe.serial("Phase 2 offer and redemption journey", () => {
       .evaluate((button) => button.getBoundingClientRect().height);
     expect(scanHeight).toBeGreaterThanOrEqual(44);
   });
+
+  test("attaching an event to an already-published offer clearly warns it is now unpublished, and republishing restores event visibility", async ({
+    page,
+  }) => {
+    // Reproduces the real report: a vendor attaches an event to a LIVE
+    // offer via edit, saves, and the association looks like it "failed"
+    // because revise_partner_offer points current_version_id at a fresh
+    // draft immediately -- the previously published version stops serving
+    // right away, with only a generic "Saved as a new draft version"
+    // message. The fix is making that consequence explicit; publishing is
+    // still a required separate step by design.
+    await signIn(page, "partner-admin@example.invalid", "Demo-only-Partner!");
+    await page.goto("/partner/offers");
+    const offerOrganization = page
+      .locator("aside.rolePanel")
+      .getByRole("combobox")
+      .first();
+    await offerOrganization.selectOption(partnerOrganizationId);
+
+    const title = `Playwright event-attach check ${runSuffix}`;
+    await page.getByRole("button", { name: "New offer" }).click();
+    await page.getByLabel("Title").fill(title);
+    await page.getByLabel("Short description").fill("Event-attach check.");
+    await page.getByLabel("Terms and conditions").fill("Terms.");
+    await page.getByLabel("How customers use it").fill("Redemption.");
+    await page.getByLabel("Per-user limit").fill("1");
+    await page.getByRole("button", { name: "Save new version" }).click();
+    await expect(page.getByRole("status")).toContainText(
+      "Saved as a new draft version",
+    );
+    await page.getByRole("button", { name: "Publish or schedule" }).click();
+    await expect(page.getByRole("status")).toContainText(
+      "Published. Now visible in Marketplace.",
+    );
+
+    const eventSelect = page.getByLabel("Attach to an event (optional)");
+    const eventOption = eventSelect.locator("option").nth(1);
+    const hasSeededEvent = (await eventSelect.locator("option").count()) > 1;
+    test.skip(
+      !hasSeededEvent,
+      "No seeded event available in this environment.",
+    );
+    const selectedEventId = (await eventOption.getAttribute("value")) || "";
+    await eventSelect.selectOption(selectedEventId);
+    await page.getByRole("button", { name: "Save new version" }).click();
+    await expect(page.getByRole("status")).toContainText(
+      "This offer is now unpublished",
+    );
+
+    await page.goto(`/events/${selectedEventId}`);
+    await expect(page.locator(".offerCard", { hasText: title })).toHaveCount(0);
+
+    await page.goto("/partner/offers");
+    await offerOrganization.selectOption(partnerOrganizationId);
+    await page.getByRole("button").filter({ hasText: title }).click();
+    await expect(eventSelect).toHaveValue(selectedEventId);
+    await page.getByRole("button", { name: "Publish or schedule" }).click();
+    await expect(page.getByRole("status")).toContainText(
+      "Published. Now visible in Marketplace.",
+    );
+
+    await page.goto(`/events/${selectedEventId}`);
+    await expect(page.locator(".offerCard", { hasText: title })).toBeVisible();
+  });
 });

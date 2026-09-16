@@ -242,7 +242,18 @@ export function OfferManager({ session }: { session: Session | null }) {
     // the moment the reload below succeeds.
     const offerId = selected || (data as string);
     const versionId = selected ? (data as string) : crypto.randomUUID();
-    setStatus("Saved as a new draft version.");
+    // Editing an already-live offer creates a new draft version and points
+    // the offer at it immediately -- the previous published version stops
+    // serving right away, it does not keep running until the new one is
+    // published. That is easy to miss (e.g. attaching an event to a live
+    // offer looks like a small edit), so say so plainly instead of the
+    // generic message every save otherwise gets.
+    const wasLive = offers.find((o) => o.id === selected)?.status === "active";
+    setStatus(
+      wasLive
+        ? "Saved as a draft revision. This offer is now unpublished -- click Publish below to make these changes (including any event link) live again."
+        : "Saved as a new draft version.",
+    );
     setOffers((current) =>
       applyOptimisticSave(
         current,
