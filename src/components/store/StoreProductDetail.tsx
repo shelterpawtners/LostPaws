@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { ArrowLeft, Clock, ShieldCheck, Sparkles, Tag } from "lucide-react";
 import {
@@ -6,6 +7,7 @@ import {
   storeAvailabilityLabels,
   storeMissionStatement,
 } from "../../store/catalog";
+import { supabase as db } from "../../lib/supabase";
 import "./Store.css";
 
 function productInitials(name: string) {
@@ -20,6 +22,8 @@ function productInitials(name: string) {
 export function StoreProductDetail() {
   const { slug } = useParams<{ slug: string }>();
   const product = findStoreProduct(slug);
+  const [requestStatus, setRequestStatus] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
   if (!product) {
     return (
@@ -38,6 +42,29 @@ export function StoreProductDetail() {
         </section>
       </div>
     );
+  }
+
+  async function submitRequest(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!db || !product?.id || submitting) return;
+    const form = new FormData(event.currentTarget);
+    setSubmitting(true);
+    const { error } = await db.rpc("create_store_request", {
+      p_product_id: product.id,
+      p_requester_name: form.get("name"),
+      p_requester_email: form.get("email"),
+      p_requester_phone: form.get("phone") || null,
+      p_requested_size: null,
+      p_quantity: Number(form.get("quantity") || 1),
+      p_notes: form.get("notes") || null,
+    });
+    setSubmitting(false);
+    setRequestStatus(
+      error
+        ? `We could not submit your request. ${error.message}`
+        : "Request received. This is not a paid order; our team will follow up if the sticker is available.",
+    );
+    if (!error) event.currentTarget.reset();
   }
 
   return (
@@ -88,6 +115,49 @@ export function StoreProductDetail() {
                   until payment processing launches.
                 </span>
               </p>
+
+              {product.id && product.availability === "in_stock" && (
+                <form className="stRequestForm" onSubmit={submitRequest}>
+                  <h2>Request this sticker</h2>
+                  <p>
+                    Tell us how to reach you. This is a request, not checkout or
+                    a paid order.
+                  </p>
+                  <label>
+                    Name
+                    <input name="name" required maxLength={160} />
+                  </label>
+                  <label>
+                    Email
+                    <input name="email" type="email" required maxLength={320} />
+                  </label>
+                  <label>
+                    Phone (optional)
+                    <input name="phone" type="tel" />
+                  </label>
+                  <label>
+                    Quantity
+                    <input
+                      name="quantity"
+                      type="number"
+                      min="1"
+                      max="20"
+                      defaultValue="1"
+                      required
+                    />
+                  </label>
+                  <label>
+                    Notes (optional)
+                    <textarea name="notes" />
+                  </label>
+                  <button className="btn" disabled={submitting}>
+                    {submitting ? "Sending request…" : "Request this sticker"}
+                  </button>
+                  <p role="status" aria-live="polite">
+                    {requestStatus}
+                  </p>
+                </form>
+              )}
 
               <section
                 className="stMission"

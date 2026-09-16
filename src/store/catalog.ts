@@ -17,6 +17,7 @@ export type StoreCategory = "stickers" | "apparel" | "merch";
 export type StoreAvailability = "in_stock" | "coming_soon" | "sold_out";
 
 export type StoreProduct = {
+  id?: string;
   slug: string;
   name: string;
   shortDescription: string;
@@ -56,14 +57,15 @@ export const storeMissionStatement =
 
 export const storeProducts: StoreProduct[] = [
   {
+    id: "60000000-0000-0000-0000-000000000001",
     slug: "shelterpawtners-logo-sticker",
     name: "Shelter Pawtners Logo Sticker",
     shortDescription:
       "A weatherproof die-cut sticker with the Shelter Pawtners mark.",
     description:
       "A durable, weatherproof vinyl sticker featuring the Shelter Pawtners logo. Built for laptops, water bottles, and pet-gear cases.",
-    imageUrl: `${base}brand/ShelterPawtners/shelterpawtners.png`,
-    priceMinor: 400,
+    imageUrl: `${base}Store/Stickers/Shelter Pawtners Logo - black text.png`,
+    priceMinor: 500,
     currency: "USD",
     category: "stickers",
     brand: "ShelterPawtners",

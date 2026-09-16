@@ -21,7 +21,7 @@ test.describe("Store", () => {
       hasText: "Shelter Pawtners Logo Sticker",
     });
     await expect(sticker).toBeVisible();
-    await expect(sticker).toContainText("$4.00");
+    await expect(sticker).toContainText("$5.00");
 
     await page.getByRole("button", { name: "Apparel" }).click();
     await expect(sticker).toHaveCount(0);
