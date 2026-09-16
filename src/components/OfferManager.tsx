@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import type { Session } from "@supabase/supabase-js";
 import { blankOffer, offerStatusLabel, type OfferTerms } from "../lib/offers";
 import { isSafeHttpsUrl } from "../lib/offer-media";
@@ -21,6 +21,7 @@ type Offer = {
   product_label: string | null;
   cta_label: string | null;
   image_urls: string[] | null;
+  channel: "pet" | "rave";
   offer_versions: any[];
 };
 type EventOption = { id: string; title: string; starts_at: string | null };
@@ -74,6 +75,7 @@ function applyOptimisticSave(
     product_label: terms.product_label || null,
     cta_label: terms.cta_label || null,
     image_urls: imageUrls,
+    channel: terms.channel,
     offer_versions: [version],
   };
   const existingIndex = current.findIndex((o) => o.id === offerId);
@@ -113,11 +115,17 @@ function applyOptimisticStatus(
   );
 }
 export function OfferManager({ session }: { session: Session | null }) {
+  const [searchParams] = useSearchParams();
+  const startsInRaveMode = searchParams.get("channel") === "rave";
+  const newOffer = (): OfferTerms => ({
+    ...blankOffer,
+    channel: startsInRaveMode ? "rave" : "pet",
+  });
   const [orgs, setOrgs] = useState<Org[]>([]),
     [org, setOrg] = useState(""),
     [offers, setOffers] = useState<Offer[]>([]),
     [selected, setSelected] = useState(""),
-    [form, setForm] = useState<OfferTerms>(blankOffer),
+    [form, setForm] = useState<OfferTerms>(newOffer),
     [preview, setPreview] = useState(false),
     [status, setStatus] = useState(""),
     [profileState, setProfileState] = useState<ProfileState | "missing">(
@@ -128,6 +136,7 @@ export function OfferManager({ session }: { session: Session | null }) {
     [offersLoading, setOffersLoading] = useState(true),
     [loadError, setLoadError] = useState(""),
     [liveOfferId, setLiveOfferId] = useState("");
+  const isRaveOffer = form.channel === "rave";
   useEffect(() => {
     if (!db) return;
     void db
@@ -154,6 +163,20 @@ export function OfferManager({ session }: { session: Session | null }) {
       });
   }, [session]);
   useEffect(() => {
+    if (
+      selected ||
+      form.channel !== "rave" ||
+      form.event_id ||
+      events.length === 0
+    )
+      return;
+    const lostLands = events.find((event) =>
+      event.title.toLowerCase().includes("lost lands"),
+    );
+    if (lostLands) setForm((current) => ({ ...current, event_id: lostLands.id }));
+  }, [events, form.channel, form.event_id, selected]);
+
+  useEffect(() => {
     if (!session || !org) return;
     localStorage.setItem(selectedOrgStorageKey(session.user.id), org);
   }, [session, org]);
@@ -163,7 +186,7 @@ export function OfferManager({ session }: { session: Session | null }) {
       db
         .from("offers")
         .select(
-          "id,title,status,current_version_id,event_id,destination_url,product_label,cta_label,image_urls,offer_versions:offer_versions!offer_versions_offer_id_fkey(*)",
+          "id,title,status,current_version_id,event_id,destination_url,product_label,cta_label,image_urls,channel,offer_versions:offer_versions!offer_versions_offer_id_fkey(*)",
         )
         .eq("organization_id", org)
         .order("created_at", { ascending: false }),
@@ -354,6 +377,7 @@ export function OfferManager({ session }: { session: Session | null }) {
       redemption_instructions: v?.redemption_instructions || "",
       source_url: v?.source_url || "",
       disclosure: v?.disclosure || "",
+      channel: o.channel || "pet",
       event_id: o.event_id || "",
       destination_url: o.destination_url || "",
       product_label: o.product_label || "",
@@ -427,7 +451,7 @@ export function OfferManager({ session }: { session: Session | null }) {
             onClick={() => {
               setSelected("");
               setLiveOfferId("");
-              setForm(blankOffer);
+              setForm(newOffer());
             }}
           >
             New offer
