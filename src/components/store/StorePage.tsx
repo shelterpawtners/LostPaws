@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import {
   CheckCircle2,
@@ -14,9 +14,11 @@ import {
   storeAvailabilityLabels,
   storeCategories,
   storeMissionStatement,
-  storeProductsByCategory,
+  storeProductFromRecord,
+  storeProducts,
   type StoreCategory,
 } from "../../store/catalog";
+import { supabase as db } from "../../lib/supabase";
 import "./Store.css";
 
 type CategoryFilter = StoreCategory | "all";
@@ -32,13 +34,40 @@ function productInitials(name: string) {
 
 export function StorePage() {
   const [category, setCategory] = useState<CategoryFilter>("all");
+  const [catalog, setCatalog] = useState(storeProducts);
+
+  useEffect(() => {
+    if (!db) return;
+    let cancelled = false;
+
+    void db
+      .from("store_products")
+      .select(
+        "id,slug,name,short_description,description,image_url,price_minor,currency,category,brand,availability,featured,promo_badge,support_percent,support_statement",
+      )
+      .eq("status", "active")
+      .order("sort_order")
+      .then(({ data, error }) => {
+        // Keep the committed catalog as a truthful offline/rollout fallback.
+        // A partially applied environment must not present an empty Store.
+        if (cancelled || error || !data?.length) return;
+        setCatalog(data.map(storeProductFromRecord));
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const products = useMemo(() => {
-    const filtered = storeProductsByCategory(category);
+    const filtered =
+      category === "all"
+        ? catalog
+        : catalog.filter((product) => product.category === category);
     return [...filtered].sort(
       (a, b) => Number(b.featured ?? false) - Number(a.featured ?? false),
     );
-  }, [category]);
+  }, [catalog, category]);
 
   return (
     <div className="stPage">

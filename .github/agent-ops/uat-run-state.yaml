@@ -4,9 +4,21 @@
 # the claim/release protocol this file supports.
 
 schema_version: 1
-updated: "2026-09-16T01:10:12Z"
+updated: "2026-09-16T03:35:00Z"
 
-active_claims: []
+active_claims:
+  - item: issue-273-swag-catalog-requestability
+    agent: codex
+    issue: 273
+    branch: feat/issue-273-swag-catalog-requestability
+    files:
+      - src/components/store/StorePage.tsx
+      - src/components/store/StoreProductDetail.tsx
+      - src/store/catalog.ts
+      - supabase/migrations/
+      - e2e/store.spec.ts
+    claimed_at: "2026-09-16T03:35:00Z"
+    note: "Issue #273 Codex-ready follow-on: seed the legitimate catalog as requestable store_products and autofill signed-in requester name/email. LostPaws messaging is intentionally sequenced behind the conflicting open PR #184."
 
 completed:
   - item: issue-250b

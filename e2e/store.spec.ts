@@ -1,9 +1,9 @@
 import { expect, test } from "@playwright/test";
 
 /**
- * Store (Issue #152) is a first-party static catalog with no database
- * dependency, so this belongs with the credential-free public suite rather
- * than Persona QA.
+ * Store is a first-party catalog. Public reads must remain usable without a
+ * signed-in persona, whether the database-backed catalog has loaded or the
+ * committed rollout fallback is in use.
  */
 test.describe("Store", () => {
   test("lists first-party products with brand, price, and category filters", async ({
@@ -33,21 +33,26 @@ test.describe("Store", () => {
     await expect(sticker).toBeVisible();
   });
 
-  test("the one requestable product is visually distinguishable from the rest on the listing", async ({
+  test("makes every in-stock catalog item requestable without implying checkout", async ({
     page,
   }) => {
     await page.goto("/store");
-    const sticker = page.locator(".stCard", {
-      hasText: "Shelter Pawtners Logo Sticker",
-    });
-    await expect(sticker.getByText("Request available")).toBeVisible();
-    await expect(sticker.getByText("Available to request")).toBeVisible();
+    for (const name of [
+      "Shelter Pawtners Logo Sticker",
+      "LostPaws Sticker Pack",
+      "RAVE Shelter Sticker",
+      "Shelter Pawtners Classic Tee",
+      "Shelter Pawtners Tote Bag",
+      "LostPaws Enamel Pin",
+    ]) {
+      const product = page.locator(".stCard", { hasText: name });
+      await expect(product.getByText("Request available")).toBeVisible();
+      await expect(product.getByText("Available to request")).toBeVisible();
+    }
 
-    const tee = page.locator(".stCard", {
-      hasText: "Shelter Pawtners Classic Tee",
-    });
-    await expect(tee.getByText("Request available")).toHaveCount(0);
-    await expect(tee.getByText("Ready when checkout opens")).toBeVisible();
+    await expect(
+      page.locator(".stCard", { hasText: "LostPaws Festival Tee" }),
+    ).toContainText("Coming soon");
   });
 
   test("does not pretend checkout is live", async ({ page }) => {
@@ -73,6 +78,11 @@ test.describe("Store", () => {
       }),
     ).toBeVisible();
     await expect(page.getByText(/Checkout is not available yet/)).toBeVisible();
+    await expect(
+      page.getByRole("heading", { level: 2, name: "Request this item" }),
+    ).toBeVisible();
+    await expect(page.getByLabel("Name")).toBeVisible();
+    await expect(page.getByLabel("Email")).toBeVisible();
   });
 
   test("an unknown product slug shows a truthful not-found state", async ({
