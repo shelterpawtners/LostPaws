@@ -115,7 +115,14 @@ test.describe.serial("Issue #283 P1-D offer cover photo upload", () => {
       mimeType: "image/png",
       buffer: onePixelPng,
     });
-    await expect(page.getByText("Photo uploaded.")).toBeVisible({
+    // Issue #283 P1 recovery: the upload attaches image_path to the offer
+    // row immediately after the Storage write succeeds, via
+    // set_partner_offer_image_path -- it no longer waits on a later manual
+    // Save. A vendor who uploads and then navigates away (or whose next
+    // save fails) must not end up with an orphaned Storage object and a
+    // null image_path, which is exactly what happened to the real hosted
+    // owner offer that prompted this fix.
+    await expect(page.getByText("Photo uploaded and attached.")).toBeVisible({
       timeout: 15_000,
     });
     const preview = page.locator(".mediaUploadPreview");
@@ -123,21 +130,12 @@ test.describe.serial("Issue #283 P1-D offer cover photo upload", () => {
     const uploadedSrc = await preview.getAttribute("src");
     expect(uploadedSrc).toContain("event-offer-media");
 
-    // The upload only writes the file to storage; the offer's image_path
-    // column is only set on the next explicit save (the same "upload, then
-    // save" flow as every other field in this form).
-    await page.getByRole("button", { name: "Save new version" }).click();
-    await expect(page.getByRole("status")).toContainText(
-      "Saved as a new draft version",
-    );
-
     // Reload, re-select the offer from the list (selection is in-memory
     // state, not persisted), and confirm the photo path came back from the
-    // database rather than only surviving in local component state.
+    // database rather than only surviving in local component state --
+    // deliberately without an intervening manual Save.
     await page.reload();
-    await page
-      .getByRole("button", { name: new RegExp(offerTitle) })
-      .click();
+    await page.getByRole("button", { name: new RegExp(offerTitle) }).click();
     await expect(page.getByLabel("Title")).toHaveValue(offerTitle);
     await expect(page.locator(".mediaUploadPreview")).toHaveAttribute(
       "src",

@@ -30,11 +30,13 @@ export function MediaUpload({
   recordId,
   value,
   onChange,
+  onPersist,
 }: {
   ownerId: string;
   recordId: string;
   value: string;
   onChange: (path: string) => void;
+  onPersist?: (path: string) => Promise<string | null>;
 }) {
   const [status, setStatus] = useState("");
   const [uploading, setUploading] = useState(false);
@@ -67,8 +69,18 @@ export function MediaUpload({
       setStatus(`Could not upload that photo. ${error.message}`);
       return;
     }
-    setStatus("Photo uploaded.");
     onChange(path);
+    if (onPersist) {
+      setStatus("Attaching photo…");
+      const persistError = await onPersist(path);
+      if (persistError) {
+        setStatus(
+          `Photo uploaded, but it could not be attached. ${persistError}`,
+        );
+        return;
+      }
+    }
+    setStatus("Photo uploaded and attached.");
   }
 
   return (

@@ -703,6 +703,20 @@ export function OfferManager({ session }: { session: Session | null }) {
                 recordId={selected}
                 value={form.image_path}
                 onChange={(path) => set("image_path", path)}
+                onPersist={async (path) => {
+                  if (!db) return "Not connected.";
+                  const { error } = await db.rpc(
+                    "set_partner_offer_image_path",
+                    { p_offer_id: selected, p_image_path: path },
+                  );
+                  if (error) return error.message;
+                  setOffers((current) =>
+                    current.map((o) =>
+                      o.id === selected ? { ...o, image_path: path } : o,
+                    ),
+                  );
+                  return null;
+                }}
               />
             </label>
             <label className="fields-wide">
