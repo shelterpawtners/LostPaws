@@ -64,12 +64,26 @@ export function watchRuntime(page: Page) {
   const failures: string[] = [];
   page.on("pageerror", (error) => failures.push(`pageerror: ${error.message}`));
   page.on("console", (message) => {
-    if (message.type() === "error") failures.push(`console: ${message.text()}`);
+    if (message.type() !== "error") return;
+    // See the images.example.invalid note below: a failed resource load logs
+    // a generic "Failed to load resource" console error whose text omits the
+    // URL, but the browser attributes it to the failing resource's location.
+    if (/images\.example\.invalid/i.test(message.location().url || "")) {
+      return;
+    }
+    failures.push(`console: ${message.text()}`);
   });
   page.on("requestfailed", (request) => {
     const reason = request.failure()?.errorText || "request failed";
     if (/ERR_ABORTED|NS_BINDING_ABORTED/i.test(reason)) return;
     if (/favicon/i.test(request.url())) return;
+    // images.example.invalid is a deliberately non-resolvable RFC 2606 test
+    // domain other e2e specs use as offer image fixtures (proving the app
+    // accepts/stores arbitrary external URLs without needing a live image
+    // host). Those offers can remain visible in the shared hosted Marketplace
+    // when unrelated specs browse it, so a failed load from this host is an
+    // expected artifact of other tests' fixtures, not a runtime defect here.
+    if (/images\.example\.invalid/i.test(request.url())) return;
     failures.push(
       `requestfailed: ${request.method()} ${request.url()} ${reason}`,
     );
