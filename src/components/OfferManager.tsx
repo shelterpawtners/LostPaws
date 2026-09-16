@@ -497,6 +497,23 @@ export function OfferManager({ session }: { session: Session | null }) {
         <div className="panel">
           <div className="fields">
             <label>
+              Offer audience
+              <select
+                value={form.channel}
+                onChange={(event) => set("channel", event.target.value)}
+              >
+                <option value="pet">Pet and Guardian offer</option>
+                <option value="rave">Human / RAVE offer</option>
+              </select>
+            </label>
+            {isRaveOffer && (
+              <p className="fields-wide notice">
+                Human / RAVE mode keeps this focused on your deal, image, link,
+                event, and optional dates. Switching back preserves the pet
+                fields you already entered.
+              </p>
+            )}
+            <label>
               Title
               <input
                 value={form.title}
@@ -531,6 +548,8 @@ export function OfferManager({ session }: { session: Session | null }) {
                 onChange={(e) => set("redemption_instructions", e.target.value)}
               />
             </label>
+            {!isRaveOffer && (
+              <>
             <label>
               <span>
                 Eligibility
@@ -576,6 +595,8 @@ export function OfferManager({ session }: { session: Session | null }) {
                 <option value="national">Nationwide</option>
               </select>
             </label>
+              </>
+            )}
             <label>
               Starts
               <input
@@ -592,7 +613,8 @@ export function OfferManager({ session }: { session: Session | null }) {
                 onChange={(e) => set("ends_at", e.target.value)}
               />
             </label>
-            <label>
+            {!isRaveOffer && (
+              <label>
               Claim expires after days
               <input
                 type="number"
@@ -601,7 +623,8 @@ export function OfferManager({ session }: { session: Session | null }) {
                 value={form.claim_window_days}
                 onChange={(e) => set("claim_window_days", e.target.value)}
               />
-            </label>
+              </label>
+            )}
             <label>
               Available quantity
               <input
@@ -620,7 +643,8 @@ export function OfferManager({ session }: { session: Session | null }) {
                 onChange={(e) => set("per_user_limit", e.target.value)}
               />
             </label>
-            <label>
+            {!isRaveOffer && (
+              <label>
               Per-pet limit
               <input
                 type="number"
@@ -628,7 +652,8 @@ export function OfferManager({ session }: { session: Session | null }) {
                 value={form.per_pet_limit}
                 onChange={(e) => set("per_pet_limit", e.target.value)}
               />
-            </label>
+              </label>
+            )}
             <label>
               Source URL
               <input
@@ -748,7 +773,7 @@ export function OfferManager({ session }: { session: Session | null }) {
           {preview && (
             <div className="card">
               <span className="eyebrow">
-                Preview · {form.eligibility_kind.replaceAll("_", " ")}
+                Preview · {isRaveOffer ? "Human / RAVE" : form.eligibility_kind.replaceAll("_", " ")}
               </span>
               <h2>{form.title || "Untitled offer"}</h2>
               <p>{form.summary}</p>
