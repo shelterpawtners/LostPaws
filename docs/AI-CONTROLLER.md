@@ -18,7 +18,7 @@ status.
 
 ## Active issue
 
-**#283 — Launch P1 (User CRUD, Human/RAVE simple mode, media uploads).** P1-A Events/Offers CRUD (#287), P1-B/C Human/RAVE simple mode + Lost Lands default (#288), P1-D real image uploads for Events/Offers (#291, plus test-only follow-up #292), and migration `20260916070000` (event-offer-media storage + `image_path` columns) are merged and confirmed applied to hosted. Owner UAT then found the real hosted vendor offer stuck at `channel=pet`/no event/no image because `revise_partner_offer` silently dropped channel changes and photo uploads only attached on a later manual Save; fixed in #294 (also fixes a broken `\\.`-in-a-plain-string regex bug found while verifying `set_partner_offer_image_path`), merged to `main`. Remaining: apply migration `20260916090000_issue_283_offer_persistence_recovery.sql` to hosted — blocked on the same missing `SUPABASE_ACCESS_TOKEN`/linked project gap as before; needs the owner or credential-holder to run `bash scripts/supabase-cli.sh db push`, then run the hosted acceptance chain (upload photo -> select Lost Lands -> save/reload -> publish -> confirm on RAVE Marketplace + Lost Lands event surface) and report PASS/FAIL on #283. A narrow CRUD-completeness audit found two backlog-worthy gaps (pets/passports have no delete/archive path; store/swag requests can't be viewed/cancelled by their own requester) — detail on #283 and cross-referenced on #252, not launch-blocking. Do not duplicate the detailed plan here.
+**#283 — Launch P1 (User CRUD, Human/RAVE simple mode, media uploads).** P1-A through P1-D, including the persistence recovery in PR #294, are merged. Both hosted migrations (`20260916070000` and `20260916090000_issue_283_offer_persistence_recovery`) are already applied and verified; do not retry them. The only remaining acceptance gate is a real authorized RAVE-vendor/business identity: save/reload a Human/RAVE offer, upload/reload its cover image, associate Lost Lands, publish, and verify the RAVE Marketplace plus Lost Lands surface. Do not create synthetic public vendor data to bypass this. The narrow CRUD audit gaps for pets/passports and requester cancellation are backlog, not launch blockers.
 
 **#273 — Launch Stabilization (Vendor Account, Event Offers, LostPaws Messaging & Swag Requests).** P0-A returning business lifecycle (#275), P0-B Event→Offer republish clarity/regression (#277), Swag catalog requestability with signed-in autofill (#280), and LostPaws vendor messaging (#285) are merged and verified. The only remaining work is the final hosted chain on Issue #273; do not duplicate the detailed plan here.
 
@@ -61,6 +61,10 @@ status.
 - Documentation-only commits do not justify Vercel inspection. For a
   product-affecting pending deployment, inspect Vercel at most once; do not poll
   or force deployment.
+
+## Completed launch UI work
+
+- **#296 — Offer Manager UI stabilization is complete.** PR #297 fixed layout/state clarity and PR #298 delivered the concise Human/RAVE workflow, optional event wording, and immediate-cover-photo guidance. Its vendor-specific hosted acceptance remains correctly tracked under #283.
 
 ## Remaining closeout actions
 
