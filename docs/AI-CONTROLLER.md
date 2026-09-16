@@ -18,6 +18,8 @@ status.
 
 ## Active issue
 
+**#283 — Launch P1 (User CRUD, Human/RAVE simple mode, media uploads).** P1-A Events/Offers CRUD (#287), P1-B/C Human/RAVE simple mode + Lost Lands default (#288), and P1-D real image uploads for Events/Offers (#291, plus test-only follow-up #292) are merged. Remaining: apply migration `20260916070000` (event-offer-media storage + `image_path` columns) to hosted — blocked on missing `SUPABASE_ACCESS_TOKEN`/linked project in the agent environment; needs owner or credential-holder to run `bash scripts/supabase-cli.sh db push`, then re-probe `public_active_offers` for an `image_path` key. A narrow CRUD-completeness audit found two backlog-worthy gaps (pets/passports have no delete/archive path; store/swag requests can't be viewed/cancelled by their own requester) — detail on #283 and cross-referenced on #252, not launch-blocking. Do not duplicate the detailed plan here.
+
 **#273 — Launch Stabilization (Vendor Account, Event Offers, LostPaws Messaging & Swag Requests).** P0-A returning business lifecycle (#275), P0-B Event→Offer republish clarity/regression (#277), Swag catalog requestability with signed-in autofill (#280), and LostPaws vendor messaging (#285) are merged and verified. The only remaining work is the final hosted chain on Issue #273; do not duplicate the detailed plan here.
 
 ## Current status
