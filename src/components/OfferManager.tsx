@@ -1,7 +1,12 @@
 import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import type { Session } from "@supabase/supabase-js";
-import { blankOffer, offerStatusLabel, type OfferTerms } from "../lib/offers";
+import {
+  blankOffer,
+  defaultRaveEventId,
+  offerStatusLabel,
+  type OfferTerms,
+} from "../lib/offers";
 import { isSafeHttpsUrl } from "../lib/offer-media";
 import {
   resolveDefaultOrgId,
@@ -170,10 +175,8 @@ export function OfferManager({ session }: { session: Session | null }) {
       events.length === 0
     )
       return;
-    const lostLands = events.find((event) =>
-      event.title.toLowerCase().includes("lost lands"),
-    );
-    if (lostLands) setForm((current) => ({ ...current, event_id: lostLands.id }));
+    const eventId = defaultRaveEventId(events, form.event_id);
+    if (eventId) setForm((current) => ({ ...current, event_id: eventId }));
   }, [events, form.channel, form.event_id, selected]);
 
   useEffect(() => {
