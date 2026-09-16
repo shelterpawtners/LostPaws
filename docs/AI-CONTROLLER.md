@@ -16,6 +16,10 @@ Use `docs/engineering/AGENT-OPERATIONS.md` for detailed operating rules. Do
 not treat dated prompts or archived material under `docs/archive/**` as live
 status.
 
+## Active issue
+
+**#273 — Launch Stabilization (Vendor Account, Event Offers, LostPaws Messaging & Swag Requests).** Current priority: P0-A (returning vendor/business lifecycle, duplicate-org risk) and P0-B (event-linked offers). See the issue for full plan/acceptance criteria; do not duplicate that plan here.
+
 ## Current status
 
 - The **AI-first documentation and operations migration is complete**
