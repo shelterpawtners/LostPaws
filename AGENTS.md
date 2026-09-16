@@ -24,6 +24,8 @@ Read only the context needed for the task, in this order:
 4. the active GitHub Issue/PR (or active task brief);
 5. at most one relevant canonical domain document.
 
+Use `docs/engineering/AGENT-BRIDGE-PROTOCOL.md` for cross-agent coordination, durable handoffs, collision avoidance, and AI-cost discipline. GitHub is the shared control plane between ChatGPT, Claude, Codex, Copilot, and other coding agents; persist detailed plans and acceptance there once, then use short pointer prompts instead of repeatedly restating context.
+
 `docs/engineering/AI-RELEASE-STATE.md` is the CI-required machine-readable
 release-state file. Read or update it only when a task needs
 completion/acceptance/workflow state. `docs/AI-HANDOFF.md` is its
