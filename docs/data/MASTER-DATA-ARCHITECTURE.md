@@ -22,19 +22,19 @@ erDiagram
 
 ## Canonical data and governance
 
-| Concept | Source of truth | Class | Rule |
-|---|---|---|---|
-| Person/account | `profiles`, auth user | master/PII | UUID identity; least-access RLS |
-| Organization and membership | `organizations`, `organization_memberships` | master | membership controls management, not name matching |
-| Offer identity/current lifecycle | `offers` | versioned shell | stable offer ID; state never replaces historical terms |
-| Offer terms | `offer_versions` | immutable/versioned | revise creates a new version |
-| Claim/redemption | `offer_claims`, `redemptions` | transaction | claim retains exact offer-version attribution |
-| Monetary impact | `economic_events`, `economic_event_lines` | append-only fact | integer minor units; corrections/reversals, never in-place rewrite |
-| Partner public profile | `organization_partner_profiles` plus controlled child tables | master/published config | publication is separate from private contacts |
-| Events/attendance | `events`, `event_attendance` | master/fact | event is campaign scope, not an offer substitute |
-| Swag catalog | `store_products` | master/published config | platform-admin owned; active rows public |
-| Swag request | `store_requests` | transaction | product FK and request-time product/price snapshot |
-| Audit/provenance | `private.audit_events` and version/audit tables | protected audit | no browser-public reads; preserve actor/time/source |
+| Concept                          | Source of truth                                              | Class                   | Rule                                                               |
+| -------------------------------- | ------------------------------------------------------------ | ----------------------- | ------------------------------------------------------------------ |
+| Person/account                   | `profiles`, auth user                                        | master/PII              | UUID identity; least-access RLS                                    |
+| Organization and membership      | `organizations`, `organization_memberships`                  | master                  | membership controls management, not name matching                  |
+| Offer identity/current lifecycle | `offers`                                                     | versioned shell         | stable offer ID; state never replaces historical terms             |
+| Offer terms                      | `offer_versions`                                             | immutable/versioned     | revise creates a new version                                       |
+| Claim/redemption                 | `offer_claims`, `redemptions`                                | transaction             | claim retains exact offer-version attribution                      |
+| Monetary impact                  | `economic_events`, `economic_event_lines`                    | append-only fact        | integer minor units; corrections/reversals, never in-place rewrite |
+| Partner public profile           | `organization_partner_profiles` plus controlled child tables | master/published config | publication is separate from private contacts                      |
+| Events/attendance                | `events`, `event_attendance`                                 | master/fact             | event is campaign scope, not an offer substitute                   |
+| Swag catalog                     | `store_products`                                             | master/published config | platform-admin owned; active rows public                           |
+| Swag request                     | `store_requests`                                             | transaction             | product FK and request-time product/price snapshot                 |
+| Audit/provenance                 | `private.audit_events` and version/audit tables              | protected audit         | no browser-public reads; preserve actor/time/source                |
 
 Controlled taxonomies (role, organization kind, offer audience/channel,
 category, publication/status) must use constrained relational values or
@@ -43,36 +43,36 @@ free-text-merge reporting keys.
 
 ## Lifecycles
 
-| Workflow | Allowed lifecycle | Historical rule |
-|---|---|---|
-| Offer | draft → published/scheduled → paused/resumed → archived | revisions create `offer_versions`; public reads only publishable current version |
-| Claim | created → eligible/claimed → redeemed/expired/cancelled | retain claim's version and eligibility evidence |
-| Redemption | initiated → completed; correction/reversal is append-only | never overwrite completed economic history |
-| Swag request | new → contacted → fulfilled or closed | snapshot product slug, price, currency, variant/size at creation |
-| Partner profile | draft → published → unpublished/suspended/removed | public read follows publication state; private data remains private |
+| Workflow        | Allowed lifecycle                                         | Historical rule                                                                  |
+| --------------- | --------------------------------------------------------- | -------------------------------------------------------------------------------- |
+| Offer           | draft → published/scheduled → paused/resumed → archived   | revisions create `offer_versions`; public reads only publishable current version |
+| Claim           | created → eligible/claimed → redeemed/expired/cancelled   | retain claim's version and eligibility evidence                                  |
+| Redemption      | initiated → completed; correction/reversal is append-only | never overwrite completed economic history                                       |
+| Swag request    | new → contacted → fulfilled or closed                     | snapshot product slug, price, currency, variant/size at creation                 |
+| Partner profile | draft → published → unpublished/suspended/removed         | public read follows publication state; private data remains private              |
 
 ## RLS/persona matrix
 
-| Persona | Public catalog | Request | Own private data | Partner content | Admin data |
-|---|---|---|---|---|---|
-| Anon | active products/read-only | submit only through `create_store_request` | none | published only | none |
-| Guardian | active products | submit; no request-list read | own profile/pets/claims | published only | none |
-| Partner | active products | submit; no request-list read | own membership/profile/offers | own authorized organization paths | none |
-| Platform admin | all catalog and requests | manage lifecycle | administrative scope | manage publication | protected audit per policy |
+| Persona        | Public catalog            | Request                                    | Own private data              | Partner content                   | Admin data                 |
+| -------------- | ------------------------- | ------------------------------------------ | ----------------------------- | --------------------------------- | -------------------------- |
+| Anon           | active products/read-only | submit only through `create_store_request` | none                          | published only                    | none                       |
+| Guardian       | active products           | submit; no request-list read               | own profile/pets/claims       | published only                    | none                       |
+| Partner        | active products           | submit; no request-list read               | own membership/profile/offers | own authorized organization paths | none                       |
+| Platform admin | all catalog and requests  | manage lifecycle                           | administrative scope          | manage publication                | protected audit per policy |
 
 No public delete for Swag requests. Browser input is untrusted; privileged
 state transitions require RLS/RPC boundaries.
 
 ## Reporting metric catalog
 
-| Metric | Grain | Numerator / denominator | Canonical sources | Caveat |
-|---|---|---|---|---|
-| Active offers | offer/version/day | publishable current versions | `offers`, `offer_versions` | define scheduled boundary explicitly |
-| Claim rate | offer version/time | claims / eligible impressions (when tracked) | `offer_claims`, future impressions | no impression denominator yet |
-| Redemption rate | offer version/time | completed redemptions / eligible claims | `redemptions`, `offer_claims` | exclude cancelled/expired by stated rule |
-| Savings delivered | economic line | sum signed minor-unit value | `economic_events`, `economic_event_lines` | corrections remain separate lines |
-| Event performance | event/time | claims/redemptions/impact by event | events + offer/claim/redemption IDs | no free-text event join |
-| Swag fulfillment | product/time | fulfilled requests / new requests | `store_requests` | request is not payment/order conversion |
+| Metric            | Grain              | Numerator / denominator                      | Canonical sources                         | Caveat                                   |
+| ----------------- | ------------------ | -------------------------------------------- | ----------------------------------------- | ---------------------------------------- |
+| Active offers     | offer/version/day  | publishable current versions                 | `offers`, `offer_versions`                | define scheduled boundary explicitly     |
+| Claim rate        | offer version/time | claims / eligible impressions (when tracked) | `offer_claims`, future impressions        | no impression denominator yet            |
+| Redemption rate   | offer version/time | completed redemptions / eligible claims      | `redemptions`, `offer_claims`             | exclude cancelled/expired by stated rule |
+| Savings delivered | economic line      | sum signed minor-unit value                  | `economic_events`, `economic_event_lines` | corrections remain separate lines        |
+| Event performance | event/time         | claims/redemptions/impact by event           | events + offer/claim/redemption IDs       | no free-text event join                  |
+| Swag fulfillment  | product/time       | fulfilled requests / new requests            | `store_requests`                          | request is not payment/order conversion  |
 
 ## Retention and change rules
 
