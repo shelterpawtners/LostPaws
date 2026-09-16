@@ -1,5 +1,9 @@
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import type { Session } from "@supabase/supabase-js";
 import { EventSpotlight } from "./events/EventSpotlight";
+import { lostPawsVendorRoute } from "../lib/lostpaws-vendor-route";
+import { supabase as db } from "../lib/supabase";
 import "./LostPawsActivation.css";
 
 /**
@@ -8,8 +12,65 @@ import "./LostPawsActivation.css";
  * rather than a product page, while the wording was cut to match the /rave
  * treatment: say the point once, then send people where they are going.
  */
-export function LostPawsActivation() {
+function hasVendorOrganization(data: unknown[]) {
+  return data.some((membership) => {
+    const organization = (
+      membership as {
+        organizations?: { organization_type?: string } | null;
+      }
+    ).organizations;
+    return (
+      organization?.organization_type === "pet_business" ||
+      organization?.organization_type === "rave_vendor"
+    );
+  });
+}
+
+export function LostPawsActivation({
+  session,
+  authLoading,
+}: {
+  session: Session | null;
+  authLoading: boolean;
+}) {
   const base = import.meta.env.BASE_URL;
+  const [vendorOrganization, setVendorOrganization] = useState<boolean | null>(
+    null,
+  );
+  useEffect(() => {
+    if (!session) {
+      setVendorOrganization(false);
+      return;
+    }
+    if (!db) {
+      setVendorOrganization(false);
+      return;
+    }
+    setVendorOrganization(null);
+    void db
+      .from("organization_memberships")
+      .select("organizations(organization_type)")
+      .eq("user_id", session.user.id)
+      .eq("status", "active")
+      .then(({ data }) =>
+        setVendorOrganization(hasVendorOrganization(data || [])),
+      );
+  }, [session]);
+
+  const vendorRoute = lostPawsVendorRoute({
+    signedIn: Boolean(session),
+    hasVendorOrganization: vendorOrganization === true,
+  });
+  const vendorCta =
+    authLoading || (session && vendorOrganization === null) ? (
+      <span className="lpButton lpSecondary" aria-live="polite">
+        Checking vendor access…
+      </span>
+    ) : (
+      <Link className="lpButton lpSecondary" to={vendorRoute}>
+        {vendorOrganization ? "Manage vendor offers" : "Join as a vendor"}
+      </Link>
+    );
   const hero = `${base}Lost Paws Logos/LostPaws Logo/lostpaws-hero-16x9.webp`;
   const heroFallback = `${base}Lost Paws Logos/LostPaws Logo/lostpaws-hero-16x9.png`;
   const logo = `${base}Lost Paws Logos/LostPaws Logo/lostpaws-logo.webp`;
@@ -40,12 +101,7 @@ export function LostPawsActivation() {
             <Link className="lpButton lpPrimary" to="/marketplace?channel=rave">
               Browse vendor offers
             </Link>
-            <Link
-              className="lpButton lpSecondary"
-              to="/register?type=rave_vendor"
-            >
-              Join as a vendor
-            </Link>
+            {vendorCta}
           </div>
           <Link
             className="lpTextLink lpHeroTextLink"
@@ -89,7 +145,15 @@ export function LostPawsActivation() {
             <article className="lpCard lpCardVendor">
               <span>Vendors and creators</span>
               <h3>Share your work with the community</h3>
-              <Link to="/register?type=rave_vendor">Join as a vendor</Link>
+              {authLoading || (session && vendorOrganization === null) ? (
+                <span aria-live="polite">Checking vendor access…</span>
+              ) : (
+                <Link to={vendorRoute}>
+                  {vendorOrganization
+                    ? "Manage vendor offers"
+                    : "Join as a vendor"}
+                </Link>
+              )}
             </article>
             <article className="lpCard lpCardShelter">
               <span>Shelters and rescues</span>

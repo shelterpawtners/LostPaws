@@ -1,4 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
+import type { Session } from "@supabase/supabase-js";
 import { LostPawsActivation } from "./LostPawsActivation";
 import "./RaveShelterMission.css";
 
@@ -12,9 +13,16 @@ import "./RaveShelterMission.css";
  * possible, and sends each of its two audiences to one obvious next step.
  * Owner direction (2026-09-12) was to cut wording that convolutes the message.
  */
-export function RaveShelterMission() {
+export function RaveShelterMission({
+  session,
+  authLoading,
+}: {
+  session: Session | null;
+  authLoading: boolean;
+}) {
   const location = useLocation();
-  if (location.pathname === "/lostpaws") return <LostPawsActivation />;
+  if (location.pathname === "/lostpaws")
+    return <LostPawsActivation session={session} authLoading={authLoading} />;
 
   const base = import.meta.env.BASE_URL;
   // Mark-only lockup: the full lockup bakes in the tagline, which the h1
