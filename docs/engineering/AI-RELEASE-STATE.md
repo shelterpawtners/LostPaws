@@ -10,8 +10,8 @@ actions belong in [`../AI-CONTROLLER.md`](../AI-CONTROLLER.md).
 
 STATUS: READY_FOR_ACCEPTANCE
 CURRENT_PHASE: Launch stabilization (Issue #273): owner UAT-driven hardening of returning business management, event-linked offers, LostPaws messaging, and Swag requestability
-CURRENT_CHECKPOINT: P0-A returning vendor/business lifecycle is merged in PR #275. Active umbrella Issue #273 remains open because P0-B Event->Offer linkage plus LostPaws messaging and all-product Swag requestability/autofill are still in progress. STATUS intentionally remains READY_FOR_ACCEPTANCE so Persona QA and Hosted QA execute their real browser suites.
-NEXT_CHECKPOINT: Complete and verify Issue #273 remaining items in priority order: Event->Offer linkage, LostPaws landing messaging, then all-product Swag requestability with logged-in autofill; merge green authorized PRs and finish with the real hosted stabilization acceptance chain.
+CURRENT_CHECKPOINT: P0-A returning vendor/business lifecycle is merged in PR #275 and P0-B Event->Offer republish clarity/regression is merged in PR #277. Active umbrella Issue #273 remains open for LostPaws messaging, all-product Swag requestability/autofill, and any remaining hosted verification. STATUS intentionally remains READY_FOR_ACCEPTANCE so Persona QA and Hosted QA execute their real browser suites.
+NEXT_CHECKPOINT: Complete and verify Issue #273 remaining items: record P0-B hosted verification if still pending, ship LostPaws landing messaging, then all-product Swag requestability with logged-in autofill; merge green authorized PRs and finish with the real hosted stabilization acceptance chain.
 OWNER_DECISION_REQUIRED: NO
 SAFE_TO_CONTINUE: YES
 ACCEPTED_CODE_SHA: NONE
