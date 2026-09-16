@@ -17,7 +17,7 @@ export type StoreCategory = "stickers" | "apparel" | "merch";
 export type StoreAvailability = "in_stock" | "coming_soon" | "sold_out";
 
 export type StoreProduct = {
-  id?: string;
+  id: string;
   slug: string;
   name: string;
   shortDescription: string;
@@ -73,6 +73,7 @@ export const storeProducts: StoreProduct[] = [
     featured: true,
   },
   {
+    id: "60000000-0000-0000-0000-000000000002",
     slug: "lostpaws-sticker-pack",
     name: "LostPaws Sticker Pack",
     shortDescription:
@@ -87,6 +88,7 @@ export const storeProducts: StoreProduct[] = [
     availability: "in_stock",
   },
   {
+    id: "60000000-0000-0000-0000-000000000003",
     slug: "rave-shelter-sticker",
     name: "RAVE Shelter Sticker",
     shortDescription:
@@ -102,6 +104,7 @@ export const storeProducts: StoreProduct[] = [
     promoBadge: "New",
   },
   {
+    id: "60000000-0000-0000-0000-000000000004",
     slug: "shelterpawtners-classic-tee",
     name: "Shelter Pawtners Classic Tee",
     shortDescription:
@@ -116,6 +119,7 @@ export const storeProducts: StoreProduct[] = [
     featured: true,
   },
   {
+    id: "60000000-0000-0000-0000-000000000005",
     slug: "lostpaws-festival-tee",
     name: "LostPaws Festival Tee",
     shortDescription: "A festival-ready tee for the LostPaws community.",
@@ -128,6 +132,7 @@ export const storeProducts: StoreProduct[] = [
     availability: "coming_soon",
   },
   {
+    id: "60000000-0000-0000-0000-000000000006",
     slug: "rave-shelter-hoodie",
     name: "RAVE Shelter Hoodie",
     shortDescription: "A pullover hoodie for RAVE Shelter supporters.",
@@ -141,6 +146,7 @@ export const storeProducts: StoreProduct[] = [
     promoBadge: "Launch collection",
   },
   {
+    id: "60000000-0000-0000-0000-000000000007",
     slug: "shelterpawtners-tote-bag",
     name: "Shelter Pawtners Tote Bag",
     shortDescription: "A durable canvas tote for everyday errands.",
@@ -153,6 +159,7 @@ export const storeProducts: StoreProduct[] = [
     availability: "in_stock",
   },
   {
+    id: "60000000-0000-0000-0000-000000000008",
     slug: "lostpaws-enamel-pin",
     name: "LostPaws Enamel Pin",
     shortDescription: "A collectible hard-enamel pin with LostPaws artwork.",
@@ -165,6 +172,52 @@ export const storeProducts: StoreProduct[] = [
     availability: "in_stock",
   },
 ];
+
+type StoreProductRecord = {
+  id: string;
+  slug: string;
+  name: string;
+  short_description: string;
+  description: string | null;
+  image_url: string | null;
+  price_minor: number;
+  currency: string;
+  category: StoreCategory;
+  brand: StoreBrand;
+  availability: StoreAvailability;
+  featured: boolean;
+  promo_badge: string | null;
+  support_percent: number | null;
+  support_statement: string | null;
+};
+
+function publicStoreImageUrl(imageUrl: string | null) {
+  if (!imageUrl) return undefined;
+  return /^https?:\/\//.test(imageUrl) ? imageUrl : `${base}${imageUrl}`;
+}
+
+/** Maps the public database contract into the stable Store rendering model. */
+export function storeProductFromRecord(
+  product: StoreProductRecord,
+): StoreProduct {
+  return {
+    id: product.id,
+    slug: product.slug,
+    name: product.name,
+    shortDescription: product.short_description,
+    description: product.description ?? undefined,
+    imageUrl: publicStoreImageUrl(product.image_url),
+    priceMinor: product.price_minor,
+    currency: product.currency,
+    category: product.category,
+    brand: product.brand,
+    availability: product.availability,
+    featured: product.featured,
+    promoBadge: product.promo_badge ?? undefined,
+    supportPercent: product.support_percent ?? undefined,
+    supportStatement: product.support_statement ?? undefined,
+  };
+}
 
 export function formatStorePrice(
   product: Pick<StoreProduct, "priceMinor" | "currency">,
@@ -191,7 +244,7 @@ export function findStoreProduct(slug: string | undefined) {
 export function isRequestable(
   product: Pick<StoreProduct, "id" | "availability">,
 ) {
-  return Boolean(product.id) && product.availability === "in_stock";
+  return product.availability === "in_stock";
 }
 
 export function storeProductsByCategory(category: StoreCategory | "all") {
