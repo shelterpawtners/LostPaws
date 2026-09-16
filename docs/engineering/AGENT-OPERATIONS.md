@@ -2,7 +2,7 @@
 
 Status: CANONICAL  
 Owner: Repository operations  
-Last reviewed: 2026-09-14  
+Last reviewed: 2026-09-16  
 Supersedes: detailed operational authority formerly in `AI-OPERATING-PROTOCOL.md`,
 `AUTONOMOUS-EXECUTION-POLICY.md`, `CHATGPT-OPERATING-PROTOCOL.md`,
 `DEV-LOOP-V2.md`, `AI-COST-AND-TESTING-GOVERNANCE.md`, and
@@ -16,6 +16,10 @@ Use this document for detailed agent autonomy, coordination, validation, cost,
 and development-loop rules. For every meaningful task, first read current GitHub
 `main`, `AGENTS.md`, `docs/AI-CONTROLLER.md`, the active Issue/PR, and only the
 domain document needed for that task.
+
+Use `AGENT-BRIDGE-PROTOCOL.md` for the permanent cross-agent shared-memory,
+ownership, collision-avoidance, and low-cost handoff contract. GitHub is the
+durable control plane; local IDE/chat state is never authoritative by itself.
 
 `AI-CONTROLLER.md` is the human live-status authority.
 `AI-RELEASE-STATE.md` is the CI-required machine-readable release-state file.
@@ -97,6 +101,11 @@ ChatGPT for control-tower/product/RED reasoning; a single coding agent for a
 bounded implementation; specialist review only when it adds distinct value. Do
 not add paid runners, monitoring, testing, deployment, or orchestration services
 without owner approval.
+
+Persist detailed scope, acceptance, and handoffs in the active GitHub Issue/PR
+once. After that, prefer short pointer prompts and targeted reads instead of
+re-sending large context blocks. When prompt cache/context/session limits are
+approaching, checkpoint to GitHub before spending more model context.
 
 ## Deployment and release boundaries
 
