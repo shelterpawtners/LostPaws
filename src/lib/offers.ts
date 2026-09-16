@@ -78,7 +78,8 @@ export const defaultRaveEventId = (
 ) => {
   if (currentEventId) return currentEventId;
   return (
-    events.find((event) => event.title.toLowerCase().includes("lost lands"))?.id ||
-    ""
+    events.find((event) =>
+      event.title.toLowerCase().includes("lost lands"),
+    )?.id || ""
   );
 };
