@@ -424,11 +424,13 @@ export function OfferManager({ session }: { session: Session | null }) {
     );
   }
   return (
-    <section className="section shell formPage">
+    <section className="section shell formPage offerManagerPage">
       <span className="eyebrow">Partner offers</span>
-      <h1>Create clear offers without rewriting history.</h1>
+      <h1>{selected ? "Edit your offer" : "Create a new offer"}</h1>
       <p className="lead">
-        Every saved edit becomes a new version. Advanced limits are optional.
+        {selected
+          ? "Saved edits create a new draft version. Publish again when you are ready to make it live."
+          : "Choose an audience, then add the details that help customers use your offer."}
       </p>
       <div className="dashboardGrid">
         <aside className="rolePanel">

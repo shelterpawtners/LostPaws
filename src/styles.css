@@ -905,6 +905,31 @@ select:focus {
 .formPage {
   max-width: 600px;
 }
+.offerManagerPage {
+  max-width: 1160px;
+}
+.offerManagerPage .dashboardGrid {
+  grid-template-columns: minmax(220px, 280px) minmax(0, 1fr);
+  gap: 24px;
+}
+.offerManagerPage .rolePanel,
+.offerManagerPage .panel,
+.offerManagerPage .fields > label {
+  min-width: 0;
+}
+.offerManagerPage .role {
+  overflow-wrap: anywhere;
+}
+.offerManagerPage input,
+.offerManagerPage select,
+.offerManagerPage textarea {
+  width: 100%;
+  min-width: 0;
+}
+.offerManagerPage textarea {
+  min-height: 6rem;
+  resize: vertical;
+}
 .formPage form {
   display: grid;
   gap: 18px;
