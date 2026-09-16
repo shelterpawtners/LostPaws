@@ -65,3 +65,20 @@ export const eligibilityLabel = (kind: string) =>
   kind === "shelter_pet_enhanced"
     ? "Enhanced benefit for eligible shelter pets"
     : "Available for all pets";
+
+export type OfferEventOption = {
+  id: string;
+  title: string;
+};
+
+/** Returns a Lost Lands default only for a blank new RAVE offer. */
+export const defaultRaveEventId = (
+  events: OfferEventOption[],
+  currentEventId: string,
+) => {
+  if (currentEventId) return currentEventId;
+  return (
+    events.find((event) => event.title.toLowerCase().includes("lost lands"))?.id ||
+    ""
+  );
+};
