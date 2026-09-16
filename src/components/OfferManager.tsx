@@ -437,8 +437,25 @@ export function OfferManager({ session }: { session: Session | null }) {
           : "Choose an audience, then add the details that help customers use your offer."}
       </p>
       <div className="dashboardGrid">
-        <aside className="rolePanel">
-          <h2>Your offers</h2>
+        <aside className="rolePanel offerListPanel" aria-label="Your offers">
+          <div className="offerListHeading">
+            <div>
+              <h2>Your offers</h2>
+              <p>
+                {offers.length === 1 ? "1 offer" : `${offers.length} offers`}
+              </p>
+            </div>
+            <button
+              className="btn quiet"
+              onClick={() => {
+                setSelected("");
+                setLiveOfferId("");
+                setForm(newOffer());
+              }}
+            >
+              New offer
+            </button>
+          </div>
           <label>
             Organization
             <select value={org} onChange={(e) => setOrg(e.target.value)}>
@@ -455,16 +472,6 @@ export function OfferManager({ session }: { session: Session | null }) {
               ? " Your public business profile is visible to Guardians."
               : " Publish your Partner profile so Guardians can learn about your business alongside its offers."}
           </div>
-          <button
-            className="btn quiet"
-            onClick={() => {
-              setSelected("");
-              setLiveOfferId("");
-              setForm(newOffer());
-            }}
-          >
-            New offer
-          </button>
           {loadError && (
             <div className="notice" role="alert">
               <b>Your list couldn&apos;t refresh.</b> {loadError}
@@ -484,6 +491,11 @@ export function OfferManager({ session }: { session: Session | null }) {
           )}
           {offersLoading ? (
             <LoadingState>Loading your offers…</LoadingState>
+          ) : offers.length === 0 ? (
+            <p className="offerEmpty">
+              No offers yet. Start with a clear title and the deal you want to
+              share.
+            </p>
           ) : (
             offers.map((o) => (
               <button
@@ -503,7 +515,13 @@ export function OfferManager({ session }: { session: Session | null }) {
             ))
           )}
         </aside>
-        <div className="panel">
+        <div className="panel offerEditorPanel">
+          <div className="offerEditorHeading">
+            <span className="eyebrow">
+              {selected ? "Editing an existing offer" : "New offer"}
+            </span>
+            <h2>{selected ? "Offer details" : "Create your offer"}</h2>
+          </div>
           <div className="fields">
             <label>
               Offer audience
