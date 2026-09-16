@@ -4,8 +4,8 @@ select plan(8);
 
 set local role authenticated;
 select set_config('request.jwt.claim.sub','10000000-0000-0000-0000-000000000005',true);
-insert into public.store_products(id,slug,name,short_description,price_minor,category,brand,status)
-values ('50000000-0000-0000-0000-000000000002','qa-request-product','QA Request Product','A QA product for request RLS.',900,'stickers','LostPaws','active');
+insert into public.store_products(id,slug,name,short_description,price_minor,category,brand,availability,status)
+values ('50000000-0000-0000-0000-000000000002','qa-request-product','QA Request Product','A QA product for request RLS.',900,'stickers','LostPaws','in_stock','active');
 select is((select count(*)::bigint from public.store_products where id='50000000-0000-0000-0000-000000000002'),1::bigint,'test product exists');
 
 set local role anon;
