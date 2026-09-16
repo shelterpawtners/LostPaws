@@ -79,4 +79,38 @@ test.describe("Phase 2 checkpoint 1 partner organization onboarding", () => {
       "Demo PetBiz A",
     );
   });
+
+  test("a returning vendor with an existing organization is offered manage actions, not onboarding, and stays on the same organization", async ({
+    page,
+  }) => {
+    await page.goto("/login");
+    await page
+      .getByLabel("Email address")
+      .fill("partner-admin@example.invalid");
+    await page
+      .getByLabel("Password", { exact: true })
+      .fill("Demo-only-Partner!");
+    await page.getByRole("button", { name: "Sign in" }).click();
+    await page.waitForURL(/\/dashboard$/);
+
+    await expect(
+      page.getByRole("link", { name: /Manage business profile/ }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("link", { name: /Complete your organization/ }),
+    ).toHaveCount(0);
+
+    await page.getByRole("link", { name: /Manage business profile/ }).click();
+    await expect(page).toHaveURL(/\/business$/);
+    await expect(page.getByLabel("Organization")).not.toHaveValue("");
+    const organizationId = await page.getByLabel("Organization").inputValue();
+
+    await page.goto("/dashboard");
+    await page.reload();
+    await expect(
+      page.getByRole("link", { name: /Manage business profile/ }),
+    ).toBeVisible();
+    await page.getByRole("link", { name: /Manage business profile/ }).click();
+    await expect(page.getByLabel("Organization")).toHaveValue(organizationId);
+  });
 });
