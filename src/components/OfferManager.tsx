@@ -550,51 +550,51 @@ export function OfferManager({ session }: { session: Session | null }) {
             </label>
             {!isRaveOffer && (
               <>
-            <label>
-              <span>
-                Eligibility
-                <span
-                  className="fieldHelp"
-                  role="img"
-                  aria-label="Eligibility help: choose enhanced only when the offer has a separate benefit for eligible shelter pets."
-                  title="Choose enhanced only when the offer has a separate benefit for eligible shelter pets."
-                >
-                  ?
-                </span>
-              </span>
-              <select
-                value={form.eligibility_kind}
-                onChange={(e) => set("eligibility_kind", e.target.value)}
-              >
-                <option value="all_pets">All pets</option>
-                <option value="shelter_pet_enhanced">
-                  Enhanced for eligible shelter pets
-                </option>
-              </select>
-            </label>
-            <label>
-              <span>
-                Where it applies
-                <span
-                  className="fieldHelp"
-                  role="img"
-                  aria-label="Where it applies help: choose where a Guardian can use this offer."
-                  title="Choose where a Guardian can use this offer."
-                >
-                  ?
-                </span>
-              </span>
-              <select
-                value={form.applicability}
-                onChange={(e) => set("applicability", e.target.value)}
-              >
-                <option value="online">Online</option>
-                <option value="all_organization_locations">
-                  All organization locations
-                </option>
-                <option value="national">Nationwide</option>
-              </select>
-            </label>
+                <label>
+                  <span>
+                    Eligibility
+                    <span
+                      className="fieldHelp"
+                      role="img"
+                      aria-label="Eligibility help: choose enhanced only when the offer has a separate benefit for eligible shelter pets."
+                      title="Choose enhanced only when the offer has a separate benefit for eligible shelter pets."
+                    >
+                      ?
+                    </span>
+                  </span>
+                  <select
+                    value={form.eligibility_kind}
+                    onChange={(e) => set("eligibility_kind", e.target.value)}
+                  >
+                    <option value="all_pets">All pets</option>
+                    <option value="shelter_pet_enhanced">
+                      Enhanced for eligible shelter pets
+                    </option>
+                  </select>
+                </label>
+                <label>
+                  <span>
+                    Where it applies
+                    <span
+                      className="fieldHelp"
+                      role="img"
+                      aria-label="Where it applies help: choose where a Guardian can use this offer."
+                      title="Choose where a Guardian can use this offer."
+                    >
+                      ?
+                    </span>
+                  </span>
+                  <select
+                    value={form.applicability}
+                    onChange={(e) => set("applicability", e.target.value)}
+                  >
+                    <option value="online">Online</option>
+                    <option value="all_organization_locations">
+                      All organization locations
+                    </option>
+                    <option value="national">Nationwide</option>
+                  </select>
+                </label>
               </>
             )}
             <label>
@@ -615,14 +615,14 @@ export function OfferManager({ session }: { session: Session | null }) {
             </label>
             {!isRaveOffer && (
               <label>
-              Claim expires after days
-              <input
-                type="number"
-                min="1"
-                max="90"
-                value={form.claim_window_days}
-                onChange={(e) => set("claim_window_days", e.target.value)}
-              />
+                Claim expires after days
+                <input
+                  type="number"
+                  min="1"
+                  max="90"
+                  value={form.claim_window_days}
+                  onChange={(e) => set("claim_window_days", e.target.value)}
+                />
               </label>
             )}
             <label>
@@ -645,13 +645,13 @@ export function OfferManager({ session }: { session: Session | null }) {
             </label>
             {!isRaveOffer && (
               <label>
-              Per-pet limit
-              <input
-                type="number"
-                min="1"
-                value={form.per_pet_limit}
-                onChange={(e) => set("per_pet_limit", e.target.value)}
-              />
+                Per-pet limit
+                <input
+                  type="number"
+                  min="1"
+                  value={form.per_pet_limit}
+                  onChange={(e) => set("per_pet_limit", e.target.value)}
+                />
               </label>
             )}
             <label>
@@ -773,7 +773,10 @@ export function OfferManager({ session }: { session: Session | null }) {
           {preview && (
             <div className="card">
               <span className="eyebrow">
-                Preview · {isRaveOffer ? "Human / RAVE" : form.eligibility_kind.replaceAll("_", " ")}
+                Preview ·{" "}
+                {isRaveOffer
+                  ? "Human / RAVE"
+                  : form.eligibility_kind.replaceAll("_", " ")}
               </span>
               <h2>{form.title || "Untitled offer"}</h2>
               <p>{form.summary}</p>
