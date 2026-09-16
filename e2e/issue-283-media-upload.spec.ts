@@ -12,6 +12,7 @@ const vendorEmail = `media-upload-vendor-${runSuffix}@example.invalid`;
 const vendorPassword = "Audit-only-Password9!";
 const orgName = `Playwright Media Vendor ${runSuffix}`;
 const offerTitle = `Playwright cover photo offer ${runSuffix}`;
+const eventTitle = `Lost Lands cover photo ${runSuffix}`;
 
 const onePixelPng = Buffer.from(
   "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAusB9Wl6nWQAAAAASUVORK5CYII=",
@@ -39,7 +40,7 @@ test.describe.serial("Issue #283 P1-D offer cover photo upload", () => {
       .upsert(
         {
           created_by: userId!,
-          partner_kind: "petbiz",
+          partner_kind: "rave_vendor",
           form_data: {
             name: orgName,
             relationship: "independent",
@@ -58,7 +59,7 @@ test.describe.serial("Issue #283 P1-D offer cover photo upload", () => {
 
     const { data: organizationId, error: organizationError } =
       await vendorDb.rpc("create_partner_organization", {
-        p_partner_kind: "petbiz",
+        p_partner_kind: "rave_vendor",
         p_form: {
           name: orgName,
           relationship: "independent",
@@ -78,11 +79,23 @@ test.describe.serial("Issue #283 P1-D offer cover photo upload", () => {
     await expect(page).toHaveURL(/\/dashboard$/);
   }
 
-  test("uploaded cover photo survives reload and renders on the public offer page", async ({
+  test("a new LostPaws offer defaults to RAVE and Lost Lands, and its uploaded cover photo renders on every public surface", async ({
     page,
   }) => {
     await signIn(page);
-    await page.goto("/partner/offers");
+    await page.goto("/events");
+    await page.getByRole("button", { name: /Add an event/ }).click();
+    await page.getByLabel("Title").fill(eventTitle);
+    await page
+      .getByLabel("Summary")
+      .fill("A Lost Lands event for the offer cover-photo regression.");
+    await page.getByRole("button", { name: "Save event" }).click();
+    const draftItem = page.locator(".evDrafts li", { hasText: eventTitle });
+    await expect(draftItem).toBeVisible();
+    await draftItem.getByRole("button", { name: "Publish" }).click();
+    await expect(page.getByText(/Published\. It now appears/)).toBeVisible();
+
+    await page.goto("/partner/offers?channel=rave");
     const offerOrganization = page
       .locator("aside.rolePanel")
       .getByRole("combobox")
@@ -90,15 +103,21 @@ test.describe.serial("Issue #283 P1-D offer cover photo upload", () => {
     await expect(offerOrganization).toContainText(orgName, {
       timeout: 15_000,
     });
+    await expect(page.getByLabel("Offer audience")).toHaveValue("rave");
+    const eventSelect = page.getByLabel(
+      "Feature this offer at an event (optional)",
+    );
+    await expect(eventSelect).toHaveValue(/.+/, { timeout: 15_000 });
+    await expect(eventSelect.locator("option:checked")).toHaveText(eventTitle);
+    const eventId = await eventSelect.inputValue();
+    expect(eventId).not.toBe("");
 
     await page.getByLabel("Title").fill(offerTitle);
     await page
       .getByLabel("Deal / description")
       .fill("A test-only offer for the cover photo regression.");
     await page.getByLabel("Terms and conditions").fill("Demo only.");
-    await page
-      .getByLabel("How customers use it")
-      .fill("Show the private code at checkout.");
+    await expect(page.getByLabel("How customers use it")).toHaveCount(0);
 
     // Cover photo starts disabled until the offer has a real id.
     await expect(page.getByLabel("Cover photo")).toBeDisabled();
@@ -137,6 +156,8 @@ test.describe.serial("Issue #283 P1-D offer cover photo upload", () => {
     await page.reload();
     await page.getByRole("button", { name: new RegExp(offerTitle) }).click();
     await expect(page.getByLabel("Title")).toHaveValue(offerTitle);
+    await expect(page.getByLabel("Offer audience")).toHaveValue("rave");
+    await expect(eventSelect).toHaveValue(eventId);
     await expect(page.locator(".mediaUploadPreview")).toHaveAttribute(
       "src",
       uploadedSrc!,
@@ -154,5 +175,19 @@ test.describe.serial("Issue #283 P1-D offer cover photo upload", () => {
       uploadedSrc!,
       { timeout: 15_000 },
     );
+
+    await page.goto("/marketplace?channel=rave");
+    await expect(
+      page
+        .locator(".offerCard", { hasText: offerTitle })
+        .locator(".marketOfferPhoto"),
+    ).toHaveAttribute("src", uploadedSrc!, { timeout: 15_000 });
+
+    await page.goto(`/marketplace?event=${eventId}`);
+    await expect(
+      page
+        .locator(".offerCard", { hasText: offerTitle })
+        .locator(".marketOfferPhoto"),
+    ).toHaveAttribute("src", uploadedSrc!, { timeout: 15_000 });
   });
 });
