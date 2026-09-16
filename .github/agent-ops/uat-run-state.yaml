@@ -4,9 +4,19 @@
 # the claim/release protocol this file supports.
 
 schema_version: 1
-updated: "2026-09-16T04:25:00Z"
+updated: "2026-09-16T04:35:00Z"
 
 active_claims:
+  - item: issue-283-human-rave-offer-form
+    agent: codex
+    issue: 283
+    branch: feat/issue-283-human-rave-offer-form
+    files:
+      - src/components/OfferManager.tsx
+      - src/lib/offers.ts
+      - e2e/phase-2-offer-redemption.spec.ts
+    claimed_at: "2026-09-16T04:35:00Z"
+    note: "P1-B bounded UI/test slice only: conditional Human/RAVE offer fields and preserving data when switching modes. Excludes delete/archive RPC/RLS, storage policies, and upload architecture reserved for Claude."
 
 completed:
   - item: issue-273-lostpaws-messaging
