@@ -125,8 +125,15 @@ test.describe.serial("Issue #283 P1 offer channel + event persistence", () => {
     // exact edit that silently lost the channel change before this fix.
     await page.getByLabel("Offer audience").selectOption("rave");
     await page
-      .getByLabel("Attach to an event (optional)")
+      .getByLabel("Feature this offer at an event (optional)")
       .selectOption({ label: eventTitle });
+    await expect(page.getByLabel("How customers use it")).toHaveCount(0);
+    await page.getByLabel("Offer audience").selectOption("pet");
+    await expect(page.getByLabel("How customers use it")).toHaveValue(
+      "Show the private code at checkout.",
+    );
+    await page.getByLabel("Offer audience").selectOption("rave");
+    await expect(page.getByLabel("How customers use it")).toHaveCount(0);
     await page.getByRole("button", { name: "Save new version" }).click();
     await expect(page.getByRole("status")).toContainText(
       "Saved as a new draft version",
@@ -139,11 +146,11 @@ test.describe.serial("Issue #283 P1 offer channel + event persistence", () => {
     await page.getByRole("button", { name: new RegExp(offerTitle) }).click();
     await expect(page.getByLabel("Title")).toHaveValue(offerTitle);
     await expect(page.getByLabel("Offer audience")).toHaveValue("rave");
-    await expect(page.getByLabel("Attach to an event (optional)")).toHaveValue(
-      /.+/,
-    );
+    await expect(
+      page.getByLabel("Feature this offer at an event (optional)"),
+    ).toHaveValue(/.+/);
     const eventValue = await page
-      .getByLabel("Attach to an event (optional)")
+      .getByLabel("Feature this offer at an event (optional)")
       .inputValue();
     expect(eventValue).not.toBe("");
 
