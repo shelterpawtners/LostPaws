@@ -31,14 +31,14 @@ export function LostPawsActivation() {
         </div>
         <div className="lpWrap lpHeroContent">
           <p className="lpKicker">A RAVE Shelter initiative for Lost Lands</p>
-          <h1 id="lp-title">Gear that gives back to the pack.</h1>
+          <h1 id="lp-title">Discover vendors that support shelter adoption.</h1>
           <p className="lpLead">
-            Gear and art from Lost Lands vendors who put part of every sale
-            behind shelter pets.
+            Meet festival vendors, Etsy sellers, artists, makers, and independent
+            businesses that support shelter adoption.
           </p>
           <div className="lpActions">
             <Link className="lpButton lpPrimary" to="/marketplace?channel=rave">
-              Browse participating offers
+              Browse vendor offers
             </Link>
             <Link
               className="lpButton lpSecondary"
@@ -60,15 +60,15 @@ export function LostPawsActivation() {
         <div className="lpWrap lpBeatsRow">
           <div className="lpBeat">
             <span>01</span>
-            <h2>Buy what you were buying anyway</h2>
+            <h2>Discover festival-ready offers</h2>
           </div>
           <div className="lpBeat">
             <span>02</span>
-            <h2>Vendors give a share back</h2>
+            <h2>Meet independent creators</h2>
           </div>
           <div className="lpBeat">
             <span>03</span>
-            <h2>Shelter pets get the benefit</h2>
+            <h2>Support shelter adoption together</h2>
           </div>
         </div>
       </section>
@@ -83,13 +83,13 @@ export function LostPawsActivation() {
           <div className="lpGrid">
             <article className="lpCard">
               <span>Headbangers</span>
-              <h3>Find deals worth using</h3>
+              <h3>Browse vendor offers</h3>
               <Link to="/marketplace?channel=rave">Browse RAVE offers</Link>
             </article>
             <article className="lpCard lpCardVendor">
               <span>Vendors and creators</span>
-              <h3>Reach the crowd before the gates open</h3>
-              <Link to="/register?type=rave_vendor">Join RAVE Shelter</Link>
+              <h3>Share your work with the community</h3>
+              <Link to="/register?type=rave_vendor">Join as a vendor</Link>
             </article>
             <article className="lpCard lpCardShelter">
               <span>Shelters and rescues</span>
