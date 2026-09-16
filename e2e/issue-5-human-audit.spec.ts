@@ -114,8 +114,20 @@ test.describe
       .getAttribute("href");
     expect(detailsHref).toMatch(/^\/offers\//);
     await page.goto(detailsHref!);
+    // Whichever offer happens to sort first can be an internal partner offer
+    // (shows "Claim this offer") or an external public-program/community
+    // listing (shows "Visit official program", or a no-claim notice when it
+    // has no destination URL) -- OfferMarketplace branches on classification,
+    // so accept any of its three valid action states here.
     await expect(
-      page.getByRole("button", { name: "Claim this offer" }),
+      page
+        .getByRole("button", { name: "Claim this offer" })
+        .or(page.getByRole("link", { name: "Visit official program" }))
+        .or(
+          page.getByText(
+            "This public resource is listed for reference.",
+          ),
+        ),
     ).toBeVisible();
     await page.goBack();
     await expect(page).toHaveURL(/\/marketplace$/);
