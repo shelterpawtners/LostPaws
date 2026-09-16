@@ -18,7 +18,7 @@ status.
 
 ## Active issue
 
-**#273 — Launch Stabilization (Vendor Account, Event Offers, LostPaws Messaging & Swag Requests).** P0-A returning business lifecycle is merged in #275 and P0-B Event→Offer republish clarity/regression is merged in #277. Remaining work and acceptance live only on Issue #273; do not duplicate the detailed plan here.
+**#273 — Launch Stabilization (Vendor Account, Event Offers, LostPaws Messaging & Swag Requests).** P0-A returning business lifecycle (#275), P0-B Event→Offer republish clarity/regression (#277), and Swag catalog requestability with signed-in autofill (#280) are merged and verified. The remaining work and final hosted chain live only on Issue #273; do not duplicate the detailed plan here.
 
 ## Current status
 
@@ -47,9 +47,10 @@ status.
   "kept for your review" judgment call — not touched, and should not be
   deleted without a content review first.
 - Current product work already merged on `main` includes Store MVP, navigation
-  and UX polish, event attendance/event-scoped offers, and rich vendor media and
-  external-commerce links. Do not reopen accepted behavior without regression
-  evidence.
+  and UX polish, event attendance/event-scoped offers, rich vendor media and
+  external-commerce links, and database-backed Swag requestability with
+  signed-in requester autofill (#280). Do not reopen accepted behavior without
+  regression evidence.
 - Owner-approved legal policy decisions are merged. Draft/reconciliation work
   may continue; final legal publication remains owner/legal-gated.
 - Meta/Facebook remains intentionally deferred. Keep Facebook disabled and do
