@@ -39,8 +39,13 @@ test.describe("Issue #283 Offer Manager layout", () => {
           return Math.max(0, rect.right - window.innerWidth, -rect.left);
         })(),
       }));
-      expect(overflow.document, `page overflow at ${width}px`).toBeLessThanOrEqual(1);
-      expect(overflow.manager, `Offer Manager overflow at ${width}px`).toBeLessThanOrEqual(1);
+      expect(overflow.document, `page overflow at ${width}px`).toBeLessThanOrEqual(
+        1,
+      );
+      expect(
+        overflow.manager,
+        `Offer Manager overflow at ${width}px`,
+      ).toBeLessThanOrEqual(1);
 
       const escapedText = await page
         .locator(".offerManagerPage .role, .offerManagerPage label")
@@ -53,7 +58,10 @@ test.describe("Issue #283 Offer Manager layout", () => {
             return box.right > container.right + 1 || box.left < container.left - 1;
           }),
         );
-      expect(escapedText, `text escapes an Offer Manager container at ${width}px`).toBeFalsy();
+      expect(
+        escapedText,
+        `text escapes an Offer Manager container at ${width}px`,
+      ).toBeFalsy();
     }
 
     expectRuntimeClean(failures);
