@@ -4,9 +4,19 @@
 # the claim/release protocol this file supports.
 
 schema_version: 1
-updated: "2026-09-16T04:25:00Z"
+updated: "2026-09-16T05:55:00Z"
 
 active_claims:
+  - item: issue-283-human-rave-offer-mode
+    agent: codex
+    issue: 283
+    branch: feat/issue-283-human-rave-mode
+    files:
+      - src/components/OfferManager.tsx
+      - src/lib/offers.ts
+      - src/lib/offers.test.ts
+    claimed_at: "2026-09-16T05:40:00Z"
+    note: "Independent P1-B/C UI slice: persisted Human/RAVE form mode, Lost Lands defaulting, and unit regression coverage. Storage upload waits for the approved bucket/column migration."
 
 completed:
   - item: issue-273-lostpaws-messaging
