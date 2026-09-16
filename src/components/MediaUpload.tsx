@@ -74,7 +74,9 @@ export function MediaUpload({
       setStatus("Attaching photo…");
       const persistError = await onPersist(path);
       if (persistError) {
-        setStatus(`Photo uploaded, but it could not be attached. ${persistError}`);
+        setStatus(
+          `Photo uploaded, but it could not be attached. ${persistError}`,
+        );
         return;
       }
     }
