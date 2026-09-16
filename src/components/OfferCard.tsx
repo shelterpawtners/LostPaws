@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import {
   ArrowUpRight,
@@ -108,8 +109,20 @@ export function OfferCard({
     ? "Official third-party source"
     : "Published by a ShelterPawtners participant";
   const uploadedImage = mediaPublicUrl(offer.image_path);
-  const primaryImage =
-    uploadedImage || offer.image_url || offer.image_urls?.[0] || null;
+  const imageCandidates = [
+    uploadedImage,
+    offer.image_url || "",
+    ...(offer.image_urls || []).filter(isSafeHttpsUrl),
+  ].filter(Boolean);
+  const imageSourceKey = [
+    offer.offer_id,
+    offer.image_path || "",
+    offer.image_url || "",
+    ...(offer.image_urls || []),
+  ].join("\u0000");
+  const [imageIndex, setImageIndex] = useState(0);
+  useEffect(() => setImageIndex(0), [imageSourceKey]);
+  const primaryImage = imageCandidates[imageIndex] || null;
   const safeDestination =
     offer.destination_url && isSafeHttpsUrl(offer.destination_url)
       ? offer.destination_url
@@ -125,10 +138,12 @@ export function OfferCard({
       <div className="marketOfferVisual">
         {primaryImage ? (
           <img
+            key={primaryImage}
             className="marketOfferPhoto"
             src={primaryImage}
             alt=""
             loading="lazy"
+            onError={() => setImageIndex((current) => current + 1)}
           />
         ) : (
           <span className="marketOfferMonogram" aria-hidden="true">
