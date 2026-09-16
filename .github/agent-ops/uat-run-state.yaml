@@ -4,21 +4,17 @@
 # the claim/release protocol this file supports.
 
 schema_version: 1
-updated: "2026-09-16T05:55:00Z"
+updated: "2026-09-16T06:15:00Z"
 
 active_claims:
+completed:
   - item: issue-283-human-rave-offer-mode
     agent: codex
-    issue: 283
-    branch: feat/issue-283-human-rave-mode
-    files:
-      - src/components/OfferManager.tsx
-      - src/lib/offers.ts
-      - src/lib/offers.test.ts
-    claimed_at: "2026-09-16T05:40:00Z"
-    note: "Independent P1-B/C UI slice: persisted Human/RAVE form mode, Lost Lands defaulting, and unit regression coverage. Storage upload waits for the approved bucket/column migration."
-
-completed:
+    pr: 288
+    merged_sha: "1d7c914f3eccaef6e5336f9e260f1a84c9406067"
+    staging_verified: false
+    completed_at: "2026-09-16T06:15:00Z"
+    note: "P1-B/C: persisted Human/RAVE offer mode, RAVE query default, Lost Lands preselection that preserves manual choices, pet-only control simplification, and unit coverage. CI, Database QA, Hosted QA, Pages acceptance, Persona QA, merge-gate, and dependency review passed. P1-D device upload remains gated on the approved private bucket plus durable column contract."
   - item: issue-273-lostpaws-messaging
     agent: codex
     pr: 285
