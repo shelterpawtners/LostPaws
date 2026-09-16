@@ -211,7 +211,9 @@ test.describe.serial("Phase 2 offer and redemption journey", () => {
     await page
       .getByLabel("Product images")
       .fill("https://images.example.invalid/journey-check.jpg");
-    const eventSelect = page.getByLabel("Attach to an event (optional)");
+    const eventSelect = page.getByLabel(
+      "Feature this offer at an event (optional)",
+    );
     const eventOption = eventSelect
       .locator("option")
       .filter({ hasText: "Demo Saturday Adoption Day" });
@@ -251,7 +253,7 @@ test.describe.serial("Phase 2 offer and redemption journey", () => {
     );
     if (hasSeededEvent) {
       await expect(
-        page.getByLabel("Attach to an event (optional)"),
+        page.getByLabel("Feature this offer at an event (optional)"),
       ).toHaveValue(selectedEventId);
     }
 
@@ -511,7 +513,9 @@ test.describe.serial("Phase 2 offer and redemption journey", () => {
       "Published. Now visible in Marketplace.",
     );
 
-    const eventSelect = page.getByLabel("Attach to an event (optional)");
+    const eventSelect = page.getByLabel(
+      "Feature this offer at an event (optional)",
+    );
     const eventOption = eventSelect.locator("option").nth(1);
     const hasSeededEvent = (await eventSelect.locator("option").count()) > 1;
     test.skip(
