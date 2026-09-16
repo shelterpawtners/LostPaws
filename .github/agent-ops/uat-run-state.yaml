@@ -4,9 +4,19 @@
 # the claim/release protocol this file supports.
 
 schema_version: 1
-updated: "2026-09-16T04:00:00Z"
+updated: "2026-09-16T04:15:00Z"
 
 active_claims:
+  - item: issue-273-lostpaws-messaging
+    agent: codex
+    issue: 273
+    branch: feat/issue-273-lostpaws-messaging
+    files:
+      - src/components/LostPawsActivation.tsx
+      - e2e/issue-125-rave-lostpaws-mobile.spec.ts
+      - .github/workflows/github-pages-mvp-acceptance.yml
+    claimed_at: "2026-09-16T04:15:00Z"
+    note: "Owner-directed final Issue #273 source slice: truthful LostPaws vendor positioning and exact CTA regression coverage. PR #184 is explicitly ignored."
 
 completed:
   - item: issue-273-swag-catalog-requestability
