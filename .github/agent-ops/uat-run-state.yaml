@@ -4,16 +4,18 @@
 # the claim/release protocol this file supports.
 
 schema_version: 1
-updated: "2026-09-15T22:00:00Z"
+updated: "2026-09-16T01:10:12Z"
 
-active_claims:
-  - item: uat-207
-    agent: codex
-    branch: feat/uat-200b-store-admin-ui
-    claimed_at: "2026-09-15T20:33:23Z"
-    note: "Claimed directly on Codex's own branch (uat-run-state.yaml commit ab96c5b), not yet merged through a ledger PR to main -- reflected here by Claude for ledger accuracy. Codex opened PR #258 (schema + create_store_request RPC + pgTAP + docs/data/MASTER-DATA-ARCHITECTURE.md). Claude reviewed for security/RLS/simplicity/MVP-correctness: RLS design is sound (RPC-only write path, server-derived price/currency snapshot, no payment/shipping/tax fields, returns the created row directly avoiding the #250 write-succeeds-read-fails pattern). One blocking issue found: the branch is stale relative to main and its uat-run-state.yaml diff would revert several already-merged completed entries -- asked Codex to rebase before merge. No frontend request-UI yet; that slice still needed after this lands. Review posted as a PR comment, not pushed to Codex's branch."
+active_claims: []
 
 completed:
+  - item: issue-250b
+    agent: claude
+    pr: null
+    merged_sha: null
+    staging_verified: true
+    completed_at: "2026-09-16T01:10:12Z"
+    note: "Root cause resolved: 4 hosted migrations confirmed genuinely applied to jukmlmryykcnjtpblbja. Real hosted workflow run 35042869042 confirms e2e/phase-2-offer-redemption.spec.ts's Issue #250 regression passes (31 passed / 0 failed) against the actual hosted database -- full vendor lifecycle (create/save/reload/edit/publish/Marketplace-visible/reopen/pause/resume, image and event-linkage persistence) verified. Getting an unmasked signal required several supporting fixes: broken npm install step (#261), GitHub Actions skipping independent steps after an unrelated failure at two nesting levels (#262, #268), and 5 stale e2e assertions in a full-browser-audit spec never previously exercised end-to-end (#264, #266). One unrelated item spun off: a hosted edge-function secret gap blocking only an Admin QA persona-switch test, filed as #267 (owner/ops action). Issue #250 closed."
   - item: issue-250
     agent: claude
     pr: 254
@@ -21,6 +23,13 @@ completed:
     staging_verified: true
     completed_at: "2026-09-15T21:55:00Z"
     note: "UI-fix slice only (issue-250b tracks the still-open root cause). #250 was reopened after auto-closing prematurely from this PR's 'Fixes #250' description -- the underlying schema gap was not actually resolved. Shipped everything fixable in code: load() no longer wipes the list or hides the real error on a reload failure; save()/action() apply an optimistic local update from the RPC response so a save/publish is visible immediately and survives a reload failure; publish result text is now specific (published vs scheduled); added a View in Marketplace link; fixed a related latent null-into-controlled-input bug in edit(). New e2e regression covers the full required journey. No RLS changes. Production migration safety review + apply/verify/rollback procedure posted on #250."
+  - item: uat-207
+    agent: codex
+    pr: 263
+    merged_sha: "044aab5"
+    staging_verified: true
+    completed_at: "2026-09-16T00:51:03Z"
+    note: "Codex's store_requests / launch Swag sticker request flow, reviewed by Claude for security/RLS/MVP-correctness (posted as a PR comment): RLS is sound -- no public insert/select policy exists at all, writes only happen through the SECURITY DEFINER create_store_request RPC which re-validates the product is active and snapshots slug/price/currency at request time; pgTAP confirms anon can submit but not read, and a forged direct-table insert with a non-'new' status is rejected. UI copy repeats in three places that this is a request, not a paid order, with no payment/checkout/shipping/tax claims. Fixed one CI-only blocker directly on Codex's branch: a Prettier formatting issue in docs/data/MASTER-DATA-ARCHITECTURE.md."
   - item: uat-196c
     agent: owner
     pr: null
