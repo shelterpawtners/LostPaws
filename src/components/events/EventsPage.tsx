@@ -254,6 +254,40 @@ export function EventsPage({ session }: { session: Session | null }) {
     void loadMyEvents();
   }
 
+  async function removeEvent(item: PublicEvent) {
+    if (!db || publishBusyId) return;
+    const isDraft = item.status !== "active";
+    if (
+      !window.confirm(
+        isDraft
+          ? "Delete this draft event? This cannot be undone."
+          : "Remove this event? It will immediately come off the public Events listing.",
+      )
+    ) {
+      return;
+    }
+    setPublishBusyId(item.id);
+    const { data, error } = await db.rpc("remove_event", {
+      p_event_id: item.id,
+    });
+    setPublishBusyId(null);
+    if (error) {
+      setStatus("We could not remove that event. Please try again.");
+      return;
+    }
+    setStatus(
+      data === "deleted"
+        ? "Deleted."
+        : "Removed. It no longer appears in the public Events listing, and its attendance history is preserved.",
+    );
+    if (editingId === item.id) {
+      setEditingId(null);
+      setShowForm(false);
+    }
+    void load();
+    void loadMyEvents();
+  }
+
   return (
     <div className="evPage">
       <section className="evHero">
@@ -520,6 +554,18 @@ export function EventsPage({ session }: { session: Session | null }) {
                             {publishBusyId === item.id ? "Working…" : "Publish"}
                           </button>
                         )}
+                        <button
+                          type="button"
+                          className="evDeleteButton"
+                          disabled={publishBusyId === item.id}
+                          onClick={() => void removeEvent(item)}
+                        >
+                          {publishBusyId === item.id
+                            ? "Working…"
+                            : isPublished
+                              ? "Delete/Remove"
+                              : "Delete"}
+                        </button>
                       </div>
                     </li>
                   );
