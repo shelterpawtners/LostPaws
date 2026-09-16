@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { CalendarDays, MapPin, Plus, Users } from "lucide-react";
+import { CalendarDays, MapPin, Pencil, Plus, Users } from "lucide-react";
 import type { Session } from "@supabase/supabase-js";
 import { supabase as db } from "../../lib/supabase";
 import {
@@ -28,15 +28,17 @@ const filters: { value: EventAudienceFilter; label: string }[] = [
 export function EventsPage({ session }: { session: Session | null }) {
   const [audience, setAudience] = useState<EventAudienceFilter>("all");
   const [events, setEvents] = useState<PublicEvent[]>([]);
-  const [draftEvents, setDraftEvents] = useState<PublicEvent[]>([]);
+  const [myEvents, setMyEvents] = useState<PublicEvent[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState("");
   const [orgs, setOrgs] = useState<ManageableOrg[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [status, setStatus] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [publishBusyId, setPublishBusyId] = useState<string | null>(null);
 
-  const [form, setForm] = useState({
+  const blankForm = {
     title: "",
     summary: "",
     category: "Adoption Event",
@@ -46,7 +48,39 @@ export function EventsPage({ session }: { session: Session | null }) {
     isOnline: false,
     startsAt: "",
     endsAt: "",
-  });
+  };
+  const [form, setForm] = useState(blankForm);
+
+  function toLocalInput(iso: string | null) {
+    if (!iso) return "";
+    const d = new Date(iso);
+    const pad = (n: number) => String(n).padStart(2, "0");
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  }
+
+  function startCreate() {
+    setEditingId(null);
+    setForm(blankForm);
+    setStatus("");
+    setShowForm(true);
+  }
+
+  function startEdit(item: PublicEvent) {
+    setEditingId(item.id);
+    setForm({
+      title: item.title,
+      summary: item.summary,
+      category: item.category,
+      audience: item.audience,
+      organizationId: item.organization_id ?? "",
+      serviceArea: item.service_area ?? "",
+      isOnline: item.is_online,
+      startsAt: toLocalInput(item.starts_at),
+      endsAt: toLocalInput(item.ends_at),
+    });
+    setStatus("");
+    setShowForm(true);
+  }
 
   const load = useCallback(async () => {
     if (!db) {
@@ -82,26 +116,25 @@ export function EventsPage({ session }: { session: Session | null }) {
     void load();
   }, [load]);
 
-  const loadDraftEvents = useCallback(async () => {
+  const loadMyEvents = useCallback(async () => {
     if (!db || !session) {
-      setDraftEvents([]);
+      setMyEvents([]);
       return;
     }
     const { data } = await db
       .from("events")
       .select(
-        "id,organization_id,audience,category,title,summary,details,service_area,is_online,starts_at,ends_at,status,published_at",
+        "id,organization_id,audience,category,title,summary,details,service_area,is_online,starts_at,ends_at,status,published_at,created_at",
       )
       .eq("created_by", session.user.id)
-      .neq("status", "active")
-      .order("starts_at", { ascending: true, nullsFirst: false })
+      .order("created_at", { ascending: false })
       .limit(30);
-    setDraftEvents((data as PublicEvent[]) ?? []);
+    setMyEvents((data as PublicEvent[]) ?? []);
   }, [session]);
 
   useEffect(() => {
-    void loadDraftEvents();
-  }, [loadDraftEvents]);
+    void loadMyEvents();
+  }, [loadMyEvents]);
 
   useEffect(() => {
     if (!db || !session) return;
@@ -144,9 +177,8 @@ export function EventsPage({ session }: { session: Session | null }) {
     }
     setSubmitting(true);
     setStatus("");
-    const { error } = await db.from("events").insert({
+    const fields = {
       organization_id: form.organizationId || null,
-      created_by: session.user.id,
       audience: form.audience,
       category: form.category,
       title: form.title.trim(),
@@ -155,18 +187,71 @@ export function EventsPage({ session }: { session: Session | null }) {
       is_online: form.isOnline,
       starts_at: form.startsAt || null,
       ends_at: form.endsAt || null,
-    });
+    };
+    const { error } = editingId
+      ? await db.from("events").update(fields).eq("id", editingId)
+      : await db
+          .from("events")
+          .insert({ ...fields, created_by: session.user.id });
     setSubmitting(false);
     if (error) {
-      setStatus("We could not create that event. Please try again.");
+      setStatus(
+        editingId
+          ? "We could not save those changes. Please try again."
+          : "We could not create that event. Please try again.",
+      );
       return;
     }
     setStatus(
-      "Saved as a draft. Publishing controls are coming next, so it is not public yet.",
+      editingId
+        ? "Saved. This did not change whether the event is published."
+        : "Saved as a draft. Use Publish below to make it public.",
     );
-    setForm((current) => ({ ...current, title: "", summary: "" }));
+    if (!editingId) {
+      setForm((current) => ({ ...current, title: "", summary: "" }));
+    }
     void load();
-    void loadDraftEvents();
+    void loadMyEvents();
+  }
+
+  async function publishEvent(item: PublicEvent) {
+    if (!db || publishBusyId) return;
+    setPublishBusyId(item.id);
+    const { error } = await db
+      .from("events")
+      .update({
+        status: "active",
+        published_at: item.published_at ?? new Date().toISOString(),
+      })
+      .eq("id", item.id);
+    setPublishBusyId(null);
+    setStatus(
+      error
+        ? "We could not publish that event. Please try again."
+        : "Published. It now appears in the public Events listing.",
+    );
+    void load();
+    void loadMyEvents();
+  }
+
+  async function unpublishEvent(item: PublicEvent) {
+    if (!db || publishBusyId) return;
+    if (!window.confirm("Take this event off the public Events listing?")) {
+      return;
+    }
+    setPublishBusyId(item.id);
+    const { error } = await db
+      .from("events")
+      .update({ status: "suspended" })
+      .eq("id", item.id);
+    setPublishBusyId(null);
+    setStatus(
+      error
+        ? "We could not update that event. Please try again."
+        : "Unpublished. It no longer appears in the public Events listing.",
+    );
+    void load();
+    void loadMyEvents();
   }
 
   return (
@@ -210,16 +295,29 @@ export function EventsPage({ session }: { session: Session | null }) {
                 type="button"
                 className="evAddButton"
                 aria-expanded={showForm}
-                onClick={() => setShowForm((current) => !current)}
+                onClick={() => {
+                  if (showForm) {
+                    setShowForm(false);
+                    setEditingId(null);
+                  } else {
+                    startCreate();
+                  }
+                }}
               >
                 <Plus /> {showForm ? "Close" : "Add an event"}
               </button>
             )}
           </div>
 
+          {session && status && (
+            <p className="evStatus" role="status" aria-live="polite">
+              {status}
+            </p>
+          )}
+
           {showForm && session && (
             <form className="evForm" onSubmit={submit}>
-              <h2>Add an event</h2>
+              <h2>{editingId ? "Edit event" : "Add an event"}</h2>
               <div className="evFormGrid">
                 <label>
                   <span>
@@ -359,28 +457,73 @@ export function EventsPage({ session }: { session: Session | null }) {
                 </label>
               </div>
               <button className="evSubmit" disabled={submitting}>
-                {submitting ? "Saving…" : "Save event"}
+                {submitting
+                  ? "Saving…"
+                  : editingId
+                    ? "Save changes"
+                    : "Save event"}
               </button>
-              <p className="evStatus" role="status" aria-live="polite">
-                {status}
-              </p>
             </form>
           )}
 
-          {session && draftEvents.length > 0 && (
-            <section className="evDrafts" aria-labelledby="my-draft-events">
-              <h2 id="my-draft-events">Your draft events</h2>
+          {session && myEvents.length > 0 && (
+            <section className="evDrafts" aria-labelledby="my-events">
+              <h2 id="my-events">Your events</h2>
               <p>
-                These are saved but not public yet. Publishing controls are
-                coming next.
+                Drafts are saved but not public. Publish one to add it to the
+                listing below; you can edit or unpublish it at any time.
               </p>
               <ul>
-                {draftEvents.map((item) => (
-                  <li key={item.id}>
-                    <strong>{item.title}</strong>
-                    <span>{item.category}</span>
-                  </li>
-                ))}
+                {myEvents.map((item) => {
+                  const isPublished = item.status === "active";
+                  return (
+                    <li key={item.id} className="evMyEvent">
+                      <div className="evMyEventInfo">
+                        <span
+                          className={
+                            isPublished
+                              ? "evStatusBadge evStatusBadgeLive"
+                              : "evStatusBadge"
+                          }
+                        >
+                          {isPublished ? "Published" : "Draft"}
+                        </span>
+                        <strong>{item.title}</strong>
+                        <span>{item.category}</span>
+                      </div>
+                      <div className="evMyEventActions">
+                        <button
+                          type="button"
+                          className="evEditButton"
+                          onClick={() => startEdit(item)}
+                        >
+                          <Pencil aria-hidden="true" /> Edit
+                        </button>
+                        {isPublished ? (
+                          <button
+                            type="button"
+                            className="evUnpublishButton"
+                            disabled={publishBusyId === item.id}
+                            onClick={() => void unpublishEvent(item)}
+                          >
+                            {publishBusyId === item.id
+                              ? "Working…"
+                              : "Unpublish"}
+                          </button>
+                        ) : (
+                          <button
+                            type="button"
+                            className="evPublishButton"
+                            disabled={publishBusyId === item.id}
+                            onClick={() => void publishEvent(item)}
+                          >
+                            {publishBusyId === item.id ? "Working…" : "Publish"}
+                          </button>
+                        )}
+                      </div>
+                    </li>
+                  );
+                })}
               </ul>
             </section>
           )}
