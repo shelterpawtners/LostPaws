@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { ArrowLeft, Clock, ShieldCheck, Sparkles, Tag } from "lucide-react";
 import {
@@ -7,6 +7,8 @@ import {
   isRequestable,
   storeAvailabilityLabels,
   storeMissionStatement,
+  storeProductFromRecord,
+  type StoreProduct,
 } from "../../store/catalog";
 import { supabase as db } from "../../lib/supabase";
 import "./Store.css";
@@ -22,9 +24,80 @@ function productInitials(name: string) {
 
 export function StoreProductDetail() {
   const { slug } = useParams<{ slug: string }>();
-  const product = findStoreProduct(slug);
+  const [product, setProduct] = useState<StoreProduct | null | undefined>(
+    undefined,
+  );
+  const [requester, setRequester] = useState({ name: "", email: "" });
   const [requestStatus, setRequestStatus] = useState("");
   const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => {
+    const fallback = findStoreProduct(slug) ?? null;
+    if (!slug || !db) {
+      setProduct(fallback);
+      return;
+    }
+    let cancelled = false;
+    setProduct(undefined);
+
+    void db
+      .from("store_products")
+      .select(
+        "id,slug,name,short_description,description,image_url,price_minor,currency,category,brand,availability,featured,promo_badge,support_percent,support_statement",
+      )
+      .eq("slug", slug)
+      .eq("status", "active")
+      .maybeSingle()
+      .then(({ data, error }) => {
+        if (cancelled) return;
+        setProduct(!error && data ? storeProductFromRecord(data) : fallback);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [slug]);
+
+  useEffect(() => {
+    if (!db) return;
+    const client = db;
+    let cancelled = false;
+
+    void client.auth.getUser().then(async ({ data, error }) => {
+      if (cancelled || error || !data.user) return;
+      const { data: profile } = await client
+        .from("profiles")
+        .select("full_name")
+        .eq("id", data.user.id)
+        .maybeSingle();
+      if (cancelled) return;
+      const profileName = profile?.full_name?.trim();
+      const accountName =
+        typeof data.user.user_metadata.full_name === "string"
+          ? data.user.user_metadata.full_name.trim()
+          : "";
+      setRequester((current) => ({
+        name: current.name || profileName || accountName,
+        email: current.email || data.user.email || "",
+      }));
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  if (product === undefined) {
+    return (
+      <div className="stPage">
+        <section className="stBody">
+          <div className="stWrap">
+            <p role="status">Loading product…</p>
+          </div>
+        </section>
+      </div>
+    );
+  }
 
   if (!product) {
     return (
@@ -47,15 +120,17 @@ export function StoreProductDetail() {
 
   async function submitRequest(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (!db || !product?.id || submitting) return;
+    if (!db || !product || submitting) return;
+    const requestProduct = product;
     const form = new FormData(event.currentTarget);
     setSubmitting(true);
     const { error } = await db.rpc("create_store_request", {
-      p_product_id: product.id,
-      p_requester_name: form.get("name"),
-      p_requester_email: form.get("email"),
+      p_product_id: requestProduct.id,
+      p_requester_name: requester.name,
+      p_requester_email: requester.email,
       p_requester_phone: form.get("phone") || null,
-      p_requested_size: null,
+      p_requested_size:
+        requestProduct.category === "apparel" ? form.get("size") || null : null,
       p_quantity: Number(form.get("quantity") || 1),
       p_notes: form.get("notes") || null,
     });
@@ -63,7 +138,7 @@ export function StoreProductDetail() {
     setRequestStatus(
       error
         ? `We could not submit your request. ${error.message}`
-        : "Request received. This is not a paid order; our team will follow up if the sticker is available.",
+        : `Request received for ${requestProduct.name}. This is not a paid order; our team will follow up if the item is available.`,
     );
     if (!error) event.currentTarget.reset();
   }
@@ -119,18 +194,41 @@ export function StoreProductDetail() {
 
               {isRequestable(product) && (
                 <form className="stRequestForm" onSubmit={submitRequest}>
-                  <h2>Request this sticker</h2>
+                  <h2>Request this item</h2>
                   <p>
                     Tell us how to reach you. This is a request, not checkout or
                     a paid order.
                   </p>
                   <label>
                     Name
-                    <input name="name" required maxLength={160} />
+                    <input
+                      name="name"
+                      value={requester.name}
+                      onChange={(event) =>
+                        setRequester((current) => ({
+                          ...current,
+                          name: event.target.value,
+                        }))
+                      }
+                      required
+                      maxLength={160}
+                    />
                   </label>
                   <label>
                     Email
-                    <input name="email" type="email" required maxLength={320} />
+                    <input
+                      name="email"
+                      type="email"
+                      value={requester.email}
+                      onChange={(event) =>
+                        setRequester((current) => ({
+                          ...current,
+                          email: event.target.value,
+                        }))
+                      }
+                      required
+                      maxLength={320}
+                    />
                   </label>
                   <label>
                     Phone (optional)
@@ -147,12 +245,18 @@ export function StoreProductDetail() {
                       required
                     />
                   </label>
+                  {product.category === "apparel" && (
+                    <label>
+                      Size (optional)
+                      <input name="size" maxLength={80} />
+                    </label>
+                  )}
                   <label>
                     Notes (optional)
                     <textarea name="notes" />
                   </label>
                   <button className="btn" disabled={submitting}>
-                    {submitting ? "Sending request…" : "Request this sticker"}
+                    {submitting ? "Sending request…" : "Request this item"}
                   </button>
                   <p role="status" aria-live="polite">
                     {requestStatus}
