@@ -535,10 +535,13 @@ export function OfferManager({ session }: { session: Session | null }) {
             </label>
             {isRaveOffer && (
               <p className="fields-wide notice">
-                Human / RAVE mode keeps this focused on your deal, image, link,
-                event, and optional dates. Switching back preserves the pet
-                fields you already entered.
+                Create a reusable offer first, then optionally feature it at an
+                event. Switching back preserves the pet fields you already
+                entered.
               </p>
+            )}
+            {isRaveOffer && (
+              <p className="fields-wide formSectionHeading">Basics</p>
             )}
             <label>
               Title
@@ -548,14 +551,14 @@ export function OfferManager({ session }: { session: Session | null }) {
               />
             </label>
             <label>
-              Short description
+              Deal / description
               <input
                 value={form.summary}
                 onChange={(e) => set("summary", e.target.value)}
               />
             </label>
             <label>
-              Details
+              More details (optional)
               <textarea
                 value={form.details}
                 onChange={(e) => set("details", e.target.value)}
@@ -568,13 +571,17 @@ export function OfferManager({ session }: { session: Session | null }) {
                 onChange={(e) => set("terms", e.target.value)}
               />
             </label>
-            <label>
-              How customers use it
-              <textarea
-                value={form.redemption_instructions}
-                onChange={(e) => set("redemption_instructions", e.target.value)}
-              />
-            </label>
+            {!isRaveOffer && (
+              <label>
+                How customers use it
+                <textarea
+                  value={form.redemption_instructions}
+                  onChange={(e) =>
+                    set("redemption_instructions", e.target.value)
+                  }
+                />
+              </label>
+            )}
             {!isRaveOffer && (
               <>
                 <label>
@@ -652,24 +659,28 @@ export function OfferManager({ session }: { session: Session | null }) {
                 />
               </label>
             )}
-            <label>
-              Available quantity
-              <input
-                type="number"
-                min="1"
-                value={form.availability_limit}
-                onChange={(e) => set("availability_limit", e.target.value)}
-              />
-            </label>
-            <label>
-              Per-user limit
-              <input
-                type="number"
-                min="1"
-                value={form.per_user_limit}
-                onChange={(e) => set("per_user_limit", e.target.value)}
-              />
-            </label>
+            {!isRaveOffer && (
+              <label>
+                Available quantity
+                <input
+                  type="number"
+                  min="1"
+                  value={form.availability_limit}
+                  onChange={(e) => set("availability_limit", e.target.value)}
+                />
+              </label>
+            )}
+            {!isRaveOffer && (
+              <label>
+                Per-user limit
+                <input
+                  type="number"
+                  min="1"
+                  value={form.per_user_limit}
+                  onChange={(e) => set("per_user_limit", e.target.value)}
+                />
+              </label>
+            )}
             {!isRaveOffer && (
               <label>
                 Per-pet limit
@@ -681,16 +692,20 @@ export function OfferManager({ session }: { session: Session | null }) {
                 />
               </label>
             )}
+            {!isRaveOffer && (
+              <label>
+                Source URL
+                <input
+                  type="url"
+                  value={form.source_url}
+                  onChange={(e) => set("source_url", e.target.value)}
+                />
+              </label>
+            )}
             <label>
-              Source URL
-              <input
-                type="url"
-                value={form.source_url}
-                onChange={(e) => set("source_url", e.target.value)}
-              />
-            </label>
-            <label>
-              Product / store link (Etsy or your own store, https only)
+              {isRaveOffer
+                ? "Shop / website / social link (https only)"
+                : "Product / store link (Etsy or your own store, https only)"}
               <input
                 type="url"
                 placeholder="https://www.etsy.com/listing/..."
@@ -698,24 +713,33 @@ export function OfferManager({ session }: { session: Session | null }) {
                 onChange={(e) => set("destination_url", e.target.value)}
               />
             </label>
-            <label>
-              Product label override (optional)
-              <input
-                placeholder="Defaults to the offer title above"
-                value={form.product_label}
-                onChange={(e) => set("product_label", e.target.value)}
-              />
-            </label>
-            <label>
-              Call-to-action button text (optional)
-              <input
-                placeholder="Defaults to “Shop on Etsy” or “Visit vendor store”"
-                value={form.cta_label}
-                onChange={(e) => set("cta_label", e.target.value)}
-              />
-            </label>
+            {!isRaveOffer && (
+              <label>
+                Product label override (optional)
+                <input
+                  placeholder="Defaults to the offer title above"
+                  value={form.product_label}
+                  onChange={(e) => set("product_label", e.target.value)}
+                />
+              </label>
+            )}
+            {!isRaveOffer && (
+              <label>
+                Call-to-action button text (optional)
+                <input
+                  placeholder="Defaults to “Shop on Etsy” or “Visit vendor store”"
+                  value={form.cta_label}
+                  onChange={(e) => set("cta_label", e.target.value)}
+                />
+              </label>
+            )}
             <label className="fields-wide">
               Cover photo
+              {isRaveOffer && (
+                <span className="fieldDescription">
+                  Your photo attaches to this offer as soon as upload finishes.
+                </span>
+              )}
               <MediaUpload
                 ownerId={org}
                 recordId={selected}
@@ -737,18 +761,25 @@ export function OfferManager({ session }: { session: Session | null }) {
                 }}
               />
             </label>
-            <label className="fields-wide">
-              Product images (one https:// URL per line)
-              <textarea
-                placeholder={
-                  "https://images.example.com/photo-1.jpg\nhttps://images.example.com/photo-2.jpg"
-                }
-                value={form.image_urls_text}
-                onChange={(e) => set("image_urls_text", e.target.value)}
-              />
-            </label>
+            {!isRaveOffer && (
+              <label className="fields-wide">
+                Product images (one https:// URL per line)
+                <textarea
+                  placeholder={
+                    "https://images.example.com/photo-1.jpg\nhttps://images.example.com/photo-2.jpg"
+                  }
+                  value={form.image_urls_text}
+                  onChange={(e) => set("image_urls_text", e.target.value)}
+                />
+              </label>
+            )}
             <label>
-              Attach to an event (optional)
+              Feature this offer at an event (optional)
+              {isRaveOffer && (
+                <span className="fieldDescription">
+                  Leave this blank to keep the offer available outside events.
+                </span>
+              )}
               <select
                 value={form.event_id}
                 onChange={(e) => set("event_id", e.target.value)}

@@ -961,6 +961,21 @@ select:focus {
   min-height: 6rem;
   resize: vertical;
 }
+.formSectionHeading {
+  margin: 8px 0 -4px;
+  color: var(--ink);
+  font-size: 0.9rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.fieldDescription {
+  display: block;
+  margin: 4px 0 8px;
+  color: var(--muted);
+  font-size: 0.88rem;
+  font-weight: 500;
+}
 .formPage form {
   display: grid;
   gap: 18px;
