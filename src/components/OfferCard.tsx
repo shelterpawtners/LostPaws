@@ -9,6 +9,15 @@ import {
 } from "lucide-react";
 import { eligibilityLabel } from "../lib/offers";
 import { ctaLabelFor, isSafeHttpsUrl } from "../lib/offer-media";
+import { supabase as db } from "../lib/supabase";
+
+const MEDIA_BUCKET = "event-offer-media";
+
+/** Resolves an uploaded event-offer-media path to its public URL, or "" if none. */
+export function mediaPublicUrl(path: string | null | undefined): string {
+  if (!path || !db) return "";
+  return db.storage.from(MEDIA_BUCKET).getPublicUrl(path).data.publicUrl;
+}
 
 export type PublicOffer = {
   offer_id: string;
@@ -37,6 +46,7 @@ export type PublicOffer = {
   product_label: string | null;
   cta_label: string | null;
   image_urls: string[] | null;
+  image_path: string | null;
 };
 
 export type MarketplaceConcept = "value" | "trust" | "curated";
@@ -97,7 +107,9 @@ export function OfferCard({
   const providerContext = external
     ? "Official third-party source"
     : "Published by a ShelterPawtners participant";
-  const primaryImage = offer.image_url || offer.image_urls?.[0] || null;
+  const uploadedImage = mediaPublicUrl(offer.image_path);
+  const primaryImage =
+    uploadedImage || offer.image_url || offer.image_urls?.[0] || null;
   const safeDestination =
     offer.destination_url && isSafeHttpsUrl(offer.destination_url)
       ? offer.destination_url

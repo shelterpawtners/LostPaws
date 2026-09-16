@@ -23,6 +23,8 @@ export type OfferTerms = {
   cta_label: string;
   /** One HTTPS image URL per line; split into offers.image_urls on save. */
   image_urls_text: string;
+  /** Storage object path in the event-offer-media bucket, or "" if none. */
+  image_path: string;
 };
 
 export const blankOffer: OfferTerms = {
@@ -49,6 +51,7 @@ export const blankOffer: OfferTerms = {
   product_label: "",
   cta_label: "",
   image_urls_text: "",
+  image_path: "",
 };
 
 export const offerStatusLabel = (status: string) =>

@@ -14,6 +14,7 @@ import {
 } from "../lib/organization-selection";
 import { supabase as db } from "../lib/supabase";
 import { LoadingState } from "./LoadingState";
+import { MediaUpload } from "./MediaUpload";
 
 type Org = { id: string; public_name: string };
 type Offer = {
@@ -26,6 +27,7 @@ type Offer = {
   product_label: string | null;
   cta_label: string | null;
   image_urls: string[] | null;
+  image_path: string | null;
   channel: "pet" | "rave";
   offer_versions: any[];
 };
@@ -80,6 +82,7 @@ function applyOptimisticSave(
     product_label: terms.product_label || null,
     cta_label: terms.cta_label || null,
     image_urls: imageUrls,
+    image_path: terms.image_path || null,
     channel: terms.channel,
     offer_versions: [version],
   };
@@ -189,7 +192,7 @@ export function OfferManager({ session }: { session: Session | null }) {
       db
         .from("offers")
         .select(
-          "id,title,status,current_version_id,event_id,destination_url,product_label,cta_label,image_urls,channel,offer_versions:offer_versions!offer_versions_offer_id_fkey(*)",
+          "id,title,status,current_version_id,event_id,destination_url,product_label,cta_label,image_urls,image_path,channel,offer_versions:offer_versions!offer_versions_offer_id_fkey(*)",
         )
         .eq("organization_id", org)
         .order("created_at", { ascending: false }),
@@ -386,6 +389,7 @@ export function OfferManager({ session }: { session: Session | null }) {
       product_label: o.product_label || "",
       cta_label: o.cta_label || "",
       image_urls_text: (o.image_urls || []).join("\n"),
+      image_path: o.image_path || "",
       starts_at: v?.starts_at?.slice(0, 16) || "",
       ends_at: v?.ends_at?.slice(0, 16) || "",
       claim_window_days: String(v?.claim_window_days || 30),
@@ -690,6 +694,15 @@ export function OfferManager({ session }: { session: Session | null }) {
                 placeholder="Defaults to “Shop on Etsy” or “Visit vendor store”"
                 value={form.cta_label}
                 onChange={(e) => set("cta_label", e.target.value)}
+              />
+            </label>
+            <label className="fields-wide">
+              Cover photo
+              <MediaUpload
+                ownerId={org}
+                recordId={selected}
+                value={form.image_path}
+                onChange={(path) => set("image_path", path)}
               />
             </label>
             <label className="fields-wide">

@@ -4,17 +4,37 @@
 -- (20260911084500), because offer/event photos must render on the public
 -- Marketplace/Event surfaces for signed-out visitors -- the same audience
 -- that already sees the plain-text image_url/image_urls fields today. A
--- public bucket serves objects via a stable getPublicUrl() with no RLS
--- read policy needed, matching that existing simplicity.
+-- public bucket serves object *content* via a stable getPublicUrl() that
+-- bypasses RLS entirely. A SELECT policy on storage.objects is still
+-- required below despite that: the JS client's upload({upsert:true}) (used
+-- for every re-upload, replacing a prior cover photo) compiles to
+-- INSERT ... ON CONFLICT (name, bucket_id) DO UPDATE, and Postgres RLS must
+-- be able to evaluate a SELECT to resolve the conflict target even on a
+-- brand new path with no prior row -- without it every upsert upload was
+-- rejected as an RLS violation regardless of the insert/update policies
+-- below (verified locally: the same request without upsert succeeded, the
+-- one with it did not). Since the bucket is already fully public for read,
+-- granting SELECT broadly here does not expose anything getPublicUrl
+-- doesn't already.
 --
 -- The actual security requirement here is write ownership: prevent one
--- vendor/org from overwriting or deleting another's media. That is
--- enforced by RLS on storage.objects for insert/update/delete only,
--- keyed off the object path's leading segment, reusing the exact
--- private.can_manage_org authorization already used for offers/events
--- everywhere else in the schema -- no new authorization concept.
+-- vendor/org (or, for organization-less events, one user) from overwriting
+-- or deleting another's media. That is enforced by RLS on storage.objects
+-- for insert/update/delete only, keyed off the object path's leading
+-- segment ("owner id"), reusing the exact private.can_manage_org
+-- authorization already used for offers/events everywhere else in the
+-- schema, plus the same organization-less fallback events_update already
+-- uses (organization_id is null -> created_by = auth.uid()) -- see
+-- events_update in 20260912120000_track2_events_foundation.sql. Offers
+-- always have an organization_id (enforced by create_partner_offer's
+-- required parameter), so only events actually exercise the fallback
+-- branch, but the policy covers both bucket users the same way -- no new
+-- authorization concept.
 --
--- Path convention: {organization_id}/{offer_or_event_id}/{filename}.
+-- Path convention: {owner_id}/{offer_or_event_id}/{filename}, where
+-- owner_id is the offer/event's organization_id, or for an
+-- organization-less event, the creating user's id (matching the private
+-- profile-avatars bucket's own {auth.uid()}/... convention).
 insert into storage.buckets(id,name,public,file_size_limit,allowed_mime_types)
 values (
   'event-offer-media',
@@ -28,12 +48,20 @@ on conflict(id) do update set
   file_size_limit = excluded.file_size_limit,
   allowed_mime_types = excluded.allowed_mime_types;
 
+drop policy if exists org_media_read on storage.objects;
+create policy org_media_read
+on storage.objects for select to anon, authenticated
+using (bucket_id = 'event-offer-media');
+
 drop policy if exists org_media_add on storage.objects;
 create policy org_media_add
 on storage.objects for insert to authenticated
 with check (
   bucket_id = 'event-offer-media'
-  and private.can_manage_org(((storage.foldername(name))[1])::uuid, array['owner','administrator','publisher'])
+  and (
+    private.can_manage_org(((storage.foldername(name))[1])::uuid, array['owner','administrator','publisher'])
+    or ((storage.foldername(name))[1])::uuid = (select auth.uid())
+  )
 );
 
 drop policy if exists org_media_update on storage.objects;
@@ -41,11 +69,17 @@ create policy org_media_update
 on storage.objects for update to authenticated
 using (
   bucket_id = 'event-offer-media'
-  and private.can_manage_org(((storage.foldername(name))[1])::uuid, array['owner','administrator','publisher'])
+  and (
+    private.can_manage_org(((storage.foldername(name))[1])::uuid, array['owner','administrator','publisher'])
+    or ((storage.foldername(name))[1])::uuid = (select auth.uid())
+  )
 )
 with check (
   bucket_id = 'event-offer-media'
-  and private.can_manage_org(((storage.foldername(name))[1])::uuid, array['owner','administrator','publisher'])
+  and (
+    private.can_manage_org(((storage.foldername(name))[1])::uuid, array['owner','administrator','publisher'])
+    or ((storage.foldername(name))[1])::uuid = (select auth.uid())
+  )
 );
 
 drop policy if exists org_media_delete on storage.objects;
@@ -53,7 +87,10 @@ create policy org_media_delete
 on storage.objects for delete to authenticated
 using (
   bucket_id = 'event-offer-media'
-  and private.can_manage_org(((storage.foldername(name))[1])::uuid, array['owner','administrator','publisher'])
+  and (
+    private.can_manage_org(((storage.foldername(name))[1])::uuid, array['owner','administrator','publisher'])
+    or ((storage.foldername(name))[1])::uuid = (select auth.uid())
+  )
 );
 
 -- Durable reference to the uploaded object's path, distinct from the
