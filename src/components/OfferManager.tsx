@@ -3,6 +3,10 @@ import { Link } from "react-router-dom";
 import type { Session } from "@supabase/supabase-js";
 import { blankOffer, offerStatusLabel, type OfferTerms } from "../lib/offers";
 import { isSafeHttpsUrl } from "../lib/offer-media";
+import {
+  resolveDefaultOrgId,
+  selectedOrgStorageKey,
+} from "../lib/organization-selection";
 import { supabase as db } from "../lib/supabase";
 import { LoadingState } from "./LoadingState";
 
@@ -145,10 +149,14 @@ export function OfferManager({ session }: { session: Session | null }) {
       .then(({ data }) => {
         const x = (data || []).map((r: any) => r.organizations).filter(Boolean);
         setOrgs(x);
-        setOrg(x[0]?.id || "");
+        setOrg(resolveDefaultOrgId(x, session.user.id));
         setOrgsLoaded(true);
       });
   }, [session]);
+  useEffect(() => {
+    if (!session || !org) return;
+    localStorage.setItem(selectedOrgStorageKey(session.user.id), org);
+  }, [session, org]);
   const load = () => {
     if (!db || !org) return;
     void Promise.all([
