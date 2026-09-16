@@ -204,10 +204,14 @@ jobs:
           path: test-results/
           if-no-files-found: warn
           retention-days: 7
-      - name: Run Issue 5 browser audit
-        # Same reasoning: this suite (including the Issue #250 vendor
-        # lifecycle regression) must run and report its own result
-        # independent of any earlier step's outcome.
+      - name: Check Issue 5 browser audit gate
+        # A single shared gate check feeding three independent test steps
+        # below -- each must run and report its own result regardless of the
+        # others, including the Issue #250 vendor lifecycle regression, so a
+        # failure in one (e.g. an Admin QA persona-switch test that depends on
+        # a hosted edge-function secret unrelated to #250) cannot silently
+        # skip the rest via shell `set -e` sequencing.
+        id: issue5_gate
         if: ${{ !cancelled() }}
         env:
           FULL_BROWSER_AUDIT: ${{ inputs.full_browser_audit }}
@@ -217,11 +221,19 @@ jobs:
           state_file=docs/engineering/AI-RELEASE-STATE.md
           if [[ "${FULL_BROWSER_AUDIT:-false}" != "true" ]] && ! grep -q "^CURRENT_CHECKPOINT: Issue #5" "$state_file"; then
             echo "Issue #5 full browser audit is not active for this acceptance run."
-            exit 0
+            echo "active=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "active=true" >> "$GITHUB_OUTPUT"
           fi
-          npx playwright test e2e/issue-5-human-audit.spec.ts
-          npx playwright test e2e/admin-qa-mode.spec.ts
-          npx playwright test e2e/phase-1-accessibility.spec.ts e2e/phase-1-auth.spec.ts e2e/guardian-dashboard.spec.ts e2e/persona-access-isolation.spec.ts e2e/persona-registration.spec.ts e2e/phase-2-partner-onboarding.spec.ts e2e/phase-2-offer-redemption.spec.ts
+      - name: Run Issue 5 human audit
+        if: ${{ !cancelled() && steps.issue5_gate.outputs.active == 'true' }}
+        run: npx playwright test e2e/issue-5-human-audit.spec.ts
+      - name: Run Admin QA mode audit
+        if: ${{ !cancelled() && steps.issue5_gate.outputs.active == 'true' }}
+        run: npx playwright test e2e/admin-qa-mode.spec.ts
+      - name: Run persona and offer regression suite
+        if: ${{ !cancelled() && steps.issue5_gate.outputs.active == 'true' }}
+        run: npx playwright test e2e/phase-1-accessibility.spec.ts e2e/phase-1-auth.spec.ts e2e/guardian-dashboard.spec.ts e2e/persona-access-isolation.spec.ts e2e/persona-registration.spec.ts e2e/phase-2-partner-onboarding.spec.ts e2e/phase-2-offer-redemption.spec.ts
       - name: Upload Playwright failure evidence
         if: failure()
         uses: actions/upload-artifact@v7
