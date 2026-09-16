@@ -110,7 +110,7 @@ test.describe.serial("Issue #283 P1 offer channel + event persistence", () => {
     await expect(page.getByLabel("Offer audience")).toHaveValue("pet");
     await page.getByLabel("Title").fill(offerTitle);
     await page
-      .getByLabel("Short description")
+      .getByLabel("Deal / description")
       .fill("Starts as a Pet offer, then switches to Human/RAVE.");
     await page.getByLabel("Terms and conditions").fill("Demo only.");
     await page
