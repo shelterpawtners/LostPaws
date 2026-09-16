@@ -180,6 +180,20 @@ export function findStoreProduct(slug: string | undefined) {
   return storeProducts.find((product) => product.slug === slug);
 }
 
+/**
+ * A product is requestable when it has a stable backing id (so the
+ * Supabase create_store_request RPC can snapshot it) and is currently
+ * in_stock. Checkout itself is not live for any product yet -- this is a
+ * distinct, narrower "you can ask us for this one now" state, and the
+ * Store listing/detail pages must agree on this exact condition so the
+ * listing badge never promises an action the detail page won't offer.
+ */
+export function isRequestable(
+  product: Pick<StoreProduct, "id" | "availability">,
+) {
+  return Boolean(product.id) && product.availability === "in_stock";
+}
+
 export function storeProductsByCategory(category: StoreCategory | "all") {
   if (category === "all") return storeProducts;
   return storeProducts.filter((product) => product.category === category);

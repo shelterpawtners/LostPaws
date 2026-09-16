@@ -33,6 +33,23 @@ test.describe("Store", () => {
     await expect(sticker).toBeVisible();
   });
 
+  test("the one requestable product is visually distinguishable from the rest on the listing", async ({
+    page,
+  }) => {
+    await page.goto("/store");
+    const sticker = page.locator(".stCard", {
+      hasText: "Shelter Pawtners Logo Sticker",
+    });
+    await expect(sticker.getByText("Request available")).toBeVisible();
+    await expect(sticker.getByText("Available to request")).toBeVisible();
+
+    const tee = page.locator(".stCard", {
+      hasText: "Shelter Pawtners Classic Tee",
+    });
+    await expect(tee.getByText("Request available")).toHaveCount(0);
+    await expect(tee.getByText("Ready when checkout opens")).toBeVisible();
+  });
+
   test("does not pretend checkout is live", async ({ page }) => {
     await page.goto("/store");
     await expect(page.getByText(/Checkout is not available yet/)).toBeVisible();
