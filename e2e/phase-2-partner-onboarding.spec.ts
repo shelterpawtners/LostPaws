@@ -174,12 +174,14 @@ test.describe("Phase 2 checkpoint 1 partner organization onboarding", () => {
 
     await page.goto("/business");
     const businessOrgSelect = page.getByLabel("Organization");
+    await expect(businessOrgSelect).not.toHaveValue("", { timeout: 15_000 });
     const defaultOnBusiness = await businessOrgSelect.inputValue();
 
     await page.goto("/partner/offers");
     const offersOrgSelect = page
       .locator(".rolePanel")
       .getByLabel("Organization");
+    await expect(offersOrgSelect).not.toHaveValue("", { timeout: 15_000 });
     await expect(offersOrgSelect).toHaveValue(defaultOnBusiness);
 
     await offersOrgSelect.selectOption(secondOrgId as string);
