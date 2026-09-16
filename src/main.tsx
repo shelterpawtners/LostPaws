@@ -21,6 +21,7 @@ import {
 import {
   ArrowRight,
   BadgeCheck,
+  CalendarDays,
   Eye,
   EyeOff,
   HeartHandshake,
@@ -2209,6 +2210,16 @@ function Dashboard() {
         );
       });
   }, [session]);
+  const [hasOrg, setHasOrg] = useState<boolean | null>(null);
+  useEffect(() => {
+    if (!db || !session) return;
+    db.from("organization_memberships")
+      .select("organization_id")
+      .eq("user_id", session.user.id)
+      .eq("status", "active")
+      .limit(1)
+      .then(({ data }) => setHasOrg(Boolean(data && data.length)));
+  }, [session]);
   function switchRole(role: string) {
     localStorage.setItem("sp_active_role", role);
     setActiveRole(role);
@@ -2321,23 +2332,53 @@ function Dashboard() {
           {kind === "guardian" && <EventAttendancePrompt session={session} />}
           {kind === "guardian" && <GuardianProfileLite session={session} />}
           <div className="nextCards">
-            {kind !== "guardian" || (!petsLoading && pets.length === 0) ? (
-              <Link
-                className="next primary"
-                to={kind === "guardian" ? "/pets/new" : `/onboarding/${kind}`}
-              >
+            {kind === "guardian" ? (
+              !petsLoading &&
+              pets.length === 0 && (
+                <Link className="next primary" to="/pets/new">
+                  <PawPrint />
+                  <div>
+                    <b>Set up your pet</b>
+                    <p>
+                      Start a private Digital Pet Passport and adoption story.
+                    </p>
+                  </div>
+                  <ArrowRight />
+                </Link>
+              )
+            ) : hasOrg ? (
+              <>
+                <Link className="next primary" to="/business">
+                  <Store />
+                  <div>
+                    <b>Manage business profile</b>
+                    <p>Edit your existing organization's public profile.</p>
+                  </div>
+                  <ArrowRight />
+                </Link>
+                <Link className="next" to="/events">
+                  <CalendarDays />
+                  <div>
+                    <b>Manage events</b>
+                    <p>Create, edit, and publish your events.</p>
+                  </div>
+                  <ArrowRight />
+                </Link>
+                <Link className="next" to={`/onboarding/${kind}`}>
+                  <PawPrint />
+                  <div>
+                    <b>Add another business</b>
+                    <p>Set up a separate organization you also run.</p>
+                  </div>
+                  <ArrowRight />
+                </Link>
+              </>
+            ) : hasOrg === false ? (
+              <Link className="next primary" to={`/onboarding/${kind}`}>
                 <PawPrint />
                 <div>
-                  <b>
-                    {kind === "guardian"
-                      ? "Set up your pet"
-                      : "Complete your organization"}
-                  </b>
-                  <p>
-                    {kind === "guardian"
-                      ? "Start a private Digital Pet Passport and adoption story."
-                      : "Add the details people need to understand your work."}
-                  </p>
+                  <b>Complete your organization</b>
+                  <p>Add the details people need to understand your work.</p>
                 </div>
                 <ArrowRight />
               </Link>
@@ -2366,7 +2407,7 @@ function Dashboard() {
               </div>
               <ArrowRight />
             </Link>
-            {kind === "petbiz" && (
+            {kind === "petbiz" && hasOrg && (
               <Link className="next" to="/partner/offers">
                 <Tag />
                 <div>
