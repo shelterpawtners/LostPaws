@@ -18,7 +18,7 @@ status.
 
 ## Active issue
 
-**#273 — Launch Stabilization (Vendor Account, Event Offers, LostPaws Messaging & Swag Requests).** Current priority: P0-A (returning vendor/business lifecycle, duplicate-org risk) and P0-B (event-linked offers). See the issue for full plan/acceptance criteria; do not duplicate that plan here.
+**#273 — Launch Stabilization (Vendor Account, Event Offers, LostPaws Messaging & Swag Requests).** P0-A returning business lifecycle is merged in #275 and P0-B Event→Offer republish clarity/regression is merged in #277. Remaining work and acceptance live only on Issue #273; do not duplicate the detailed plan here.
 
 ## Current status
 
