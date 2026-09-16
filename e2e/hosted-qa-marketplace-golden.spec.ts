@@ -84,7 +84,7 @@ test.describe
     );
     await page.getByLabel("Title").fill(offerTitle);
     await page
-      .getByLabel("Short description")
+      .getByLabel("Deal / description")
       .fill("A hosted QA golden-path offer.");
     await page.getByLabel("Terms and conditions").fill(offerTerms);
     await page.getByLabel("How customers use it").fill(offerUsage);

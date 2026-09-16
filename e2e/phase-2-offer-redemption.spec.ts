@@ -136,7 +136,7 @@ test.describe.serial("Phase 2 offer and redemption journey", () => {
     );
     await page.getByLabel("Title").fill(offerTitle);
     await page
-      .getByLabel("Short description")
+      .getByLabel("Deal / description")
       .fill("A test-only Partner offer with clear terms.");
     await page
       .getByLabel("Terms and conditions")
@@ -202,7 +202,7 @@ test.describe.serial("Phase 2 offer and redemption journey", () => {
 
     await page.getByLabel("Title").fill(journeyOfferTitle);
     await page
-      .getByLabel("Short description")
+      .getByLabel("Deal / description")
       .fill("Persistence regression check.");
     await page.getByLabel("Terms and conditions").fill("Demo only.");
     await page
@@ -257,7 +257,7 @@ test.describe.serial("Phase 2 offer and redemption journey", () => {
 
     // Edit the draft, then publish.
     await page
-      .getByLabel("Short description")
+      .getByLabel("Deal / description")
       .fill("Persistence regression check, revised.");
     await page.getByRole("button", { name: "Save new version" }).click();
     await expect(page.getByRole("status")).toContainText(
@@ -498,7 +498,7 @@ test.describe.serial("Phase 2 offer and redemption journey", () => {
     const title = `Playwright event-attach check ${runSuffix}`;
     await page.getByRole("button", { name: "New offer" }).click();
     await page.getByLabel("Title").fill(title);
-    await page.getByLabel("Short description").fill("Event-attach check.");
+    await page.getByLabel("Deal / description").fill("Event-attach check.");
     await page.getByLabel("Terms and conditions").fill("Terms.");
     await page.getByLabel("How customers use it").fill("Redemption.");
     await page.getByLabel("Per-user limit").fill("1");

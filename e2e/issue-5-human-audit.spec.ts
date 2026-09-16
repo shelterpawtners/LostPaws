@@ -31,7 +31,7 @@ async function createPartnerOffer(page: Page, title: string) {
   await page.getByRole("button", { name: "New offer" }).click();
   await page.getByLabel("Title").fill(title);
   await page
-    .getByLabel("Short description")
+    .getByLabel("Deal / description")
     .fill(`Issue 5 multi-offer persistence ${runSuffix}`);
   await page
     .getByLabel("Terms and conditions")
