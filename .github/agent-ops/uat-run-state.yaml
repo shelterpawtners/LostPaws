@@ -4,23 +4,18 @@
 # the claim/release protocol this file supports.
 
 schema_version: 1
-updated: "2026-09-16T03:35:00Z"
+updated: "2026-09-16T04:00:00Z"
 
 active_claims:
-  - item: issue-273-swag-catalog-requestability
-    agent: codex
-    issue: 273
-    branch: feat/issue-273-swag-catalog-requestability
-    files:
-      - src/components/store/StorePage.tsx
-      - src/components/store/StoreProductDetail.tsx
-      - src/store/catalog.ts
-      - supabase/migrations/
-      - e2e/store.spec.ts
-    claimed_at: "2026-09-16T03:35:00Z"
-    note: "Issue #273 Codex-ready follow-on: seed the legitimate catalog as requestable store_products and autofill signed-in requester name/email. LostPaws messaging is intentionally sequenced behind the conflicting open PR #184."
 
 completed:
+  - item: issue-273-swag-catalog-requestability
+    agent: codex
+    pr: 280
+    merged_sha: "bbcaaad9f11828869e1f6ba7b9908fb48af8f6e4"
+    staging_verified: true
+    completed_at: "2026-09-16T04:00:00Z"
+    note: "All eight legitimate Swag catalog records now have stable public database backing. In-stock requestability is enforced in both UI and create_store_request; signed-in name/email prefill is editable. CI, Database QA, Hosted QA, Pages acceptance, and Persona QA passed. The exact merged migration was applied and queried successfully on shelterpawtners-dev."
   - item: issue-250b
     agent: claude
     pr: null
