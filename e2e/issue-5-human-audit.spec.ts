@@ -54,6 +54,18 @@ function adminQaBanner(page: Page) {
   return page.getByRole("status").filter({ hasText: "ADMIN QA MODE" });
 }
 
+async function selectOrganization(page: Page, organizationId: string) {
+  // OfferManager's page also has an unrelated "Where it applies" select whose
+  // accessible name (label text + currently rendered option text) can
+  // overlap a plain getByLabel("Organization") match, so scope to the panel
+  // that actually contains the organization picker.
+  const select = page.locator(".rolePanel").getByLabel("Organization");
+  await expect(
+    select.locator(`option[value="${organizationId}"]`),
+  ).toHaveCount(1, { timeout: 15_000 });
+  await select.selectOption(organizationId);
+}
+
 test.describe
   .serial("Issue #5 human-style browser and persistence audit", () => {
   test.skip(!issue5Hosted, "Run through acceptance-gated Hosted QA.");
@@ -98,7 +110,7 @@ test.describe
     const firstOffer = page.locator(".offerCard").first();
     await expect(firstOffer).toBeVisible();
     const detailsHref = await firstOffer
-      .getByRole("link", { name: "View offer details" })
+      .getByRole("link", { name: /^See (offer|benefit) and eligibility/ })
       .getAttribute("href");
     expect(detailsHref).toMatch(/^\/offers\//);
     await page.goto(detailsHref!);
@@ -119,6 +131,11 @@ test.describe
       /\/register\?type=guardian&source=business-card$/,
     );
     await page.goto("/this-route-does-not-exist");
+    await expect(page).toHaveURL(/\/this-route-does-not-exist$/);
+    await expect(
+      page.getByRole("heading", { name: /does not lead anywhere/i }),
+    ).toBeVisible();
+    await page.getByRole("link", { name: "Go home" }).click();
     await expect(page).toHaveURL(/\/$/);
 
     expectRuntimeClean(failures);
@@ -215,23 +232,24 @@ test.describe
     const offerA = `Issue 5 Offer A ${runSuffix}`;
     const offerB = `Issue 5 Offer B ${runSuffix}`;
 
-    const { data: membership, error: membershipError } = await db
-      .from("organization_memberships")
-      .select("organization_id")
-      .eq("status", "active")
-      .limit(1)
-      .maybeSingle();
-    expect(membershipError).toBeNull();
-    expect(membership?.organization_id).toBeTruthy();
-    const organizationId = membership!.organization_id;
-
     await signInPage(page, email, password);
     await page.goto("/business");
     const saveDraft = page.getByRole("button", { name: "Save draft" });
     await expect(saveDraft).toBeEnabled({ timeout: 15_000 });
+    // The shared QA persona can accumulate more than one organization across
+    // repeated test runs. Different pages have historically defaulted to
+    // different orgs with no guaranteed agreement (PartnerProfileEditor sorts
+    // by id, OfferManager does not), so read whichever org this page actually
+    // selected from its own live state and pin every later step and direct
+    // database check to that same id, instead of guessing one independently.
+    const organizationId = await page.getByLabel("Organization").inputValue();
+    expect(organizationId).toBeTruthy();
     await page
       .getByLabel("Public description")
       .fill(`Issue 5 persisted Partner profile ${runSuffix}`);
+    await page
+      .getByLabel("Public email")
+      .fill(`issue5-partner-${runSuffix}@example.invalid`);
     await page.getByLabel("How customers are served").selectOption("online");
     await saveDraft.click();
     await expect(page.getByTestId("partner-profile-save-status")).toContainText(
@@ -245,8 +263,10 @@ test.describe
     );
 
     await page.goto("/partner/offers");
+    await selectOrganization(page, organizationId);
     await expect(page.getByTestId("marketplace-profile-state")).toContainText(
       "published",
+      { timeout: 15_000 },
     );
     await createPartnerOffer(page, offerA);
     await createPartnerOffer(page, offerB);
@@ -276,6 +296,7 @@ test.describe
       page.getByRole("heading", { name: "Manage your organization" }),
     ).toBeVisible();
     await page.goto("/partner/offers");
+    await selectOrganization(page, organizationId);
     const offerAButton = page.getByRole("button").filter({ hasText: offerA });
     const offerBButton = page.getByRole("button").filter({ hasText: offerB });
     await expect(offerAButton).toBeVisible();
@@ -283,6 +304,7 @@ test.describe
     await offerAButton.click();
     await expect(page.getByLabel("Title")).toHaveValue(offerA);
     await page.reload();
+    await selectOrganization(page, organizationId);
     await expect(
       page.getByRole("button").filter({ hasText: offerA }),
     ).toBeVisible();
