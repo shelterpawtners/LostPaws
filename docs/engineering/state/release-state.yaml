@@ -12,8 +12,8 @@
 
 STATUS: READY_FOR_ACCEPTANCE
 CURRENT_PHASE: "Launch stabilization (Issue #273): final hosted acceptance"
-CURRENT_CHECKPOINT: "P0-A returning vendor/business lifecycle (#275/#281), P0-B Event->Offer republish clarity/regression (#277), Swag catalog requestability with signed-in autofill (#280), and LostPaws vendor messaging (#285) are merged and verified. The only remaining Issue #273 work is the real hosted stabilization acceptance chain."
-NEXT_CHECKPOINT: "Run the real hosted stabilization chain: LostPaws landing -> vendor signup/returning business management -> event-linked offer publish -> public event offer visibility -> Swag request; then close Issue #273."
+CURRENT_CHECKPOINT: "P0-A returning vendor/business lifecycle (#275/#281), P0-B Event->Offer republish clarity/regression (#277), Swag catalog requestability with signed-in autofill (#280), and LostPaws vendor messaging (#285) are merged and verified. The only remaining Issue #273 work is the real hosted stabilization acceptance chain. In parallel, Issue #283's P1 offer-persistence recovery (channel/event/image_path lost on revise; photo upload not attaching immediately) is merged (#294) and pending the same hosted migration-push blocker below before its own hosted acceptance chain can run."
+NEXT_CHECKPOINT: "Apply migration 20260916090000_issue_283_offer_persistence_recovery.sql to hosted (blocked on missing SUPABASE_ACCESS_TOKEN/linked project in the agent environment -- needs the owner or a credential-holder to run `bash scripts/supabase-cli.sh db push`), then run both remaining hosted chains: Issue #273's stabilization chain (LostPaws landing -> vendor signup/returning business management -> event-linked offer publish -> public event offer visibility -> Swag request) and Issue #283's recovery chain (upload photo -> select Lost Lands -> save/reload -> publish -> confirm on RAVE Marketplace + Lost Lands event surface); then close both issues."
 OWNER_DECISION_REQUIRED: "NO"
 SAFE_TO_CONTINUE: "YES"
 ACCEPTED_CODE_SHA: "NONE"
