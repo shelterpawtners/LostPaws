@@ -33,8 +33,8 @@ export function LostPawsActivation() {
           <p className="lpKicker">A RAVE Shelter initiative for Lost Lands</p>
           <h1 id="lp-title">Discover vendors that support shelter adoption.</h1>
           <p className="lpLead">
-            Meet festival vendors, Etsy sellers, artists, makers, and independent
-            businesses that support shelter adoption.
+            Meet festival vendors, Etsy sellers, artists, makers, and
+            independent businesses that support shelter adoption.
           </p>
           <div className="lpActions">
             <Link className="lpButton lpPrimary" to="/marketplace?channel=rave">
