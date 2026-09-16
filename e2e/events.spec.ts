@@ -146,4 +146,102 @@ test.describe("Events", () => {
       page.locator(".evDrafts li", { hasText: editedTitle }),
     ).toBeVisible();
   });
+
+  test("a draft event can be hard-deleted, and a published event can be removed and comes off the public listing", async ({
+    page,
+  }) => {
+    await signIn(page, "guardian-a@example.invalid", "Demo-only-Guardian-A!");
+    await page.goto("/events");
+
+    const suffix = `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+    const draftTitle = `Delete check draft ${suffix}`;
+    await page.getByRole("button", { name: /Add an event/ }).click();
+    await page.getByLabel("Title").fill(draftTitle);
+    await page.getByLabel("Summary").fill("Draft delete regression.");
+    await page.getByRole("button", { name: "Save event" }).click();
+    await expect(page.getByText(/Saved as a draft/)).toBeVisible();
+    await page.reload();
+
+    const draftItem = page.locator(".evDrafts li", { hasText: draftTitle });
+    await expect(draftItem).toBeVisible();
+    page.once("dialog", (dialog) => dialog.accept());
+    await draftItem.getByRole("button", { name: "Delete" }).click();
+    await expect(page.getByText(/^Deleted\.$/)).toBeVisible();
+    await expect(
+      page.locator(".evDrafts li", { hasText: draftTitle }),
+    ).toHaveCount(0);
+
+    const liveTitle = `Delete check published ${suffix}`;
+    await page.getByRole("button", { name: /Add an event/ }).click();
+    await page.getByLabel("Title").fill(liveTitle);
+    await page.getByLabel("Summary").fill("Published removal regression.");
+    await page.getByRole("button", { name: "Save event" }).click();
+    await expect(page.getByText(/Saved as a draft/)).toBeVisible();
+    const liveDraftItem = page.locator(".evDrafts li", { hasText: liveTitle });
+    await liveDraftItem.getByRole("button", { name: "Publish" }).click();
+    await expect(page.getByText(/Published\. It now appears/)).toBeVisible();
+    await page.reload();
+    await expect(page.locator(".evCard", { hasText: liveTitle })).toBeVisible();
+
+    // A real attendee exists now -- removal must archive (preserve that
+    // attendance history), not hard-delete, unlike the untouched draft above.
+    const supabaseUrl = process.env.PLAYWRIGHT_SUPABASE_URL || "";
+    const supabaseKey = process.env.PLAYWRIGHT_SUPABASE_PUBLISHABLE_KEY || "";
+    const { createClient } = await import("@supabase/supabase-js");
+    const attendeeDb = createClient(supabaseUrl, supabaseKey);
+    const attendeeSignIn = await attendeeDb.auth.signInWithPassword({
+      email: "guardian-b@example.invalid",
+      password: "Demo-only-Guardian-B!",
+    });
+    expect(attendeeSignIn.error).toBeNull();
+    const { data: liveEvent } = await attendeeDb
+      .from("events")
+      .select("id")
+      .eq("title", liveTitle)
+      .single();
+    const { error: attendError } = await attendeeDb
+      .from("event_attendees")
+      .upsert({
+        event_id: liveEvent!.id,
+        user_id: attendeeSignIn.data.user!.id,
+        status: "attending",
+      });
+    expect(attendError).toBeNull();
+    await attendeeDb.auth.signOut();
+
+    const publishedItem = page.locator(".evDrafts li", { hasText: liveTitle });
+    page.once("dialog", (dialog) => dialog.accept());
+    await publishedItem.getByRole("button", { name: "Delete/Remove" }).click();
+    await expect(page.getByText(/Removed\./)).toBeVisible();
+    await page.reload();
+    await expect(page.locator(".evCard", { hasText: liveTitle })).toHaveCount(
+      0,
+    );
+    // Archived, not deleted, since attendance history exists -- still
+    // visible/manageable in the owner's own list, just off the public
+    // Events listing.
+    await expect(
+      page.locator(".evDrafts li", { hasText: liveTitle }),
+    ).toBeVisible();
+  });
+
+  test("an unrelated user cannot remove someone else's event", async () => {
+    const supabaseUrl = process.env.PLAYWRIGHT_SUPABASE_URL || "";
+    const supabaseKey = process.env.PLAYWRIGHT_SUPABASE_PUBLISHABLE_KEY || "";
+    test.skip(!supabaseUrl || !supabaseKey, "Local Supabase key required");
+    const { createClient } = await import("@supabase/supabase-js");
+    const client = createClient(supabaseUrl, supabaseKey);
+    const signIn = await client.auth.signInWithPassword({
+      email: "guardian-a@example.invalid",
+      password: "Demo-only-Guardian-A!",
+    });
+    expect(signIn.error).toBeNull();
+    // Demo Saturday Adoption Day, owned by Demo Shelter B -- guardian-a has
+    // no membership on that organization.
+    const { error } = await client.rpc("remove_event", {
+      p_event_id: "40000000-0000-0000-0000-0000000000f1",
+    });
+    expect(error).not.toBeNull();
+    expect(error!.message).toMatch(/not authorized/i);
+  });
 });
