@@ -93,7 +93,7 @@ test.describe.serial("Issue #283 P1-D offer cover photo upload", () => {
 
     await page.getByLabel("Title").fill(offerTitle);
     await page
-      .getByLabel("Short description")
+      .getByLabel("Deal / description")
       .fill("A test-only offer for the cover photo regression.");
     await page.getByLabel("Terms and conditions").fill("Demo only.");
     await page
