@@ -28,7 +28,7 @@ declare o public.offers;
 begin
   o := private.assert_offer_manager(p_offer_id);
   if p_image_path is not null and p_image_path <> '' then
-    if p_image_path !~ ('^' || o.organization_id::text || '/' || p_offer_id::text || '/cover\\.(jpg|png|webp)$') then
+    if p_image_path !~ ('^' || o.organization_id::text || '/' || p_offer_id::text || '/cover[.](jpg|png|webp)$') then
       raise exception 'Invalid offer image path' using errcode='22023';
     end if;
   end if;
