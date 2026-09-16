@@ -4,6 +4,7 @@ import { ArrowLeft, Clock, ShieldCheck, Sparkles, Tag } from "lucide-react";
 import {
   findStoreProduct,
   formatStorePrice,
+  isRequestable,
   storeAvailabilityLabels,
   storeMissionStatement,
 } from "../../store/catalog";
@@ -116,7 +117,7 @@ export function StoreProductDetail() {
                 </span>
               </p>
 
-              {product.id && product.availability === "in_stock" && (
+              {isRequestable(product) && (
                 <form className="stRequestForm" onSubmit={submitRequest}>
                   <h2>Request this sticker</h2>
                   <p>
