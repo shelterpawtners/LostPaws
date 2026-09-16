@@ -113,4 +113,77 @@ test.describe("Phase 2 checkpoint 1 partner organization onboarding", () => {
     await page.getByRole("link", { name: /Manage business profile/ }).click();
     await expect(page.getByLabel("Organization")).toHaveValue(organizationId);
   });
+
+  test("with multiple organizations, /business and /partner/offers agree on the same default and stay in sync when switched", async ({
+    page,
+  }) => {
+    // Uses rave-vendor@example.invalid specifically: it is not touched by
+    // any other test's organization_onboarding_drafts row in this file or
+    // in phase-2-offer-redemption.spec.ts (which shares that same
+    // one-row-per-user table for partner-admin). Both files run in the same
+    // CI command in parallel workers -- reusing a persona's draft row
+    // across them caused a real "Cannot read properties of null" race here.
+    const supabaseUrl = process.env.PLAYWRIGHT_SUPABASE_URL!;
+    const supabaseKey = process.env.PLAYWRIGHT_SUPABASE_PUBLISHABLE_KEY!;
+    const partnerDb = createClient(supabaseUrl, supabaseKey);
+    const signInResult = await partnerDb.auth.signInWithPassword({
+      email: "rave-vendor@example.invalid",
+      password: "Demo-only-RAVE-Vendor!",
+    });
+    const userId = signInResult.data.user!.id;
+    const secondOrgName = `Second real org ${Date.now()}`;
+    const { data: draft } = await partnerDb
+      .from("organization_onboarding_drafts")
+      .upsert(
+        {
+          created_by: userId,
+          partner_kind: "rave_vendor",
+          form_data: {
+            name: secondOrgName,
+            relationship: "independent",
+            additionalLocations: [],
+          },
+          status: "editing",
+          resolved_organization_id: null,
+          resolution_note: null,
+        },
+        { onConflict: "created_by" },
+      )
+      .select("id")
+      .single();
+    const { data: secondOrgId } = await partnerDb.rpc(
+      "create_partner_organization",
+      {
+        p_partner_kind: "rave_vendor",
+        p_form: {
+          name: secondOrgName,
+          relationship: "independent",
+          additionalLocations: [],
+        },
+        p_draft_id: draft!.id,
+      },
+    );
+
+    await page.goto("/login");
+    await page.getByLabel("Email address").fill("rave-vendor@example.invalid");
+    await page
+      .getByLabel("Password", { exact: true })
+      .fill("Demo-only-RAVE-Vendor!");
+    await page.getByRole("button", { name: "Sign in" }).click();
+    await page.waitForURL(/\/dashboard$/);
+
+    await page.goto("/business");
+    const businessOrgSelect = page.getByLabel("Organization");
+    const defaultOnBusiness = await businessOrgSelect.inputValue();
+
+    await page.goto("/partner/offers");
+    const offersOrgSelect = page
+      .locator(".rolePanel")
+      .getByLabel("Organization");
+    await expect(offersOrgSelect).toHaveValue(defaultOnBusiness);
+
+    await offersOrgSelect.selectOption(secondOrgId as string);
+    await page.goto("/business");
+    await expect(businessOrgSelect).toHaveValue(secondOrgId as string);
+  });
 });

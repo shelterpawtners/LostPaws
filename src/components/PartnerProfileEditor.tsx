@@ -2,6 +2,10 @@ import { useEffect, useState } from "react";
 import { PartnerGivingPanel } from "./giving/PartnerGivingPanel";
 import type { Session } from "@supabase/supabase-js";
 import { supabase as db } from "../lib/supabase";
+import {
+  resolveDefaultOrgId,
+  selectedOrgStorageKey,
+} from "../lib/organization-selection";
 import { LoadingState } from "./LoadingState";
 import {
   isHttpUrl,
@@ -20,9 +24,9 @@ const blankHours = () =>
   }));
 
 export function PartnerProfileEditor({ session }: { session: Session | null }) {
-  const selectionKey = session
-    ? `partner-profile:selected-org:${session.user.id}`
-    : "";
+  // Shared with OfferManager so a vendor with more than one organization
+  // sees the same one selected on both /business and /partner/offers.
+  const selectionKey = session ? selectedOrgStorageKey(session.user.id) : "";
   const [orgs, setOrgs] = useState<Org[]>([]),
     [categories, setCategories] = useState<{ id: string; label: string }[]>([]),
     [id, setId] = useState(""),
