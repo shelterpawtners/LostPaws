@@ -17,6 +17,7 @@ export type PublicEvent = {
   ends_at: string | null;
   status: string;
   published_at: string | null;
+  image_path: string | null;
 };
 
 /** Audience filter as offered in the UI. */

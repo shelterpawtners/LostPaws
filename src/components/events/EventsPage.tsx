@@ -15,6 +15,8 @@ import {
   type PublicEvent,
 } from "../../lib/events";
 import { LoadingState } from "../LoadingState";
+import { MediaUpload } from "../MediaUpload";
+import { mediaPublicUrl } from "../OfferCard";
 import "./Events.css";
 
 type ManageableOrg = { organization_id: string; public_name: string };
@@ -48,6 +50,7 @@ export function EventsPage({ session }: { session: Session | null }) {
     isOnline: false,
     startsAt: "",
     endsAt: "",
+    imagePath: "",
   };
   const [form, setForm] = useState(blankForm);
 
@@ -77,6 +80,7 @@ export function EventsPage({ session }: { session: Session | null }) {
       isOnline: item.is_online,
       startsAt: toLocalInput(item.starts_at),
       endsAt: toLocalInput(item.ends_at),
+      imagePath: item.image_path ?? "",
     });
     setStatus("");
     setShowForm(true);
@@ -92,7 +96,7 @@ export function EventsPage({ session }: { session: Session | null }) {
     const { data, error } = await db
       .from("events")
       .select(
-        "id,organization_id,audience,category,title,summary,details,service_area,is_online,starts_at,ends_at,status,published_at",
+        "id,organization_id,audience,category,title,summary,details,service_area,is_online,starts_at,ends_at,status,published_at,image_path",
       )
       .in("audience", audiencesFor(audience))
       .eq("status", "active")
@@ -124,7 +128,7 @@ export function EventsPage({ session }: { session: Session | null }) {
     const { data } = await db
       .from("events")
       .select(
-        "id,organization_id,audience,category,title,summary,details,service_area,is_online,starts_at,ends_at,status,published_at,created_at",
+        "id,organization_id,audience,category,title,summary,details,service_area,is_online,starts_at,ends_at,status,published_at,created_at,image_path",
       )
       .eq("created_by", session.user.id)
       .order("created_at", { ascending: false })
@@ -187,12 +191,20 @@ export function EventsPage({ session }: { session: Session | null }) {
       is_online: form.isOnline,
       starts_at: form.startsAt || null,
       ends_at: form.endsAt || null,
+      image_path: form.imagePath || null,
     };
-    const { error } = editingId
-      ? await db.from("events").update(fields).eq("id", editingId)
+    const { data: inserted, error } = editingId
+      ? await db
+          .from("events")
+          .update(fields)
+          .eq("id", editingId)
+          .select("id")
+          .maybeSingle()
       : await db
           .from("events")
-          .insert({ ...fields, created_by: session.user.id });
+          .insert({ ...fields, created_by: session.user.id })
+          .select("id")
+          .single();
     setSubmitting(false);
     if (error) {
       setStatus(
@@ -207,8 +219,9 @@ export function EventsPage({ session }: { session: Session | null }) {
         ? "Saved. This did not change whether the event is published."
         : "Saved as a draft. Use Publish below to make it public.",
     );
-    if (!editingId) {
+    if (!editingId && inserted?.id) {
       setForm((current) => ({ ...current, title: "", summary: "" }));
+      setEditingId(inserted.id);
     }
     void load();
     void loadMyEvents();
@@ -489,6 +502,17 @@ export function EventsPage({ session }: { session: Session | null }) {
                   />
                   <span>This event is online</span>
                 </label>
+                <label className="fields-wide">
+                  Cover photo
+                  <MediaUpload
+                    ownerId={form.organizationId || session?.user.id || ""}
+                    recordId={editingId ?? ""}
+                    value={form.imagePath}
+                    onChange={(path) =>
+                      setForm((current) => ({ ...current, imagePath: path }))
+                    }
+                  />
+                </label>
               </div>
               <button className="evSubmit" disabled={submitting}>
                 {submitting
@@ -597,6 +621,14 @@ export function EventsPage({ session }: { session: Session | null }) {
             <ul className="evGrid">
               {events.map((item) => (
                 <li className="evCard" key={item.id}>
+                  {mediaPublicUrl(item.image_path) && (
+                    <img
+                      className="evCardPhoto"
+                      src={mediaPublicUrl(item.image_path)}
+                      alt=""
+                      loading="lazy"
+                    />
+                  )}
                   <span className="evCardTags">
                     <em>{eventAudienceLabels[item.audience]}</em>
                     <span>{item.category}</span>

@@ -19,6 +19,7 @@ import {
 } from "../../lib/events";
 import { OfferMarketplace } from "../OfferMarketplace";
 import { LoadingState } from "../LoadingState";
+import { mediaPublicUrl } from "../OfferCard";
 import "./Events.css";
 
 type ParticipantOrg = {
@@ -54,7 +55,7 @@ export function EventDetailPage({ session }: { session: Session | null }) {
     const { data, error } = await client
       .from("events")
       .select(
-        "id,organization_id,audience,category,title,summary,details,service_area,is_online,starts_at,ends_at,status,published_at",
+        "id,organization_id,audience,category,title,summary,details,service_area,is_online,starts_at,ends_at,status,published_at,image_path",
       )
       .eq("id", id)
       .maybeSingle();
@@ -144,6 +145,8 @@ export function EventDetailPage({ session }: { session: Session | null }) {
     );
   }
 
+  const coverImage = mediaPublicUrl(event.image_path);
+
   return (
     <div className="evPage">
       <section className="evHero">
@@ -151,6 +154,9 @@ export function EventDetailPage({ session }: { session: Session | null }) {
           <Link className="evBackLink" to="/events">
             <ArrowLeft aria-hidden="true" /> Back to events
           </Link>
+          {coverImage && (
+            <img className="evCoverPhoto" src={coverImage} alt="" />
+          )}
           <span className="evEyebrow">
             <CalendarDays aria-hidden="true" />{" "}
             {eventAudienceLabels[event.audience]}
