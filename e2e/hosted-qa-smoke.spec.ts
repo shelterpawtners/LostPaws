@@ -116,10 +116,11 @@ test.describe.serial("Hosted shared-dev smoke", () => {
       settingOrDefault("PLAYWRIGHT_PARTNER_PASSWORD", "Demo-only-Partner!"),
     );
     await page.goto("/partner/offers");
+    // Issue #283 P1-D's Offer Manager layout pass (#290) replaced the old
+    // static heading with a create/edit-state heading; a fresh visit always
+    // starts in create mode (no offer auto-selected).
     await expect(
-      page.getByRole("heading", {
-        name: "Create clear offers without rewriting history.",
-      }),
+      page.getByRole("heading", { name: "Create a new offer" }),
     ).toBeVisible();
   });
 });
