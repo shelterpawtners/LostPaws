@@ -584,9 +584,10 @@ function Offers() {
   );
 }
 function RaveMissionPage() {
+  const { session, loading } = useAuth();
   return (
     <Page>
-      <RaveShelterMission />
+      <RaveShelterMission session={session} authLoading={loading} />
     </Page>
   );
 }
