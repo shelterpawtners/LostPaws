@@ -11,9 +11,9 @@
 # Markdown files alongside it in the same change.
 
 STATUS: READY_FOR_ACCEPTANCE
-CURRENT_PHASE: "Launch stabilization (Issue #273): remaining LostPaws messaging and final hosted acceptance"
-CURRENT_CHECKPOINT: "P0-A returning vendor/business lifecycle (#275), P0-B Event->Offer republish clarity/regression (#277), and Swag catalog requestability with signed-in autofill (#280) are merged and verified. The active umbrella Issue #273 remains open only for the coordinated LostPaws messaging slice and final real hosted stabilization chain."
-NEXT_CHECKPOINT: "After the conflicting decorative PR #184 is resolved or retired, ship the owner-directed LostPaws landing messaging, then run the real hosted stabilization acceptance chain."
+CURRENT_PHASE: "Launch stabilization (Issue #273): final hosted acceptance"
+CURRENT_CHECKPOINT: "P0-A returning vendor/business lifecycle (#275/#281), P0-B Event->Offer republish clarity/regression (#277), Swag catalog requestability with signed-in autofill (#280), and LostPaws vendor messaging (#285) are merged and verified. The only remaining Issue #273 work is the real hosted stabilization acceptance chain."
+NEXT_CHECKPOINT: "Run the real hosted stabilization chain: LostPaws landing -> vendor signup/returning business management -> event-linked offer publish -> public event offer visibility -> Swag request; then close Issue #273."
 OWNER_DECISION_REQUIRED: "NO"
 SAFE_TO_CONTINUE: "YES"
 ACCEPTED_CODE_SHA: "NONE"

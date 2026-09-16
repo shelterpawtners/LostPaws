@@ -4,21 +4,18 @@
 # the claim/release protocol this file supports.
 
 schema_version: 1
-updated: "2026-09-16T04:15:00Z"
+updated: "2026-09-16T04:25:00Z"
 
 active_claims:
-  - item: issue-273-lostpaws-messaging
-    agent: codex
-    issue: 273
-    branch: feat/issue-273-lostpaws-messaging
-    files:
-      - src/components/LostPawsActivation.tsx
-      - e2e/issue-125-rave-lostpaws-mobile.spec.ts
-      - .github/workflows/github-pages-mvp-acceptance.yml
-    claimed_at: "2026-09-16T04:15:00Z"
-    note: "Owner-directed final Issue #273 source slice: truthful LostPaws vendor positioning and exact CTA regression coverage. PR #184 is explicitly ignored."
 
 completed:
+  - item: issue-273-lostpaws-messaging
+    agent: codex
+    pr: 285
+    merged_sha: "44abf2310312912fdcf240c27a8d92b510d19bc9"
+    staging_verified: true
+    completed_at: "2026-09-16T04:25:00Z"
+    note: "Owner-approved LostPaws headline, truthful festival/Etsy/creator positioning, and exact vendor CTAs shipped. Unsupported donation-per-sale language was removed. CI, public browser regression, Pages acceptance, Persona QA, Hosted QA, and Database QA passed."
   - item: issue-273-swag-catalog-requestability
     agent: codex
     pr: 280

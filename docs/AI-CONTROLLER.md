@@ -18,7 +18,7 @@ status.
 
 ## Active issue
 
-**#273 — Launch Stabilization (Vendor Account, Event Offers, LostPaws Messaging & Swag Requests).** P0-A returning business lifecycle (#275), P0-B Event→Offer republish clarity/regression (#277), and Swag catalog requestability with signed-in autofill (#280) are merged and verified. The remaining work and final hosted chain live only on Issue #273; do not duplicate the detailed plan here.
+**#273 — Launch Stabilization (Vendor Account, Event Offers, LostPaws Messaging & Swag Requests).** P0-A returning business lifecycle (#275), P0-B Event→Offer republish clarity/regression (#277), Swag catalog requestability with signed-in autofill (#280), and LostPaws vendor messaging (#285) are merged and verified. The only remaining work is the final hosted chain on Issue #273; do not duplicate the detailed plan here.
 
 ## Current status
 
