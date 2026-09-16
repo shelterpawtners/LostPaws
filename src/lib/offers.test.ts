@@ -16,6 +16,8 @@ describe("defaultRaveEventId", () => {
   });
 
   it("leaves the event blank when Lost Lands is unavailable", () => {
-    expect(defaultRaveEventId([{ id: "summer", title: "Summer Gathering" }], "")).toBe("");
+    expect(
+      defaultRaveEventId([{ id: "summer", title: "Summer Gathering" }], ""),
+    ).toBe("");
   });
 });
