@@ -362,7 +362,16 @@ test.describe.serial("Phase 2 offer and redemption journey", () => {
     await expect(
       page.getByText("ShelterPawtners does not process this purchase"),
     ).toBeVisible();
-    await expect(page.locator(".marketOfferGallery img")).toHaveCount(1); // the second image is shown as the primary card image, not duplicated in the gallery
+    const galleryImages = page.locator(".marketOfferGallery img");
+    await expect(galleryImages).toHaveCount(2);
+    await expect(galleryImages.nth(0)).toHaveAttribute(
+      "src",
+      "https://images.example.invalid/pin-front.jpg",
+    );
+    await expect(galleryImages.nth(1)).toHaveAttribute(
+      "src",
+      "https://images.example.invalid/pin-back.jpg",
+    );
 
     await page.getByRole("button", { name: "Claim this offer" }).click();
     await expect(page.getByRole("status")).toContainText("Claim ready");
