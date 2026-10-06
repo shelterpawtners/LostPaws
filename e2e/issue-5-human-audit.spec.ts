@@ -10,6 +10,15 @@ import {
   watchRuntime,
 } from "./helpers/issue5";
 
+const offerOption = (page: Page, title: string) =>
+  page
+    .getByLabel("Choose an offer to edit")
+    .locator("option")
+    .filter({ hasText: title });
+async function pickOffer(page: Page, title: string) {
+  const value = await offerOption(page, title).getAttribute("value");
+  await page.getByLabel("Choose an offer to edit").selectOption(value!);
+}
 const runSuffix = `${Date.now()}-${Math.random().toString(16).slice(2)}`;
 const guardianEmail = () => requiredSetting("PLAYWRIGHT_GUARDIAN_EMAIL");
 const guardianPassword = () => requiredSetting("PLAYWRIGHT_GUARDIAN_PASSWORD");
@@ -61,9 +70,10 @@ async function selectOrganization(page: Page, organizationId: string) {
   // overlap a plain getByLabel("Organization") match, so scope to the panel
   // that actually contains the organization picker.
   const select = page.locator(".offerTopBar").getByLabel("Organization");
-  await expect(
-    select.locator(`option[value="${organizationId}"]`),
-  ).toHaveCount(1, { timeout: 15_000 });
+  await expect(select.locator(`option[value="${organizationId}"]`)).toHaveCount(
+    1,
+    { timeout: 15_000 },
+  );
   await select.selectOption(organizationId);
 }
 
@@ -124,11 +134,7 @@ test.describe
       page
         .getByRole("button", { name: "Claim this offer" })
         .or(page.getByRole("link", { name: "Visit official program" }))
-        .or(
-          page.getByText(
-            "This public resource is listed for reference.",
-          ),
-        ),
+        .or(page.getByText("This public resource is listed for reference.")),
     ).toBeVisible();
     await page.goBack();
     await expect(page).toHaveURL(/\/marketplace$/);
@@ -310,20 +316,14 @@ test.describe
     ).toBeVisible();
     await page.goto("/partner/offers");
     await selectOrganization(page, organizationId);
-    const offerAButton = page.getByRole("button").filter({ hasText: offerA });
-    const offerBButton = page.getByRole("button").filter({ hasText: offerB });
-    await expect(offerAButton).toBeVisible();
-    await expect(offerBButton).toBeVisible();
-    await offerAButton.click();
+    await expect(offerOption(page, offerA)).toHaveCount(1);
+    await expect(offerOption(page, offerB)).toHaveCount(1);
+    await pickOffer(page, offerA);
     await expect(page.getByLabel("Title")).toHaveValue(offerA);
     await page.reload();
     await selectOrganization(page, organizationId);
-    await expect(
-      page.getByRole("button").filter({ hasText: offerA }),
-    ).toBeVisible();
-    await expect(
-      page.getByRole("button").filter({ hasText: offerB }),
-    ).toBeVisible();
+    await expect(offerOption(page, offerA)).toHaveCount(1);
+    await expect(offerOption(page, offerB)).toHaveCount(1);
 
     await db.auth.signOut();
   });

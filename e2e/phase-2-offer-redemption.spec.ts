@@ -1,6 +1,15 @@
 import { createClient } from "@supabase/supabase-js";
 import { expect, test, type Page } from "@playwright/test";
 
+const offerOption = (page: Page, title: string) =>
+  page
+    .getByLabel("Choose an offer to edit")
+    .locator("option")
+    .filter({ hasText: title });
+async function pickOffer(page: Page, title: string) {
+  const value = await offerOption(page, title).getAttribute("value");
+  await page.getByLabel("Choose an offer to edit").selectOption(value!);
+}
 const runSuffix = `${Date.now()}-${Math.random().toString(16).slice(2)}`;
 const offerTitle = `Playwright welcome offer ${runSuffix}`;
 const journeyOfferTitle = `Playwright persistence check ${runSuffix}`;
@@ -232,23 +241,17 @@ test.describe.serial("Phase 2 offer and redemption journey", () => {
 
     // The draft must appear immediately, selected, without depending on a
     // second round-trip succeeding.
-    const draftButton = page
-      .getByRole("button")
-      .filter({ hasText: journeyOfferTitle });
-    await expect(draftButton).toBeVisible();
-    await expect(draftButton).toHaveClass(/active/);
+    await expect(offerOption(page, journeyOfferTitle)).toHaveCount(1);
+    await expect(page.getByLabel("Choose an offer to edit")).toHaveValue(
+      (await offerOption(page, journeyOfferTitle).getAttribute("value")) || "",
+    );
 
     // Reload: the draft, its image URL, and its event attachment must all
     // still be there and still editable -- not just the title.
     await page.reload();
     await offerOrganization.selectOption(partnerOrganizationId);
-    await expect(
-      page.getByRole("button").filter({ hasText: journeyOfferTitle }),
-    ).toBeVisible();
-    await page
-      .getByRole("button")
-      .filter({ hasText: journeyOfferTitle })
-      .click();
+    await expect(offerOption(page, journeyOfferTitle)).toHaveCount(1);
+    await pickOffer(page, journeyOfferTitle);
     await expect(page.getByLabel("Title")).toHaveValue(journeyOfferTitle);
     await expect(page.getByLabel("Product images")).toHaveValue(
       "https://images.example.invalid/journey-check.jpg",
@@ -302,12 +305,10 @@ test.describe.serial("Phase 2 offer and redemption journey", () => {
     // Returning to Offer Manager: still there, still editable/manageable.
     await page.goto("/partner/offers");
     await offerOrganization.selectOption(partnerOrganizationId);
-    const publishedButton = page
-      .getByRole("button")
-      .filter({ hasText: journeyOfferTitle });
-    await expect(publishedButton).toBeVisible();
+    const publishedButton = offerOption(page, journeyOfferTitle);
+    await expect(publishedButton).toHaveCount(1);
     await expect(publishedButton).toContainText("Published");
-    await publishedButton.click();
+    await pickOffer(page, journeyOfferTitle);
     await expect(page.getByLabel("Title")).toHaveValue(journeyOfferTitle);
 
     // Pause must actually remove it from the public Marketplace, and Resume
@@ -325,7 +326,7 @@ test.describe.serial("Phase 2 offer and redemption journey", () => {
 
     await page.goto("/partner/offers");
     await offerOrganization.selectOption(partnerOrganizationId);
-    await publishedButton.click();
+    await pickOffer(page, journeyOfferTitle);
     await page.getByRole("button", { name: "Resume" }).click();
     await expect(page.getByRole("status")).toContainText(
       "Published. Now visible in Marketplace.",
@@ -546,7 +547,7 @@ test.describe.serial("Phase 2 offer and redemption journey", () => {
 
     await page.goto("/partner/offers");
     await offerOrganization.selectOption(partnerOrganizationId);
-    await page.getByRole("button").filter({ hasText: title }).click();
+    await pickOffer(page, title);
     await expect(eventSelect).toHaveValue(selectedEventId);
     await page.getByRole("button", { name: "Save & publish" }).click();
     await expect(page.getByRole("status")).toContainText(
