@@ -696,6 +696,11 @@ function Signup({ c }: { c: (typeof choices)[number] }) {
             : `Join as a ${c.title}`}
         </h1>
         <p>{c.copy}</p>
+        {(c.kind === "petbiz" || c.kind === "rave_vendor") && (
+          <small>
+            <ShieldCheck /> Add your company name, then make your first offer.
+          </small>
+        )}
         <small>
           <ShieldCheck /> One login can support multiple roles.
         </small>
@@ -705,11 +710,18 @@ function Signup({ c }: { c: (typeof choices)[number] }) {
         <h2>Create your free account</h2>
         <label>
           Full name
-          <input name="name" required autoComplete="name" />
+          <input name="name" required autoComplete="name" enterKeyHint="next" />
         </label>
         <label>
           Email address
-          <input name="email" required type="email" autoComplete="email" />
+          <input
+            name="email"
+            required
+            type="email"
+            autoComplete="email"
+            inputMode="email"
+            enterKeyHint="next"
+          />
         </label>
         <PasswordField
           label="Password"
@@ -814,7 +826,10 @@ function PartnerOrganizationOnboarding({ kind }: { kind: PartnerKind }) {
   const [status, setStatus] = useState("");
   const [reviewedMatches, setReviewedMatches] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [createdOrgId, setCreatedOrgId] = useState("");
   const choice = choices.find((item) => item.kind === kind)!;
+  const offersHref =
+    kind === "rave_vendor" ? "/partner/offers?channel=rave" : "/partner/offers";
   const update = (key: keyof PartnerForm, value: string) => {
     setForm((current) => ({ ...current, [key]: value }));
     setReviewedMatches(false);
@@ -992,19 +1007,20 @@ function PartnerOrganizationOnboarding({ kind }: { kind: PartnerKind }) {
     if (!id) return;
     setSubmitting(true);
     setStatus("Creating your organization…");
-    const { error } = await db.rpc("create_partner_organization", {
-      p_partner_kind: kind,
-      p_form: form,
-      p_draft_id: id,
-    });
+    const { data: newOrganizationId, error } = await db.rpc(
+      "create_partner_organization",
+      {
+        p_partner_kind: kind,
+        p_form: form,
+        p_draft_id: id,
+      },
+    );
     if (error) {
       setSubmitting(false);
       return setStatus(error.message);
     }
-    setStatus(
-      "Organization created. You can request related access separately when needed.",
-    );
-    window.setTimeout(() => navigate("/dashboard"), 700);
+    setStatus("Organization created.");
+    setCreatedOrgId(String(newOrganizationId));
   }
   const visibleMatches = matches.filter(
     (item) => !dismissed.includes(item.organization_id),
@@ -1030,18 +1046,46 @@ function PartnerOrganizationOnboarding({ kind }: { kind: PartnerKind }) {
       </Page>
     );
   }
+  if (createdOrgId) {
+    return (
+      <Page>
+        <section className="section shell narrow partnerOnboardingDone">
+          <span className="eyebrow">{choice.title} setup</span>
+          <h1>Your organization is ready.</h1>
+          <p className="lead">
+            Make your first offer now, or finish your profile later.
+          </p>
+          <div className="actions">
+            <Link className="btn full" to={offersHref}>
+              Make your first offer
+            </Link>
+            <Link className="textButton" to="/business">
+              Finish your profile later
+            </Link>
+          </div>
+          <div className="notice publishChecklist">
+            <b>Still to add, whenever you're ready:</b>
+            <ul>
+              <li>Address or service area</li>
+              <li>Business hours</li>
+              <li>Logo and social links</li>
+              <li>Description and categories</li>
+            </ul>
+          </div>
+        </section>
+      </Page>
+    );
+  }
   return (
     <Page>
-      <section className="section shell partnerOnboarding">
+      <section className="section shell narrow partnerOnboarding">
         <Link to="/dashboard">← Back to your dashboard</Link>
         <span className="eyebrow">{choice.title} setup</span>
         <h1>Start with your business details.</h1>
         <p className="lead">
-          A name alone never proves control. We use the details you provide to
-          surface possible organizations, then let you request the right access
-          or create a genuinely separate business.
+          Just the business name to start — add the rest whenever you're ready.
         </p>
-        <div className="partnerOnboardingGrid">
+        <div className="partnerOnboardingForm">
           <form
             className="detail"
             onSubmit={(event) => {
@@ -1050,17 +1094,70 @@ function PartnerOrganizationOnboarding({ kind }: { kind: PartnerKind }) {
             }}
           >
             <div className="panel">
-              <h2>Business details</h2>
+              <label>
+                Public business name
+                <input
+                  value={form.name}
+                  onChange={(event) => update("name", event.target.value)}
+                  required
+                  autoComplete="organization"
+                  enterKeyHint="done"
+                />
+              </label>
+            </div>
+            <div
+              className="panel matchPanel"
+              aria-label="Possible organization matches"
+            >
+              <span className="eyebrow">Assisted matching</span>
+              <h2>Possible matches</h2>
+              <p aria-live="polite">
+                {visibleMatches.length
+                  ? "Review these before creating a new business."
+                  : "Add a name plus a website, phone, or location to check for possible matches."}
+              </p>
+              {visibleMatches.map((candidate) => (
+                <article className="candidate" key={candidate.organization_id}>
+                  <h3>{candidate.public_name}</h3>
+                  {(candidate.city || candidate.state_province) && (
+                    <p>
+                      {[candidate.city, candidate.state_province]
+                        .filter(Boolean)
+                        .join(", ")}
+                    </p>
+                  )}
+                  <small>
+                    {organizationMatchSummary(candidate.match_reasons)}
+                  </small>
+                  <div className="candidateActions">
+                    <button
+                      type="button"
+                      className="btn quiet"
+                      onClick={() => request(candidate, "membership")}
+                    >
+                      Request access
+                    </button>
+                    <button
+                      type="button"
+                      className="textButton"
+                      onClick={() => request(candidate, "ownership_claim")}
+                    >
+                      Claim review
+                    </button>
+                    <button
+                      type="button"
+                      className="textButton"
+                      onClick={() => dismiss(candidate)}
+                    >
+                      Not my business
+                    </button>
+                  </div>
+                </article>
+              ))}
+            </div>
+            <details className="offerOptionalDetails">
+              <summary>Add more business details now (optional)</summary>
               <div className="fields">
-                <label>
-                  Public business name
-                  <input
-                    value={form.name}
-                    onChange={(event) => update("name", event.target.value)}
-                    required
-                    autoComplete="organization"
-                  />
-                </label>
                 <label>
                   Legal name or DBA
                   <input
@@ -1077,6 +1174,8 @@ function PartnerOrganizationOnboarding({ kind }: { kind: PartnerKind }) {
                     value={form.website}
                     onChange={(event) => update("website", event.target.value)}
                     placeholder="https://"
+                    autoComplete="url"
+                    inputMode="url"
                   />
                 </label>
                 <label>
@@ -1085,6 +1184,8 @@ function PartnerOrganizationOnboarding({ kind }: { kind: PartnerKind }) {
                     type="tel"
                     value={form.phone}
                     onChange={(event) => update("phone", event.target.value)}
+                    autoComplete="tel"
+                    inputMode="tel"
                   />
                 </label>
                 <label>
@@ -1093,6 +1194,8 @@ function PartnerOrganizationOnboarding({ kind }: { kind: PartnerKind }) {
                     type="email"
                     value={form.email}
                     onChange={(event) => update("email", event.target.value)}
+                    autoComplete="email"
+                    inputMode="email"
                   />
                 </label>
                 <label>
@@ -1106,8 +1209,6 @@ function PartnerOrganizationOnboarding({ kind }: { kind: PartnerKind }) {
                   />
                 </label>
               </div>
-            </div>
-            <div className="panel">
               <h2>Primary location</h2>
               <p>
                 Use a physical location when you have one. Add every location
@@ -1144,6 +1245,7 @@ function PartnerOrganizationOnboarding({ kind }: { kind: PartnerKind }) {
                     value={form.postal}
                     onChange={(event) => update("postal", event.target.value)}
                     autoComplete="postal-code"
+                    inputMode="numeric"
                   />
                 </label>
               </div>
@@ -1234,8 +1336,6 @@ function PartnerOrganizationOnboarding({ kind }: { kind: PartnerKind }) {
               >
                 Add another location
               </button>
-            </div>
-            <div className="panel">
               <h2>
                 Is this a new business, or part of one you already manage?
               </h2>
@@ -1293,68 +1393,20 @@ function PartnerOrganizationOnboarding({ kind }: { kind: PartnerKind }) {
                   </select>
                 </label>
               )}
+            </details>
+            <div className="partnerOnboardingSticky">
+              <button className="btn full" disabled={submitting}>
+                {submitting
+                  ? "Creating your business…"
+                  : visibleMatches.length
+                    ? "None of these — create a new business"
+                    : "Create my business"}
+              </button>
+              <p role="status" aria-live="polite" aria-atomic="true">
+                {status}
+              </p>
             </div>
-            <button className="btn" disabled={submitting}>
-              {submitting
-                ? "Creating your business…"
-                : visibleMatches.length
-                  ? "None of these — create a new business"
-                  : "Create my business"}
-            </button>
-            <p role="status" aria-live="polite" aria-atomic="true">
-              {status}
-            </p>
           </form>
-          <aside
-            className="matchPanel"
-            aria-label="Possible organization matches"
-          >
-            <span className="eyebrow">Assisted matching</span>
-            <h2>Possible matches</h2>
-            <p aria-live="polite">
-              {visibleMatches.length
-                ? "Review these before creating a new business."
-                : "Add a name plus a website, phone, or location to check for possible matches."}
-            </p>
-            {visibleMatches.map((candidate) => (
-              <article className="candidate" key={candidate.organization_id}>
-                <h3>{candidate.public_name}</h3>
-                {(candidate.city || candidate.state_province) && (
-                  <p>
-                    {[candidate.city, candidate.state_province]
-                      .filter(Boolean)
-                      .join(", ")}
-                  </p>
-                )}
-                <small>
-                  {organizationMatchSummary(candidate.match_reasons)}
-                </small>
-                <div className="candidateActions">
-                  <button
-                    type="button"
-                    className="btn quiet"
-                    onClick={() => request(candidate, "membership")}
-                  >
-                    Request access
-                  </button>
-                  <button
-                    type="button"
-                    className="textButton"
-                    onClick={() => request(candidate, "ownership_claim")}
-                  >
-                    Claim review
-                  </button>
-                  <button
-                    type="button"
-                    className="textButton"
-                    onClick={() => dismiss(candidate)}
-                  >
-                    Not my business
-                  </button>
-                </div>
-              </article>
-            ))}
-          </aside>
         </div>
       </section>
     </Page>
