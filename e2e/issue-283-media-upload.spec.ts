@@ -19,6 +19,30 @@ const onePixelPng = Buffer.from(
   "base64",
 );
 
+// OfferManager's optional fields live behind four independently-collapsed
+// "Add more details later" groups (Dates & limits / Event & link / Terms &
+// redemption / Extra images) rather than one big accordion -- force them
+// all open rather than tracking which group holds which field.
+async function openOfferDetailGroups(page: Page) {
+  await page.evaluate(() => {
+    document
+      .querySelectorAll<HTMLDetailsElement>(".offerDetailGroup")
+      .forEach((details) => {
+        details.open = true;
+      });
+  });
+}
+// A vendor with exactly one organization and no existing offers sees no
+// picker at all -- OfferManager only shows the "Your offers" disclosure once
+// there is more than one organization or at least one existing offer.
+async function openYourOffers(page: Page) {
+  await page.evaluate(() => {
+    const details =
+      document.querySelector<HTMLDetailsElement>(".offerYourOffers");
+    if (details) details.open = true;
+  });
+}
+
 test.describe.serial("Issue #283 P1-D offer cover photo upload", () => {
   test.beforeAll(async () => {
     const supabaseUrl = process.env.PLAYWRIGHT_SUPABASE_URL;
@@ -96,13 +120,9 @@ test.describe.serial("Issue #283 P1-D offer cover photo upload", () => {
     await expect(page.getByText(/Published\. It now appears/)).toBeVisible();
 
     await page.goto("/partner/offers?channel=rave");
-    const offerOrganization = page
-      .locator(".offerTopBar")
-      .getByRole("combobox")
-      .first();
-    await expect(offerOrganization).toContainText(orgName, {
-      timeout: 15_000,
-    });
+    await expect(
+      page.getByRole("heading", { name: "Create a new offer" }),
+    ).toBeVisible({ timeout: 15_000 });
     await expect(page.getByLabel("Offer audience")).toHaveValue("rave");
     const eventSelect = page.getByLabel(
       "Feature this offer at an event (optional)",
@@ -116,7 +136,7 @@ test.describe.serial("Issue #283 P1-D offer cover photo upload", () => {
     await page
       .getByLabel("Deal / description")
       .fill("A test-only offer for the cover photo regression.");
-    await page.getByText("Add optional details").click();
+    await openOfferDetailGroups(page);
     await page.getByLabel("Terms and conditions").fill("Demo only.");
     await expect(page.getByLabel("How customers use it")).toHaveCount(0);
 
@@ -155,6 +175,7 @@ test.describe.serial("Issue #283 P1-D offer cover photo upload", () => {
     // database rather than only surviving in local component state --
     // deliberately without an intervening manual Save.
     await page.reload();
+    await openYourOffers(page);
     await page.getByRole("button", { name: new RegExp(offerTitle) }).click();
     await expect(page.getByLabel("Title")).toHaveValue(offerTitle);
     await expect(page.getByLabel("Offer audience")).toHaveValue("rave");
