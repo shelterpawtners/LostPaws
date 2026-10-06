@@ -1,4 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
+import { openOfferDetailGroups } from "./helpers/offers";
 
 const hosted = process.env.PLAYWRIGHT_HOSTED_QA === "true";
 const runSuffix = `${Date.now()}-${Math.random().toString(16).slice(2)}`;
@@ -86,7 +87,7 @@ test.describe
     await page
       .getByLabel("Deal / description")
       .fill("A hosted QA golden-path offer.");
-    await page.getByText("Add optional details").click();
+    await openOfferDetailGroups(page, ["Dates & limits", "Terms & redemption"]);
     await page.getByLabel("Terms and conditions").fill(offerTerms);
     await page.getByLabel("How customers use it").fill(offerUsage);
     await page.getByLabel("Per-user limit").fill("1");

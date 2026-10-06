@@ -1,5 +1,10 @@
 import { createClient } from "@supabase/supabase-js";
 import { expect, test, type Page } from "@playwright/test";
+import {
+  openOfferDetailGroups,
+  openYourOffers,
+  pickOffer,
+} from "./helpers/offers";
 
 // Uses a freshly signed-up vendor per run (not a shared seeded persona) so
 // this file cannot race phase-2-offer-redemption.spec.ts or
@@ -18,30 +23,6 @@ const onePixelPng = Buffer.from(
   "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAusB9Wl6nWQAAAAASUVORK5CYII=",
   "base64",
 );
-
-// OfferManager's optional fields live behind four independently-collapsed
-// "Add more details later" groups (Dates & limits / Event & link / Terms &
-// redemption / Extra images) rather than one big accordion -- force them
-// all open rather than tracking which group holds which field.
-async function openOfferDetailGroups(page: Page) {
-  await page.evaluate(() => {
-    document
-      .querySelectorAll<HTMLDetailsElement>(".offerDetailGroup")
-      .forEach((details) => {
-        details.open = true;
-      });
-  });
-}
-// A vendor with exactly one organization and no existing offers sees no
-// picker at all -- OfferManager only shows the "Your offers" disclosure once
-// there is more than one organization or at least one existing offer.
-async function openYourOffers(page: Page) {
-  await page.evaluate(() => {
-    const details =
-      document.querySelector<HTMLDetailsElement>(".offerYourOffers");
-    if (details) details.open = true;
-  });
-}
 
 test.describe.serial("Issue #283 P1-D offer cover photo upload", () => {
   test.beforeAll(async () => {
@@ -124,6 +105,7 @@ test.describe.serial("Issue #283 P1-D offer cover photo upload", () => {
       page.getByRole("heading", { name: "Create a new offer" }),
     ).toBeVisible({ timeout: 15_000 });
     await expect(page.getByLabel("Offer audience")).toHaveValue("rave");
+    await openOfferDetailGroups(page, ["Event & link"]);
     const eventSelect = page.getByLabel(
       "Feature this offer at an event (optional)",
     );
@@ -136,7 +118,7 @@ test.describe.serial("Issue #283 P1-D offer cover photo upload", () => {
     await page
       .getByLabel("Deal / description")
       .fill("A test-only offer for the cover photo regression.");
-    await openOfferDetailGroups(page);
+    await openOfferDetailGroups(page, ["Terms & redemption"]);
     await page.getByLabel("Terms and conditions").fill("Demo only.");
     await expect(page.getByLabel("How customers use it")).toHaveCount(0);
 
@@ -176,7 +158,8 @@ test.describe.serial("Issue #283 P1-D offer cover photo upload", () => {
     // deliberately without an intervening manual Save.
     await page.reload();
     await openYourOffers(page);
-    await page.getByRole("button", { name: new RegExp(offerTitle) }).click();
+    await pickOffer(page, offerTitle);
+    await openOfferDetailGroups(page, ["Event & link"]);
     await expect(page.getByLabel("Title")).toHaveValue(offerTitle);
     await expect(page.getByLabel("Offer audience")).toHaveValue("rave");
     await expect(eventSelect).toHaveValue(eventId);

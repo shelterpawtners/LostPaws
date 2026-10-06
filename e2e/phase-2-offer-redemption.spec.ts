@@ -1,15 +1,11 @@
 import { createClient } from "@supabase/supabase-js";
 import { expect, test, type Page } from "@playwright/test";
-
-const offerOption = (page: Page, title: string) =>
-  page
-    .getByLabel("Choose an offer to edit")
-    .locator("option")
-    .filter({ hasText: title });
-async function pickOffer(page: Page, title: string) {
-  const value = await offerOption(page, title).getAttribute("value");
-  await page.getByLabel("Choose an offer to edit").selectOption(value!);
-}
+import {
+  offerCard,
+  openOfferDetailGroups,
+  openYourOffers,
+  pickOffer,
+} from "./helpers/offers";
 const runSuffix = `${Date.now()}-${Math.random().toString(16).slice(2)}`;
 const offerTitle = `Playwright welcome offer ${runSuffix}`;
 const journeyOfferTitle = `Playwright persistence check ${runSuffix}`;
@@ -147,7 +143,12 @@ test.describe.serial("Phase 2 offer and redemption journey", () => {
     await page
       .getByLabel("Deal / description")
       .fill("A test-only Partner offer with clear terms.");
-    await page.getByText("Add optional details").click();
+    await openOfferDetailGroups(page, [
+      "Dates & limits",
+      "Event & link",
+      "Terms & redemption",
+      "Extra images",
+    ]);
     await page
       .getByLabel("Terms and conditions")
       .fill("Demo only. One claim per guardian.");
@@ -214,7 +215,11 @@ test.describe.serial("Phase 2 offer and redemption journey", () => {
     await page
       .getByLabel("Deal / description")
       .fill("Persistence regression check.");
-    await page.getByText("Add optional details").click();
+    await openOfferDetailGroups(page, [
+      "Event & link",
+      "Terms & redemption",
+      "Extra images",
+    ]);
     await page.getByLabel("Terms and conditions").fill("Demo only.");
     await page
       .getByLabel("How customers use it")
@@ -222,6 +227,7 @@ test.describe.serial("Phase 2 offer and redemption journey", () => {
     await page
       .getByLabel("Product images")
       .fill("https://images.example.invalid/journey-check.jpg");
+    await openOfferDetailGroups(page, ["Event & link"]);
     const eventSelect = page.getByLabel(
       "Feature this offer at an event (optional)",
     );
@@ -241,17 +247,18 @@ test.describe.serial("Phase 2 offer and redemption journey", () => {
 
     // The draft must appear immediately, selected, without depending on a
     // second round-trip succeeding.
-    await expect(offerOption(page, journeyOfferTitle)).toHaveCount(1);
-    await expect(page.getByLabel("Choose an offer to edit")).toHaveValue(
-      (await offerOption(page, journeyOfferTitle).getAttribute("value")) || "",
-    );
+    await openYourOffers(page);
+    await expect(offerCard(page, journeyOfferTitle)).toHaveCount(1);
+    await expect(offerCard(page, journeyOfferTitle)).toHaveClass(/isSelected/);
 
     // Reload: the draft, its image URL, and its event attachment must all
     // still be there and still editable -- not just the title.
     await page.reload();
     await offerOrganization.selectOption(partnerOrganizationId);
-    await expect(offerOption(page, journeyOfferTitle)).toHaveCount(1);
+    await openYourOffers(page);
+    await expect(offerCard(page, journeyOfferTitle)).toHaveCount(1);
     await pickOffer(page, journeyOfferTitle);
+    await openOfferDetailGroups(page, ["Event & link", "Extra images"]);
     await expect(page.getByLabel("Title")).toHaveValue(journeyOfferTitle);
     await expect(page.getByLabel("Product images")).toHaveValue(
       "https://images.example.invalid/journey-check.jpg",
@@ -305,7 +312,8 @@ test.describe.serial("Phase 2 offer and redemption journey", () => {
     // Returning to Offer Manager: still there, still editable/manageable.
     await page.goto("/partner/offers");
     await offerOrganization.selectOption(partnerOrganizationId);
-    const publishedButton = offerOption(page, journeyOfferTitle);
+    await openYourOffers(page);
+    const publishedButton = offerCard(page, journeyOfferTitle);
     await expect(publishedButton).toHaveCount(1);
     await expect(publishedButton).toContainText("Published");
     await pickOffer(page, journeyOfferTitle);
@@ -513,7 +521,7 @@ test.describe.serial("Phase 2 offer and redemption journey", () => {
     await page.getByRole("button", { name: "New offer" }).click();
     await page.getByLabel("Title").fill(title);
     await page.getByLabel("Deal / description").fill("Event-attach check.");
-    await page.getByText("Add optional details").click();
+    await openOfferDetailGroups(page, ["Dates & limits", "Terms & redemption"]);
     await page.getByLabel("Terms and conditions").fill("Terms.");
     await page.getByLabel("How customers use it").fill("Redemption.");
     await page.getByLabel("Per-user limit").fill("1");
@@ -526,6 +534,7 @@ test.describe.serial("Phase 2 offer and redemption journey", () => {
       "Published. Now visible in Marketplace.",
     );
 
+    await openOfferDetailGroups(page, ["Event & link"]);
     const eventSelect = page.getByLabel(
       "Feature this offer at an event (optional)",
     );
@@ -548,6 +557,7 @@ test.describe.serial("Phase 2 offer and redemption journey", () => {
     await page.goto("/partner/offers");
     await offerOrganization.selectOption(partnerOrganizationId);
     await pickOffer(page, title);
+    await openOfferDetailGroups(page, ["Event & link"]);
     await expect(eventSelect).toHaveValue(selectedEventId);
     await page.getByRole("button", { name: "Save & publish" }).click();
     await expect(page.getByRole("status")).toContainText(

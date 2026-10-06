@@ -9,36 +9,7 @@ import {
   signOutPage,
   watchRuntime,
 } from "./helpers/issue5";
-
-// OfferManager lists existing offers as tap-to-edit cards inside a collapsed
-// "Your offers" disclosure rather than a <select> -- force it open rather
-// than relying on a click to toggle it (it may already be open).
-async function openYourOffers(page: Page) {
-  await page.evaluate(() => {
-    const details =
-      document.querySelector<HTMLDetailsElement>(".offerYourOffers");
-    if (details) details.open = true;
-  });
-}
-const offerCard = (page: Page, title: string) =>
-  page.getByRole("button").filter({ hasText: title });
-async function pickOffer(page: Page, title: string) {
-  await openYourOffers(page);
-  await offerCard(page, title).click();
-}
-// OfferManager's optional fields live behind four independently-collapsed
-// "Add more details later" groups (Dates & limits / Event & link / Terms &
-// redemption / Extra images) rather than one big accordion -- force them
-// all open rather than tracking which group holds which field.
-async function openOfferDetailGroups(page: Page) {
-  await page.evaluate(() => {
-    document
-      .querySelectorAll<HTMLDetailsElement>(".offerDetailGroup")
-      .forEach((details) => {
-        details.open = true;
-      });
-  });
-}
+import { offerCard, openOfferDetailGroups, pickOffer } from "./helpers/offers";
 const runSuffix = `${Date.now()}-${Math.random().toString(16).slice(2)}`;
 const guardianEmail = () => requiredSetting("PLAYWRIGHT_GUARDIAN_EMAIL");
 const guardianPassword = () => requiredSetting("PLAYWRIGHT_GUARDIAN_PASSWORD");
@@ -62,7 +33,7 @@ async function createPartnerOffer(page: Page, title: string) {
   await page
     .getByLabel("Deal / description")
     .fill(`Issue 5 multi-offer persistence ${runSuffix}`);
-  await openOfferDetailGroups(page);
+  await openOfferDetailGroups(page, ["Dates & limits", "Terms & redemption"]);
   await page
     .getByLabel("Terms and conditions")
     .fill(`Issue 5 terms ${runSuffix}`);

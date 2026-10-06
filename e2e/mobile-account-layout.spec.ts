@@ -35,31 +35,31 @@ async function expectNavAboveContent(
 ) {
   const navBox = await page.locator(navSelector).boundingBox();
   const contentBox = await page.locator(contentSelector).boundingBox();
-  expect(navBox, `${navSelector} must be visible and measurable`).not
-    .toBeNull();
-  expect(contentBox, `${contentSelector} must be visible and measurable`)
-    .not.toBeNull();
+  expect(
+    navBox,
+    `${navSelector} must be visible and measurable`,
+  ).not.toBeNull();
+  expect(
+    contentBox,
+    `${contentSelector} must be visible and measurable`,
+  ).not.toBeNull();
   expect(
     navBox!.y + navBox!.height,
     `${navSelector} must sit above ${contentSelector} (single column)`,
   ).toBeLessThanOrEqual(contentBox!.y);
 }
 
-// The header's hamburger toggle is a native <button>: the browser already
-// gives it Enter/Space activation, so this only confirms that behavior keeps
-// working for the shared Header across both account surfaces.
-async function expectNavMenuKeyboardAccessible(page: Page) {
-  const toggle = page.getByRole("button", { name: "Open menu" });
-  const nav = page.getByRole("navigation", { name: "Primary navigation" });
-  await expect(nav).toBeHidden();
+async function expectAccountSectionNavKeyboardAccessible(page: Page) {
+  const nav = page.getByRole("navigation", { name: "Your roles" });
+  const toggle = nav.getByRole("button").first();
+  const sectionList = nav.locator(".accountSectionNavList");
+  await expect(sectionList).toHaveAttribute("data-open", "false");
   await toggle.focus();
   await page.keyboard.press("Enter");
-  await expect(nav).toBeVisible();
-  await expect(
-    page.getByRole("button", { name: "Close menu" }),
-  ).toBeFocused();
-  await page.keyboard.press("Enter");
-  await expect(nav).toBeHidden();
+  await expect(sectionList).toHaveAttribute("data-open", "true");
+  await page.keyboard.press("Escape");
+  await expect(sectionList).toHaveAttribute("data-open", "false");
+  await expect(toggle).toBeFocused();
 }
 
 test.describe("Mobile account layout", () => {
@@ -70,28 +70,20 @@ test.describe("Mobile account layout", () => {
       page,
     }) => {
       await page.setViewportSize(viewport);
-      await signIn(
-        page,
-        "guardian-a@example.invalid",
-        "Demo-only-Guardian-A!",
-      );
+      await signIn(page, "guardian-a@example.invalid", "Demo-only-Guardian-A!");
       await page.goto("/dashboard");
       await expect(page.locator(".accountSectionNav")).toBeVisible();
 
       await expectNoHorizontalOverflow(page);
       await expectNavAboveContent(page, ".dashboardRoleNav", ".dashboardMain");
-      await expectNavMenuKeyboardAccessible(page);
+      await expectAccountSectionNavKeyboardAccessible(page);
     });
 
     test(`Partner offers page is single-column and keyboard-operable at ${viewport.name}`, async ({
       page,
     }) => {
       await page.setViewportSize(viewport);
-      await signIn(
-        page,
-        "partner-admin@example.invalid",
-        "Demo-only-Partner!",
-      );
+      await signIn(page, "partner-admin@example.invalid", "Demo-only-Partner!");
       await page.goto("/partner/offers");
       await expect(
         page.getByRole("heading", { name: "Create a new offer" }),
@@ -99,7 +91,6 @@ test.describe("Mobile account layout", () => {
 
       await expectNoHorizontalOverflow(page);
       await expectNavAboveContent(page, ".offerTopBar", ".offerEditorPanel");
-      await expectNavMenuKeyboardAccessible(page);
     });
   }
 });

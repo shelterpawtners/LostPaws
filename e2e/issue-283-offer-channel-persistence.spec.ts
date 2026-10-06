@@ -1,29 +1,10 @@
 import { createClient } from "@supabase/supabase-js";
 import { expect, test, type Page } from "@playwright/test";
-
-// OfferManager's optional fields live behind four independently-collapsed
-// "Add more details later" groups (Dates & limits / Event & link / Terms &
-// redemption / Extra images) rather than one big accordion -- force them
-// all open rather than tracking which group holds which field.
-async function openOfferDetailGroups(page: Page) {
-  await page.evaluate(() => {
-    document
-      .querySelectorAll<HTMLDetailsElement>(".offerDetailGroup")
-      .forEach((details) => {
-        details.open = true;
-      });
-  });
-}
-// A vendor with exactly one organization and no existing offers sees no
-// picker at all -- OfferManager only shows the "Your offers" disclosure once
-// there is more than one organization or at least one existing offer.
-async function openYourOffers(page: Page) {
-  await page.evaluate(() => {
-    const details =
-      document.querySelector<HTMLDetailsElement>(".offerYourOffers");
-    if (details) details.open = true;
-  });
-}
+import {
+  openOfferDetailGroups,
+  openYourOffers,
+  pickOffer,
+} from "./helpers/offers";
 
 // Issue #283 P1 recovery: the real hosted owner offer got stuck at
 // channel=pet with no event even after the vendor switched it to Human/RAVE
@@ -132,7 +113,7 @@ test.describe.serial("Issue #283 P1 offer channel + event persistence", () => {
     await page
       .getByLabel("Deal / description")
       .fill("Starts as a Pet offer, then switches to Human/RAVE.");
-    await openOfferDetailGroups(page);
+    await openOfferDetailGroups(page, ["Event & link", "Terms & redemption"]);
     await page.getByLabel("Terms and conditions").fill("Demo only.");
     await page
       .getByLabel("How customers use it")
@@ -164,7 +145,8 @@ test.describe.serial("Issue #283 P1 offer channel + event persistence", () => {
     // attachment both came back from the database, not just local state.
     await page.reload();
     await openYourOffers(page);
-    await page.getByRole("button", { name: new RegExp(offerTitle) }).click();
+    await pickOffer(page, offerTitle);
+    await openOfferDetailGroups(page, ["Event & link"]);
     await expect(page.getByLabel("Title")).toHaveValue(offerTitle);
     await expect(page.getByLabel("Offer audience")).toHaveValue("rave");
     await expect(
