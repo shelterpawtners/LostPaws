@@ -1089,10 +1089,11 @@ select:focus {
 .guardianAccountPanel .accountSignOut {
   color: #9c2438;
 }
+.dashboardRoleNav {
+  margin-bottom: 32px;
+}
 .dashboardGrid {
   display: grid;
-  grid-template-columns: 280px 1fr;
-  gap: 35px;
   align-items: start;
 }
 .rolePanel {
@@ -1107,8 +1108,7 @@ select:focus {
 .dashboardMain h2 {
   font-family: Outfit;
 }
-.role,
-.rolePanel summary {
+.role {
   width: 100%;
   display: flex;
   align-items: center;
@@ -1125,15 +1125,6 @@ select:focus {
   color: #fff;
   border-color: var(--navy);
   background: var(--navy);
-}
-.rolePanel details {
-  margin-top: 10px;
-}
-.rolePanel summary {
-  cursor: pointer;
-}
-.rolePanel details .role {
-  margin-top: 8px;
 }
 .dashboardMain h2 {
   font-size: clamp(2rem, 4vw, 3.2rem);
@@ -1379,7 +1370,6 @@ footer {
   .connect,
   .fields,
   .partnerOnboardingGrid,
-  .dashboardGrid,
   .nextCards {
     grid-template-columns: 1fr;
   }

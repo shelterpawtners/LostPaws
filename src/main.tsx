@@ -77,6 +77,7 @@ import { SavingsExplorer } from "./components/learn/SavingsExplorer";
 import { HeroVendorProgram } from "./components/learn/HeroVendorProgram";
 import { RedemptionFlow } from "./components/RedemptionFlow";
 import { GuardianProfileLite } from "./components/GuardianProfileLite";
+import { AccountSectionNav } from "./components/AccountSectionNav";
 import { GuardianPetPassport } from "./components/GuardianPetPassport";
 import { SupportPage } from "./components/SupportPage";
 import { EventsPage } from "./components/events/EventsPage";
@@ -2248,6 +2249,9 @@ function Dashboard() {
     session?.user.user_metadata.full_name ||
     session?.user.email?.split("@")[0] ||
     "there";
+  const addRoleChoices = choices.filter(
+    (c) => !roles.includes(onboardingRole[c.kind]),
+  );
   return (
     <Page>
       <section className="dashboardHero">
@@ -2262,34 +2266,36 @@ function Dashboard() {
           </div>
         </div>
       </section>
-      <section className="section shell dashboardGrid">
-        <aside className="rolePanel">
-          <h2>Your roles</h2>
-          {roles.map((role) => (
-            <button
-              key={role}
-              className={activeRole === role ? "role active" : "role"}
-              onClick={() => switchRole(role)}
-            >
-              <UserRound />
-              {phaseOneRoleLabels[role as UserRole] || role}
-            </button>
-          ))}
-          <details>
-            <summary>Add another role</summary>
-            {choices
-              .filter((c) => !roles.includes(onboardingRole[c.kind]))
-              .map((c) => (
-                <button
-                  className="role"
-                  key={c.kind}
-                  onClick={() => addRole(c.kind)}
-                >
-                  {c.title}
-                </button>
-              ))}
-          </details>
-        </aside>
+      <section className="section shell">
+        <div className="dashboardRoleNav">
+          <AccountSectionNav
+            label="Your roles"
+            activeId={activeRole}
+            onSelect={switchRole}
+            items={roles.map((role) => ({
+              id: role,
+              label: phaseOneRoleLabels[role as UserRole] || role,
+              icon: <UserRound aria-hidden="true" />,
+            }))}
+            footer={
+              addRoleChoices.length > 0 ? (
+                <details className="accountSectionNavAddRole">
+                  <summary>Add another role</summary>
+                  {addRoleChoices.map((c) => (
+                    <button
+                      type="button"
+                      className="accountSectionNavAddRoleOption"
+                      key={c.kind}
+                      onClick={() => addRole(c.kind)}
+                    >
+                      {c.title}
+                    </button>
+                  ))}
+                </details>
+              ) : undefined
+            }
+          />
+        </div>
         <div className="dashboardMain">
           <span className="eyebrow">{phaseOneRoleLabels[active]}</span>
           <h2>

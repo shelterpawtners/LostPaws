@@ -1,0 +1,134 @@
+.accountSectionNav {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 100%;
+}
+.accountSectionNavToggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 44px;
+  padding: 11px 14px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: #fff;
+  color: var(--navy);
+  font: inherit;
+  font-weight: 700;
+  text-align: left;
+  cursor: pointer;
+}
+.accountSectionNavToggleLabel {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.accountSectionNavChevron {
+  flex: 0 0 auto;
+  width: 18px;
+  height: 18px;
+  transition: transform 0.15s ease;
+}
+.accountSectionNavToggle[aria-expanded="true"] .accountSectionNavChevron {
+  transform: rotate(180deg);
+}
+.accountSectionNavList {
+  display: grid;
+  gap: 8px;
+  max-width: 100%;
+}
+.accountSectionNavList[data-open="false"] {
+  display: none;
+}
+.accountSectionNavItem {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-height: 44px;
+  padding: 11px 14px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #fff;
+  color: var(--navy);
+  font: inherit;
+  font-weight: 700;
+  text-align: left;
+  cursor: pointer;
+}
+.accountSectionNavItem.active {
+  color: #fff;
+  border-color: var(--navy);
+  background: var(--navy);
+}
+.accountSectionNavFooter {
+  max-width: 100%;
+}
+.accountSectionNavAddRole {
+  margin-top: 2px;
+}
+.accountSectionNavAddRole summary {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 11px 14px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #fff;
+  color: var(--navy);
+  font-weight: 700;
+  cursor: pointer;
+  list-style: none;
+}
+.accountSectionNavAddRole summary::-webkit-details-marker {
+  display: none;
+}
+.accountSectionNavAddRole[open] summary {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+.accountSectionNavAddRoleOption {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-height: 44px;
+  padding: 11px 14px;
+  border: 1px solid var(--line);
+  border-top: 0;
+  border-radius: 0 0 12px 12px;
+  background: #fff;
+  color: var(--navy);
+  font: inherit;
+  font-weight: 700;
+  text-align: left;
+  cursor: pointer;
+}
+
+@media (min-width: 640px) {
+  .accountSectionNavToggle {
+    display: none;
+  }
+  .accountSectionNavList {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    padding-bottom: 2px;
+  }
+  .accountSectionNavList[data-open="false"] {
+    display: flex;
+  }
+  .accountSectionNavItem {
+    flex: 0 0 auto;
+    scroll-snap-align: start;
+    white-space: nowrap;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .accountSectionNavChevron {
+    transition: none;
+  }
+}
