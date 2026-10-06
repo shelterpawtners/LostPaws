@@ -8,7 +8,7 @@ export const offerCard = (page: Page, title: string) =>
 
 export async function openYourOffers(page: Page) {
   const offers = page.locator(".offerYourOffers");
-  if (!(await offers.getAttribute("open"))) {
+  if (!(await offers.evaluate((el) => (el as HTMLDetailsElement).open))) {
     await offers.locator("summary").click();
   }
 }
