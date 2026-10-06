@@ -15,6 +15,7 @@ import {
 import { supabase as db } from "../lib/supabase";
 import { LoadingState } from "./LoadingState";
 import { MediaUpload } from "./MediaUpload";
+import "./offer-manager.css";
 
 type Org = { id: string; public_name: string };
 type Offer = {
@@ -154,6 +155,15 @@ export function offerStatusForVersionStatus(versionStatus: string) {
   return "expired";
 }
 
+/** The status that actually describes an offer row in a list: the current
+ * version's own status when present, falling back to the parent offer's. */
+function currentVersionStatus(o: Offer): string {
+  return (
+    (o.offer_versions.find((v) => v.id === o.current_version_id) || {})
+      .status || o.status
+  );
+}
+
 export type OfferChecklistItem = { key: string; label: string };
 
 /** Optional extras worth nudging a vendor toward right after publishing a
@@ -195,9 +205,32 @@ export function OfferManager({ session }: { session: Session | null }) {
     [offersLoading, setOffersLoading] = useState(true),
     [loadError, setLoadError] = useState(""),
     [liveOfferId, setLiveOfferId] = useState(""),
-    [detailsOpen, setDetailsOpen] = useState(false),
+    [yourOffersOpen, setYourOffersOpen] = useState(false),
+    [datesOpen, setDatesOpen] = useState(false),
+    [eventLinkOpen, setEventLinkOpen] = useState(false),
+    [termsOpen, setTermsOpen] = useState(false),
+    [imagesOpen, setImagesOpen] = useState(false),
+    [overflowOpen, setOverflowOpen] = useState(false),
     [justPublished, setJustPublished] = useState(false);
+  const openOptionalGroups = (open: boolean) => {
+    setDatesOpen(open);
+    setEventLinkOpen(open);
+    setTermsOpen(open);
+    setImagesOpen(open);
+  };
+  /** Routes a publish-checklist item to the detail group that holds its
+   * field -- "photo" has no group of its own since the cover photo lives in
+   * the always-visible Quick Offer fields, so it scrolls there instead. */
+  function revealChecklistItem(key: string) {
+    if (key === "dates" || key === "limits") setDatesOpen(true);
+    if (key === "link" || key === "event") setEventLinkOpen(true);
+    if (key === "photo")
+      document
+        .getElementById("offerCoverPhotoField")
+        ?.scrollIntoView({ block: "center" });
+  }
   const isRaveOffer = form.channel === "rave";
+  const hasOfferControls = orgs.length > 1 || offers.length > 0;
   useEffect(() => {
     if (!db) return;
     void db
@@ -458,13 +491,15 @@ export function OfferManager({ session }: { session: Session | null }) {
     setSelected("");
     setLiveOfferId("");
     setJustPublished(false);
-    setDetailsOpen(false);
+    setOverflowOpen(false);
+    openOptionalGroups(false);
     setForm(newOffer());
   }
   function edit(o: Offer) {
     setSelected(o.id);
     setJustPublished(false);
-    setDetailsOpen(true);
+    setOverflowOpen(false);
+    openOptionalGroups(true);
     const v =
       o.offer_versions.find((x) => x.id === o.current_version_id) ||
       o.offer_versions[0];
@@ -541,87 +576,98 @@ export function OfferManager({ session }: { session: Session | null }) {
           ? "Saved edits create a new draft version. Save & publish again when you are ready to make it live."
           : "Add the few details Guardians need, then publish. Everything else is optional."}
       </p>
-      <section className="panel offerTopBar" aria-label="Your offers">
-        <div className="offerListHeading">
-          <div>
-            <h2>Your offers</h2>
-            <p>{offers.length === 1 ? "1 offer" : `${offers.length} offers`}</p>
-          </div>
-          <button className="btn quiet" onClick={startNewOffer}>
-            New offer
-          </button>
-        </div>
-        <label>
-          Organization
-          <select value={org} onChange={(e) => setOrg(e.target.value)}>
-            {orgs.map((o) => (
-              <option key={o.id} value={o.id}>
-                {o.public_name}
-              </option>
-            ))}
-          </select>
-        </label>
-        {offers.length > 0 && (
-          <label>
-            Choose an offer to edit
-            <select
-              value={selected}
-              onChange={(e) => {
-                const found = offers.find((o) => o.id === e.target.value);
-                if (found) edit(found);
-                else startNewOffer();
-              }}
-            >
-              <option value="">Start a new offer</option>
-              {offers.map((o) => (
-                <option key={o.id} value={o.id}>
-                  {o.title} ·{" "}
-                  {offerStatusLabel(
-                    (
-                      o.offer_versions.find(
-                        (x) => x.id === o.current_version_id,
-                      ) || {}
-                    ).status || o.status,
-                  )}
-                </option>
-              ))}
-            </select>
-          </label>
-        )}
-        <div className="notice" data-testid="marketplace-profile-state">
-          <b>Marketplace profile:</b> {profileState.replaceAll("_", " ")}.
-          {profileState === "published"
-            ? " Your public business profile is visible to Guardians."
-            : " Publish your Partner profile so Guardians can learn about your business alongside its offers."}
-        </div>
-        {loadError && (
-          <div className="notice" role="alert">
-            <b>Your list couldn&apos;t refresh.</b> {loadError}
-            {offers.length > 0 &&
-              " Offers you already had loaded are still shown below and are not affected."}
-            <button
-              type="button"
-              className="textButton"
-              onClick={() => {
-                setOffersLoading(true);
-                load();
-              }}
-            >
-              Retry
+      <div
+        className="notice offerProfileBanner"
+        data-testid="marketplace-profile-state"
+      >
+        <b>Marketplace profile:</b> {profileState.replaceAll("_", " ")}.
+        {profileState === "published"
+          ? " Visible to Guardians."
+          : " Publish your Partner profile so Guardians can learn about your business."}
+      </div>
+      {hasOfferControls && (
+        <section className="panel offerTopBar" aria-label="Your business">
+          <div className="offerListHeading">
+            <span className="eyebrow">Your business</span>
+            <button className="btn quiet" onClick={startNewOffer}>
+              New offer
             </button>
           </div>
-        )}
-        {offersLoading ? (
-          <LoadingState>Loading your offers…</LoadingState>
-        ) : (
-          offers.length === 0 && (
-            <p className="offerEmpty">
-              No offers yet. Start with a clear title and the deal you want to
-              share.
-            </p>
-          )
-        )}
-      </section>
+          {orgs.length > 1 && (
+            <label>
+              Organization
+              <select value={org} onChange={(e) => setOrg(e.target.value)}>
+                {orgs.map((o) => (
+                  <option key={o.id} value={o.id}>
+                    {o.public_name}
+                  </option>
+                ))}
+              </select>
+            </label>
+          )}
+          {loadError && (
+            <div className="notice" role="alert">
+              <b>Your list couldn&apos;t refresh.</b> {loadError}
+              {offers.length > 0 &&
+                " Offers you already had loaded are still shown below and are not affected."}
+              <button
+                type="button"
+                className="textButton"
+                onClick={() => {
+                  setOffersLoading(true);
+                  load();
+                }}
+              >
+                Retry
+              </button>
+            </div>
+          )}
+          <details
+            className="offerYourOffers"
+            open={yourOffersOpen}
+            onToggle={(e) =>
+              setYourOffersOpen((e.target as HTMLDetailsElement).open)
+            }
+          >
+            <summary>Your offers ({offers.length})</summary>
+            <div className="offerYourOffersBody">
+              {offersLoading ? (
+                <LoadingState>Loading your offers…</LoadingState>
+              ) : offers.length === 0 ? (
+                <p className="offerEmpty">
+                  No offers yet. Start with a clear title and the deal you want
+                  to share below.
+                </p>
+              ) : (
+                <ul className="offerPickList">
+                  {offers.map((o) => {
+                    const statusKey = currentVersionStatus(o);
+                    return (
+                      <li key={o.id}>
+                        <button
+                          type="button"
+                          className={
+                            "offerPickCard" +
+                            (selected === o.id ? " isSelected" : "")
+                          }
+                          onClick={() => edit(o)}
+                        >
+                          <span className="offerPickCardTitle">{o.title}</span>
+                          <span
+                            className={`offerStatusChip offerStatusChip-${statusKey}`}
+                          >
+                            {offerStatusLabel(statusKey)}
+                          </span>
+                        </button>
+                      </li>
+                    );
+                  })}
+                </ul>
+              )}
+            </div>
+          </details>
+        </section>
+      )}
       <div className="panel offerEditorPanel">
         <div className="offerEditorHeading">
           <span className="eyebrow">
@@ -661,7 +707,7 @@ export function OfferManager({ session }: { session: Session | null }) {
               onChange={(e) => set("summary", e.target.value)}
             />
           </label>
-          <label className="fields-wide">
+          <label className="fields-wide" id="offerCoverPhotoField">
             Cover photo
             {isRaveOffer && (
               <span className="fieldDescription">
@@ -690,23 +736,166 @@ export function OfferManager({ session }: { session: Session | null }) {
             />
           </label>
         </div>
+        <p className="offerMoreDetailsHeading">Add more details later</p>
         <details
-          className="offerOptionalDetails"
-          open={detailsOpen}
-          onToggle={(e) =>
-            setDetailsOpen((e.target as HTMLDetailsElement).open)
-          }
+          className="offerDetailGroup"
+          open={datesOpen}
+          onToggle={(e) => setDatesOpen((e.target as HTMLDetailsElement).open)}
         >
-          <summary>Add optional details</summary>
+          <summary>Dates & limits</summary>
           <div className="fields">
             <label>
+              Starts
+              <input
+                type="datetime-local"
+                value={form.starts_at}
+                onChange={(e) => set("starts_at", e.target.value)}
+              />
+            </label>
+            <label>
+              Ends
+              <input
+                type="datetime-local"
+                value={form.ends_at}
+                onChange={(e) => set("ends_at", e.target.value)}
+              />
+            </label>
+            {!isRaveOffer && (
+              <label>
+                Claim expires after days
+                <input
+                  type="number"
+                  min="1"
+                  max="90"
+                  value={form.claim_window_days}
+                  onChange={(e) => set("claim_window_days", e.target.value)}
+                />
+              </label>
+            )}
+            {!isRaveOffer && (
+              <label>
+                Available quantity
+                <input
+                  type="number"
+                  min="1"
+                  value={form.availability_limit}
+                  onChange={(e) => set("availability_limit", e.target.value)}
+                />
+              </label>
+            )}
+            {!isRaveOffer && (
+              <label>
+                Per-user limit
+                <input
+                  type="number"
+                  min="1"
+                  value={form.per_user_limit}
+                  onChange={(e) => set("per_user_limit", e.target.value)}
+                />
+              </label>
+            )}
+            {!isRaveOffer && (
+              <label>
+                Per-pet limit
+                <input
+                  type="number"
+                  min="1"
+                  value={form.per_pet_limit}
+                  onChange={(e) => set("per_pet_limit", e.target.value)}
+                />
+              </label>
+            )}
+          </div>
+        </details>
+        <details
+          className="offerDetailGroup"
+          open={eventLinkOpen}
+          onToggle={(e) =>
+            setEventLinkOpen((e.target as HTMLDetailsElement).open)
+          }
+        >
+          <summary>Event & link</summary>
+          <div className="fields">
+            <label>
+              Feature this offer at an event (optional)
+              {isRaveOffer && (
+                <span className="fieldDescription">
+                  Leave this blank to keep the offer available outside events.
+                </span>
+              )}
+              <select
+                value={form.event_id}
+                onChange={(e) => set("event_id", e.target.value)}
+              >
+                <option value="">No specific event</option>
+                {events.map((ev) => (
+                  <option key={ev.id} value={ev.id}>
+                    {ev.title}
+                    {ev.starts_at
+                      ? ` — ${new Date(ev.starts_at).toLocaleDateString()}`
+                      : ""}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="fields-wide">
+              {isRaveOffer
+                ? "Shop / website / social link (https only)"
+                : "Product / store link (Etsy or your own store, https only)"}
+              <input
+                type="url"
+                placeholder="https://www.etsy.com/listing/..."
+                value={form.destination_url}
+                onChange={(e) => set("destination_url", e.target.value)}
+              />
+            </label>
+            {!isRaveOffer && (
+              <label>
+                Product label override (optional)
+                <input
+                  placeholder="Defaults to the offer title above"
+                  value={form.product_label}
+                  onChange={(e) => set("product_label", e.target.value)}
+                />
+              </label>
+            )}
+            {!isRaveOffer && (
+              <label>
+                Call-to-action button text (optional)
+                <input
+                  placeholder="Defaults to “Shop on Etsy” or “Visit vendor store”"
+                  value={form.cta_label}
+                  onChange={(e) => set("cta_label", e.target.value)}
+                />
+              </label>
+            )}
+            {!isRaveOffer && (
+              <label>
+                Source URL
+                <input
+                  type="url"
+                  value={form.source_url}
+                  onChange={(e) => set("source_url", e.target.value)}
+                />
+              </label>
+            )}
+          </div>
+        </details>
+        <details
+          className="offerDetailGroup"
+          open={termsOpen}
+          onToggle={(e) => setTermsOpen((e.target as HTMLDetailsElement).open)}
+        >
+          <summary>Terms & redemption</summary>
+          <div className="fields">
+            <label className="fields-wide">
               More details (optional)
               <textarea
                 value={form.details}
                 onChange={(e) => set("details", e.target.value)}
               />
             </label>
-            <label>
+            <label className="fields-wide">
               Terms and conditions
               <textarea
                 value={form.terms}
@@ -720,7 +909,7 @@ export function OfferManager({ session }: { session: Session | null }) {
               )}
             </label>
             {!isRaveOffer && (
-              <label>
+              <label className="fields-wide">
                 How customers use it
                 <textarea
                   value={form.redemption_instructions}
@@ -786,143 +975,7 @@ export function OfferManager({ session }: { session: Session | null }) {
                 </label>
               </>
             )}
-            <label>
-              Starts
-              <input
-                type="datetime-local"
-                value={form.starts_at}
-                onChange={(e) => set("starts_at", e.target.value)}
-              />
-            </label>
-            <label>
-              Ends
-              <input
-                type="datetime-local"
-                value={form.ends_at}
-                onChange={(e) => set("ends_at", e.target.value)}
-              />
-            </label>
-            {!isRaveOffer && (
-              <label>
-                Claim expires after days
-                <input
-                  type="number"
-                  min="1"
-                  max="90"
-                  value={form.claim_window_days}
-                  onChange={(e) => set("claim_window_days", e.target.value)}
-                />
-              </label>
-            )}
-            {!isRaveOffer && (
-              <label>
-                Available quantity
-                <input
-                  type="number"
-                  min="1"
-                  value={form.availability_limit}
-                  onChange={(e) => set("availability_limit", e.target.value)}
-                />
-              </label>
-            )}
-            {!isRaveOffer && (
-              <label>
-                Per-user limit
-                <input
-                  type="number"
-                  min="1"
-                  value={form.per_user_limit}
-                  onChange={(e) => set("per_user_limit", e.target.value)}
-                />
-              </label>
-            )}
-            {!isRaveOffer && (
-              <label>
-                Per-pet limit
-                <input
-                  type="number"
-                  min="1"
-                  value={form.per_pet_limit}
-                  onChange={(e) => set("per_pet_limit", e.target.value)}
-                />
-              </label>
-            )}
-            {!isRaveOffer && (
-              <label>
-                Source URL
-                <input
-                  type="url"
-                  value={form.source_url}
-                  onChange={(e) => set("source_url", e.target.value)}
-                />
-              </label>
-            )}
-            <label>
-              {isRaveOffer
-                ? "Shop / website / social link (https only)"
-                : "Product / store link (Etsy or your own store, https only)"}
-              <input
-                type="url"
-                placeholder="https://www.etsy.com/listing/..."
-                value={form.destination_url}
-                onChange={(e) => set("destination_url", e.target.value)}
-              />
-            </label>
-            {!isRaveOffer && (
-              <label>
-                Product label override (optional)
-                <input
-                  placeholder="Defaults to the offer title above"
-                  value={form.product_label}
-                  onChange={(e) => set("product_label", e.target.value)}
-                />
-              </label>
-            )}
-            {!isRaveOffer && (
-              <label>
-                Call-to-action button text (optional)
-                <input
-                  placeholder="Defaults to “Shop on Etsy” or “Visit vendor store”"
-                  value={form.cta_label}
-                  onChange={(e) => set("cta_label", e.target.value)}
-                />
-              </label>
-            )}
-            {!isRaveOffer && (
-              <label className="fields-wide">
-                Product images (one https:// URL per line)
-                <textarea
-                  placeholder={
-                    "https://images.example.com/photo-1.jpg\nhttps://images.example.com/photo-2.jpg"
-                  }
-                  value={form.image_urls_text}
-                  onChange={(e) => set("image_urls_text", e.target.value)}
-                />
-              </label>
-            )}
-            <label>
-              Feature this offer at an event (optional)
-              {isRaveOffer && (
-                <span className="fieldDescription">
-                  Leave this blank to keep the offer available outside events.
-                </span>
-              )}
-              <select
-                value={form.event_id}
-                onChange={(e) => set("event_id", e.target.value)}
-              >
-                <option value="">No specific event</option>
-                {events.map((ev) => (
-                  <option key={ev.id} value={ev.id}>
-                    {ev.title}
-                    {ev.starts_at
-                      ? ` — ${new Date(ev.starts_at).toLocaleDateString()}`
-                      : ""}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <label>
+            <label className="fields-wide">
               <span>
                 Disclosure
                 <span
@@ -941,59 +994,57 @@ export function OfferManager({ session }: { session: Session | null }) {
             </label>
           </div>
         </details>
-        <div className="actions">
-          <button className="btn" onClick={saveAndPublish}>
-            Save & publish
-          </button>
-          <button className="btn quiet" onClick={save}>
-            Save draft
-          </button>
-          <button className="btn quiet" onClick={() => setPreview((v) => !v)}>
-            Preview
-          </button>
-          {selected && (
-            <>
-              <button className="textButton" onClick={() => action("pause")}>
-                Pause
-              </button>
-              <button className="textButton" onClick={() => action("resume")}>
-                Resume
-              </button>
-              <button
-                className="textButton"
-                onClick={() => action("duplicate")}
-              >
-                Duplicate
-              </button>
-              <button className="textButton" onClick={() => action("archive")}>
-                Archive
-              </button>
-              {liveOfferId === selected && (
-                <Link className="btn" to={`/offers/${selected}`}>
-                  View in Marketplace
-                </Link>
-              )}
-            </>
-          )}
-        </div>
+        {!isRaveOffer && (
+          <details
+            className="offerDetailGroup"
+            open={imagesOpen}
+            onToggle={(e) =>
+              setImagesOpen((e.target as HTMLDetailsElement).open)
+            }
+          >
+            <summary>Extra images</summary>
+            <div className="fields">
+              <label className="fields-wide">
+                Product images (one https:// URL per line)
+                <textarea
+                  placeholder={
+                    "https://images.example.com/photo-1.jpg\nhttps://images.example.com/photo-2.jpg"
+                  }
+                  value={form.image_urls_text}
+                  onChange={(e) => set("image_urls_text", e.target.value)}
+                />
+              </label>
+            </div>
+          </details>
+        )}
         {justPublished &&
           (() => {
             const extras = pendingOfferExtras(form);
             return (
-              <div className="notice publishChecklist">
-                <b>Published.</b>{" "}
+              <div className="notice offerSuccess">
+                <p className="offerSuccessHeadline">
+                  <b>Published.</b> Now visible in Marketplace.
+                  {liveOfferId === selected && (
+                    <Link
+                      className="btn quiet offerSuccessLink"
+                      to={`/offers/${selected}`}
+                    >
+                      View in Marketplace
+                    </Link>
+                  )}
+                </p>
                 {extras.length === 0 ? (
-                  "You've already filled in every optional detail."
+                  <p>You've already filled in every optional detail.</p>
                 ) : (
                   <>
-                    Consider adding, in "Add optional details" above:
+                    <p>Consider adding:</p>
                     <ul>
                       {extras.map((item) => (
                         <li key={item.key}>
                           <button
                             type="button"
                             className="textButton"
-                            onClick={() => setDetailsOpen(true)}
+                            onClick={() => revealChecklistItem(item.key)}
                           >
                             {item.label}
                           </button>
@@ -1022,6 +1073,67 @@ export function OfferManager({ session }: { session: Session | null }) {
         <p className="formStatus" role="status" aria-live="polite">
           {status}
         </p>
+        <div className="offerActionBar">
+          <button className="btn" onClick={saveAndPublish}>
+            Save & publish
+          </button>
+          <button className="btn quiet" onClick={save}>
+            Save draft
+          </button>
+          <div className="offerOverflow">
+            <button
+              type="button"
+              className="textButton offerOverflowToggle"
+              aria-expanded={overflowOpen}
+              onClick={() => setOverflowOpen((v) => !v)}
+            >
+              More actions
+            </button>
+            {overflowOpen && (
+              <div className="offerOverflowMenu">
+                <button
+                  type="button"
+                  className="textButton"
+                  onClick={() => setPreview((v) => !v)}
+                >
+                  Preview
+                </button>
+                {selected && (
+                  <>
+                    <button
+                      type="button"
+                      className="textButton"
+                      onClick={() => action("pause")}
+                    >
+                      Pause
+                    </button>
+                    <button
+                      type="button"
+                      className="textButton"
+                      onClick={() => action("resume")}
+                    >
+                      Resume
+                    </button>
+                    <button
+                      type="button"
+                      className="textButton"
+                      onClick={() => action("duplicate")}
+                    >
+                      Duplicate
+                    </button>
+                    <button
+                      type="button"
+                      className="textButton"
+                      onClick={() => action("archive")}
+                    >
+                      Archive
+                    </button>
+                  </>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
       </div>
     </section>
   );

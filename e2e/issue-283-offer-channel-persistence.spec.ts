@@ -1,6 +1,30 @@
 import { createClient } from "@supabase/supabase-js";
 import { expect, test, type Page } from "@playwright/test";
 
+// OfferManager's optional fields live behind four independently-collapsed
+// "Add more details later" groups (Dates & limits / Event & link / Terms &
+// redemption / Extra images) rather than one big accordion -- force them
+// all open rather than tracking which group holds which field.
+async function openOfferDetailGroups(page: Page) {
+  await page.evaluate(() => {
+    document
+      .querySelectorAll<HTMLDetailsElement>(".offerDetailGroup")
+      .forEach((details) => {
+        details.open = true;
+      });
+  });
+}
+// A vendor with exactly one organization and no existing offers sees no
+// picker at all -- OfferManager only shows the "Your offers" disclosure once
+// there is more than one organization or at least one existing offer.
+async function openYourOffers(page: Page) {
+  await page.evaluate(() => {
+    const details =
+      document.querySelector<HTMLDetailsElement>(".offerYourOffers");
+    if (details) details.open = true;
+  });
+}
+
 // Issue #283 P1 recovery: the real hosted owner offer got stuck at
 // channel=pet with no event even after the vendor switched it to Human/RAVE
 // and attached the Lost Lands event, because revise_partner_offer silently
@@ -100,19 +124,15 @@ test.describe.serial("Issue #283 P1 offer channel + event persistence", () => {
     // Create the offer as a plain Pet offer -- the real hosted bug only
     // reproduces on a *revise* of an already-existing offer, not on create.
     await page.goto("/partner/offers");
-    const offerOrganization = page
-      .locator(".offerTopBar")
-      .getByRole("combobox")
-      .first();
-    await expect(offerOrganization).toContainText(orgName, {
-      timeout: 15_000,
-    });
+    await expect(
+      page.getByRole("heading", { name: "Create a new offer" }),
+    ).toBeVisible({ timeout: 15_000 });
     await expect(page.getByLabel("Offer audience")).toHaveValue("pet");
     await page.getByLabel("Title").fill(offerTitle);
     await page
       .getByLabel("Deal / description")
       .fill("Starts as a Pet offer, then switches to Human/RAVE.");
-    await page.getByText("Add optional details").click();
+    await openOfferDetailGroups(page);
     await page.getByLabel("Terms and conditions").fill("Demo only.");
     await page
       .getByLabel("How customers use it")
@@ -143,7 +163,7 @@ test.describe.serial("Issue #283 P1 offer channel + event persistence", () => {
     // Reload and re-select from the list -- confirm the channel and event
     // attachment both came back from the database, not just local state.
     await page.reload();
-    await offerOrganization.selectOption({ label: orgName });
+    await openYourOffers(page);
     await page.getByRole("button", { name: new RegExp(offerTitle) }).click();
     await expect(page.getByLabel("Title")).toHaveValue(offerTitle);
     await expect(page.getByLabel("Offer audience")).toHaveValue("rave");

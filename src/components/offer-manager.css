@@ -1,0 +1,205 @@
+/* OfferManager mobile-first layout. Scoped entirely under .offerManagerPage
+   so it cannot leak into other pages' .fields/.notice/.textButton rules. */
+
+/* The shared `.fields` grid only drops to one column below 700px (see
+   styles.css's @media (max-width: 700px) rule, owned by another slice) --
+   that still leaves two cramped columns on phones in landscape and on
+   tablets up to 1024px. Force a single column for the whole Offer Manager
+   form at that width, per the mobile-forms-standard's one-column rule. */
+@media (max-width: 1024px) {
+  .offerManagerPage .fields {
+    grid-template-columns: 1fr;
+  }
+}
+
+.offerProfileBanner {
+  margin: 14px 0 0;
+  padding: 10px 14px;
+  font-size: 0.88rem;
+  line-height: 1.4;
+}
+.offerProfileBanner b {
+  margin-right: 4px;
+}
+
+.offerYourOffers summary,
+.offerDetailGroup summary {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--navy);
+  font-weight: 800;
+  cursor: pointer;
+  list-style: none;
+}
+.offerYourOffers summary::-webkit-details-marker,
+.offerDetailGroup summary::-webkit-details-marker {
+  display: none;
+}
+.offerYourOffers summary::before,
+.offerDetailGroup summary::before {
+  display: inline-flex;
+  width: 1.1rem;
+  margin-right: 6px;
+  color: var(--purple);
+  content: "+";
+}
+.offerYourOffers[open] summary::before,
+.offerDetailGroup[open] summary::before {
+  content: "\2212";
+}
+.offerYourOffersBody {
+  margin-top: 10px;
+}
+
+.offerPickList {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.offerPickCard {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+  min-height: 44px;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: #fff;
+  text-align: left;
+  font-weight: 700;
+  color: var(--navy);
+}
+.offerPickCard.isSelected {
+  border-color: var(--purple);
+  background: #f7f3ff;
+}
+.offerPickCardTitle {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.offerStatusChip {
+  flex: 0 0 auto;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.74rem;
+  font-weight: 800;
+  white-space: nowrap;
+}
+.offerStatusChip-draft {
+  background: #eef1f6;
+  color: #44506b;
+}
+.offerStatusChip-published,
+.offerStatusChip-active {
+  background: #e3f7f1;
+  color: var(--success);
+}
+.offerStatusChip-scheduled {
+  background: #eee6ff;
+  color: #5b3fa0;
+}
+.offerStatusChip-paused,
+.offerStatusChip-suspended {
+  background: #fff4e0;
+  color: var(--warning);
+}
+.offerStatusChip-expired,
+.offerStatusChip-archived {
+  background: #fdecea;
+  color: var(--error);
+}
+
+.offerMoreDetailsHeading {
+  margin: 24px 0 8px;
+  color: var(--muted);
+  font-size: 0.8rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.offerDetailGroup {
+  margin: 10px 0;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+}
+.offerDetailGroup .fields {
+  margin-top: 16px;
+}
+
+.offerSuccess {
+  display: block;
+  background: #e3f7f1;
+  border-color: #bfe8d9;
+}
+.offerSuccessHeadline {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 6px;
+  color: #0f3f34;
+}
+.offerSuccess ul {
+  display: grid;
+  gap: 2px;
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.offerSuccess .textButton {
+  min-height: 44px;
+}
+
+/* Sticky bottom action bar: pinned on phones/tablets (<=1024px) with
+   safe-area padding so it never sits under a device's home-indicator
+   gesture area; a normal inline row on desktop, where there is no reason to
+   pin it. */
+.offerActionBar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 22px;
+}
+@media (max-width: 1024px) {
+  .offerActionBar {
+    position: sticky;
+    bottom: 0;
+    z-index: 5;
+    margin: 22px -27px -27px;
+    padding: 14px 27px calc(14px + env(safe-area-inset-bottom));
+    background: #fff;
+    border-top: 1px solid var(--line);
+    box-shadow: 0 -8px 20px #1d234412;
+  }
+  .offerActionBar .btn {
+    flex: 1 1 auto;
+  }
+}
+.offerOverflow {
+  position: relative;
+}
+.offerOverflowMenu {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  right: 0;
+  display: grid;
+  gap: 4px;
+  min-width: 160px;
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: var(--shadow);
+}
+.offerOverflowMenu .textButton {
+  min-height: 44px;
+  text-align: left;
+}

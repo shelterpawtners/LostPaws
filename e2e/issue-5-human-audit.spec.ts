@@ -10,14 +10,34 @@ import {
   watchRuntime,
 } from "./helpers/issue5";
 
-const offerOption = (page: Page, title: string) =>
-  page
-    .getByLabel("Choose an offer to edit")
-    .locator("option")
-    .filter({ hasText: title });
+// OfferManager lists existing offers as tap-to-edit cards inside a collapsed
+// "Your offers" disclosure rather than a <select> -- force it open rather
+// than relying on a click to toggle it (it may already be open).
+async function openYourOffers(page: Page) {
+  await page.evaluate(() => {
+    const details =
+      document.querySelector<HTMLDetailsElement>(".offerYourOffers");
+    if (details) details.open = true;
+  });
+}
+const offerCard = (page: Page, title: string) =>
+  page.getByRole("button").filter({ hasText: title });
 async function pickOffer(page: Page, title: string) {
-  const value = await offerOption(page, title).getAttribute("value");
-  await page.getByLabel("Choose an offer to edit").selectOption(value!);
+  await openYourOffers(page);
+  await offerCard(page, title).click();
+}
+// OfferManager's optional fields live behind four independently-collapsed
+// "Add more details later" groups (Dates & limits / Event & link / Terms &
+// redemption / Extra images) rather than one big accordion -- force them
+// all open rather than tracking which group holds which field.
+async function openOfferDetailGroups(page: Page) {
+  await page.evaluate(() => {
+    document
+      .querySelectorAll<HTMLDetailsElement>(".offerDetailGroup")
+      .forEach((details) => {
+        details.open = true;
+      });
+  });
 }
 const runSuffix = `${Date.now()}-${Math.random().toString(16).slice(2)}`;
 const guardianEmail = () => requiredSetting("PLAYWRIGHT_GUARDIAN_EMAIL");
@@ -42,7 +62,7 @@ async function createPartnerOffer(page: Page, title: string) {
   await page
     .getByLabel("Deal / description")
     .fill(`Issue 5 multi-offer persistence ${runSuffix}`);
-  await page.getByText("Add optional details").click();
+  await openOfferDetailGroups(page);
   await page
     .getByLabel("Terms and conditions")
     .fill(`Issue 5 terms ${runSuffix}`);
@@ -316,14 +336,14 @@ test.describe
     ).toBeVisible();
     await page.goto("/partner/offers");
     await selectOrganization(page, organizationId);
-    await expect(offerOption(page, offerA)).toHaveCount(1);
-    await expect(offerOption(page, offerB)).toHaveCount(1);
+    await expect(offerCard(page, offerA)).toHaveCount(1);
+    await expect(offerCard(page, offerB)).toHaveCount(1);
     await pickOffer(page, offerA);
     await expect(page.getByLabel("Title")).toHaveValue(offerA);
     await page.reload();
     await selectOrganization(page, organizationId);
-    await expect(offerOption(page, offerA)).toHaveCount(1);
-    await expect(offerOption(page, offerB)).toHaveCount(1);
+    await expect(offerCard(page, offerA)).toHaveCount(1);
+    await expect(offerCard(page, offerB)).toHaveCount(1);
 
     await db.auth.signOut();
   });
