@@ -1,0 +1,107 @@
+/* Mobile-first layout for the fast partner signup path (Signup's petbiz/
+   rave_vendor step, PartnerOrganizationOnboarding, and PartnerProfileEditor).
+   Scoped to classes only used by these owned components so it never
+   affects other slices sharing src/styles.css. */
+
+/* .signup is only ever rendered by Signup; styles.css only collapses it to
+   one column below 900px, leaving a 2-column layout on tablets. */
+@media (max-width: 1024px) {
+  .signup {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* iOS treats smaller controls as a reason to zoom. The global label text can
+   stay compact; the controls used for entering partner information cannot. */
+.signup input,
+.partnerOnboarding input,
+.partnerOnboarding select,
+.partnerProfilePage input,
+.partnerProfilePage select,
+.partnerProfilePage textarea {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 44px;
+  font-size: 16px;
+}
+
+.partnerOnboardingForm {
+  display: grid;
+  gap: 20px;
+  max-width: 640px;
+  margin-top: 28px;
+}
+.partnerOnboardingForm .detail {
+  margin-top: 0;
+}
+/* The assisted-matching panel now sits inline in the single-column flow
+   instead of a sticky side rail. */
+.partnerOnboardingForm .matchPanel {
+  position: static;
+  top: auto;
+}
+.partnerOnboardingSticky {
+  position: sticky;
+  bottom: 0;
+  margin-top: 4px;
+  padding: 14px 0 calc(14px + env(safe-area-inset-bottom));
+  background: linear-gradient(to top, #fbfcff 65%, #fbfcff00);
+}
+.partnerOnboardingDone .actions {
+  align-items: center;
+}
+
+/* PartnerProfileEditor: single column below 1024px, max ~640px content,
+   no side-by-side fields at any width. */
+.partnerProfilePage {
+  max-width: 640px;
+}
+.partnerProfilePage .fields {
+  grid-template-columns: 1fr;
+}
+.partnerProfileLogo {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+.partnerProfileLogoPreview {
+  width: 64px;
+  height: 64px;
+  border-radius: 14px;
+  object-fit: cover;
+  border: 1px solid var(--line);
+  background: #fff;
+}
+.partnerProfileLogoField {
+  display: grid;
+  gap: 6px;
+  font-size: 0.8rem;
+  font-weight: 800;
+}
+.partnerProfileLogoField input {
+  min-height: 44px;
+  font-weight: 500;
+}
+
+.partnerProfilePage textarea {
+  min-height: 7rem;
+  resize: vertical;
+}
+
+.signup .check input,
+.partnerOnboarding .relationshipOptions input,
+.partnerOnboarding input[type="checkbox"],
+.partnerOnboarding input[type="radio"],
+.partnerProfilePage .relationshipOptions input,
+.partnerProfilePage input[type="checkbox"],
+.partnerProfilePage input[type="radio"] {
+  width: auto;
+  min-height: 18px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .partnerOnboardingSticky {
+    background: #fbfcff;
+  }
+}

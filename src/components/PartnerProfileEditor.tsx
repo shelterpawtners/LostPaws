@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { PartnerGivingPanel } from "./giving/PartnerGivingPanel";
 import type { Session } from "@supabase/supabase-js";
 import { supabase as db } from "../lib/supabase";
@@ -13,6 +13,7 @@ import {
   partnerDayNames,
   partnerSocialPlatforms,
 } from "../lib/partner-profile";
+import "./partner-onboarding.css";
 
 type Org = { id: string; public_name: string };
 type Hours = { opens_at: string; closes_at: string; is_closed: boolean };
@@ -22,6 +23,49 @@ const blankHours = () =>
     closes_at: "17:00",
     is_closed: true,
   }));
+
+const LOGO_BUCKET = "organization-assets";
+const LOGO_MAX_BYTES = 5 * 1024 * 1024;
+const LOGO_TYPES: Record<string, string> = {
+  "image/jpeg": "jpg",
+  "image/png": "png",
+  "image/webp": "webp",
+};
+
+type ChecklistItem = { key: string; label: string };
+
+/** What's still worth finishing on a partner profile -- everything here is
+ * optional (the organization already exists from the fast onboarding path),
+ * so this is a nudge, not a gate. Mirrors OfferManager's pendingOfferExtras. */
+function pendingProfileExtras(input: {
+  logoPath: string;
+  website: string;
+  phone: string;
+  selectedCategories: string[];
+  socials: Record<string, string>;
+  hours: Hours[];
+  primaryName: string;
+  primaryEmail: string;
+  primaryPhone: string;
+}): ChecklistItem[] {
+  const items: ChecklistItem[] = [];
+  if (!input.logoPath) items.push({ key: "logo", label: "Add a logo" });
+  if (!input.website.trim() && !input.phone.trim())
+    items.push({ key: "contact", label: "Add a website or phone number" });
+  if (!input.selectedCategories.length)
+    items.push({ key: "categories", label: "Choose categories" });
+  if (!Object.values(input.socials).some((url) => url.trim()))
+    items.push({ key: "social", label: "Add a social link" });
+  if (input.hours.every((h) => h.is_closed))
+    items.push({ key: "hours", label: "Set your business hours" });
+  if (
+    !input.primaryName.trim() &&
+    !input.primaryEmail.trim() &&
+    !input.primaryPhone.trim()
+  )
+    items.push({ key: "contacts", label: "Add a private contact" });
+  return items;
+}
 
 export function PartnerProfileEditor({ session }: { session: Session | null }) {
   // Shared with OfferManager so a vendor with more than one organization
@@ -54,6 +98,10 @@ export function PartnerProfileEditor({ session }: { session: Session | null }) {
     [opsName, setOpsName] = useState(""),
     [opsEmail, setOpsEmail] = useState(""),
     [opsPhone, setOpsPhone] = useState("");
+  const [logoPath, setLogoPath] = useState("");
+  const [logoUploading, setLogoUploading] = useState(false);
+  const [logoStatus, setLogoStatus] = useState("");
+  const logoInputRef = useRef<HTMLInputElement>(null);
   useEffect(() => {
     if (!db || !session) return;
     let cancelled = false;
@@ -102,6 +150,7 @@ export function PartnerProfileEditor({ session }: { session: Session | null }) {
     if (!db || !id) return;
     let cancelled = false;
     setLoadingProfile(true);
+    setLogoStatus("");
     void Promise.all([
       db
         .from("organization_partner_profiles")
@@ -110,7 +159,7 @@ export function PartnerProfileEditor({ session }: { session: Session | null }) {
         .maybeSingle(),
       db
         .from("organizations")
-        .select("website_url,public_email,public_phone")
+        .select("website_url,public_email,public_phone,logo_path")
         .eq("id", id)
         .maybeSingle(),
       db
@@ -147,6 +196,7 @@ export function PartnerProfileEditor({ session }: { session: Session | null }) {
         setWebsite(org.website_url || "");
         setEmail(org.public_email || "");
         setPhone(org.public_phone || "");
+        setLogoPath(org.logo_path || "");
         setBooking(profile.public_booking_url || "");
         setOrder(profile.public_order_url || "");
         setServiceArea(profile.public_service_area || "");
@@ -195,6 +245,43 @@ export function PartnerProfileEditor({ session }: { session: Session | null }) {
         ? v.filter((x) => x !== categoryId)
         : [...v, categoryId],
     );
+  async function uploadLogo(file: File | undefined) {
+    if (!file || !db || !id) return;
+    const ext = LOGO_TYPES[file.type];
+    if (!ext) {
+      setLogoStatus("Only JPEG, PNG, or WEBP images are allowed.");
+      return;
+    }
+    if (file.size > LOGO_MAX_BYTES) {
+      setLogoStatus("Image must be 5MB or smaller.");
+      return;
+    }
+    setLogoUploading(true);
+    setLogoStatus("Uploading…");
+    const path = `${id}/logo-${Date.now()}.${ext}`;
+    const { error } = await db.storage
+      .from(LOGO_BUCKET)
+      .upload(path, file, { contentType: file.type });
+    if (error) {
+      setLogoUploading(false);
+      setLogoStatus(`Could not upload that photo. ${error.message}`);
+      return;
+    }
+    const { error: attachError } = await db
+      .from("organizations")
+      .update({ logo_path: path })
+      .eq("id", id);
+    setLogoUploading(false);
+    if (attachError) {
+      setLogoStatus(
+        `Photo uploaded, but it could not be attached. ${attachError.message}`,
+      );
+      return;
+    }
+    setLogoPath(path);
+    setLogoStatus("Logo uploaded.");
+    if (logoInputRef.current) logoInputRef.current.value = "";
+  }
   async function save(publish = false, unpublish = false) {
     if (!db || !id || saving || loadingProfile) return;
     if (
@@ -325,11 +412,35 @@ export function PartnerProfileEditor({ session }: { session: Session | null }) {
   ) => (
     <label key={label}>
       {label}
-      <input type={type} value={value} onChange={(e) => set(e.target.value)} />
+      <input
+        type={type}
+        value={value}
+        inputMode={
+          type === "tel" ? "tel" : type === "email" ? "email" : undefined
+        }
+        onChange={(e) => set(e.target.value)}
+      />
     </label>
   );
+  const logoUrl =
+    logoPath && db
+      ? db.storage.from(LOGO_BUCKET).getPublicUrl(logoPath).data.publicUrl
+      : "";
+  const extras = id
+    ? pendingProfileExtras({
+        logoPath,
+        website,
+        phone,
+        selectedCategories,
+        socials,
+        hours,
+        primaryName,
+        primaryEmail,
+        primaryPhone,
+      })
+    : [];
   return (
-    <section className="section shell formPage">
+    <section className="section shell formPage partnerProfilePage">
       <span className="eyebrow">Partner profile</span>
       <h1>Make your business easy to understand.</h1>
       <p className="lead">
@@ -350,7 +461,43 @@ export function PartnerProfileEditor({ session }: { session: Session | null }) {
         {loadingProfile && (
           <LoadingState>Loading saved profile details…</LoadingState>
         )}
+        {id && !loadingProfile && (
+          <div className="notice publishChecklist">
+            {extras.length ? (
+              <div>
+                <b>Finish your profile when you're ready:</b>
+                <ul>
+                  {extras.map((item) => (
+                    <li key={item.key}>{item.label}</li>
+                  ))}
+                </ul>
+              </div>
+            ) : (
+              <p>Nice work -- every optional detail is filled in.</p>
+            )}
+          </div>
+        )}
         <fieldset disabled={saving || loadingProfile || loadingSetup || !id}>
+          <div className="partnerProfileLogo">
+            {logoUrl && (
+              <img className="partnerProfileLogoPreview" src={logoUrl} alt="" />
+            )}
+            <label className="partnerProfileLogoField">
+              Business logo
+              <input
+                ref={logoInputRef}
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                disabled={!id || logoUploading}
+                onChange={(e) => void uploadLogo(e.target.files?.[0])}
+              />
+            </label>
+          </div>
+          {logoStatus && (
+            <p role="status" aria-live="polite">
+              {logoStatus}
+            </p>
+          )}
           <div className="fields">
             <label>
               Public description
@@ -359,19 +506,9 @@ export function PartnerProfileEditor({ session }: { session: Session | null }) {
                 onChange={(e) => setDescription(e.target.value)}
               />
             </label>
-            <label>
-              About your business
-              <textarea
-                value={about}
-                onChange={(e) => setAbout(e.target.value)}
-              />
-            </label>
             {field("Public website", website, setWebsite, "url")}
             {field("Public email", email, setEmail, "email")}
             {field("Public phone", phone, setPhone, "tel")}
-            {field("Booking URL", booking, setBooking, "url")}
-            {field("Order or ecommerce URL", order, setOrder, "url")}
-            {field("Service area", serviceArea, setServiceArea)}
             <label>
               How customers are served
               <select value={model} onChange={(e) => setModel(e.target.value)}>
@@ -382,122 +519,149 @@ export function PartnerProfileEditor({ session }: { session: Session | null }) {
                 ))}
               </select>
             </label>
-            {field("Species served (comma separated)", species, setSpecies)}
           </div>
-          <h2>Categories</h2>
-          <div className="relationshipOptions">
-            {categories.map((c) => (
-              <label key={c.id}>
-                <input
-                  type="checkbox"
-                  checked={selectedCategories.includes(c.id)}
-                  onChange={() => toggle(c.id)}
+          <details className="offerOptionalDetails">
+            <summary>More about your business</summary>
+            <div className="fields">
+              <label>
+                About your business
+                <textarea
+                  value={about}
+                  onChange={(e) => setAbout(e.target.value)}
                 />
-                {c.label}
               </label>
-            ))}
-          </div>
-          <h2>Social links</h2>
-          <div className="fields">
-            {partnerSocialPlatforms.map((platform) =>
-              field(
-                `${platform} URL`,
-                socials[platform] || "",
-                (url) => setSocials((all) => ({ ...all, [platform]: url })),
-                "url",
-              ),
-            )}
-          </div>
-          <h2>Business hours</h2>
-          <div className="fields">
-            {partnerDayNames.map((day, i) => (
-              <fieldset key={day}>
-                <legend>{day}</legend>
-                <label>
+              {field("Booking URL", booking, setBooking, "url")}
+              {field("Order or ecommerce URL", order, setOrder, "url")}
+              {field("Service area", serviceArea, setServiceArea)}
+              {field("Species served (comma separated)", species, setSpecies)}
+            </div>
+          </details>
+          <details className="offerOptionalDetails">
+            <summary>Categories</summary>
+            <div className="relationshipOptions">
+              {categories.map((c) => (
+                <label key={c.id}>
                   <input
                     type="checkbox"
-                    checked={hours[i].is_closed}
-                    onChange={(e) =>
-                      setHours((all) =>
-                        all.map((h, n) =>
-                          n === i ? { ...h, is_closed: e.target.checked } : h,
-                        ),
-                      )
-                    }
+                    checked={selectedCategories.includes(c.id)}
+                    onChange={() => toggle(c.id)}
                   />
-                  Closed
+                  {c.label}
                 </label>
-                {!hours[i].is_closed && (
-                  <>
+              ))}
+            </div>
+          </details>
+          <details className="offerOptionalDetails">
+            <summary>Social links</summary>
+            <div className="fields">
+              {partnerSocialPlatforms.map((platform) =>
+                field(
+                  `${platform} URL`,
+                  socials[platform] || "",
+                  (url) => setSocials((all) => ({ ...all, [platform]: url })),
+                  "url",
+                ),
+              )}
+            </div>
+          </details>
+          <details className="offerOptionalDetails">
+            <summary>Business hours</summary>
+            <div className="fields">
+              {partnerDayNames.map((day, i) => (
+                <fieldset key={day}>
+                  <legend>{day}</legend>
+                  <label>
                     <input
-                      aria-label={`${day} opening time`}
-                      type="time"
-                      value={hours[i].opens_at}
+                      type="checkbox"
+                      checked={hours[i].is_closed}
                       onChange={(e) =>
                         setHours((all) =>
                           all.map((h, n) =>
-                            n === i ? { ...h, opens_at: e.target.value } : h,
+                            n === i ? { ...h, is_closed: e.target.checked } : h,
                           ),
                         )
                       }
                     />
-                    <input
-                      aria-label={`${day} closing time`}
-                      type="time"
-                      value={hours[i].closes_at}
-                      onChange={(e) =>
-                        setHours((all) =>
-                          all.map((h, n) =>
-                            n === i ? { ...h, closes_at: e.target.value } : h,
-                          ),
-                        )
-                      }
-                    />
-                  </>
-                )}
-              </fieldset>
-            ))}
-          </div>
+                    Closed
+                  </label>
+                  {!hours[i].is_closed && (
+                    <>
+                      <input
+                        aria-label={`${day} opening time`}
+                        type="time"
+                        value={hours[i].opens_at}
+                        onChange={(e) =>
+                          setHours((all) =>
+                            all.map((h, n) =>
+                              n === i ? { ...h, opens_at: e.target.value } : h,
+                            ),
+                          )
+                        }
+                      />
+                      <input
+                        aria-label={`${day} closing time`}
+                        type="time"
+                        value={hours[i].closes_at}
+                        onChange={(e) =>
+                          setHours((all) =>
+                            all.map((h, n) =>
+                              n === i ? { ...h, closes_at: e.target.value } : h,
+                            ),
+                          )
+                        }
+                      />
+                    </>
+                  )}
+                </fieldset>
+              ))}
+            </div>
+          </details>
           <h2>Locations and service context</h2>
           <p>
             {locations.length
               ? locations.join(" · ")
               : "No saved locations. An online, national, mobile, or service-area model can publish without a street address."}
           </p>
-          <h2>Private contacts</h2>
-          <p className="lead">
-            Only organization owners and administrators can access these
-            contacts.
-          </p>
-          <div className="fields">
-            {field("Primary contact name", primaryName, setPrimaryName)}
-            {field(
-              "Primary contact email",
-              primaryEmail,
-              setPrimaryEmail,
-              "email",
-            )}
-            {field(
-              "Primary contact phone",
-              primaryPhone,
-              setPrimaryPhone,
-              "tel",
-            )}
-            {field("Operational/redemption contact name", opsName, setOpsName)}
-            {field(
-              "Operational/redemption email",
-              opsEmail,
-              setOpsEmail,
-              "email",
-            )}
-            {field(
-              "Operational/redemption phone",
-              opsPhone,
-              setOpsPhone,
-              "tel",
-            )}
-          </div>
-          <div className="actions">
+          <details className="offerOptionalDetails">
+            <summary>Private contacts</summary>
+            <p className="lead">
+              Only organization owners and administrators can access these
+              contacts.
+            </p>
+            <div className="fields">
+              {field("Primary contact name", primaryName, setPrimaryName)}
+              {field(
+                "Primary contact email",
+                primaryEmail,
+                setPrimaryEmail,
+                "email",
+              )}
+              {field(
+                "Primary contact phone",
+                primaryPhone,
+                setPrimaryPhone,
+                "tel",
+              )}
+              {field(
+                "Operational/redemption contact name",
+                opsName,
+                setOpsName,
+              )}
+              {field(
+                "Operational/redemption email",
+                opsEmail,
+                setOpsEmail,
+                "email",
+              )}
+              {field(
+                "Operational/redemption phone",
+                opsPhone,
+                setOpsPhone,
+                "tel",
+              )}
+            </div>
+          </details>
+          <div className="partnerOnboardingSticky actions">
             <button className="btn quiet" onClick={() => save(false)}>
               Save draft
             </button>
