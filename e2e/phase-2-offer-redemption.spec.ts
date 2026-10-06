@@ -124,7 +124,7 @@ test.describe.serial("Phase 2 offer and redemption journey", () => {
 
     await page.goto("/partner/offers");
     const offerOrganization = page
-      .locator("aside.rolePanel")
+      .locator(".offerTopBar")
       .getByRole("combobox")
       .first();
     await expect(offerOrganization).toContainText(partnerOrganizationName, {
@@ -138,6 +138,7 @@ test.describe.serial("Phase 2 offer and redemption journey", () => {
     await page
       .getByLabel("Deal / description")
       .fill("A test-only Partner offer with clear terms.");
+    await page.getByText("Add optional details").click();
     await page
       .getByLabel("Terms and conditions")
       .fill("Demo only. One claim per guardian.");
@@ -151,7 +152,7 @@ test.describe.serial("Phase 2 offer and redemption journey", () => {
     await page
       .getByLabel("Product / store link")
       .fill("http://insecure.example.com/listing");
-    await page.getByRole("button", { name: "Save new version" }).click();
+    await page.getByRole("button", { name: "Save draft" }).click();
     await expect(page.getByRole("status")).toContainText(
       "Product/store link must be a valid https:// URL",
     );
@@ -173,11 +174,11 @@ test.describe.serial("Phase 2 offer and redemption journey", () => {
 
     await page.getByRole("button", { name: "Preview" }).click();
     await expect(page.getByText("Preview · all pets")).toBeVisible();
-    await page.getByRole("button", { name: "Save new version" }).click();
+    await page.getByRole("button", { name: "Save draft" }).click();
     await expect(page.getByRole("status")).toContainText(
       "Saved as a new draft version",
     );
-    await page.getByRole("button", { name: "Publish or schedule" }).click();
+    await page.getByRole("button", { name: "Save & publish" }).click();
     await expect(page.getByRole("status")).toContainText(
       "Published. Now visible in Marketplace.",
     );
@@ -192,7 +193,7 @@ test.describe.serial("Phase 2 offer and redemption journey", () => {
     await signIn(page, "partner-admin@example.invalid", "Demo-only-Partner!");
     await page.goto("/partner/offers");
     const offerOrganization = page
-      .locator("aside.rolePanel")
+      .locator(".offerTopBar")
       .getByRole("combobox")
       .first();
     await expect(offerOrganization).toContainText(partnerOrganizationName, {
@@ -204,6 +205,7 @@ test.describe.serial("Phase 2 offer and redemption journey", () => {
     await page
       .getByLabel("Deal / description")
       .fill("Persistence regression check.");
+    await page.getByText("Add optional details").click();
     await page.getByLabel("Terms and conditions").fill("Demo only.");
     await page
       .getByLabel("How customers use it")
@@ -223,7 +225,7 @@ test.describe.serial("Phase 2 offer and redemption journey", () => {
       selectedEventId = (await eventOption.getAttribute("value")) || "";
       await eventSelect.selectOption(selectedEventId);
     }
-    await page.getByRole("button", { name: "Save new version" }).click();
+    await page.getByRole("button", { name: "Save draft" }).click();
     await expect(page.getByRole("status")).toContainText(
       "Saved as a new draft version",
     );
@@ -261,11 +263,11 @@ test.describe.serial("Phase 2 offer and redemption journey", () => {
     await page
       .getByLabel("Deal / description")
       .fill("Persistence regression check, revised.");
-    await page.getByRole("button", { name: "Save new version" }).click();
+    await page.getByRole("button", { name: "Save draft" }).click();
     await expect(page.getByRole("status")).toContainText(
       "Saved as a new draft version",
     );
-    await page.getByRole("button", { name: "Publish or schedule" }).click();
+    await page.getByRole("button", { name: "Save & publish" }).click();
     await expect(page.getByRole("status")).toContainText(
       "Published. Now visible in Marketplace.",
     );
@@ -501,7 +503,7 @@ test.describe.serial("Phase 2 offer and redemption journey", () => {
     await signIn(page, "partner-admin@example.invalid", "Demo-only-Partner!");
     await page.goto("/partner/offers");
     const offerOrganization = page
-      .locator("aside.rolePanel")
+      .locator(".offerTopBar")
       .getByRole("combobox")
       .first();
     await offerOrganization.selectOption(partnerOrganizationId);
@@ -510,14 +512,15 @@ test.describe.serial("Phase 2 offer and redemption journey", () => {
     await page.getByRole("button", { name: "New offer" }).click();
     await page.getByLabel("Title").fill(title);
     await page.getByLabel("Deal / description").fill("Event-attach check.");
+    await page.getByText("Add optional details").click();
     await page.getByLabel("Terms and conditions").fill("Terms.");
     await page.getByLabel("How customers use it").fill("Redemption.");
     await page.getByLabel("Per-user limit").fill("1");
-    await page.getByRole("button", { name: "Save new version" }).click();
+    await page.getByRole("button", { name: "Save draft" }).click();
     await expect(page.getByRole("status")).toContainText(
       "Saved as a new draft version",
     );
-    await page.getByRole("button", { name: "Publish or schedule" }).click();
+    await page.getByRole("button", { name: "Save & publish" }).click();
     await expect(page.getByRole("status")).toContainText(
       "Published. Now visible in Marketplace.",
     );
@@ -533,7 +536,7 @@ test.describe.serial("Phase 2 offer and redemption journey", () => {
     );
     const selectedEventId = (await eventOption.getAttribute("value")) || "";
     await eventSelect.selectOption(selectedEventId);
-    await page.getByRole("button", { name: "Save new version" }).click();
+    await page.getByRole("button", { name: "Save draft" }).click();
     await expect(page.getByRole("status")).toContainText(
       "This offer is now unpublished",
     );
@@ -545,7 +548,7 @@ test.describe.serial("Phase 2 offer and redemption journey", () => {
     await offerOrganization.selectOption(partnerOrganizationId);
     await page.getByRole("button").filter({ hasText: title }).click();
     await expect(eventSelect).toHaveValue(selectedEventId);
-    await page.getByRole("button", { name: "Publish or schedule" }).click();
+    await page.getByRole("button", { name: "Save & publish" }).click();
     await expect(page.getByRole("status")).toContainText(
       "Published. Now visible in Marketplace.",
     );

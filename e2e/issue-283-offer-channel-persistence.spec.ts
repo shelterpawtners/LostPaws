@@ -101,7 +101,7 @@ test.describe.serial("Issue #283 P1 offer channel + event persistence", () => {
     // reproduces on a *revise* of an already-existing offer, not on create.
     await page.goto("/partner/offers");
     const offerOrganization = page
-      .locator("aside.rolePanel")
+      .locator(".offerTopBar")
       .getByRole("combobox")
       .first();
     await expect(offerOrganization).toContainText(orgName, {
@@ -112,11 +112,12 @@ test.describe.serial("Issue #283 P1 offer channel + event persistence", () => {
     await page
       .getByLabel("Deal / description")
       .fill("Starts as a Pet offer, then switches to Human/RAVE.");
+    await page.getByText("Add optional details").click();
     await page.getByLabel("Terms and conditions").fill("Demo only.");
     await page
       .getByLabel("How customers use it")
       .fill("Show the private code at checkout.");
-    await page.getByRole("button", { name: "Save new version" }).click();
+    await page.getByRole("button", { name: "Save draft" }).click();
     await expect(page.getByRole("status")).toContainText(
       "Saved as a new draft version",
     );
@@ -134,7 +135,7 @@ test.describe.serial("Issue #283 P1 offer channel + event persistence", () => {
     );
     await page.getByLabel("Offer audience").selectOption("rave");
     await expect(page.getByLabel("How customers use it")).toHaveCount(0);
-    await page.getByRole("button", { name: "Save new version" }).click();
+    await page.getByRole("button", { name: "Save draft" }).click();
     await expect(page.getByRole("status")).toContainText(
       "Saved as a new draft version",
     );
@@ -154,7 +155,7 @@ test.describe.serial("Issue #283 P1 offer channel + event persistence", () => {
       .inputValue();
     expect(eventValue).not.toBe("");
 
-    await page.getByRole("button", { name: "Publish or schedule" }).click();
+    await page.getByRole("button", { name: "Save & publish" }).click();
     await expect(page.getByRole("status")).toContainText(
       "Published. Now visible in Marketplace.",
     );

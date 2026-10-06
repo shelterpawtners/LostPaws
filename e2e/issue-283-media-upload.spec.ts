@@ -97,7 +97,7 @@ test.describe.serial("Issue #283 P1-D offer cover photo upload", () => {
 
     await page.goto("/partner/offers?channel=rave");
     const offerOrganization = page
-      .locator("aside.rolePanel")
+      .locator(".offerTopBar")
       .getByRole("combobox")
       .first();
     await expect(offerOrganization).toContainText(orgName, {
@@ -116,13 +116,14 @@ test.describe.serial("Issue #283 P1-D offer cover photo upload", () => {
     await page
       .getByLabel("Deal / description")
       .fill("A test-only offer for the cover photo regression.");
+    await page.getByText("Add optional details").click();
     await page.getByLabel("Terms and conditions").fill("Demo only.");
     await expect(page.getByLabel("How customers use it")).toHaveCount(0);
 
     // Cover photo starts disabled until the offer has a real id.
     await expect(page.getByLabel("Cover photo")).toBeDisabled();
 
-    await page.getByRole("button", { name: "Save new version" }).click();
+    await page.getByRole("button", { name: "Save draft" }).click();
     await expect(page.getByRole("status")).toContainText(
       "Saved as a new draft version",
     );
@@ -164,7 +165,7 @@ test.describe.serial("Issue #283 P1-D offer cover photo upload", () => {
       { timeout: 15_000 },
     );
 
-    await page.getByRole("button", { name: "Publish or schedule" }).click();
+    await page.getByRole("button", { name: "Save & publish" }).click();
     await expect(page.getByRole("status")).toContainText(
       "Published. Now visible in Marketplace.",
     );

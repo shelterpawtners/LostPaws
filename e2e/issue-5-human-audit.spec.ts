@@ -33,6 +33,7 @@ async function createPartnerOffer(page: Page, title: string) {
   await page
     .getByLabel("Deal / description")
     .fill(`Issue 5 multi-offer persistence ${runSuffix}`);
+  await page.getByText("Add optional details").click();
   await page
     .getByLabel("Terms and conditions")
     .fill(`Issue 5 terms ${runSuffix}`);
@@ -40,11 +41,11 @@ async function createPartnerOffer(page: Page, title: string) {
     .getByLabel("How customers use it")
     .fill(`Issue 5 redemption instructions ${runSuffix}`);
   await page.getByLabel("Per-user limit").fill("1");
-  await page.getByRole("button", { name: "Save new version" }).click();
+  await page.getByRole("button", { name: "Save draft" }).click();
   await expect(page.getByRole("status")).toContainText(
     "Saved as a new draft version",
   );
-  await page.getByRole("button", { name: "Publish or schedule" }).click();
+  await page.getByRole("button", { name: "Save & publish" }).click();
   await expect(page.getByRole("status")).toContainText(
     "Published. Now visible in Marketplace.",
   );
@@ -59,7 +60,7 @@ async function selectOrganization(page: Page, organizationId: string) {
   // accessible name (label text + currently rendered option text) can
   // overlap a plain getByLabel("Organization") match, so scope to the panel
   // that actually contains the organization picker.
-  const select = page.locator(".rolePanel").getByLabel("Organization");
+  const select = page.locator(".offerTopBar").getByLabel("Organization");
   await expect(
     select.locator(`option[value="${organizationId}"]`),
   ).toHaveCount(1, { timeout: 15_000 });

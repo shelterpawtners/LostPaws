@@ -193,11 +193,11 @@ test.describe("Hosted public and branded-surface design QA", () => {
       await page.setViewportSize(viewport);
       await page.goto("/dashboard");
       await expect(page.locator(".dashboardHero")).toBeVisible();
-      await expect(page.locator(".rolePanel")).toBeVisible();
+      await expect(page.locator(".accountSectionNav")).toBeVisible();
       await waitForFonts(page);
 
       if (viewport.name === "phone") {
-        await expect(page.locator(".rolePanel")).toHaveCSS(
+        await expect(page.locator(".accountSectionNav")).toHaveCSS(
           "position",
           "static",
         );
@@ -275,11 +275,9 @@ test.describe("Hosted public and branded-surface design QA", () => {
 
     await page.goto("/partner/offers");
     await expect(
-      page.getByRole("heading", {
-        name: "Create clear offers without rewriting history.",
-      }),
+      page.getByRole("heading", { name: "Create a new offer" }),
     ).toBeVisible();
-    await expect(page.locator(".dashboardGrid")).toBeVisible();
+    await expect(page.locator(".offerManagerPage")).toBeVisible();
     await waitForFonts(page);
     await attachAxe(page, testInfo, "axe-partner-offers", "/partner/offers");
     await page.screenshot({
