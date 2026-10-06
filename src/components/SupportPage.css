@@ -105,6 +105,7 @@
   border: 1px solid var(--sp-line);
   border-radius: 12px;
   font: inherit;
+  font-size: 16px;
 }
 
 .supportForm textarea {
@@ -272,7 +273,7 @@
   text-transform: capitalize;
 }
 
-@media (max-width: 860px) {
+@media (max-width: 1023px) {
   .supportGrid {
     grid-template-columns: 1fr;
   }

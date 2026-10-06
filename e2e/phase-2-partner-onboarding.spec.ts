@@ -179,7 +179,7 @@ test.describe("Phase 2 checkpoint 1 partner organization onboarding", () => {
 
     await page.goto("/partner/offers");
     const offersOrgSelect = page
-      .locator(".rolePanel")
+      .locator(".offerTopBar")
       .getByLabel("Organization");
     await expect(offersOrgSelect).not.toHaveValue("", { timeout: 15_000 });
     await expect(offersOrgSelect).toHaveValue(defaultOnBusiness);

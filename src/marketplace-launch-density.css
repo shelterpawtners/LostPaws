@@ -206,6 +206,21 @@
   min-height: 44px;
 }
 
+/* The list density view pairs a fixed-width thumbnail with the offer body,
+   the same "sidebar" shape the mobile-first standard forbids below 1024px.
+   The 760/520px rules below only narrowed that thumbnail column; this stacks
+   it instead so phones and tablets never see a squeezed side column. */
+@media (max-width: 1023px) {
+  .marketplacePremium .marketplaceCardGrid-list .marketOfferCard {
+    grid-template-columns: 1fr;
+  }
+
+  .marketplacePremium .marketplaceCardGrid-list .marketOfferVisual {
+    min-height: 150px;
+    border-radius: 17px 17px 0 0;
+  }
+}
+
 @media (max-width: 760px) {
   .marketplaceResultsActions {
     width: 100%;
@@ -214,10 +229,6 @@
 
   .marketplacePremium .marketplaceCardGrid-grid {
     grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  }
-
-  .marketplacePremium .marketplaceCardGrid-list .marketOfferCard {
-    grid-template-columns: 112px minmax(0, 1fr);
   }
 
   .marketplacePremium .marketplaceCardGrid-list .marketOfferBody {
@@ -245,11 +256,8 @@
     justify-content: center;
   }
 
-  .marketplacePremium .marketplaceCardGrid-list .marketOfferCard {
-    grid-template-columns: 92px minmax(0, 1fr);
-  }
-
   .marketplacePremium .marketplaceCardGrid-list .marketOfferVisual {
+    min-height: 120px;
     padding: 10px;
   }
 

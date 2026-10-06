@@ -3,6 +3,7 @@ import type { Session } from "@supabase/supabase-js";
 import { BadgeCheck, Clock3, Send } from "lucide-react";
 import { supabase as db } from "../lib/supabase";
 import { LoadingState } from "./LoadingState";
+import "./guardian-forms.css";
 
 type Verification = {
   id: string;
@@ -183,7 +184,7 @@ export function GuardianAdoptionVerification({
       ) : null}
 
       {canStart ? (
-        <form onSubmit={submit} className="fields">
+        <form onSubmit={submit} className="gfFields">
           <label>
             Shelter or rescue name
             <input name="shelter_name" required />
@@ -212,7 +213,7 @@ export function GuardianAdoptionVerification({
             Approximate adoption date
             <input name="approximate_adoption_date" type="date" />
           </label>
-          <label className="checkRow">
+          <label className="check">
             <input name="contact_consent" type="checkbox" required />I authorize
             ShelterPawtners to contact this shelter or rescue about this
             adoption.

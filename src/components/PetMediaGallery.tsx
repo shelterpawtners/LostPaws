@@ -273,7 +273,8 @@ export function PetMediaGallery({
                 : `Add photos (${remainingPhotoSlots} left)`}
             <input
               type="file"
-              accept="image/jpeg,image/png,image/webp"
+              accept="image/*"
+              capture="environment"
               multiple
               disabled={uploading || media.length >= MAX_PASSPORT_PHOTOS}
               onChange={(event) => {

@@ -9,7 +9,7 @@ import {
   signOutPage,
   watchRuntime,
 } from "./helpers/issue5";
-
+import { offerCard, openOfferDetailGroups, pickOffer } from "./helpers/offers";
 const runSuffix = `${Date.now()}-${Math.random().toString(16).slice(2)}`;
 const guardianEmail = () => requiredSetting("PLAYWRIGHT_GUARDIAN_EMAIL");
 const guardianPassword = () => requiredSetting("PLAYWRIGHT_GUARDIAN_PASSWORD");
@@ -33,6 +33,7 @@ async function createPartnerOffer(page: Page, title: string) {
   await page
     .getByLabel("Deal / description")
     .fill(`Issue 5 multi-offer persistence ${runSuffix}`);
+  await openOfferDetailGroups(page, ["Dates & limits", "Terms & redemption"]);
   await page
     .getByLabel("Terms and conditions")
     .fill(`Issue 5 terms ${runSuffix}`);
@@ -40,11 +41,11 @@ async function createPartnerOffer(page: Page, title: string) {
     .getByLabel("How customers use it")
     .fill(`Issue 5 redemption instructions ${runSuffix}`);
   await page.getByLabel("Per-user limit").fill("1");
-  await page.getByRole("button", { name: "Save new version" }).click();
+  await page.getByRole("button", { name: "Save draft" }).click();
   await expect(page.getByRole("status")).toContainText(
     "Saved as a new draft version",
   );
-  await page.getByRole("button", { name: "Publish or schedule" }).click();
+  await page.getByRole("button", { name: "Save & publish" }).click();
   await expect(page.getByRole("status")).toContainText(
     "Published. Now visible in Marketplace.",
   );
@@ -59,10 +60,11 @@ async function selectOrganization(page: Page, organizationId: string) {
   // accessible name (label text + currently rendered option text) can
   // overlap a plain getByLabel("Organization") match, so scope to the panel
   // that actually contains the organization picker.
-  const select = page.locator(".rolePanel").getByLabel("Organization");
-  await expect(
-    select.locator(`option[value="${organizationId}"]`),
-  ).toHaveCount(1, { timeout: 15_000 });
+  const select = page.locator(".offerTopBar").getByLabel("Organization");
+  await expect(select.locator(`option[value="${organizationId}"]`)).toHaveCount(
+    1,
+    { timeout: 15_000 },
+  );
   await select.selectOption(organizationId);
 }
 
@@ -123,11 +125,7 @@ test.describe
       page
         .getByRole("button", { name: "Claim this offer" })
         .or(page.getByRole("link", { name: "Visit official program" }))
-        .or(
-          page.getByText(
-            "This public resource is listed for reference.",
-          ),
-        ),
+        .or(page.getByText("This public resource is listed for reference.")),
     ).toBeVisible();
     await page.goBack();
     await expect(page).toHaveURL(/\/marketplace$/);
@@ -309,20 +307,14 @@ test.describe
     ).toBeVisible();
     await page.goto("/partner/offers");
     await selectOrganization(page, organizationId);
-    const offerAButton = page.getByRole("button").filter({ hasText: offerA });
-    const offerBButton = page.getByRole("button").filter({ hasText: offerB });
-    await expect(offerAButton).toBeVisible();
-    await expect(offerBButton).toBeVisible();
-    await offerAButton.click();
+    await expect(offerCard(page, offerA)).toHaveCount(1);
+    await expect(offerCard(page, offerB)).toHaveCount(1);
+    await pickOffer(page, offerA);
     await expect(page.getByLabel("Title")).toHaveValue(offerA);
     await page.reload();
     await selectOrganization(page, organizationId);
-    await expect(
-      page.getByRole("button").filter({ hasText: offerA }),
-    ).toBeVisible();
-    await expect(
-      page.getByRole("button").filter({ hasText: offerB }),
-    ).toBeVisible();
+    await expect(offerCard(page, offerA)).toHaveCount(1);
+    await expect(offerCard(page, offerB)).toHaveCount(1);
 
     await db.auth.signOut();
   });

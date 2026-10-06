@@ -22,6 +22,8 @@ status.
 
 **#273 — Launch Stabilization (Vendor Account, Event Offers, LostPaws Messaging & Swag Requests).** P0-A returning business lifecycle (#275), P0-B Event→Offer republish clarity/regression (#277), Swag catalog requestability with signed-in autofill (#280), and LostPaws vendor messaging (#285) are merged and verified. The only remaining work is the final hosted chain on Issue #273; do not duplicate the detailed plan here.
 
+**Mobile-first forms sprint (owner priority, draft PR on branch `design/mobile-forms-sprint`, includes #309).** Single-column Dashboard, Manage Offers (Quick Offer + phone-first layout), fast business signup, fast guardian pet entry, auth/events/marketplace/learn stacking at <=1023px. Briefs: `docs/engineering/briefs/mobile-forms-standard.md` and slice briefs. Remaining: CI green, owner phone review of the Vercel preview, then merge. Not live until merged.
+
 ## Current status
 
 - The **AI-first documentation and operations migration is complete**

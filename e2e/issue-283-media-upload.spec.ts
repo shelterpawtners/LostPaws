@@ -1,5 +1,10 @@
 import { createClient } from "@supabase/supabase-js";
 import { expect, test, type Page } from "@playwright/test";
+import {
+  openOfferDetailGroups,
+  openYourOffers,
+  pickOffer,
+} from "./helpers/offers";
 
 // Uses a freshly signed-up vendor per run (not a shared seeded persona) so
 // this file cannot race phase-2-offer-redemption.spec.ts or
@@ -96,14 +101,11 @@ test.describe.serial("Issue #283 P1-D offer cover photo upload", () => {
     await expect(page.getByText(/Published\. It now appears/)).toBeVisible();
 
     await page.goto("/partner/offers?channel=rave");
-    const offerOrganization = page
-      .locator("aside.rolePanel")
-      .getByRole("combobox")
-      .first();
-    await expect(offerOrganization).toContainText(orgName, {
-      timeout: 15_000,
-    });
+    await expect(
+      page.getByRole("heading", { name: "Create a new offer" }),
+    ).toBeVisible({ timeout: 15_000 });
     await expect(page.getByLabel("Offer audience")).toHaveValue("rave");
+    await openOfferDetailGroups(page, ["Event & link"]);
     const eventSelect = page.getByLabel(
       "Feature this offer at an event (optional)",
     );
@@ -116,13 +118,14 @@ test.describe.serial("Issue #283 P1-D offer cover photo upload", () => {
     await page
       .getByLabel("Deal / description")
       .fill("A test-only offer for the cover photo regression.");
+    await openOfferDetailGroups(page, ["Terms & redemption"]);
     await page.getByLabel("Terms and conditions").fill("Demo only.");
     await expect(page.getByLabel("How customers use it")).toHaveCount(0);
 
     // Cover photo starts disabled until the offer has a real id.
     await expect(page.getByLabel("Cover photo")).toBeDisabled();
 
-    await page.getByRole("button", { name: "Save new version" }).click();
+    await page.getByRole("button", { name: "Save draft" }).click();
     await expect(page.getByRole("status")).toContainText(
       "Saved as a new draft version",
     );
@@ -154,7 +157,9 @@ test.describe.serial("Issue #283 P1-D offer cover photo upload", () => {
     // database rather than only surviving in local component state --
     // deliberately without an intervening manual Save.
     await page.reload();
-    await page.getByRole("button", { name: new RegExp(offerTitle) }).click();
+    await openYourOffers(page);
+    await pickOffer(page, offerTitle);
+    await openOfferDetailGroups(page, ["Event & link"]);
     await expect(page.getByLabel("Title")).toHaveValue(offerTitle);
     await expect(page.getByLabel("Offer audience")).toHaveValue("rave");
     await expect(eventSelect).toHaveValue(eventId);
@@ -164,7 +169,7 @@ test.describe.serial("Issue #283 P1-D offer cover photo upload", () => {
       { timeout: 15_000 },
     );
 
-    await page.getByRole("button", { name: "Publish or schedule" }).click();
+    await page.getByRole("button", { name: "Save & publish" }).click();
     await expect(page.getByRole("status")).toContainText(
       "Published. Now visible in Marketplace.",
     );

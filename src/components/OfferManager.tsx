@@ -15,6 +15,7 @@ import {
 import { supabase as db } from "../lib/supabase";
 import { LoadingState } from "./LoadingState";
 import { MediaUpload } from "./MediaUpload";
+import "./offer-manager.css";
 
 type Org = { id: string; public_name: string };
 type Offer = {
@@ -122,6 +123,66 @@ function applyOptimisticStatus(
       : o,
   );
 }
+export const DEFAULT_OFFER_TERMS_TEXT =
+  "Offer is provided by the business and subject to availability.";
+export const DEFAULT_OFFER_REDEMPTION_TEXT =
+  "Show this offer to the business to redeem.";
+
+/**
+ * Fills blank terms/redemption instructions with honest generic defaults so
+ * a vendor who only filled in the Quick Offer fields can still publish
+ * instead of being blocked by set_partner_offer_state's non-empty
+ * requirement. Redemption instructions are left blank for RAVE offers,
+ * which hide that field and never require it server-side (Issue #283/#300).
+ */
+export function withPublishDefaults(form: OfferTerms): OfferTerms {
+  return {
+    ...form,
+    terms: form.terms.trim() ? form.terms : DEFAULT_OFFER_TERMS_TEXT,
+    redemption_instructions:
+      form.channel === "rave" || form.redemption_instructions.trim()
+        ? form.redemption_instructions
+        : DEFAULT_OFFER_REDEMPTION_TEXT,
+  };
+}
+
+/** set_partner_offer_state returns the version's new status directly; this
+ * maps it to the parent offer's status for optimistic list updates. */
+export function offerStatusForVersionStatus(versionStatus: string) {
+  if (versionStatus === "published" || versionStatus === "scheduled")
+    return "active";
+  if (versionStatus === "paused") return "suspended";
+  return "expired";
+}
+
+/** The status that actually describes an offer row in a list: the current
+ * version's own status when present, falling back to the parent offer's. */
+function currentVersionStatus(o: Offer): string {
+  return (
+    (o.offer_versions.find((v) => v.id === o.current_version_id) || {})
+      .status || o.status
+  );
+}
+
+export type OfferChecklistItem = { key: string; label: string };
+
+/** Optional extras worth nudging a vendor toward right after publishing a
+ * Quick Offer -- everything else lives behind "Add optional details". */
+export function pendingOfferExtras(form: OfferTerms): OfferChecklistItem[] {
+  const items: OfferChecklistItem[] = [];
+  if (!form.image_path && !form.image_urls_text.trim())
+    items.push({ key: "photo", label: "Add a photo" });
+  if (!form.destination_url.trim())
+    items.push({ key: "link", label: "Add a product or store link" });
+  if (!form.starts_at && !form.ends_at)
+    items.push({ key: "dates", label: "Set a start or end date" });
+  if (!form.availability_limit && !form.per_user_limit && !form.per_pet_limit)
+    items.push({ key: "limits", label: "Set an availability limit" });
+  if (!form.event_id)
+    items.push({ key: "event", label: "Feature it at an event" });
+  return items;
+}
+
 export function OfferManager({ session }: { session: Session | null }) {
   const [searchParams] = useSearchParams();
   const startsInRaveMode = searchParams.get("channel") === "rave";
@@ -143,8 +204,33 @@ export function OfferManager({ session }: { session: Session | null }) {
     [orgsLoaded, setOrgsLoaded] = useState(false),
     [offersLoading, setOffersLoading] = useState(true),
     [loadError, setLoadError] = useState(""),
-    [liveOfferId, setLiveOfferId] = useState("");
+    [liveOfferId, setLiveOfferId] = useState(""),
+    [yourOffersOpen, setYourOffersOpen] = useState(false),
+    [datesOpen, setDatesOpen] = useState(false),
+    [eventLinkOpen, setEventLinkOpen] = useState(false),
+    [termsOpen, setTermsOpen] = useState(false),
+    [imagesOpen, setImagesOpen] = useState(false),
+    [overflowOpen, setOverflowOpen] = useState(false),
+    [justPublished, setJustPublished] = useState(false);
+  const openOptionalGroups = (open: boolean) => {
+    setDatesOpen(open);
+    setEventLinkOpen(open);
+    setTermsOpen(open);
+    setImagesOpen(open);
+  };
+  /** Routes a publish-checklist item to the detail group that holds its
+   * field -- "photo" has no group of its own since the cover photo lives in
+   * the always-visible Quick Offer fields, so it scrolls there instead. */
+  function revealChecklistItem(key: string) {
+    if (key === "dates" || key === "limits") setDatesOpen(true);
+    if (key === "link" || key === "event") setEventLinkOpen(true);
+    if (key === "photo")
+      document
+        .getElementById("offerCoverPhotoField")
+        ?.scrollIntoView({ block: "center" });
+  }
   const isRaveOffer = form.channel === "rave";
+  const hasOfferControls = orgs.length > 1 || offers.length > 0;
   useEffect(() => {
     if (!db) return;
     void db
@@ -238,39 +324,45 @@ export function OfferManager({ session }: { session: Session | null }) {
   }, [org]);
   const set = (key: keyof OfferTerms, value: string) =>
     setForm((v) => ({ ...v, [key]: value }));
-  async function save() {
-    if (!db || !org) return;
-    const destinationUrl = form.destination_url.trim();
-    const imageUrls = form.image_urls_text
+  /** Validates and sends the create/revise RPC, applying the optimistic list
+   * update shared by both the plain draft save and save-&-publish. Returns
+   * the resulting offer id, or null after already surfacing an error via
+   * setStatus. */
+  async function persist(
+    terms: OfferTerms,
+  ): Promise<{ offerId: string; wasLive: boolean } | null> {
+    if (!db || !org) return null;
+    const destinationUrl = terms.destination_url.trim();
+    const imageUrls = terms.image_urls_text
       .split("\n")
       .map((line) => line.trim())
       .filter(Boolean);
     if (!isSafeHttpsUrl(destinationUrl)) {
       setStatus("Product/store link must be a valid https:// URL.");
-      return;
+      return null;
     }
     const badImage = imageUrls.find((url) => !isSafeHttpsUrl(url));
     if (badImage) {
       setStatus(
         `Every product image must be an https:// URL. Check: ${badImage}`,
       );
-      return;
+      return null;
     }
-    const terms = {
-      ...form,
+    const payloadTerms = {
+      ...terms,
       destination_url: destinationUrl,
       image_urls: imageUrls,
     };
     const args = selected
-      ? { p_offer_id: selected, p_terms: terms }
-      : { p_organization_id: org, p_terms: terms };
+      ? { p_offer_id: selected, p_terms: payloadTerms }
+      : { p_organization_id: org, p_terms: payloadTerms };
     const { data, error } = await db.rpc(
       selected ? "revise_partner_offer" : "create_partner_offer",
       args as any,
     );
     if (error) {
       setStatus(error.message);
-      return;
+      return null;
     }
     // create_partner_offer returns the new offer id; revise_partner_offer
     // returns the new version id (the offer id is already `selected`). A
@@ -279,30 +371,72 @@ export function OfferManager({ session }: { session: Session | null }) {
     // the moment the reload below succeeds.
     const offerId = selected || (data as string);
     const versionId = selected ? (data as string) : crypto.randomUUID();
-    // Editing an already-live offer creates a new draft version and points
-    // the offer at it immediately -- the previous published version stops
-    // serving right away, it does not keep running until the new one is
-    // published. That is easy to miss (e.g. attaching an event to a live
-    // offer looks like a small edit), so say so plainly instead of the
-    // generic message every save otherwise gets.
     const wasLive = offers.find((o) => o.id === selected)?.status === "active";
-    setStatus(
-      wasLive
-        ? "Saved as a draft revision. This offer is now unpublished -- click Publish below to make these changes (including any event link) live again."
-        : "Saved as a new draft version.",
-    );
     setOffers((current) =>
       applyOptimisticSave(
         current,
         offerId,
         versionId,
-        form,
+        terms,
         destinationUrl,
         imageUrls,
       ),
     );
     if (!selected) setSelected(offerId);
     setLiveOfferId("");
+    return { offerId, wasLive };
+  }
+  async function save() {
+    setJustPublished(false);
+    const result = await persist(form);
+    if (!result) return;
+    // Editing an already-live offer creates a new draft version and points
+    // the offer at it immediately -- the previous published version stops
+    // serving right away, it does not keep running until the new one is
+    // published. That is easy to miss (e.g. attaching an event to a live
+    // offer looks like a small edit), so say so plainly instead of the
+    // generic message every save otherwise gets.
+    setStatus(
+      result.wasLive
+        ? "Saved as a draft revision. This offer is now unpublished -- click Save & publish below to make these changes (including any event link) live again."
+        : "Saved as a new draft version.",
+    );
+    load();
+  }
+  async function saveAndPublish() {
+    if (!db) return;
+    setJustPublished(false);
+    const effectiveTerms = withPublishDefaults(form);
+    const result = await persist(effectiveTerms);
+    if (!result) return;
+    setForm(effectiveTerms);
+    const { data, error } = await db.rpc("set_partner_offer_state", {
+      p_offer_id: result.offerId,
+      p_action: "publish",
+    });
+    if (error) {
+      setStatus(error.message);
+      load();
+      return;
+    }
+    const versionStatus = data as string;
+    setStatus(
+      versionStatus === "published"
+        ? "Published. Now visible in Marketplace."
+        : versionStatus === "scheduled"
+          ? "Scheduled -- will publish automatically at the start date."
+          : "Saved and published.",
+    );
+    setOffers((current) =>
+      applyOptimisticStatus(
+        current,
+        result.offerId,
+        offerStatusForVersionStatus(versionStatus),
+        versionStatus,
+      ),
+    );
+    setLiveOfferId(versionStatus === "published" ? result.offerId : "");
+    setJustPublished(true);
     load();
   }
   async function action(name: string, id = selected) {
@@ -338,12 +472,7 @@ export function OfferManager({ session }: { session: Session | null }) {
       // fired (e.g. a future start date produces "scheduled", not
       // "published", per Issue #250's required publish-result clarity).
       const versionStatus = data as string;
-      const offerStatus =
-        versionStatus === "published" || versionStatus === "scheduled"
-          ? "active"
-          : versionStatus === "paused"
-            ? "suspended"
-            : "expired";
+      const offerStatus = offerStatusForVersionStatus(versionStatus);
       setStatus(
         versionStatus === "published"
           ? "Published. Now visible in Marketplace."
@@ -358,8 +487,19 @@ export function OfferManager({ session }: { session: Session | null }) {
     }
     load();
   }
+  function startNewOffer() {
+    setSelected("");
+    setLiveOfferId("");
+    setJustPublished(false);
+    setOverflowOpen(false);
+    openOptionalGroups(false);
+    setForm(newOffer());
+  }
   function edit(o: Offer) {
     setSelected(o.id);
+    setJustPublished(false);
+    setOverflowOpen(false);
+    openOptionalGroups(true);
     const v =
       o.offer_versions.find((x) => x.id === o.current_version_id) ||
       o.offer_versions[0];
@@ -433,45 +573,38 @@ export function OfferManager({ session }: { session: Session | null }) {
       <h1>{selected ? "Edit your offer" : "Create a new offer"}</h1>
       <p className="lead">
         {selected
-          ? "Saved edits create a new draft version. Publish again when you are ready to make it live."
-          : "Choose an audience, then add the details that help customers use your offer."}
+          ? "Saved edits create a new draft version. Save & publish again when you are ready to make it live."
+          : "Add the few details Guardians need, then publish. Everything else is optional."}
       </p>
-      <div className="dashboardGrid">
-        <aside className="rolePanel offerListPanel" aria-label="Your offers">
+      <div
+        className="notice offerProfileBanner"
+        data-testid="marketplace-profile-state"
+      >
+        <b>Marketplace profile:</b> {profileState.replaceAll("_", " ")}.
+        {profileState === "published"
+          ? " Visible to Guardians."
+          : " Publish your Partner profile so Guardians can learn about your business."}
+      </div>
+      {hasOfferControls && (
+        <section className="panel offerTopBar" aria-label="Your business">
           <div className="offerListHeading">
-            <div>
-              <h2>Your offers</h2>
-              <p>
-                {offers.length === 1 ? "1 offer" : `${offers.length} offers`}
-              </p>
-            </div>
-            <button
-              className="btn quiet"
-              onClick={() => {
-                setSelected("");
-                setLiveOfferId("");
-                setForm(newOffer());
-              }}
-            >
+            <span className="eyebrow">Your business</span>
+            <button className="btn quiet" onClick={startNewOffer}>
               New offer
             </button>
           </div>
-          <label>
-            Organization
-            <select value={org} onChange={(e) => setOrg(e.target.value)}>
-              {orgs.map((o) => (
-                <option key={o.id} value={o.id}>
-                  {o.public_name}
-                </option>
-              ))}
-            </select>
-          </label>
-          <div className="notice" data-testid="marketplace-profile-state">
-            <b>Marketplace profile:</b> {profileState.replaceAll("_", " ")}.
-            {profileState === "published"
-              ? " Your public business profile is visible to Guardians."
-              : " Publish your Partner profile so Guardians can learn about your business alongside its offers."}
-          </div>
+          {orgs.length > 1 && (
+            <label>
+              Organization
+              <select value={org} onChange={(e) => setOrg(e.target.value)}>
+                {orgs.map((o) => (
+                  <option key={o.id} value={o.id}>
+                    {o.public_name}
+                  </option>
+                ))}
+              </select>
+            </label>
+          )}
           {loadError && (
             <div className="notice" role="alert">
               <b>Your list couldn&apos;t refresh.</b> {loadError}
@@ -489,148 +622,128 @@ export function OfferManager({ session }: { session: Session | null }) {
               </button>
             </div>
           )}
-          {offersLoading ? (
-            <LoadingState>Loading your offers…</LoadingState>
-          ) : offers.length === 0 ? (
-            <p className="offerEmpty">
-              No offers yet. Start with a clear title and the deal you want to
-              share.
+          <details
+            className="offerYourOffers"
+            open={yourOffersOpen}
+            onToggle={(e) =>
+              setYourOffersOpen((e.target as HTMLDetailsElement).open)
+            }
+          >
+            <summary>Your offers ({offers.length})</summary>
+            <div className="offerYourOffersBody">
+              {offersLoading ? (
+                <LoadingState>Loading your offers…</LoadingState>
+              ) : offers.length === 0 ? (
+                <p className="offerEmpty">
+                  No offers yet. Start with a clear title and the deal you want
+                  to share below.
+                </p>
+              ) : (
+                <ul className="offerPickList">
+                  {offers.map((o) => {
+                    const statusKey = currentVersionStatus(o);
+                    return (
+                      <li key={o.id}>
+                        <button
+                          type="button"
+                          className={
+                            "offerPickCard" +
+                            (selected === o.id ? " isSelected" : "")
+                          }
+                          onClick={() => edit(o)}
+                        >
+                          <span className="offerPickCardTitle">{o.title}</span>
+                          <span
+                            className={`offerStatusChip offerStatusChip-${statusKey}`}
+                          >
+                            {offerStatusLabel(statusKey)}
+                          </span>
+                        </button>
+                      </li>
+                    );
+                  })}
+                </ul>
+              )}
+            </div>
+          </details>
+        </section>
+      )}
+      <div className="panel offerEditorPanel">
+        <div className="offerEditorHeading">
+          <span className="eyebrow">
+            {selected ? "Editing an existing offer" : "New offer"}
+          </span>
+          <h2>{selected ? "Offer details" : "Quick offer"}</h2>
+        </div>
+        <div className="fields">
+          <label>
+            Offer audience
+            <select
+              value={form.channel}
+              onChange={(event) => set("channel", event.target.value)}
+            >
+              <option value="pet">Pet and Guardian offer</option>
+              <option value="rave">Human / RAVE offer</option>
+            </select>
+          </label>
+          {isRaveOffer && (
+            <p className="fields-wide notice">
+              Create a reusable offer first, then optionally feature it at an
+              event. Switching back preserves the pet fields you already
+              entered.
             </p>
-          ) : (
-            offers.map((o) => (
-              <button
-                className={selected === o.id ? "role active" : "role"}
-                key={o.id}
-                onClick={() => edit(o)}
-              >
-                {o.title} ·{" "}
-                {offerStatusLabel(
-                  (
-                    o.offer_versions.find(
-                      (x) => x.id === o.current_version_id,
-                    ) || {}
-                  ).status || o.status,
-                )}
-              </button>
-            ))
           )}
-        </aside>
-        <div className="panel offerEditorPanel">
-          <div className="offerEditorHeading">
-            <span className="eyebrow">
-              {selected ? "Editing an existing offer" : "New offer"}
-            </span>
-            <h2>{selected ? "Offer details" : "Create your offer"}</h2>
-          </div>
+          <label>
+            Title
+            <input
+              value={form.title}
+              onChange={(e) => set("title", e.target.value)}
+            />
+          </label>
+          <label>
+            Deal / description
+            <input
+              value={form.summary}
+              onChange={(e) => set("summary", e.target.value)}
+            />
+          </label>
+          <label className="fields-wide" id="offerCoverPhotoField">
+            Cover photo
+            {isRaveOffer && (
+              <span className="fieldDescription">
+                Your photo attaches to this offer as soon as upload finishes.
+              </span>
+            )}
+            <MediaUpload
+              ownerId={org}
+              recordId={selected}
+              value={form.image_path}
+              onChange={(path) => set("image_path", path)}
+              onPersist={async (path) => {
+                if (!db) return "Not connected.";
+                const { error } = await db.rpc("set_partner_offer_image_path", {
+                  p_offer_id: selected,
+                  p_image_path: path,
+                });
+                if (error) return error.message;
+                setOffers((current) =>
+                  current.map((o) =>
+                    o.id === selected ? { ...o, image_path: path } : o,
+                  ),
+                );
+                return null;
+              }}
+            />
+          </label>
+        </div>
+        <p className="offerMoreDetailsHeading">Add more details later</p>
+        <details
+          className="offerDetailGroup"
+          open={datesOpen}
+          onToggle={(e) => setDatesOpen((e.target as HTMLDetailsElement).open)}
+        >
+          <summary>Dates & limits</summary>
           <div className="fields">
-            <label>
-              Offer audience
-              <select
-                value={form.channel}
-                onChange={(event) => set("channel", event.target.value)}
-              >
-                <option value="pet">Pet and Guardian offer</option>
-                <option value="rave">Human / RAVE offer</option>
-              </select>
-            </label>
-            {isRaveOffer && (
-              <p className="fields-wide notice">
-                Create a reusable offer first, then optionally feature it at an
-                event. Switching back preserves the pet fields you already
-                entered.
-              </p>
-            )}
-            {isRaveOffer && (
-              <p className="fields-wide formSectionHeading">Basics</p>
-            )}
-            <label>
-              Title
-              <input
-                value={form.title}
-                onChange={(e) => set("title", e.target.value)}
-              />
-            </label>
-            <label>
-              Deal / description
-              <input
-                value={form.summary}
-                onChange={(e) => set("summary", e.target.value)}
-              />
-            </label>
-            <label>
-              More details (optional)
-              <textarea
-                value={form.details}
-                onChange={(e) => set("details", e.target.value)}
-              />
-            </label>
-            <label>
-              Terms and conditions
-              <textarea
-                value={form.terms}
-                onChange={(e) => set("terms", e.target.value)}
-              />
-            </label>
-            {!isRaveOffer && (
-              <label>
-                How customers use it
-                <textarea
-                  value={form.redemption_instructions}
-                  onChange={(e) =>
-                    set("redemption_instructions", e.target.value)
-                  }
-                />
-              </label>
-            )}
-            {!isRaveOffer && (
-              <>
-                <label>
-                  <span>
-                    Eligibility
-                    <span
-                      className="fieldHelp"
-                      role="img"
-                      aria-label="Eligibility help: choose enhanced only when the offer has a separate benefit for eligible shelter pets."
-                      title="Choose enhanced only when the offer has a separate benefit for eligible shelter pets."
-                    >
-                      ?
-                    </span>
-                  </span>
-                  <select
-                    value={form.eligibility_kind}
-                    onChange={(e) => set("eligibility_kind", e.target.value)}
-                  >
-                    <option value="all_pets">All pets</option>
-                    <option value="shelter_pet_enhanced">
-                      Enhanced for eligible shelter pets
-                    </option>
-                  </select>
-                </label>
-                <label>
-                  <span>
-                    Where it applies
-                    <span
-                      className="fieldHelp"
-                      role="img"
-                      aria-label="Where it applies help: choose where a Guardian can use this offer."
-                      title="Choose where a Guardian can use this offer."
-                    >
-                      ?
-                    </span>
-                  </span>
-                  <select
-                    value={form.applicability}
-                    onChange={(e) => set("applicability", e.target.value)}
-                  >
-                    <option value="online">Online</option>
-                    <option value="all_organization_locations">
-                      All organization locations
-                    </option>
-                    <option value="national">Nationwide</option>
-                  </select>
-                </label>
-              </>
-            )}
             <label>
               Starts
               <input
@@ -692,17 +805,40 @@ export function OfferManager({ session }: { session: Session | null }) {
                 />
               </label>
             )}
-            {!isRaveOffer && (
-              <label>
-                Source URL
-                <input
-                  type="url"
-                  value={form.source_url}
-                  onChange={(e) => set("source_url", e.target.value)}
-                />
-              </label>
-            )}
+          </div>
+        </details>
+        <details
+          className="offerDetailGroup"
+          open={eventLinkOpen}
+          onToggle={(e) =>
+            setEventLinkOpen((e.target as HTMLDetailsElement).open)
+          }
+        >
+          <summary>Event & link</summary>
+          <div className="fields">
             <label>
+              Feature this offer at an event (optional)
+              {isRaveOffer && (
+                <span className="fieldDescription">
+                  Leave this blank to keep the offer available outside events.
+                </span>
+              )}
+              <select
+                value={form.event_id}
+                onChange={(e) => set("event_id", e.target.value)}
+              >
+                <option value="">No specific event</option>
+                {events.map((ev) => (
+                  <option key={ev.id} value={ev.id}>
+                    {ev.title}
+                    {ev.starts_at
+                      ? ` — ${new Date(ev.starts_at).toLocaleDateString()}`
+                      : ""}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="fields-wide">
               {isRaveOffer
                 ? "Shop / website / social link (https only)"
                 : "Product / store link (Etsy or your own store, https only)"}
@@ -733,69 +869,113 @@ export function OfferManager({ session }: { session: Session | null }) {
                 />
               </label>
             )}
-            <label className="fields-wide">
-              Cover photo
-              {isRaveOffer && (
-                <span className="fieldDescription">
-                  Your photo attaches to this offer as soon as upload finishes.
-                </span>
-              )}
-              <MediaUpload
-                ownerId={org}
-                recordId={selected}
-                value={form.image_path}
-                onChange={(path) => set("image_path", path)}
-                onPersist={async (path) => {
-                  if (!db) return "Not connected.";
-                  const { error } = await db.rpc(
-                    "set_partner_offer_image_path",
-                    { p_offer_id: selected, p_image_path: path },
-                  );
-                  if (error) return error.message;
-                  setOffers((current) =>
-                    current.map((o) =>
-                      o.id === selected ? { ...o, image_path: path } : o,
-                    ),
-                  );
-                  return null;
-                }}
-              />
-            </label>
             {!isRaveOffer && (
-              <label className="fields-wide">
-                Product images (one https:// URL per line)
-                <textarea
-                  placeholder={
-                    "https://images.example.com/photo-1.jpg\nhttps://images.example.com/photo-2.jpg"
-                  }
-                  value={form.image_urls_text}
-                  onChange={(e) => set("image_urls_text", e.target.value)}
+              <label>
+                Source URL
+                <input
+                  type="url"
+                  value={form.source_url}
+                  onChange={(e) => set("source_url", e.target.value)}
                 />
               </label>
             )}
-            <label>
-              Feature this offer at an event (optional)
-              {isRaveOffer && (
+          </div>
+        </details>
+        <details
+          className="offerDetailGroup"
+          open={termsOpen}
+          onToggle={(e) => setTermsOpen((e.target as HTMLDetailsElement).open)}
+        >
+          <summary>Terms & redemption</summary>
+          <div className="fields">
+            <label className="fields-wide">
+              More details (optional)
+              <textarea
+                value={form.details}
+                onChange={(e) => set("details", e.target.value)}
+              />
+            </label>
+            <label className="fields-wide">
+              Terms and conditions
+              <textarea
+                value={form.terms}
+                onChange={(e) => set("terms", e.target.value)}
+              />
+              {form.terms === DEFAULT_OFFER_TERMS_TEXT && (
                 <span className="fieldDescription">
-                  Leave this blank to keep the offer available outside events.
+                  Editable default -- filled in automatically because this was
+                  left blank when you published.
                 </span>
               )}
-              <select
-                value={form.event_id}
-                onChange={(e) => set("event_id", e.target.value)}
-              >
-                <option value="">No specific event</option>
-                {events.map((ev) => (
-                  <option key={ev.id} value={ev.id}>
-                    {ev.title}
-                    {ev.starts_at
-                      ? ` — ${new Date(ev.starts_at).toLocaleDateString()}`
-                      : ""}
-                  </option>
-                ))}
-              </select>
             </label>
-            <label>
+            {!isRaveOffer && (
+              <label className="fields-wide">
+                How customers use it
+                <textarea
+                  value={form.redemption_instructions}
+                  onChange={(e) =>
+                    set("redemption_instructions", e.target.value)
+                  }
+                />
+                {form.redemption_instructions ===
+                  DEFAULT_OFFER_REDEMPTION_TEXT && (
+                  <span className="fieldDescription">
+                    Editable default -- filled in automatically because this was
+                    left blank when you published.
+                  </span>
+                )}
+              </label>
+            )}
+            {!isRaveOffer && (
+              <>
+                <label>
+                  <span>
+                    Eligibility
+                    <span
+                      className="fieldHelp"
+                      role="img"
+                      aria-label="Eligibility help: choose enhanced only when the offer has a separate benefit for eligible shelter pets."
+                      title="Choose enhanced only when the offer has a separate benefit for eligible shelter pets."
+                    >
+                      ?
+                    </span>
+                  </span>
+                  <select
+                    value={form.eligibility_kind}
+                    onChange={(e) => set("eligibility_kind", e.target.value)}
+                  >
+                    <option value="all_pets">All pets</option>
+                    <option value="shelter_pet_enhanced">
+                      Enhanced for eligible shelter pets
+                    </option>
+                  </select>
+                </label>
+                <label>
+                  <span>
+                    Where it applies
+                    <span
+                      className="fieldHelp"
+                      role="img"
+                      aria-label="Where it applies help: choose where a Guardian can use this offer."
+                      title="Choose where a Guardian can use this offer."
+                    >
+                      ?
+                    </span>
+                  </span>
+                  <select
+                    value={form.applicability}
+                    onChange={(e) => set("applicability", e.target.value)}
+                  >
+                    <option value="online">Online</option>
+                    <option value="all_organization_locations">
+                      All organization locations
+                    </option>
+                    <option value="national">Nationwide</option>
+                  </select>
+                </label>
+              </>
+            )}
+            <label className="fields-wide">
               <span>
                 Disclosure
                 <span
@@ -813,61 +993,146 @@ export function OfferManager({ session }: { session: Session | null }) {
               />
             </label>
           </div>
-          <div className="actions">
-            <button className="btn quiet" onClick={save}>
-              Save new version
-            </button>
-            <button className="btn quiet" onClick={() => setPreview((v) => !v)}>
-              Preview
-            </button>
-            {selected && (
-              <>
-                <button className="btn" onClick={() => action("publish")}>
-                  Publish or schedule
-                </button>
-                <button className="textButton" onClick={() => action("pause")}>
-                  Pause
-                </button>
-                <button className="textButton" onClick={() => action("resume")}>
-                  Resume
-                </button>
-                <button
-                  className="textButton"
-                  onClick={() => action("duplicate")}
-                >
-                  Duplicate
-                </button>
-                <button
-                  className="textButton"
-                  onClick={() => action("archive")}
-                >
-                  Archive
-                </button>
-                {liveOfferId === selected && (
-                  <Link className="btn" to={`/offers/${selected}`}>
-                    View in Marketplace
-                  </Link>
+        </details>
+        {!isRaveOffer && (
+          <details
+            className="offerDetailGroup"
+            open={imagesOpen}
+            onToggle={(e) =>
+              setImagesOpen((e.target as HTMLDetailsElement).open)
+            }
+          >
+            <summary>Extra images</summary>
+            <div className="fields">
+              <label className="fields-wide">
+                Product images (one https:// URL per line)
+                <textarea
+                  placeholder={
+                    "https://images.example.com/photo-1.jpg\nhttps://images.example.com/photo-2.jpg"
+                  }
+                  value={form.image_urls_text}
+                  onChange={(e) => set("image_urls_text", e.target.value)}
+                />
+              </label>
+            </div>
+          </details>
+        )}
+        {justPublished &&
+          (() => {
+            const extras = pendingOfferExtras(form);
+            return (
+              <div className="notice offerSuccess">
+                <p className="offerSuccessHeadline">
+                  <b>Published.</b> Now visible in Marketplace.
+                  {liveOfferId === selected && (
+                    <Link
+                      className="btn quiet offerSuccessLink"
+                      to={`/offers/${selected}`}
+                    >
+                      View in Marketplace
+                    </Link>
+                  )}
+                </p>
+                {extras.length === 0 ? (
+                  <p>You've already filled in every optional detail.</p>
+                ) : (
+                  <>
+                    <p>Consider adding:</p>
+                    <ul>
+                      {extras.map((item) => (
+                        <li key={item.key}>
+                          <button
+                            type="button"
+                            className="textButton"
+                            onClick={() => revealChecklistItem(item.key)}
+                          >
+                            {item.label}
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  </>
                 )}
-              </>
+              </div>
+            );
+          })()}
+        {preview && (
+          <div className="card">
+            <span className="eyebrow">
+              Preview ·{" "}
+              {isRaveOffer
+                ? "Human / RAVE"
+                : form.eligibility_kind.replaceAll("_", " ")}
+            </span>
+            <h2>{form.title || "Untitled offer"}</h2>
+            <p>{form.summary}</p>
+            <h3>Terms</h3>
+            <p>{form.terms}</p>
+          </div>
+        )}
+        <p className="formStatus" role="status" aria-live="polite">
+          {status}
+        </p>
+        <div className="offerActionBar">
+          <button className="btn" onClick={saveAndPublish}>
+            Save & publish
+          </button>
+          <button className="btn quiet" onClick={save}>
+            Save draft
+          </button>
+          <div className="offerOverflow">
+            <button
+              type="button"
+              className="textButton offerOverflowToggle"
+              aria-expanded={overflowOpen}
+              onClick={() => setOverflowOpen((v) => !v)}
+            >
+              More actions
+            </button>
+            {overflowOpen && (
+              <div className="offerOverflowMenu">
+                <button
+                  type="button"
+                  className="textButton"
+                  onClick={() => setPreview((v) => !v)}
+                >
+                  Preview
+                </button>
+                {selected && (
+                  <>
+                    <button
+                      type="button"
+                      className="textButton"
+                      onClick={() => action("pause")}
+                    >
+                      Pause
+                    </button>
+                    <button
+                      type="button"
+                      className="textButton"
+                      onClick={() => action("resume")}
+                    >
+                      Resume
+                    </button>
+                    <button
+                      type="button"
+                      className="textButton"
+                      onClick={() => action("duplicate")}
+                    >
+                      Duplicate
+                    </button>
+                    <button
+                      type="button"
+                      className="textButton"
+                      onClick={() => action("archive")}
+                    >
+                      Archive
+                    </button>
+                  </>
+                )}
+              </div>
             )}
           </div>
-          {preview && (
-            <div className="card">
-              <span className="eyebrow">
-                Preview ·{" "}
-                {isRaveOffer
-                  ? "Human / RAVE"
-                  : form.eligibility_kind.replaceAll("_", " ")}
-              </span>
-              <h2>{form.title || "Untitled offer"}</h2>
-              <p>{form.summary}</p>
-              <h3>Terms</h3>
-              <p>{form.terms}</p>
-            </div>
-          )}
-          <p className="formStatus" role="status" aria-live="polite">
-            {status}
-          </p>
         </div>
       </div>
     </section>

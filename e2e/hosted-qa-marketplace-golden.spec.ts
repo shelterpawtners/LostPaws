@@ -1,4 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
+import { openOfferDetailGroups } from "./helpers/offers";
 
 const hosted = process.env.PLAYWRIGHT_HOSTED_QA === "true";
 const runSuffix = `${Date.now()}-${Math.random().toString(16).slice(2)}`;
@@ -86,16 +87,18 @@ test.describe
     await page
       .getByLabel("Deal / description")
       .fill("A hosted QA golden-path offer.");
+    await openOfferDetailGroups(page, ["Dates & limits", "Terms & redemption"]);
     await page.getByLabel("Terms and conditions").fill(offerTerms);
     await page.getByLabel("How customers use it").fill(offerUsage);
     await page.getByLabel("Per-user limit").fill("1");
+    await page.getByRole("button", { name: "More actions" }).click();
     await page.getByRole("button", { name: "Preview" }).click();
     await expect(page.getByText("Preview · all pets")).toBeVisible();
-    await page.getByRole("button", { name: "Save new version" }).click();
+    await page.getByRole("button", { name: "Save draft" }).click();
     await expect(page.getByRole("status")).toContainText(
       "Saved as a new draft version",
     );
-    await page.getByRole("button", { name: "Publish or schedule" }).click();
+    await page.getByRole("button", { name: "Save & publish" }).click();
     await expect(page.getByRole("status")).toContainText(
       "Published. Now visible in Marketplace.",
     );

@@ -22,6 +22,7 @@ import {
   ArrowRight,
   BadgeCheck,
   CalendarDays,
+  Camera,
   Eye,
   EyeOff,
   HeartHandshake,
@@ -61,6 +62,7 @@ import {
   type UserRole,
 } from "./types/personas";
 import "./styles.css";
+import "./components/guardian-forms.css";
 import { PartnerDirectory } from "./components/PartnerDirectory";
 import { PartnerProfileEditor } from "./components/PartnerProfileEditor";
 import { PublicPartnerProfile } from "./components/PublicPartnerProfile";
@@ -77,6 +79,7 @@ import { SavingsExplorer } from "./components/learn/SavingsExplorer";
 import { HeroVendorProgram } from "./components/learn/HeroVendorProgram";
 import { RedemptionFlow } from "./components/RedemptionFlow";
 import { GuardianProfileLite } from "./components/GuardianProfileLite";
+import { AccountSectionNav } from "./components/AccountSectionNav";
 import { GuardianPetPassport } from "./components/GuardianPetPassport";
 import { SupportPage } from "./components/SupportPage";
 import { EventsPage } from "./components/events/EventsPage";
@@ -357,12 +360,14 @@ function PasswordField({
   required = false,
   minLength,
   autoComplete,
+  enterKeyHint,
 }: {
   label: string;
   name: string;
   required?: boolean;
   minLength?: number;
   autoComplete?: string;
+  enterKeyHint?: React.InputHTMLAttributes<HTMLInputElement>["enterKeyHint"];
 }) {
   const [visible, setVisible] = useState(false);
   return (
@@ -375,6 +380,7 @@ function PasswordField({
           required={required}
           minLength={minLength}
           autoComplete={autoComplete}
+          enterKeyHint={enterKeyHint}
         />
         <button
           type="button"
@@ -695,6 +701,11 @@ function Signup({ c }: { c: (typeof choices)[number] }) {
             : `Join as a ${c.title}`}
         </h1>
         <p>{c.copy}</p>
+        {(c.kind === "petbiz" || c.kind === "rave_vendor") && (
+          <small>
+            <ShieldCheck /> Add your company name, then make your first offer.
+          </small>
+        )}
         <small>
           <ShieldCheck /> One login can support multiple roles.
         </small>
@@ -704,11 +715,18 @@ function Signup({ c }: { c: (typeof choices)[number] }) {
         <h2>Create your free account</h2>
         <label>
           Full name
-          <input name="name" required autoComplete="name" />
+          <input name="name" required autoComplete="name" enterKeyHint="next" />
         </label>
         <label>
           Email address
-          <input name="email" required type="email" autoComplete="email" />
+          <input
+            name="email"
+            required
+            type="email"
+            autoComplete="email"
+            inputMode="email"
+            enterKeyHint="next"
+          />
         </label>
         <PasswordField
           label="Password"
@@ -716,6 +734,7 @@ function Signup({ c }: { c: (typeof choices)[number] }) {
           required
           minLength={8}
           autoComplete="new-password"
+          enterKeyHint="next"
         />
         <PasswordField
           label="Confirm password"
@@ -723,6 +742,7 @@ function Signup({ c }: { c: (typeof choices)[number] }) {
           required
           minLength={8}
           autoComplete="new-password"
+          enterKeyHint="go"
         />
         <label className="check">
           <input required type="checkbox" />I agree to the Terms and acknowledge
@@ -813,7 +833,10 @@ function PartnerOrganizationOnboarding({ kind }: { kind: PartnerKind }) {
   const [status, setStatus] = useState("");
   const [reviewedMatches, setReviewedMatches] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [createdOrgId, setCreatedOrgId] = useState("");
   const choice = choices.find((item) => item.kind === kind)!;
+  const offersHref =
+    kind === "rave_vendor" ? "/partner/offers?channel=rave" : "/partner/offers";
   const update = (key: keyof PartnerForm, value: string) => {
     setForm((current) => ({ ...current, [key]: value }));
     setReviewedMatches(false);
@@ -991,19 +1014,20 @@ function PartnerOrganizationOnboarding({ kind }: { kind: PartnerKind }) {
     if (!id) return;
     setSubmitting(true);
     setStatus("Creating your organization…");
-    const { error } = await db.rpc("create_partner_organization", {
-      p_partner_kind: kind,
-      p_form: form,
-      p_draft_id: id,
-    });
+    const { data: newOrganizationId, error } = await db.rpc(
+      "create_partner_organization",
+      {
+        p_partner_kind: kind,
+        p_form: form,
+        p_draft_id: id,
+      },
+    );
     if (error) {
       setSubmitting(false);
       return setStatus(error.message);
     }
-    setStatus(
-      "Organization created. You can request related access separately when needed.",
-    );
-    window.setTimeout(() => navigate("/dashboard"), 700);
+    setStatus("Organization created.");
+    setCreatedOrgId(String(newOrganizationId));
   }
   const visibleMatches = matches.filter(
     (item) => !dismissed.includes(item.organization_id),
@@ -1029,18 +1053,46 @@ function PartnerOrganizationOnboarding({ kind }: { kind: PartnerKind }) {
       </Page>
     );
   }
+  if (createdOrgId) {
+    return (
+      <Page>
+        <section className="section shell narrow partnerOnboardingDone">
+          <span className="eyebrow">{choice.title} setup</span>
+          <h1>Your organization is ready.</h1>
+          <p className="lead">
+            Make your first offer now, or finish your profile later.
+          </p>
+          <div className="actions">
+            <Link className="btn full" to={offersHref}>
+              Make your first offer
+            </Link>
+            <Link className="textButton" to="/business">
+              Finish your profile later
+            </Link>
+          </div>
+          <div className="notice publishChecklist">
+            <b>Still to add, whenever you're ready:</b>
+            <ul>
+              <li>Address or service area</li>
+              <li>Business hours</li>
+              <li>Logo and social links</li>
+              <li>Description and categories</li>
+            </ul>
+          </div>
+        </section>
+      </Page>
+    );
+  }
   return (
     <Page>
-      <section className="section shell partnerOnboarding">
+      <section className="section shell narrow partnerOnboarding">
         <Link to="/dashboard">← Back to your dashboard</Link>
         <span className="eyebrow">{choice.title} setup</span>
         <h1>Start with your business details.</h1>
         <p className="lead">
-          A name alone never proves control. We use the details you provide to
-          surface possible organizations, then let you request the right access
-          or create a genuinely separate business.
+          Just the business name to start — add the rest whenever you're ready.
         </p>
-        <div className="partnerOnboardingGrid">
+        <div className="partnerOnboardingForm">
           <form
             className="detail"
             onSubmit={(event) => {
@@ -1049,17 +1101,70 @@ function PartnerOrganizationOnboarding({ kind }: { kind: PartnerKind }) {
             }}
           >
             <div className="panel">
-              <h2>Business details</h2>
+              <label>
+                Public business name
+                <input
+                  value={form.name}
+                  onChange={(event) => update("name", event.target.value)}
+                  required
+                  autoComplete="organization"
+                  enterKeyHint="done"
+                />
+              </label>
+            </div>
+            <div
+              className="panel matchPanel"
+              aria-label="Possible organization matches"
+            >
+              <span className="eyebrow">Assisted matching</span>
+              <h2>Possible matches</h2>
+              <p aria-live="polite">
+                {visibleMatches.length
+                  ? "Review these before creating a new business."
+                  : "Add a name plus a website, phone, or location to check for possible matches."}
+              </p>
+              {visibleMatches.map((candidate) => (
+                <article className="candidate" key={candidate.organization_id}>
+                  <h3>{candidate.public_name}</h3>
+                  {(candidate.city || candidate.state_province) && (
+                    <p>
+                      {[candidate.city, candidate.state_province]
+                        .filter(Boolean)
+                        .join(", ")}
+                    </p>
+                  )}
+                  <small>
+                    {organizationMatchSummary(candidate.match_reasons)}
+                  </small>
+                  <div className="candidateActions">
+                    <button
+                      type="button"
+                      className="btn quiet"
+                      onClick={() => request(candidate, "membership")}
+                    >
+                      Request access
+                    </button>
+                    <button
+                      type="button"
+                      className="textButton"
+                      onClick={() => request(candidate, "ownership_claim")}
+                    >
+                      Claim review
+                    </button>
+                    <button
+                      type="button"
+                      className="textButton"
+                      onClick={() => dismiss(candidate)}
+                    >
+                      Not my business
+                    </button>
+                  </div>
+                </article>
+              ))}
+            </div>
+            <details className="offerOptionalDetails">
+              <summary>Add more business details now (optional)</summary>
               <div className="fields">
-                <label>
-                  Public business name
-                  <input
-                    value={form.name}
-                    onChange={(event) => update("name", event.target.value)}
-                    required
-                    autoComplete="organization"
-                  />
-                </label>
                 <label>
                   Legal name or DBA
                   <input
@@ -1076,6 +1181,8 @@ function PartnerOrganizationOnboarding({ kind }: { kind: PartnerKind }) {
                     value={form.website}
                     onChange={(event) => update("website", event.target.value)}
                     placeholder="https://"
+                    autoComplete="url"
+                    inputMode="url"
                   />
                 </label>
                 <label>
@@ -1084,6 +1191,8 @@ function PartnerOrganizationOnboarding({ kind }: { kind: PartnerKind }) {
                     type="tel"
                     value={form.phone}
                     onChange={(event) => update("phone", event.target.value)}
+                    autoComplete="tel"
+                    inputMode="tel"
                   />
                 </label>
                 <label>
@@ -1092,6 +1201,8 @@ function PartnerOrganizationOnboarding({ kind }: { kind: PartnerKind }) {
                     type="email"
                     value={form.email}
                     onChange={(event) => update("email", event.target.value)}
+                    autoComplete="email"
+                    inputMode="email"
                   />
                 </label>
                 <label>
@@ -1105,8 +1216,6 @@ function PartnerOrganizationOnboarding({ kind }: { kind: PartnerKind }) {
                   />
                 </label>
               </div>
-            </div>
-            <div className="panel">
               <h2>Primary location</h2>
               <p>
                 Use a physical location when you have one. Add every location
@@ -1143,6 +1252,7 @@ function PartnerOrganizationOnboarding({ kind }: { kind: PartnerKind }) {
                     value={form.postal}
                     onChange={(event) => update("postal", event.target.value)}
                     autoComplete="postal-code"
+                    inputMode="numeric"
                   />
                 </label>
               </div>
@@ -1233,8 +1343,6 @@ function PartnerOrganizationOnboarding({ kind }: { kind: PartnerKind }) {
               >
                 Add another location
               </button>
-            </div>
-            <div className="panel">
               <h2>
                 Is this a new business, or part of one you already manage?
               </h2>
@@ -1292,68 +1400,20 @@ function PartnerOrganizationOnboarding({ kind }: { kind: PartnerKind }) {
                   </select>
                 </label>
               )}
+            </details>
+            <div className="partnerOnboardingSticky">
+              <button className="btn full" disabled={submitting}>
+                {submitting
+                  ? "Creating your business…"
+                  : visibleMatches.length
+                    ? "None of these — create a new business"
+                    : "Create my business"}
+              </button>
+              <p role="status" aria-live="polite" aria-atomic="true">
+                {status}
+              </p>
             </div>
-            <button className="btn" disabled={submitting}>
-              {submitting
-                ? "Creating your business…"
-                : visibleMatches.length
-                  ? "None of these — create a new business"
-                  : "Create my business"}
-            </button>
-            <p role="status" aria-live="polite" aria-atomic="true">
-              {status}
-            </p>
           </form>
-          <aside
-            className="matchPanel"
-            aria-label="Possible organization matches"
-          >
-            <span className="eyebrow">Assisted matching</span>
-            <h2>Possible matches</h2>
-            <p aria-live="polite">
-              {visibleMatches.length
-                ? "Review these before creating a new business."
-                : "Add a name plus a website, phone, or location to check for possible matches."}
-            </p>
-            {visibleMatches.map((candidate) => (
-              <article className="candidate" key={candidate.organization_id}>
-                <h3>{candidate.public_name}</h3>
-                {(candidate.city || candidate.state_province) && (
-                  <p>
-                    {[candidate.city, candidate.state_province]
-                      .filter(Boolean)
-                      .join(", ")}
-                  </p>
-                )}
-                <small>
-                  {organizationMatchSummary(candidate.match_reasons)}
-                </small>
-                <div className="candidateActions">
-                  <button
-                    type="button"
-                    className="btn quiet"
-                    onClick={() => request(candidate, "membership")}
-                  >
-                    Request access
-                  </button>
-                  <button
-                    type="button"
-                    className="textButton"
-                    onClick={() => request(candidate, "ownership_claim")}
-                  >
-                    Claim review
-                  </button>
-                  <button
-                    type="button"
-                    className="textButton"
-                    onClick={() => dismiss(candidate)}
-                  >
-                    Not my business
-                  </button>
-                </div>
-              </article>
-            ))}
-          </aside>
         </div>
       </section>
     </Page>
@@ -1365,13 +1425,70 @@ function Onboard() {
     return <PartnerOrganizationOnboarding kind={k} />;
   return <StandardOnboard kind={k} />;
 }
+const onboardingPhotoExtensions: Record<string, string> = {
+  "image/jpeg": "jpg",
+  "image/png": "png",
+  "image/webp": "webp",
+};
+
+async function saveOnboardingPetPhoto(
+  petId: string,
+  userId: string,
+  file: File,
+) {
+  if (!db) return "";
+  const extension = onboardingPhotoExtensions[file.type];
+  if (!extension || file.size > 5 * 1024 * 1024) {
+    return " Photo skipped: use a JPEG, PNG, or WebP photo up to 5 MB.";
+  }
+  const path = `${userId}/${petId}/${crypto.randomUUID()}.${extension}`;
+  const { error: uploadError } = await db.storage
+    .from("pet-photos")
+    .upload(path, file, { cacheControl: "3600", upsert: false });
+  if (uploadError) return ` Photo skipped: ${uploadError.message}`;
+  const { data: inserted, error: insertError } = await db
+    .from("pet_media")
+    .insert({
+      pet_id: petId,
+      created_by: userId,
+      media_type: "image",
+      media_context: "passport",
+      storage_bucket: "pet-photos",
+      storage_path: path,
+      alt_text: `${file.name} — pet photo`,
+      sort_order: 0,
+      visibility: "private",
+      provenance_code: "guardian_entered",
+      status: "active",
+    })
+    .select("id")
+    .single();
+  if (insertError || !inserted) {
+    await db.storage.from("pet-photos").remove([path]);
+    return ` Photo skipped: ${insertError?.message || "unable to save photo."}`;
+  }
+  const { error: primaryError } = await db.rpc("set_primary_pet_media", {
+    p_media_id: inserted.id,
+  });
+  return primaryError ? " Photo added but could not be set as primary." : "";
+}
+
 function StandardOnboard({ kind: k }: { kind: "guardian" | "shelter" }) {
   const c = choices.find((x) => x.kind === k) || choices[0];
   const navigate = useNavigate();
-  const [adopted, setAdopted] = useState(false),
-    [status, setStatus] = useState(""),
+  const [status, setStatus] = useState(""),
     [saving, setSaving] = useState(false);
+  const [guardianPhoto, setGuardianPhoto] = useState<File | null>(null);
+  const [guardianPhotoPreview, setGuardianPhotoPreview] = useState("");
   const [guardianSubmissionId] = useState(() => crypto.randomUUID());
+  useEffect(() => {
+    if (!guardianPhotoPreview) return;
+    return () => URL.revokeObjectURL(guardianPhotoPreview);
+  }, [guardianPhotoPreview]);
+  function pickGuardianPhoto(file: File | null) {
+    setGuardianPhoto(file);
+    setGuardianPhotoPreview(file ? URL.createObjectURL(file) : "");
+  }
   async function save(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (!db) return setStatus("Development connection is unavailable.");
@@ -1395,37 +1512,27 @@ function StandardOnboard({ kind: k }: { kind: "guardian" | "shelter" }) {
       return setStatus("Please sign in before saving.");
     }
     if (k === "guardian") {
-      const { error } = await db.rpc("save_guardian_onboarding_pet", {
-        p_submission_id: guardianSubmissionId,
-        p_name: String(f.get("name") || ""),
-        p_species: String(f.get("species") || ""),
-        p_adopted: adopted,
-        p_shelter_name: adopted ? String(f.get("shelter_name") || "") : null,
-        p_shelter_email: adopted
-          ? String(f.get("shelter_email") || "") || null
-          : null,
-        p_shelter_phone: adopted
-          ? String(f.get("shelter_phone") || "") || null
-          : null,
-        p_shelter_social: adopted
-          ? String(f.get("shelter_social") || "") || null
-          : null,
-        p_adoption_date: adopted
-          ? String(f.get("adoption_date") || "") || null
-          : null,
-        p_adoption_name: adopted
-          ? String(f.get("adoption_name") || "") || null
-          : null,
-      });
+      const { data: savedPetId, error } = await db.rpc(
+        "save_guardian_onboarding_pet",
+        {
+          p_submission_id: guardianSubmissionId,
+          p_name: String(f.get("name") || ""),
+          p_species: String(f.get("species") || ""),
+        },
+      );
       if (error) {
         setSaving(false);
         return setStatus(`Unable to save your pet. ${error.message}`);
       }
-      setStatus(
-        adopted
-          ? "Pet saved. Adoption confirmation is submitted."
-          : "Pet Passport started.",
-      );
+      let photoWarning = "";
+      if (guardianPhoto && savedPetId) {
+        photoWarning = await saveOnboardingPetPhoto(
+          savedPetId,
+          user.id,
+          guardianPhoto,
+        );
+      }
+      setStatus(`Pet Passport started.${photoWarning}`);
       window.setTimeout(() => navigate("/dashboard"), 700);
       return;
     }
@@ -1487,7 +1594,7 @@ function StandardOnboard({ kind: k }: { kind: "guardian" | "shelter" }) {
         <form className="detail" onSubmit={save}>
           <div className="panel">
             <h2>{k === "guardian" ? "Pet basics" : "Organization profile"}</h2>
-            <div className="fields">
+            <div className={k === "guardian" ? "gfFields" : "fields"}>
               <label>
                 {k === "guardian" ? "Pet name" : "Public name"}
                 <input name="name" required />
@@ -1535,53 +1642,40 @@ function StandardOnboard({ kind: k }: { kind: "guardian" | "shelter" }) {
                   </label>
                 </>
               )}
+              {k === "guardian" && (
+                <label className="gfPhotoPicker">
+                  {guardianPhotoPreview.startsWith("blob:") ? (
+                    <img
+                      className="gfPhotoPreview"
+                      src={guardianPhotoPreview.replace(/[^\w:/.-]/g, "")}
+                      alt=""
+                    />
+                  ) : (
+                    <Camera aria-hidden="true" />
+                  )}
+                  <span>
+                    {guardianPhoto
+                      ? guardianPhoto.name
+                      : "Add a photo (optional)"}
+                  </span>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    capture="environment"
+                    onChange={(event) =>
+                      pickGuardianPhoto(event.target.files?.[0] || null)
+                    }
+                  />
+                </label>
+              )}
             </div>
           </div>
           {k === "guardian" && (
-            <div className="panel">
-              <h2>Was this pet adopted?</h2>
-              <button
-                type="button"
-                className="btn quiet"
-                onClick={() => setAdopted(!adopted)}
-              >
-                {adopted
-                  ? "Remove confirmation request"
-                  : "Yes, request shelter confirmation"}
-              </button>
-              {adopted && (
-                <div className="fields inset">
-                  <label>
-                    Shelter name
-                    <input name="shelter_name" required />
-                  </label>
-                  <label>
-                    Shelter email
-                    <input name="shelter_email" type="email" />
-                  </label>
-                  <label>
-                    Phone
-                    <input name="shelter_phone" type="tel" />
-                  </label>
-                  <label>
-                    Website or social profile
-                    <input name="shelter_social" />
-                  </label>
-                  <label>
-                    Approximate adoption date
-                    <input name="adoption_date" type="date" />
-                  </label>
-                  <label>
-                    Pet name at adoption
-                    <input name="adoption_name" />
-                  </label>
-                  <label className="check">
-                    <input required type="checkbox" />I authorize
-                    ShelterPawtners to contact this shelter.
-                  </label>
-                </div>
-              )}
-            </div>
+            <p className="gfHint">
+              Add the rest — breed, birthday, microchip, vet details, and
+              adoption verification — from your pet's Passport whenever you have
+              a minute.
+            </p>
           )}
           {k !== "guardian" && k !== "shelter" && (
             <div className="panel">
@@ -1606,12 +1700,14 @@ function StandardOnboard({ kind: k }: { kind: "guardian" | "shelter" }) {
               </div>
             </div>
           )}
-          <button className="btn" disabled={saving}>
-            {saving ? "Saving…" : "Save and continue"}
-          </button>
-          <p role="status" aria-live="polite" aria-atomic="true">
-            {status}
-          </p>
+          <div className="gfStickyBar">
+            <button className="btn" disabled={saving}>
+              {saving ? "Saving…" : "Save and continue"}
+            </button>
+            <p role="status" aria-live="polite" aria-atomic="true">
+              {status}
+            </p>
+          </div>
         </form>
       </section>
     </Page>
@@ -1902,13 +1998,21 @@ function Login() {
           <form onSubmit={login}>
             <label>
               Email address
-              <input name="email" required type="email" autoComplete="email" />
+              <input
+                name="email"
+                required
+                type="email"
+                autoComplete="email"
+                inputMode="email"
+                enterKeyHint="next"
+              />
             </label>
             <PasswordField
               label="Password"
               name="password"
               required
               autoComplete="current-password"
+              enterKeyHint="go"
             />
             <button className="btn full">Sign in</button>
             <FormStatus message={status} isError={statusIsError} />
@@ -1976,9 +2080,16 @@ function ForgotPassword() {
           <p>Enter the email used for your ShelterPawtners account.</p>
           <label>
             Email address
-            <input name="email" type="email" required autoComplete="email" />
+            <input
+              name="email"
+              type="email"
+              required
+              autoComplete="email"
+              inputMode="email"
+              enterKeyHint="go"
+            />
           </label>
-          <button className="btn">Send recovery email</button>
+          <button className="btn full">Send recovery email</button>
           <FormStatus message={status} isError={statusIsError} />
           <Link to="/login">Back to sign in</Link>
         </form>
@@ -2049,8 +2160,9 @@ function ResetPassword() {
             required
             minLength={8}
             autoComplete="new-password"
+            enterKeyHint="go"
           />
-          <button className="btn">Update password</button>
+          <button className="btn full">Update password</button>
           <FormStatus message={status} isError={statusIsError} />
         </form>
       </section>
@@ -2248,6 +2360,9 @@ function Dashboard() {
     session?.user.user_metadata.full_name ||
     session?.user.email?.split("@")[0] ||
     "there";
+  const addRoleChoices = choices.filter(
+    (c) => !roles.includes(onboardingRole[c.kind]),
+  );
   return (
     <Page>
       <section className="dashboardHero">
@@ -2262,34 +2377,36 @@ function Dashboard() {
           </div>
         </div>
       </section>
-      <section className="section shell dashboardGrid">
-        <aside className="rolePanel">
-          <h2>Your roles</h2>
-          {roles.map((role) => (
-            <button
-              key={role}
-              className={activeRole === role ? "role active" : "role"}
-              onClick={() => switchRole(role)}
-            >
-              <UserRound />
-              {phaseOneRoleLabels[role as UserRole] || role}
-            </button>
-          ))}
-          <details>
-            <summary>Add another role</summary>
-            {choices
-              .filter((c) => !roles.includes(onboardingRole[c.kind]))
-              .map((c) => (
-                <button
-                  className="role"
-                  key={c.kind}
-                  onClick={() => addRole(c.kind)}
-                >
-                  {c.title}
-                </button>
-              ))}
-          </details>
-        </aside>
+      <section className="section shell">
+        <div className="dashboardRoleNav">
+          <AccountSectionNav
+            label="Your roles"
+            activeId={activeRole}
+            onSelect={switchRole}
+            items={roles.map((role) => ({
+              id: role,
+              label: phaseOneRoleLabels[role as UserRole] || role,
+              icon: <UserRound aria-hidden="true" />,
+            }))}
+            footer={
+              addRoleChoices.length > 0 ? (
+                <details className="accountSectionNavAddRole">
+                  <summary>Add another role</summary>
+                  {addRoleChoices.map((c) => (
+                    <button
+                      type="button"
+                      className="accountSectionNavAddRoleOption"
+                      key={c.kind}
+                      onClick={() => addRole(c.kind)}
+                    >
+                      {c.title}
+                    </button>
+                  ))}
+                </details>
+              ) : undefined
+            }
+          />
+        </div>
         <div className="dashboardMain">
           <span className="eyebrow">{phaseOneRoleLabels[active]}</span>
           <h2>
