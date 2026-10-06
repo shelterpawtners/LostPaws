@@ -28,7 +28,7 @@ export async function openOfferDetailGroups(
     const details = page.locator(".offerDetailGroup", {
       has: page.locator("summary", { hasText: group }),
     });
-    if (!(await details.getAttribute("open"))) {
+    if (!(await details.evaluate((el) => (el as HTMLDetailsElement).open))) {
       await details.locator("summary").click();
     }
   }

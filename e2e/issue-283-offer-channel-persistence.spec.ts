@@ -126,6 +126,7 @@ test.describe.serial("Issue #283 P1 offer channel + event persistence", () => {
     // Now revise it: switch to Human/RAVE and attach the event. This is the
     // exact edit that silently lost the channel change before this fix.
     await page.getByLabel("Offer audience").selectOption("rave");
+    await openOfferDetailGroups(page, ["Event & link"]);
     await page
       .getByLabel("Feature this offer at an event (optional)")
       .selectOption({ label: eventTitle });
