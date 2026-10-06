@@ -22,6 +22,7 @@ import {
   ArrowRight,
   BadgeCheck,
   CalendarDays,
+  Camera,
   Eye,
   EyeOff,
   HeartHandshake,
@@ -61,6 +62,7 @@ import {
   type UserRole,
 } from "./types/personas";
 import "./styles.css";
+import "./components/guardian-forms.css";
 import { PartnerDirectory } from "./components/PartnerDirectory";
 import { PartnerProfileEditor } from "./components/PartnerProfileEditor";
 import { PublicPartnerProfile } from "./components/PublicPartnerProfile";
@@ -1366,13 +1368,70 @@ function Onboard() {
     return <PartnerOrganizationOnboarding kind={k} />;
   return <StandardOnboard kind={k} />;
 }
+const onboardingPhotoExtensions: Record<string, string> = {
+  "image/jpeg": "jpg",
+  "image/png": "png",
+  "image/webp": "webp",
+};
+
+async function saveOnboardingPetPhoto(
+  petId: string,
+  userId: string,
+  file: File,
+) {
+  if (!db) return "";
+  const extension = onboardingPhotoExtensions[file.type];
+  if (!extension || file.size > 5 * 1024 * 1024) {
+    return " Photo skipped: use a JPEG, PNG, or WebP photo up to 5 MB.";
+  }
+  const path = `${userId}/${petId}/${crypto.randomUUID()}.${extension}`;
+  const { error: uploadError } = await db.storage
+    .from("pet-photos")
+    .upload(path, file, { cacheControl: "3600", upsert: false });
+  if (uploadError) return ` Photo skipped: ${uploadError.message}`;
+  const { data: inserted, error: insertError } = await db
+    .from("pet_media")
+    .insert({
+      pet_id: petId,
+      created_by: userId,
+      media_type: "image",
+      media_context: "passport",
+      storage_bucket: "pet-photos",
+      storage_path: path,
+      alt_text: `${file.name} — pet photo`,
+      sort_order: 0,
+      visibility: "private",
+      provenance_code: "guardian_entered",
+      status: "active",
+    })
+    .select("id")
+    .single();
+  if (insertError || !inserted) {
+    await db.storage.from("pet-photos").remove([path]);
+    return ` Photo skipped: ${insertError?.message || "unable to save photo."}`;
+  }
+  const { error: primaryError } = await db.rpc("set_primary_pet_media", {
+    p_media_id: inserted.id,
+  });
+  return primaryError ? " Photo added but could not be set as primary." : "";
+}
+
 function StandardOnboard({ kind: k }: { kind: "guardian" | "shelter" }) {
   const c = choices.find((x) => x.kind === k) || choices[0];
   const navigate = useNavigate();
-  const [adopted, setAdopted] = useState(false),
-    [status, setStatus] = useState(""),
+  const [status, setStatus] = useState(""),
     [saving, setSaving] = useState(false);
+  const [guardianPhoto, setGuardianPhoto] = useState<File | null>(null);
+  const [guardianPhotoPreview, setGuardianPhotoPreview] = useState("");
   const [guardianSubmissionId] = useState(() => crypto.randomUUID());
+  useEffect(() => {
+    if (!guardianPhotoPreview) return;
+    return () => URL.revokeObjectURL(guardianPhotoPreview);
+  }, [guardianPhotoPreview]);
+  function pickGuardianPhoto(file: File | null) {
+    setGuardianPhoto(file);
+    setGuardianPhotoPreview(file ? URL.createObjectURL(file) : "");
+  }
   async function save(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (!db) return setStatus("Development connection is unavailable.");
@@ -1396,37 +1455,27 @@ function StandardOnboard({ kind: k }: { kind: "guardian" | "shelter" }) {
       return setStatus("Please sign in before saving.");
     }
     if (k === "guardian") {
-      const { error } = await db.rpc("save_guardian_onboarding_pet", {
-        p_submission_id: guardianSubmissionId,
-        p_name: String(f.get("name") || ""),
-        p_species: String(f.get("species") || ""),
-        p_adopted: adopted,
-        p_shelter_name: adopted ? String(f.get("shelter_name") || "") : null,
-        p_shelter_email: adopted
-          ? String(f.get("shelter_email") || "") || null
-          : null,
-        p_shelter_phone: adopted
-          ? String(f.get("shelter_phone") || "") || null
-          : null,
-        p_shelter_social: adopted
-          ? String(f.get("shelter_social") || "") || null
-          : null,
-        p_adoption_date: adopted
-          ? String(f.get("adoption_date") || "") || null
-          : null,
-        p_adoption_name: adopted
-          ? String(f.get("adoption_name") || "") || null
-          : null,
-      });
+      const { data: savedPetId, error } = await db.rpc(
+        "save_guardian_onboarding_pet",
+        {
+          p_submission_id: guardianSubmissionId,
+          p_name: String(f.get("name") || ""),
+          p_species: String(f.get("species") || ""),
+        },
+      );
       if (error) {
         setSaving(false);
         return setStatus(`Unable to save your pet. ${error.message}`);
       }
-      setStatus(
-        adopted
-          ? "Pet saved. Adoption confirmation is submitted."
-          : "Pet Passport started.",
-      );
+      let photoWarning = "";
+      if (guardianPhoto && savedPetId) {
+        photoWarning = await saveOnboardingPetPhoto(
+          savedPetId,
+          user.id,
+          guardianPhoto,
+        );
+      }
+      setStatus(`Pet Passport started.${photoWarning}`);
       window.setTimeout(() => navigate("/dashboard"), 700);
       return;
     }
@@ -1488,7 +1537,7 @@ function StandardOnboard({ kind: k }: { kind: "guardian" | "shelter" }) {
         <form className="detail" onSubmit={save}>
           <div className="panel">
             <h2>{k === "guardian" ? "Pet basics" : "Organization profile"}</h2>
-            <div className="fields">
+            <div className={k === "guardian" ? "gfFields" : "fields"}>
               <label>
                 {k === "guardian" ? "Pet name" : "Public name"}
                 <input name="name" required />
@@ -1536,53 +1585,40 @@ function StandardOnboard({ kind: k }: { kind: "guardian" | "shelter" }) {
                   </label>
                 </>
               )}
+              {k === "guardian" && (
+                <label className="gfPhotoPicker">
+                  {guardianPhotoPreview ? (
+                    <img
+                      className="gfPhotoPreview"
+                      src={guardianPhotoPreview}
+                      alt=""
+                    />
+                  ) : (
+                    <Camera aria-hidden="true" />
+                  )}
+                  <span>
+                    {guardianPhoto
+                      ? guardianPhoto.name
+                      : "Add a photo (optional)"}
+                  </span>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    capture="environment"
+                    onChange={(event) =>
+                      pickGuardianPhoto(event.target.files?.[0] || null)
+                    }
+                  />
+                </label>
+              )}
             </div>
           </div>
           {k === "guardian" && (
-            <div className="panel">
-              <h2>Was this pet adopted?</h2>
-              <button
-                type="button"
-                className="btn quiet"
-                onClick={() => setAdopted(!adopted)}
-              >
-                {adopted
-                  ? "Remove confirmation request"
-                  : "Yes, request shelter confirmation"}
-              </button>
-              {adopted && (
-                <div className="fields inset">
-                  <label>
-                    Shelter name
-                    <input name="shelter_name" required />
-                  </label>
-                  <label>
-                    Shelter email
-                    <input name="shelter_email" type="email" />
-                  </label>
-                  <label>
-                    Phone
-                    <input name="shelter_phone" type="tel" />
-                  </label>
-                  <label>
-                    Website or social profile
-                    <input name="shelter_social" />
-                  </label>
-                  <label>
-                    Approximate adoption date
-                    <input name="adoption_date" type="date" />
-                  </label>
-                  <label>
-                    Pet name at adoption
-                    <input name="adoption_name" />
-                  </label>
-                  <label className="check">
-                    <input required type="checkbox" />I authorize
-                    ShelterPawtners to contact this shelter.
-                  </label>
-                </div>
-              )}
-            </div>
+            <p className="gfHint">
+              Add the rest — breed, birthday, microchip, vet details, and
+              adoption verification — from your pet's Passport whenever you have
+              a minute.
+            </p>
           )}
           {k !== "guardian" && k !== "shelter" && (
             <div className="panel">
@@ -1607,12 +1643,14 @@ function StandardOnboard({ kind: k }: { kind: "guardian" | "shelter" }) {
               </div>
             </div>
           )}
-          <button className="btn" disabled={saving}>
-            {saving ? "Saving…" : "Save and continue"}
-          </button>
-          <p role="status" aria-live="polite" aria-atomic="true">
-            {status}
-          </p>
+          <div className="gfStickyBar">
+            <button className="btn" disabled={saving}>
+              {saving ? "Saving…" : "Save and continue"}
+            </button>
+            <p role="status" aria-live="polite" aria-atomic="true">
+              {status}
+            </p>
+          </div>
         </form>
       </section>
     </Page>

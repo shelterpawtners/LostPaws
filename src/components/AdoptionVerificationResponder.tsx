@@ -3,6 +3,7 @@ import { Link, useParams } from "react-router-dom";
 import { BadgeCheck, ShieldCheck } from "lucide-react";
 import { supabase as db } from "../lib/supabase";
 import { LoadingState } from "./LoadingState";
+import "./guardian-forms.css";
 
 type VerificationContext = {
   shelter_name: string;
@@ -160,7 +161,7 @@ export function AdoptionVerificationResponder() {
         }}
       >
         <h2>Shelter or rescue response</h2>
-        <div className="fields">
+        <div className="gfFields">
           <label>
             Your name
             <input name="responder_name" autoComplete="name" />

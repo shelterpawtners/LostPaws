@@ -7,6 +7,7 @@ import { LoadingState } from "./LoadingState";
 import { GuardianActivityTimeline } from "./GuardianActivityTimeline";
 import { GuardianGivingHistory } from "./giving/GuardianGivingHistory";
 import "../guardian-profile-lite.css";
+import "./guardian-forms.css";
 
 type ProfileLite = {
   full_name: string;
@@ -177,7 +178,7 @@ export function GuardianProfileLite({ session }: { session: Session | null }) {
                 JPEG, PNG, or WebP up to 5 MB. Private to your account.
               </small>
             </div>
-            <div className="fields">
+            <div className="gfFields">
               <label>
                 Full name
                 <input
