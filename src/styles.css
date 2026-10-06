@@ -77,6 +77,9 @@ svg {
   background: #fff;
   padding: 12px;
   z-index: 100;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
 }
 .skip:focus {
   transform: none;

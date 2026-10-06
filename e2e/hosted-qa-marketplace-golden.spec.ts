@@ -91,6 +91,7 @@ test.describe
     await page.getByLabel("Terms and conditions").fill(offerTerms);
     await page.getByLabel("How customers use it").fill(offerUsage);
     await page.getByLabel("Per-user limit").fill("1");
+    await page.getByRole("button", { name: "More actions" }).click();
     await page.getByRole("button", { name: "Preview" }).click();
     await expect(page.getByText("Preview · all pets")).toBeVisible();
     await page.getByRole("button", { name: "Save draft" }).click();

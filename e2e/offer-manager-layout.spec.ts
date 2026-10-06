@@ -39,9 +39,10 @@ test.describe("Issue #283 Offer Manager layout", () => {
           return Math.max(0, rect.right - window.innerWidth, -rect.left);
         })(),
       }));
-      expect(overflow.document, `page overflow at ${width}px`).toBeLessThanOrEqual(
-        1,
-      );
+      expect(
+        overflow.document,
+        `page overflow at ${width}px`,
+      ).toBeLessThanOrEqual(1);
       expect(
         overflow.manager,
         `Offer Manager overflow at ${width}px`,
@@ -55,7 +56,9 @@ test.describe("Issue #283 Offer Manager layout", () => {
             range.selectNodeContents(element);
             const box = range.getBoundingClientRect();
             const container = element.getBoundingClientRect();
-            return box.right > container.right + 1 || box.left < container.left - 1;
+            return (
+              box.right > container.right + 1 || box.left < container.left - 1
+            );
           }),
         );
       expect(

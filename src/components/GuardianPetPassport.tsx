@@ -379,7 +379,7 @@ export function GuardianPetPassport({
           <div className="gfChecklist">
             <div className="gfChecklistIntro">
               <span className="eyebrow">Optional details</span>
-              <h2>Complete {pet.name}'s Passport</h2>
+              <h2>Complete this Passport</h2>
               <p>
                 Add these whenever you have a minute. Each section saves on its
                 own, so there's nothing to finish in one sitting.

@@ -22,7 +22,9 @@ test.describe("Production security headers", () => {
     expect(headers["referrer-policy"]).toBe("strict-origin-when-cross-origin");
     expect(headers["permissions-policy"]).toContain("camera=()");
     expect(headers["content-security-policy"]).toContain("default-src 'self'");
-    expect(headers["content-security-policy"]).toContain("frame-ancestors 'none'");
+    expect(headers["content-security-policy"]).toContain(
+      "frame-ancestors 'none'",
+    );
     expect(headers["content-security-policy"]).toContain(
       "connect-src 'self' https://jukmlmryykcnjtpblbja.supabase.co",
     );
@@ -32,7 +34,9 @@ test.describe("Production security headers", () => {
   test("a client-side route also carries the same headers", async ({
     request,
   }) => {
-    const response = await request.get("https://shelterpawtners.com/marketplace");
+    const response = await request.get(
+      "https://shelterpawtners.com/marketplace",
+    );
     expect(response.ok()).toBe(true);
     expect(response.headers()["content-security-policy"]).toContain(
       "default-src 'self'",

@@ -182,6 +182,7 @@ test.describe.serial("Phase 2 offer and redemption journey", () => {
         "https://images.example.invalid/pin-front.jpg\nhttps://images.example.invalid/pin-back.jpg",
       );
 
+    await page.getByRole("button", { name: "More actions" }).click();
     await page.getByRole("button", { name: "Preview" }).click();
     await expect(page.getByText("Preview · all pets")).toBeVisible();
     await page.getByRole("button", { name: "Save draft" }).click();
