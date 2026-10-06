@@ -135,6 +135,7 @@ export function RedemptionFlow() {
           <div>
             <video
               ref={video}
+              className="qrPreview"
               muted
               playsInline
               aria-label="QR camera preview"

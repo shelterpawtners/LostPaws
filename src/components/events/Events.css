@@ -189,6 +189,7 @@
   border: 1px solid var(--ev-line);
   border-radius: 12px;
   font: inherit;
+  font-size: 16px;
 }
 
 .evForm textarea {
@@ -198,6 +199,37 @@
 
 .evFormWide {
   grid-column: 1 / -1;
+}
+
+/* Mobile-first forms standard: one column below 1024px, and the add-event
+   form is long enough (ten fields plus a photo upload) to earn a sticky,
+   full-width submit bar instead of a button the user has to scroll back to. */
+@media (max-width: 1023px) {
+  .evFormGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.evFormActions {
+  margin-top: 0;
+}
+
+@media (max-width: 700px) {
+  .evFormActions {
+    position: sticky;
+    bottom: 0;
+    z-index: 2;
+    margin: 0.5rem calc(-1 * clamp(1.2rem, 3vw, 1.6rem))
+      calc(-1 * clamp(1.2rem, 3vw, 1.6rem));
+    padding: 0.75rem clamp(1.2rem, 3vw, 1.6rem)
+      calc(0.75rem + env(safe-area-inset-bottom));
+    background: var(--ev-surface);
+    border-top: 1px solid var(--ev-line);
+  }
+
+  .evFormActions .evSubmit {
+    width: 100%;
+  }
 }
 
 .evCheckbox {

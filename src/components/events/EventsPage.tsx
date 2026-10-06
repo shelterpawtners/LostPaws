@@ -514,13 +514,15 @@ export function EventsPage({ session }: { session: Session | null }) {
                   />
                 </label>
               </div>
-              <button className="evSubmit" disabled={submitting}>
-                {submitting
-                  ? "Saving…"
-                  : editingId
-                    ? "Save changes"
-                    : "Save event"}
-              </button>
+              <div className="evFormActions">
+                <button className="evSubmit" disabled={submitting}>
+                  {submitting
+                    ? "Saving…"
+                    : editingId
+                      ? "Save changes"
+                      : "Save event"}
+                </button>
+              </div>
             </form>
           )}
 
