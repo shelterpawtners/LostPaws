@@ -7,3 +7,5 @@ test-results/
 supabase/.temp/
 *.tsbuildinfo
 debug.log
+
+.ai-runs/
