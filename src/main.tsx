@@ -360,12 +360,14 @@ function PasswordField({
   required = false,
   minLength,
   autoComplete,
+  enterKeyHint,
 }: {
   label: string;
   name: string;
   required?: boolean;
   minLength?: number;
   autoComplete?: string;
+  enterKeyHint?: React.InputHTMLAttributes<HTMLInputElement>["enterKeyHint"];
 }) {
   const [visible, setVisible] = useState(false);
   return (
@@ -378,6 +380,7 @@ function PasswordField({
           required={required}
           minLength={minLength}
           autoComplete={autoComplete}
+          enterKeyHint={enterKeyHint}
         />
         <button
           type="button"
@@ -707,11 +710,18 @@ function Signup({ c }: { c: (typeof choices)[number] }) {
         <h2>Create your free account</h2>
         <label>
           Full name
-          <input name="name" required autoComplete="name" />
+          <input name="name" required autoComplete="name" enterKeyHint="next" />
         </label>
         <label>
           Email address
-          <input name="email" required type="email" autoComplete="email" />
+          <input
+            name="email"
+            required
+            type="email"
+            autoComplete="email"
+            inputMode="email"
+            enterKeyHint="next"
+          />
         </label>
         <PasswordField
           label="Password"
@@ -719,6 +729,7 @@ function Signup({ c }: { c: (typeof choices)[number] }) {
           required
           minLength={8}
           autoComplete="new-password"
+          enterKeyHint="next"
         />
         <PasswordField
           label="Confirm password"
@@ -726,6 +737,7 @@ function Signup({ c }: { c: (typeof choices)[number] }) {
           required
           minLength={8}
           autoComplete="new-password"
+          enterKeyHint="go"
         />
         <label className="check">
           <input required type="checkbox" />I agree to the Terms and acknowledge
@@ -1941,13 +1953,21 @@ function Login() {
           <form onSubmit={login}>
             <label>
               Email address
-              <input name="email" required type="email" autoComplete="email" />
+              <input
+                name="email"
+                required
+                type="email"
+                autoComplete="email"
+                inputMode="email"
+                enterKeyHint="next"
+              />
             </label>
             <PasswordField
               label="Password"
               name="password"
               required
               autoComplete="current-password"
+              enterKeyHint="go"
             />
             <button className="btn full">Sign in</button>
             <FormStatus message={status} isError={statusIsError} />
@@ -2015,9 +2035,16 @@ function ForgotPassword() {
           <p>Enter the email used for your ShelterPawtners account.</p>
           <label>
             Email address
-            <input name="email" type="email" required autoComplete="email" />
+            <input
+              name="email"
+              type="email"
+              required
+              autoComplete="email"
+              inputMode="email"
+              enterKeyHint="go"
+            />
           </label>
-          <button className="btn">Send recovery email</button>
+          <button className="btn full">Send recovery email</button>
           <FormStatus message={status} isError={statusIsError} />
           <Link to="/login">Back to sign in</Link>
         </form>
@@ -2088,8 +2115,9 @@ function ResetPassword() {
             required
             minLength={8}
             autoComplete="new-password"
+            enterKeyHint="go"
           />
-          <button className="btn">Update password</button>
+          <button className="btn full">Update password</button>
           <FormStatus message={status} isError={statusIsError} />
         </form>
       </section>

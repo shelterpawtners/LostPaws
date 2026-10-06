@@ -625,6 +625,7 @@ select {
   border: 1px solid #cbd3df;
   border-radius: 10px;
   background: #fff;
+  font-size: 16px;
 }
 input:focus,
 select:focus {
@@ -1344,15 +1345,27 @@ footer {
   color: #c7cedb;
   font-size: 0.84rem;
 }
-@media (max-width: 900px) {
-  .cards {
-    grid-template-columns: 1fr 1fr;
+/* Mobile-first forms standard: these are all form/content grids with a
+   fixed or fractional side column (aside, passport summary, hero copy).
+   Below 1024px there is no room for a side rail without squeezing form
+   fields, so they collapse to one column through the full tablet range
+   instead of only below 700/900px. */
+@media (max-width: 1023px) {
+  .heroGrid,
+  .cards,
+  .offers,
+  .connect,
+  .fields,
+  .partnerOnboardingGrid,
+  .nextCards,
+  .signup,
+  .passportLead {
+    grid-template-columns: 1fr;
   }
+}
+@media (max-width: 900px) {
   .heroGrid {
     gap: 30px;
-  }
-  .signup {
-    grid-template-columns: 1fr;
   }
 }
 @media (max-width: 700px) {
@@ -1392,15 +1405,6 @@ footer {
   .hero {
     padding: 58px 0;
   }
-  .heroGrid,
-  .cards,
-  .offers,
-  .connect,
-  .fields,
-  .partnerOnboardingGrid,
-  .nextCards {
-    grid-template-columns: 1fr;
-  }
   .offerListHeading {
     align-items: center;
   }
@@ -1416,7 +1420,6 @@ footer {
     flex-direction: column;
   }
   .passportLead {
-    grid-template-columns: 1fr;
     gap: 18px;
   }
   .dashboardAccountActions {
@@ -1697,4 +1700,15 @@ header .guardianAccountPanel {
   min-height: 1.1rem;
   color: var(--muted);
   font-size: 0.85rem;
+}
+
+/* The QR scanner preview had no width rule, so the browser's default
+   replaced-element size (300px) overflowed a 320px viewport once the
+   .panel padding was subtracted. */
+.qrPreview {
+  display: block;
+  width: 100%;
+  max-width: 360px;
+  border-radius: 14px;
+  background: #000;
 }

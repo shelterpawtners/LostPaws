@@ -952,7 +952,7 @@
   }
 }
 
-@media (max-width: 800px) {
+@media (max-width: 1023px) {
   .marketplacePrototypeBar,
   .marketplaceDiscovery {
     grid-template-columns: 1fr;
@@ -964,6 +964,9 @@
     padding-bottom: 2px;
   }
 
+  /* These cards pair a fixed-width thumbnail with body copy, the same
+     "sidebar" shape the mobile-first standard forbids below 1024px, so they
+     stack instead of squeezing a thumbnail column onto a tablet. */
   .marketOfferCard-trust,
   .marketOfferCard-curated:not(.marketOfferCard-featured),
   .marketOfferCard-curated.marketOfferCard-featured,
