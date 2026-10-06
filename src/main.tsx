@@ -1644,10 +1644,10 @@ function StandardOnboard({ kind: k }: { kind: "guardian" | "shelter" }) {
               )}
               {k === "guardian" && (
                 <label className="gfPhotoPicker">
-                  {guardianPhotoPreview ? (
+                  {guardianPhotoPreview.startsWith("blob:") ? (
                     <img
                       className="gfPhotoPreview"
-                      src={guardianPhotoPreview}
+                      src={guardianPhotoPreview.replace(/[^\w:/.-]/g, "")}
                       alt=""
                     />
                   ) : (
