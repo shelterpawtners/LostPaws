@@ -2,6 +2,7 @@ import { createClient } from "@supabase/supabase-js";
 import { expect, test, type Page } from "@playwright/test";
 import {
   offerCard,
+  clickOfferOverflowAction,
   openOfferDetailGroups,
   openYourOffers,
   pickOffer,
@@ -325,7 +326,7 @@ test.describe.serial("Phase 2 offer and redemption journey", () => {
     // guarded by a window.confirm(), which Playwright auto-dismisses unless
     // told otherwise.
     page.once("dialog", (dialog) => dialog.accept());
-    await page.getByRole("button", { name: "Pause" }).click();
+    await clickOfferOverflowAction(page, "Pause");
     await expect(page.getByRole("status")).toContainText("pause complete");
     await expect(publishedButton).toContainText("Paused");
     await page.goto("/marketplace");
@@ -336,7 +337,7 @@ test.describe.serial("Phase 2 offer and redemption journey", () => {
     await page.goto("/partner/offers");
     await offerOrganization.selectOption(partnerOrganizationId);
     await pickOffer(page, journeyOfferTitle);
-    await page.getByRole("button", { name: "Resume" }).click();
+    await clickOfferOverflowAction(page, "Resume");
     await expect(page.getByRole("status")).toContainText(
       "Published. Now visible in Marketplace.",
     );

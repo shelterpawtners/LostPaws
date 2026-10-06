@@ -33,3 +33,11 @@ export async function openOfferDetailGroups(
     }
   }
 }
+
+export async function clickOfferOverflowAction(page: Page, name: string) {
+  const toggle = page.getByRole("button", { name: "More actions" });
+  if ((await toggle.getAttribute("aria-expanded")) !== "true") {
+    await toggle.click();
+  }
+  await page.getByRole("button", { name, exact: true }).click();
+}
