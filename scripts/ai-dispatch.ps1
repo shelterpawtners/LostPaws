@@ -7,6 +7,7 @@ $prompt = "Read AGENTS.md then $Brief and implement it fully in this working dir
 Push-Location $Worktree
 try {
   if($Tool -eq 'claude'){ claude -p $prompt --permission-mode acceptEdits --allowedTools "Bash(npm run *)" "Bash(git add*)" "Bash(git commit*)" "Bash(git status*)" "Bash(git diff*)" "Bash(grep*)" "Read" "Edit" "Write" 2>&1 | Tee-Object $out }
-  else { codex exec --full-auto $prompt 2>&1 | Tee-Object $out }
+  else { codex exec --sandbox workspace-write $prompt 2>&1 | Tee-Object $out }
 } finally { Pop-Location }
+
 
