@@ -906,22 +906,18 @@ select:focus {
   max-width: 600px;
 }
 .offerManagerPage {
-  max-width: 1160px;
+  max-width: 760px;
 }
-.offerManagerPage .dashboardGrid {
-  grid-template-columns: minmax(200px, 240px) minmax(0, 1fr);
-  gap: 24px;
-}
-.offerManagerPage .rolePanel,
 .offerManagerPage .panel,
 .offerManagerPage .fields > label {
   min-width: 0;
 }
-.offerManagerPage .role {
-  display: block;
-  max-width: 100%;
-  text-align: left;
-  overflow-wrap: anywhere;
+.offerManagerPage .panel + .panel {
+  margin-top: 24px;
+}
+.offerTopBar {
+  display: grid;
+  gap: 14px;
 }
 .offerListHeading {
   display: flex;
@@ -961,13 +957,45 @@ select:focus {
   min-height: 6rem;
   resize: vertical;
 }
-.formSectionHeading {
-  margin: 8px 0 -4px;
-  color: var(--ink);
-  font-size: 0.9rem;
+.offerOptionalDetails {
+  margin: 22px 0;
+  padding-top: 20px;
+  border-top: 1px solid var(--line);
+}
+.offerOptionalDetails summary {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--navy);
   font-weight: 800;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
+  cursor: pointer;
+  list-style: none;
+}
+.offerOptionalDetails summary::-webkit-details-marker {
+  display: none;
+}
+.offerOptionalDetails summary::before {
+  display: inline-flex;
+  width: 1.1rem;
+  margin-right: 6px;
+  color: var(--purple);
+  content: "+";
+}
+.offerOptionalDetails[open] summary::before {
+  content: "\2212";
+}
+.offerOptionalDetails .fields {
+  margin-top: 18px;
+}
+.publishChecklist ul {
+  display: grid;
+  gap: 2px;
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.publishChecklist .textButton {
+  min-height: 44px;
 }
 .fieldDescription {
   display: block;
