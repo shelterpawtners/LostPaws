@@ -63,6 +63,7 @@ import {
 } from "./types/personas";
 import "./styles.css";
 import "./components/guardian-forms.css";
+import "./site-header.css";
 import { PartnerDirectory } from "./components/PartnerDirectory";
 import { PartnerProfileEditor } from "./components/PartnerProfileEditor";
 import { PublicPartnerProfile } from "./components/PublicPartnerProfile";
@@ -207,7 +208,7 @@ function Header() {
     await db?.auth.signOut();
   }
   return (
-    <header>
+    <header className="siteHeader">
       <div className="shell head">
         <Link className="brand" to="/">
           <img

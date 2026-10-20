@@ -17,7 +17,8 @@
     "typecheck": "tsc -b --pretty false",
     "release-state:check": "node scripts/release-state.mjs check",
     "release-state:generate": "node scripts/release-state.mjs generate",
-    "check": "npm run lint && npm run lint:shell && npm run typecheck && npm run release-state:check && npm test"
+    "check": "npm run data-api-grants:check && npm run lint && npm run lint:shell && npm run typecheck && npm run release-state:check && npm test",
+    "data-api-grants:check": "node scripts/check-data-api-grants.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "2.116.0",
