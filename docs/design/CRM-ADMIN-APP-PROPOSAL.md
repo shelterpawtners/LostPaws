@@ -7,6 +7,7 @@ Do not combine this feature release with the October 2026 Data API compatibility
 ## Goal and experience
 
 An ultra-modern operations console for ShelterPawtners staff, influenced by Salesforce Lightning and Dynamics 365 Customer Service without copying either brand:
+
 - Left rail: Home/Work Queue, **Business Accounts**, **Guardians (Contacts)**, **Pets / Passports**, **Support Cases**, **Activities**, and eventually Offers/Events.
 - At-a-glance KPI tiles: open cases, overdue follow-ups, active partners, onboarding gaps. No unverifiable impact metrics.
 - Dataverse-like responsive data grids: pinned/sortable/resizable columns, searchable filters, status chips, paginated server-side results, saved list views, bulk selection only where approved.
@@ -19,6 +20,7 @@ An ultra-modern operations console for ShelterPawtners staff, influenced by Sale
 ## Deployment isolation (separate app, not a hidden /admin route)
 
 **Proposed URL:** `https://crm.shelterpawtners.com`. This is a proposal, not a live DNS or deployment.
+
 - Separate Vercel project and build entrypoint under the existing repository or a dedicated private repository after assessment; separate build artifact, environment variables, deployment permissions and release gate.
 - No staff CRM navigation or staff PII JS bundle on the public `shelterpawtners.com` app.
 - Merely hiding links or using a subdomain is **not security**. All requests require backend authorization; deep links, API calls, downloads and record IDs must enforce it too.
@@ -40,6 +42,7 @@ Store staff roles in a server-controlled, audited authorization structure (e.g. 
 ## Reuse canonical data — no migrations of source-of-truth rows
 
 Current hosted structures verified (2026-10-20; metadata only):
+
 - **Businesses:** `public.organizations`, `organization_partner_profiles`, `organization_memberships`, `organization_private_contacts`, `organization_locations`, `offers`, `events`.
 - **Guardians:** `public.profiles`, `guardianships`, `pets`, `adoption_verification_requests`, `pet_media`.
 - **Service:** `public.support_tickets`, `support_ticket_messages`, `support_ticket_events`.
@@ -50,17 +53,20 @@ Use secure server-side **read projections/views** for grid rows, with explicit c
 ## UX specification for first release
 
 **Account grid**
+
 - Columns: organization name, category/type, status, onboarding state, partner participation state, primary city/service area, last updated, assigned staff member.
 - Filters: organization type (Shelter/Rescue/PetBiz/RAVE vendor), onboarding state, status, geography, last interaction.
 - Detail: account summary, authorized contacts, membership roles, offers/events, open service cases, internal timeline and staff follow-up.
 - Must distinguish public partner data from operational/private contact information.
 
 **Guardian grid**
+
 - Columns: display name, profile created, number of linked pets, adoption-verification status, case count, most recent interaction, assigned staff.
 - Restricted PII columns (email/phone) revealed only for authorized roles and legitimate assistance use.
 - Detail: contact card, guardian-linked pets/passports, verification progress, case history, notes and activities; no exposing full private pet identifiers or records unnecessarily.
 
 **Support grid and case form**
+
 - Columns: ticket reference, subject, status, severity, record link, owner/assignee, created/updated, SLA target (only once defined).
 - Details: safe ticket body/messages by visibility, notes, contact/partner context, action timeline.
 - Actions proposed only after permissions review: assign case, set status, add internal note, create follow-up and resolve/close through documented lifecycle APIs; retain existing customer-owned support messages and audit.
@@ -78,6 +84,7 @@ Use secure server-side **read projections/views** for grid rows, with explicit c
 **Non-goals for MVP:** export-all data, mass email, AI-driven automatic customer decisions, impersonating guardians, modifying adoption/economic history, public CRM links, cross-org mass mutations, artificial demo partner data on public surfaces.
 
 ### Acceptance criteria
+
 - Anonymous, Guardian and ordinary business users cannot load CRM data or staff bundles requiring authentication, even with known deep links and API endpoints.
 - Revoked staff permission immediately fails fresh server authorization checks; expired/missing MFA fails closed.
 - Read-only Account and Guardian grids search, filter, paginate, drill down accurately and do not expose disallowed columns/rows.
