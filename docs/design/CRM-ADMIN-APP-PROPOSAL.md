@@ -30,12 +30,10 @@ An ultra-modern operations console for ShelterPawtners staff, influenced by Sale
 
 New CRM permission grants should be independent of a user's normal Guardian/PetBiz/Shelter membership and not automatically inherited from legacy `platform_admin` or QA impersonation.
 
-| Role          | Search/list/view                         | Case notes & tasks                   | Partner operational changes        | Staff/security administration       |
-| ------------- | ---------------------------------------- | ------------------------------------ | ---------------------------------- | ----------------------------------- |
-| `crm_viewer`  | approved masked columns / assigned scope | No                                   | No                                 | No                                  |
-| `crm_agent`   | assigned guardians and partner cases     | assigned case notes, tasks, statuses | No                                 | No                                  |
-| `crm_manager` | authorized team scope, review/escalate   | assign/triage, approve exceptions    | approved controlled workflows only | No                                  |
-| `crm_admin`   | approved administrative scope            | all approved case actions            | approval-required actions          | grant/revoke roles and audit access |
+- **`crm_viewer`**: Search/list/view — approved masked columns / assigned scope; Case notes & tasks — No; Partner operational changes — No; Staff/security administration — No.
+- **`crm_agent`**: Search/list/view — assigned guardians and partner cases; Case notes & tasks — assigned case notes, tasks, statuses; Partner operational changes — No; Staff/security administration — No.
+- **`crm_manager`**: Search/list/view — authorized team scope, review/escalate; Case notes & tasks — assign/triage, approve exceptions; Partner operational changes — approved controlled workflows only; Staff/security administration — No.
+- **`crm_admin`**: Search/list/view — approved administrative scope; Case notes & tasks — all approved case actions; Partner operational changes — approval-required actions; Staff/security administration — grant/revoke roles and audit access.
 
 Store staff roles in a server-controlled, audited authorization structure (e.g. `private.crm_staff_grants`), with MFA requirements and revocation support. Never trust user-editable `user_metadata` or display role values. Use explicit allowlisting, server-side checks on every read/write, scope restrictions by record, and audit privilege changes. No blanket `authenticated` read of contact/guardian PII.
 
