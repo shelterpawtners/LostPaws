@@ -3,8 +3,18 @@ import { expect, test, type Page } from "@playwright/test";
 // Every public route shares the same Header; checking computed styles catches
 // CSS import order/cascade regressions that screenshots alone can miss.
 const routes = [
-  "/", "/marketplace", "/lostpaws", "/rave", "/events", "/learn",
-  "/register", "/login", "/directory", "/support", "/store", "/sevenstars",
+  "/",
+  "/marketplace",
+  "/lostpaws",
+  "/rave",
+  "/events",
+  "/learn",
+  "/register",
+  "/login",
+  "/directory",
+  "/support",
+  "/store",
+  "/sevenstars",
 ] as const;
 
 async function expectDarkShell(page: Page) {
@@ -12,6 +22,7 @@ async function expectDarkShell(page: Page) {
   const nav = header.getByRole("navigation", { name: "Primary navigation" });
   await expect(header).toBeVisible();
   await expect(header).toHaveCSS("background-color", "rgb(11, 20, 38)");
+  await expect(header).toHaveCSS("background-image", /linear-gradient/);
   await expect(nav.getByRole("link", { name: "Marketplace" })).toHaveCSS(
     "color", "rgb(245, 247, 255)",
   );
@@ -35,13 +46,14 @@ test.describe("shared site-header design contract", () => {
       await page.goto(route);
       const toggle = page.getByRole("button", { name: "Open menu" });
       await expect(toggle).toBeVisible();
-      await toggle.click();
+      await toggle.focus();
+      await page.keyboard.press("Enter");
       await expect(toggle).toHaveAttribute("aria-expanded", "true");
       const nav = page.getByRole("navigation", { name: "Primary navigation" });
       await expect(nav).toBeVisible();
       await expectDarkShell(page);
       await expect(nav).toHaveCSS("background-color", "rgb(16, 29, 52)");
-      await page.getByRole("button", { name: "Close menu" }).click();
+      await page.keyboard.press("Enter");
       await expect(nav).toBeHidden();
     }
   });
