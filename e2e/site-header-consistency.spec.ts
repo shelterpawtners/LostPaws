@@ -44,11 +44,12 @@ test.describe("shared site-header design contract", () => {
     await page.setViewportSize({ width: 390, height: 844 });
     for (const route of routes) {
       await page.goto(route);
-      const toggle = page.getByRole("button", { name: "Open menu" });
+      const toggle = page.locator("header.siteHeader button.menu");
       await expect(toggle).toBeVisible();
       await toggle.focus();
       await page.keyboard.press("Enter");
       await expect(toggle).toHaveAttribute("aria-expanded", "true");
+      await expect(toggle).toHaveAttribute("aria-label", "Close menu");
       const nav = page.getByRole("navigation", { name: "Primary navigation" });
       await expect(nav).toBeVisible();
       await expectDarkShell(page);
