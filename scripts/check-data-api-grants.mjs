@@ -2,7 +2,6 @@
 // Future migrations must explicitly opt into Data API access after the
 // October 2026 default privilege change. Do not mutate historical migrations.
 import { readFileSync, readdirSync } from "node:fs";
-import { join } from "node:path";
 
 const migrationDir = new URL("../supabase/migrations/", import.meta.url);
 const legacyCutoff = "20261020120000";
