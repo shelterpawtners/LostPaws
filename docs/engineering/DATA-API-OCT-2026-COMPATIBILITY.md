@@ -14,7 +14,7 @@ Source: https://supabase.com/changelog/45329-breaking-change-tables-not-exposed-
 
 ## Inventory: repository migrations that CREATE public tables
 
-All 62 hosted public tables reconcile to this known migration family; tables created in the early prototype baseline must still be verified against a *clean* local replay.
+All 62 hosted public tables reconcile to this known migration family; tables created in the early prototype baseline must still be verified against a _clean_ local replay.
 
 - **`20260906025003_festival_mvp_foundation.sql`**: profiles, participant_roles, organizations, organization_memberships, pets, guardianships, adoption_verification_requests, offers, organization_connections, offer_comments, conversations, conversation_participants, messages
 - **`20260906091449_phase_1_platform_data_foundation.sql`**: role_definitions, user_roles, organization_types, organization_relationship_types, organization_relationships, organization_locations, partner_categories, organization_categories, provenance_types, source_systems, pet_identifiers, pet_external_identifiers, import_jobs, lifecycle_event_types, pet_lifecycle_events, offer_versions, offer_eligibility_rules, offer_locations, offer_claims, redemptions, economic_events, economic_event_lines, giving_providers, donation_recipients, donation_intents, donation_transactions, donation_allocations
