@@ -41,6 +41,8 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
+      - name: Data API explicit-grant migration guard
+        run: npm run data-api-grants:check
       - name: Documentation authority drift check
         run: bash scripts/check-doc-authority-drift.sh
       - name: Change-impact classifier precedence regression test
@@ -82,6 +84,8 @@ jobs:
         run: bash scripts/install-playwright-chromium.sh
       - name: Run public browser regressions
         run: npm run test:e2e:public
+      - name: Run shared site-header visual contract
+        run: npx playwright test e2e/site-header-consistency.spec.ts
 
   ci-gate:
     name: CI Gate
