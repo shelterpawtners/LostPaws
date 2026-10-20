@@ -74,15 +74,6 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run lint
-      - name: Temporary docs formatter evidence
-        if: failure()
-        run: |
-          npx prettier --write docs/design/CRM-ADMIN-APP-PROPOSAL.md docs/engineering/DATA-API-OCT-2026-COMPATIBILITY.md >/dev/null
-          printf 'PRETTIER_DESIGN='
-          base64 -w0 docs/design/CRM-ADMIN-APP-PROPOSAL.md
-          printf '\nPRETTIER_ENGINEERING='
-          base64 -w0 docs/engineering/DATA-API-OCT-2026-COMPATIBILITY.md
-          printf '\n'
       - run: npm run lint:shell
       - run: npm test
       - run: npm run build
