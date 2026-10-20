@@ -1,0 +1,35 @@
+/* Global navigation contract. Scope to the site shell, not nested card/modal headers.
+   The fill is deliberately opaque: the brand gradient must not inherit a light
+   page background or depend on Marketplace-only styles being loaded. */
+header.siteHeader {
+  background-color: #0b1426;
+  background-image: linear-gradient(112deg, #0b1426, #111f38 58%, #102d38);
+  color: #f5f7ff;
+  border-bottom-color: #344560;
+}
+header.siteHeader nav#primary-navigation {
+  color: #f5f7ff;
+}
+header.siteHeader nav#primary-navigation > a:not(.btn),
+header.siteHeader nav#primary-navigation > .navGroup > summary {
+  color: #f5f7ff;
+}
+header.siteHeader nav#primary-navigation > a:not(.btn):hover,
+header.siteHeader nav#primary-navigation > .navGroup > summary:hover {
+  color: #8ce3d8;
+}
+header.siteHeader nav#primary-navigation > a:not(.btn):focus-visible,
+header.siteHeader nav#primary-navigation > .navGroup > summary:focus-visible {
+  outline-color: #8ce3d8;
+}
+/* Keep the intentionally light sign-in button legible on the dark shell. */
+header.siteHeader nav#primary-navigation > .btn.quiet {
+  color: #13213b;
+}
+@media (max-width: 700px) {
+  header.siteHeader nav#primary-navigation.open {
+    background-color: #101d34;
+    background-image: none;
+    border-color: #40516b;
+  }
+}
