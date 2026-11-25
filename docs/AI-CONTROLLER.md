@@ -22,7 +22,9 @@ status.
 
 **#273 — Launch Stabilization (Vendor Account, Event Offers, LostPaws Messaging & Swag Requests).** P0-A returning business lifecycle (#275), P0-B Event→Offer republish clarity/regression (#277), Swag catalog requestability with signed-in autofill (#280), and LostPaws vendor messaging (#285) are merged and verified. The only remaining work is the final hosted chain on Issue #273; do not duplicate the detailed plan here.
 
-**Mobile-first forms sprint (owner priority, draft PR on branch `design/mobile-forms-sprint`, includes #309).** Single-column Dashboard, Manage Offers (Quick Offer + phone-first layout), fast business signup, fast guardian pet entry, auth/events/marketplace/learn stacking at <=1023px. Briefs: `docs/engineering/briefs/mobile-forms-standard.md` and slice briefs. Remaining: CI green, owner phone review of the Vercel preview, then merge. Not live until merged.
+**Mobile-first forms sprint (owner priority) — merged to `main` in #310 (`126d052`, includes #309).** Single-column Dashboard, Manage Offers (Quick Offer + phone-first layout), fast business signup, fast guardian pet entry, auth/events/marketplace/learn stacking at <=1023px. Briefs: `docs/engineering/briefs/mobile-forms-standard.md` and slice briefs. Remaining: owner phone review on the production deploy; open a bounded follow-up Issue for any defects found.
+
+**Restart after the 2026-10 to 2026-11 pause (2026-11-25).** State in this controller and `release-state.yaml` was reconciled first. The September UAT sprint queue (`.github/agent-ops/uat-*.yaml`, `docs/operations/UAT-OVERNIGHT-OPERATIONS.md`) is closed and historical — do not claim items from it. New work starts only after the owner + ChatGPT restart-plan review (agent handoffs, marketplace/Store separation, donation and revenue model) is resolved on its GitHub Issue.
 
 ## Current status
 

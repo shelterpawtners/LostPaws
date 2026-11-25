@@ -1,6 +1,6 @@
 # UAT Overnight Operations
 
-Status: CANONICAL (sprint-scoped)
+Status: HISTORICAL — sprint closed (marked 2026-11-25). Do not claim work from this document or from `.github/agent-ops/uat-*.yaml`. Current work comes from `docs/AI-CONTROLLER.md` and the active GitHub Issue.
 Owner: Repository operations
 Created: 2026-09-15
 Sprint window: post-MVP UAT pass (Issue #183), 2026-09-15 overnight autonomous execution

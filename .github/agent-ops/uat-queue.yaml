@@ -1,3 +1,7 @@
+# HISTORICAL — the September 2026 UAT sprint is closed (marked 2026-11-25).
+# Do not claim items from this queue, including any still marked `ready`.
+# Current work comes from docs/AI-CONTROLLER.md and the active GitHub Issue.
+#
 # UAT sprint work queue — durable backlog derived from Issue #183, re-ranked
 # by Guardian/Vendor funnel impact per docs/operations/UAT-OVERNIGHT-OPERATIONS.md.
 #

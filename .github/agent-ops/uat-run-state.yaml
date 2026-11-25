@@ -1,3 +1,6 @@
+# HISTORICAL — the September 2026 UAT sprint is closed (marked 2026-11-25).
+# Do not add claims here. Current work comes from docs/AI-CONTROLLER.md.
+#
 # Live execution ledger for the UAT sprint. Machine state only — not prose.
 # Claim an item here before branching; release it (move to completed) as the
 # last step after merge. See docs/operations/UAT-OVERNIGHT-OPERATIONS.md for
