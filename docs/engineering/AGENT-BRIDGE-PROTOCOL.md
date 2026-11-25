@@ -42,26 +42,25 @@ Prompts should normally be pointers, not restatements. Preferred form:
 
 One primary coding agent owns one bounded code path at a time.
 
+- Default (owner direction, #325): **one feature implementer per vertical slice**, normally Claude Code. Add one substantive independent review (usually Codex) on security, data, auth or payment paths; repeat it only when material risk or change warrants.
 - Claude: prefer cross-cutting state/auth/RLS/data-flow diagnosis, ambiguous product-state issues, and difficult integration work.
 - Codex: prefer bounded implementation, UI, tests, validation, and low-conflict follow-on work.
-- Copilot: prefer local developer assistance, scoped edits, and specialist repository instructions.
+- Copilot: local developer assistance and scoped edits only; no baton routing to Copilot.
 - ChatGPT: prefer control-tower reasoning, owner decisions, prioritization, review, and direct GitHub coordination when available.
 
 These are cost/coordination defaults, not capability limits. The active Issue may assign work differently.
 
-Before editing, refresh `main` and check the active Issue/PR and agent queue. If another agent owns the same files or code path, take a different independent task rather than competing.
+Before editing, refresh `main` and check the active Issue/PR and agent queue. If another agent owns the same files or code path, stop and report the collision on the Issue rather than competing or switching tasks.
 
-## Continuous execution
+## Bounded packet execution
 
-A status update, commit, PR creation, CI start, merge, deployment, queue update, or checkpoint is not a voluntary stopping point.
+The contract is in `AGENTS.md` ("Bounded packet contract"). In short: complete the one explicitly approved packet, record evidence, and stop. A `turn:*` label routes work; it does not authorize it. Handoff fields are defined in `docs/engineering/briefs/agent-baton-handoff.md`.
 
-For approved GREEN/YELLOW work, continue:
+Within an approved packet, a status update, commit, PR creation or CI start is not a stopping point:
 
-`claim -> implement -> focused validation -> PR -> resolve CI -> merge when authorized/green -> hosted/staging verification -> durable state update -> refresh main -> next safe task`
+`verify handoff fields -> implement -> focused validation -> PR -> resolve CI -> merge only if the packet authorizes it and checks are green -> durable state/evidence -> handoff comment -> stop`
 
-If one task is RED or owner-blocked, record the exact blocker and continue the highest-priority independent safe task.
-
-Stop voluntarily only when all remaining work is RED/owner-blocked/deferred, access is unavailable and no independent safe work remains, or the execution environment actually terminates.
+If part of the packet is RED or owner-blocked, finish the safely separable parts of the same packet, record the exact blocker and stop. Do not continue to another task.
 
 ## Merge rule
 

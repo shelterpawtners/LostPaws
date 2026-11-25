@@ -130,8 +130,11 @@ report, PR review, or chat handoff:
   prompt needed, in prerequisite order -- never show a dependent action
   before the prerequisite it needs, and confirm the prerequisite's expected
   successful result so the owner knows it is safe to continue.
-- If the next step is something you can perform with available tools,
-  perform it before replying rather than announcing that it should happen.
+- If the next step is inside the current approved packet and you can
+  perform it with available tools, perform it before replying rather than
+  announcing that it should happen. A step outside the packet is a
+  recommendation for the owner, never something to start (`AGENTS.md`,
+  "Bounded packet contract").
   Do not end on "I will check" or "I will verify" when the check can be
   completed in the current turn.
 - If there is more than one valid path, present a recommended default plus
@@ -140,6 +143,48 @@ report, PR review, or chat handoff:
 - A response that reports status without either performing the next
   available action or giving an exact next action is a dead end -- do not
   produce one.
+
+## Restart directions (owner-approved 2026-11-25, Issue #325)
+
+**AI workforce.**
+
+- One feature implementer per vertical slice, normally Claude Code.
+- Codex may implement an independent packet when it fits best.
+- Add one substantive independent review on security, data, auth or payment paths. Repeat it only when material risk or change warrants.
+- ChatGPT handles strategy, review and decisions.
+- ChatGPT Work is optional, for provider consoles, cross-system operations or independent hosted acceptance.
+- Cowork handles growth, documentation and approved local setup, and does not duplicate engineering.
+
+**Tooling (shortlist for controlled installation planning only; nothing installed by this note).**
+
+- Keep the Frontend Design skill and the deterministic tests.
+- Coding agents keep using the `gh` CLI, and the ChatGPT connector stays.
+- Candidates:
+  - pinned official Supabase skills;
+  - a controlled Claude Design trial;
+  - three Superpowers markdown skills (systematic debugging, verification-before-completion, TDD), with the full Superpowers hook left disabled;
+  - Impeccable audit/polish, only after review.
+- Not adopted:
+  - a full GStack install (borrow its design-review rubric instead);
+  - Taste and UI UX Pro Max, deferred until there is an actual gap;
+  - Emil motion, later.
+- Context7 is optional, for version-sensitive docs, and is not always on.
+- Before installing anything, record its source, license, pin, test and rollback.
+- Never copy scripts or binaries blindly, never duplicate skill routers, never enable auto-update.
+- The first installation packet verifies the actual local permission state, with backups:
+  - VS Code terminal auto-approve;
+  - Supabase connection scope;
+  - the stale clone and its trust entry;
+  - the extra-usage cap.
+
+**Test and browser policy.**
+
+- Executable specs and CI are primary. "Free" means within the runner allowance.
+- The built-in browser or Claude in Chrome is for exploration and visual screenshots.
+- Playwright MCP only for demonstrated gaps.
+- Capture each reproducible material regression at the cheapest appropriate layer (unit, pgTAP, API or browser). Not every typo or cosmetic fix needs a full E2E spec.
+- Required per-PR checks, RLS/security negative tests, affected persona and hosted gates, and broad release acceptance stay mandatory under `AGENTS.md`.
+- No scheduled nightly job without owner authorization. No AI review of every test result; deterministic evidence comes first.
 
 ## Completion record
 

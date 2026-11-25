@@ -49,24 +49,34 @@ Use one bounded Issue -> one short-lived branch -> one PR -> one acceptance boun
 
 - Default to acting, not instructing: if the agent has the required tool/access and the action is safe, simple, reversible, and within approved scope, execute it instead of asking the owner to click, type, merge, or perform the same action manually.
 - Ask the owner to act only when explicit owner judgment/approval is genuinely required, the available tools cannot perform the action, or the action crosses a RED boundary.
-- **GREEN:** decide, implement, test, and continue.
-- **YELLOW:** choose the safest reversible assumption, document it when material, and continue.
+- **GREEN:** decide, implement, test, and continue within the approved packet.
+- **YELLOW:** choose the safest reversible assumption, document it when material, and continue within the approved packet.
 - **RED:** finish safely separable work, record the blocker, update the handoff, and stop narrowly.
 - Fix related in-scope GREEN/YELLOW defects before declaring completion.
 - Never weaken a valid test merely to make CI green.
 
-### Continuous execution contract
+### Bounded packet contract
 
-This contract is mandatory for Codex Work, Claude Code, Copilot, and any other coding agent operating under this repository.
+This contract applies to Codex, Claude Code, Copilot, ChatGPT and any other agent working in this repository. It replaces the earlier "continuous execution / claim the next safe task" contract (owner decision on Issue #325, 2026-11-25).
 
-- A **checkpoint, status summary, claim, commit, PR creation, CI start, merge, staging verification, or queue update is not a stopping point** by itself.
-- After claiming an approved task, continue through the entire safe loop: **implement -> validate -> PR -> resolve CI -> merge when authorized/green -> verify -> update durable state -> refresh `main` -> claim the next safe ready task**.
-- Do not voluntarily return control to the owner merely to report that work has started, a branch was created, CI is running, a PR is open, a merge completed, or another agent is inactive.
-- If CI is running, keep ownership of the task. Monitor/resolve it and merge when green. If there is genuinely independent, non-conflicting approved work that can be performed safely without jeopardizing the active branch/PR, continue that work rather than idling.
-- If one item is owner-blocked or RED, record the exact blocker and immediately continue with the highest-priority independent safe item. A blocked item does not block the sprint.
-- Stop voluntarily only when **all** remaining work is RED/owner-blocked/deferred, required access is unavailable and no independent safe work remains, or a platform/session/runtime limit actually terminates execution.
-- If the platform/session is about to end, write enough durable GitHub state (claim, branch, PR/issue note, next action) that a fresh session can resume without rediscovery. A platform-imposed stop is not task completion.
-- Keep end-of-turn narration short. Prefer doing the next safe action over producing a long progress report.
+- **Complete the one explicitly approved bounded packet, record evidence, and stop.** A further packet needs its own explicit owner authorization.
+- **A `turn:*` label is routing metadata, never authorization.** Authorization is an owner-authored (or owner-recorded) assignment comment that names the scope.
+- Before starting, verify that the handoff names:
+  - the exact repository;
+  - the exact Issue number;
+  - the expected `turn:*` label;
+  - a link to the authorized assignment;
+  - the scope and the stopping condition;
+  - the next baton owner.
+
+  Automated runs also need a unique execution ID. If any of these is missing or does not match, stop and report.
+
+- Within the packet, a commit, PR, CI start or status note is not a stopping point. Finish the packet's own loop (implement → validate → PR → resolve CI → merge only when the packet authorizes it and checks are green → record evidence).
+- If part of the packet hits a RED or owner-blocked boundary, finish the safely separable parts of **the same packet**, record the exact blocker, and stop. Do not pick up other work.
+- Never claim another Issue, queue item or task automatically, even one carrying your `turn:` label.
+- When ending, post the handoff comment (format in `docs/engineering/briefs/agent-baton-handoff.md`), move only that Issue's label to the named next owner, and stop.
+- If the platform or session is about to end mid-packet, write enough durable GitHub state (branch, PR, Issue note, next action) that a fresh session can resume the same packet.
+- Keep end-of-turn narration short.
 
 ## Product and design invariants
 

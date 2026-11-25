@@ -17,6 +17,8 @@ Load only the context required for the task:
 | Database/auth/RLS        | `docs/engineering/ARCHITECTURE.md`, `docs/security/SECURITY-AND-PRIVACY.md`, `docs/product/USER-ROLES.md`              |
 | Shelter/transfer         | product requirements + roles + architecture + security/privacy                                                        |
 | Planning/phase           | `docs/AI-CONTROLLER.md`, active GitHub Issue/PR, and relevant roadmap/domain document                                  |
+| Revenue/donations/compliance | `docs/business/README.md`, then the one `docs/business/*` document needed                                         |
+| Agent handoffs           | `docs/engineering/AGENT-BRIDGE-PROTOCOL.md`, `docs/engineering/briefs/agent-baton-handoff.md`                        |
 
 For active implementation also read the GitHub Issue/PR and
 `docs/engineering/AI-RELEASE-STATE.md` when completion/acceptance state is

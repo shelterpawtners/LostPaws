@@ -37,6 +37,19 @@ Execute the smallest next bounded action from the controller and active Issue/PR
 Do not stop merely to ask for confirmation when the action is already authorized.
 ```
 
+## Baton turn (short form)
+
+When an Issue carries the `turn:chatgpt` label, the owner pastes a pointer that names the exact Issue:
+
+```text
+Handle shelterpawtners/LostPaws Issue #<n> (expected label turn:chatgpt). Follow the authorized assignment linked in its latest baton comment, reply on that Issue with the required handoff fields, move only that Issue's label to the named next owner, and stop.
+```
+
+- A `turn:*` label is routing, never authorization. Act only on an owner-authored or owner-recorded assignment.
+- Never pick "the open issue with the label" by search, and never continue to another Issue.
+- Use the required handoff fields in `docs/engineering/briefs/agent-baton-handoff.md`: repository, Issue, expected label, authorized assignment, scope and stopping condition, next owner, and execution ID.
+- The 2026-11-25 restart review (#325) was the first Issue to use this.
+
 ## When not to use
 
 Do not paste this into a coding-agent task that already has a narrower issue-specific implementation prompt. Use it for ChatGPT controller/operator sessions that need to recover the current project state and decide/execute the next action.

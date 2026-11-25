@@ -18,6 +18,8 @@ Load only the context required for the task:
 | Planning/phase           | `docs/AI-CONTROLLER.md`, active GitHub Issue/PR, and relevant roadmap/domain document                                  |
 | Support/incident         | `docs/support/*` (triage severity, escalation, and the relevant runbook)                                               |
 | Decisions/open gates     | `docs/DECISIONS.md`                                                                                                    |
+| Revenue/donations/compliance | `docs/business/README.md`, then the one `docs/business/*` document needed                                         |
+| Agent handoffs           | `docs/engineering/AGENT-BRIDGE-PROTOCOL.md`, `docs/engineering/briefs/agent-baton-handoff.md`                        |
 | Technical debt           | `docs/engineering/TECHNICAL-DEBT.md`                                                                                   |
 
 For active implementation also read the GitHub Issue/PR and
