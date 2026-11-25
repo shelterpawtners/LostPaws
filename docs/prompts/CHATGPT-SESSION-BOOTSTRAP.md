@@ -39,13 +39,16 @@ Do not stop merely to ask for confirmation when the action is already authorized
 
 ## Baton turn (short form)
 
-When an Issue carries the `turn:chatgpt` label, the owner only needs to paste:
+When an Issue carries the `turn:chatgpt` label, the owner pastes a pointer that names the exact Issue:
 
 ```text
-Handle the open shelterpawtners/LostPaws Issue labeled turn:chatgpt. Follow its instructions, reply on the Issue, then move the label to the next turn:* owner.
+Handle shelterpawtners/LostPaws Issue #<n> (expected label turn:chatgpt). Follow the authorized assignment linked in its latest baton comment, reply on that Issue with the required handoff fields, move only that Issue's label to the named next owner, and stop.
 ```
 
-The 2026-11-25 restart-plan review (OD-006 to OD-009, `docs/business/*`, `docs/engineering/briefs/agent-baton-handoff.md`) is the first Issue to use this.
+- A `turn:*` label is routing, never authorization. Act only on an owner-authored or owner-recorded assignment.
+- Never pick "the open issue with the label" by search, and never continue to another Issue.
+- Use the required handoff fields in `docs/engineering/briefs/agent-baton-handoff.md`: repository, Issue, expected label, authorized assignment, scope and stopping condition, next owner, and execution ID.
+- The 2026-11-25 restart review (#325) was the first Issue to use this.
 
 ## When not to use
 

@@ -1,6 +1,6 @@
 # Business, revenue, and compliance
 
-Status: **PROPOSED (2026-11-25)**. This is owner direction drafted by Claude Code and is waiting on the owner + ChatGPT restart-plan review. Nothing here is tax or legal advice. Nothing here authorizes payments, money movement, or public claims; those stay gated by OD-002, OD-003, OD-004, OD-005 and OD-006 through OD-009 in `docs/DECISIONS.md`.
+Status: **Direction approved 2026-11-25 on Issue #325; documents PROPOSED.** Drafted by Claude Code from owner direction and the ChatGPT review. Nothing here is tax or legal advice. Nothing here authorizes payments, money movement, or public claims; those stay gated by OD-002, OD-003, OD-004, OD-005 and OD-006 through OD-009 in `docs/DECISIONS.md`.
 
 This domain holds the business-side planning that sits beside product work, so it is tracked separately from engineering tasks:
 
@@ -18,5 +18,22 @@ These docs build on existing documents rather than replacing them:
 - `docs/product/DONATION-TRACKING-SCHEMA-PROPOSAL.md` and `docs/data/FINANCIAL-LEDGER-AND-GIVING.md`: the existing giving schema (`partner_contribution_commitments`, evidence and review, `donation_intents`, `donation_transactions`).
 - `docs/product/PASSPORT-SAVINGS-IMPACT-MODEL.md`: the Guardian savings scenarios.
 - `docs/legal/OWNER-LEGAL-REVIEW-CHECKLIST.md`: review of the Terms and Privacy text.
+
+## Public vs private
+
+This repository is **public**. Only engineering-facing requirements and sanitized checklists belong here.
+
+The following belong in an access-controlled private workspace:
+
+- pricing and fee rates;
+- supplier quotes and negotiations;
+- forecasts and cash projections;
+- contracts and advisor correspondence;
+- confidential strategy;
+- security material.
+
+The owner chooses that location (a private GitHub repository or Microsoft 365 are the candidates). Creating or migrating it needs separate approval.
+
+The owner should also assess what earlier public comments and history already disclosed. Deleting them does not remove copies.
 
 Standing rule: AI tools may research, draft and organize. A CPA and a nonprofit or marketplace attorney must sign off on tax treatment, entity structure and any public donation or savings claim before it ships.

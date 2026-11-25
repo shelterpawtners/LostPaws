@@ -135,111 +135,134 @@ PENDING. Recommended sequence when the owner is ready to resolve this (from the 
 
 Status: BLOCKING
 Category: PRODUCT
-Introduced by: Claude Code (owner-directed proposal, pending owner + ChatGPT restart review)
+Introduced by: Claude Code (owner-directed proposal), reviewed by ChatGPT on Issue #325
 Date: 2026-11-25
 Review by: Before further marketplace navigation, onboarding, or impact-copy work
 
 Question:
-Confirm three distinct surfaces: the ShelterPawtners (pet) Marketplace and the RAVE Shelter Marketplace, both third-party vendor offers on one shared offer engine and `channel` model but with separate routes, navigation, branding, vendor eligibility, onboarding copy, impact rules and metrics; and Store/Swag as a separate first-party business that ShelterPawtners sells directly. Also decide: separate domains or subdomains; whether one vendor account can list in both marketplaces.
+Confirm three surfaces with separate routes, navigation, branding, eligibility, onboarding copy, impact rules and metrics:
+
+- the ShelterPawtners (pet) Marketplace and the RAVE Shelter Marketplace, which share one offer engine and the `channel` model;
+- Store/Swag, a separate first-party seller with its own fulfillment boundary.
 
 Provisional assumption:
-N/A. The current shared-platform, two-storefront model (`docs/product/DUAL-MARKETPLACE-RAVE-SHELTER-EXECUTION-PLAN.md`) stays as built until this is approved.
+The current shared-platform, two-storefront model (`docs/product/DUAL-MARKETPLACE-RAVE-SHELTER-EXECUTION-PLAN.md`) stays as built.
 
 Why safe to defer:
-No schema change is proposed; this is product definition first.
+No schema change is proposed.
 
 Affected areas:
 Marketplace routes and navigation, vendor onboarding, Store, `docs/business/REVENUE-STREAMS.md`.
 
 Resolution:
-PENDING
+PARTIAL. The direction was approved by the owner on 2026-11-25 (https://github.com/shelterpawtners/LostPaws/issues/325#issuecomment-7175427307):
 
-### OD-007 — Donation basis, discount separation, and tax-deductibility wording
+- one modular platform with distinct persona experiences;
+- no separate domains or databases now;
+- existing channels kept;
+- Guardians and the founding core accounts stay free;
+- the Store is described as requestability, not live checkout.
+
+Still pending: whether one vendor account may serve both channels, and with which channel-specific eligibility and permissions. The #317 CRM boundary and OD-002, OD-004 and OD-005 are unchanged.
+
+### OD-007 — Donation basis, discount separation, and tax wording
 
 Status: BLOCKING
 Category: FINANCIAL
-Introduced by: Claude Code (owner-directed proposal, pending owner + ChatGPT restart review)
+Introduced by: Claude Code (owner-directed proposal), reviewed by ChatGPT on Issue #325
 Date: 2026-11-25
 Review by: Before any public donation, Hero Vendor, or tax wording
 
 Question:
-Approve the formulas and framing in `docs/business/DONATION-ECONOMICS.md` §1–2:
+Approve the Hero basis and the status model in `docs/business/DONATION-ECONOMICS.md` §1–3:
 
-- discounts are never deductible;
-- a vendor pledge is the vendor's gift;
-- only a separate optional customer donation through a receipting intermediary may be called tax-deductible, and only for itemizers;
-- the Hero basis is after discount, excluding tax and shipping, net of refunds, attributed sales only.
+- a discount is not a gift;
+- a vendor-funded pledge is not a customer donation;
+- a separate voluntary customer gift _may_ qualify, including under the capped non-itemizer deduction from tax year 2026, with no blanket guarantee;
+- the Hero basis is net attributed sales after discount, excluding tax, shipping and fees, net of refunds.
 
-These answer `docs/product/OWNER-DECISIONS-NEXT-SPRINT.md` #2 and #5. A CPA must confirm.
+Still to specify:
+
+- rounding;
+- caps;
+- partial refunds;
+- reconciliation;
+- post-disbursement adjustments.
+
+This answers `docs/product/OWNER-DECISIONS-NEXT-SPRINT.md` #2 and #5. A CPA must confirm.
 
 Provisional assumption:
-N/A. Existing copy rules stay in force (no deductibility claims; pledged is shown separately from settled).
+Existing copy rules stay in force: no deductibility claims, and pledged is shown separately from settled.
 
 Why safe to defer:
 Stage 0 shows intent only.
 
 Affected areas:
-Hero Vendor copy, `partner_contribution_commitments` basis, the business giving docs.
+Hero Vendor copy, the `partner_contribution_commitments` basis, the business giving docs.
 
 Resolution:
-PENDING
+PARTIAL. The direction was approved on 2026-11-25 (https://github.com/shelterpawtners/LostPaws/issues/325#issuecomment-7175427307), including the corrected tax framing. The basis parameters, CPA confirmation and attorney review of the solicitation analysis are still pending. The OD-003 verified-savings gate is separate and unchanged.
 
-### OD-008 — On-site checkout with vendor self-service and a donation intermediary
+### OD-008 — Staged verification and integrated commerce
 
 Status: BLOCKING
 Category: FINANCIAL
-Introduced by: Claude Code (owner-directed proposal, pending owner + ChatGPT restart review)
+Introduced by: Claude Code (owner-directed proposal), reviewed by ChatGPT on Issue #325
 Date: 2026-11-25
-Review by: Before any payment design or Phase 3 planning (also gated by OD-002, OD-004, OD-005)
+Review by: Before any payment design or Phase 3 planning (also gated by OD-002, OD-004, OD-005, OD-007)
 
 Question:
-Adopt the staged verification path in `docs/business/DONATION-ECONOMICS.md` §3–4:
+Adopt the staged path in `docs/business/DONATION-ECONOMICS.md` §4–5:
 
 - Stage 0: intent only.
-- Stage 1: vendor-POS promo codes plus attestation, using the existing evidence review.
-- Stage 2: on-site checkout via Stripe Connect Express, where vendors configure products, discounts, pledges and fulfillment from their own profile; Stripe Tax handles sales tax; pledges route to a receipting intermediary; ShelterPawtners never holds charitable funds.
+- Stage 1: vendor POS attribution plus attestation, with settlement evidence reviewed.
+- Stage 2: integrated commerce, only after the legal and owner gates.
 
-Also decide who absorbs processing fees, and whether to charge a platform fee.
+The design keeps the existing non-payment claim/redemption workflow. Vendors set up routine items themselves; recipient eligibility, KYC, fraud review, disputes and settlement exceptions go through verification. Stripe Connect is a candidate, not the approved architecture. Store commerce is a separate pilot.
+
+Also decide who absorbs processing fees and whether to charge a platform fee (privately).
 
 Provisional assumption:
-N/A. Phase 3 is not authorized, so no payment code is written.
+Phase 3 is not authorized, so no payment code is written.
 
 Why safe to defer:
 Stages 0 and 1 need no new money movement.
 
 Affected areas:
-A future payments design, vendor profile settings, `donation_transactions`, legal checklist items 3–7.
+A future payments design doc, vendor profile settings, `donation_transactions`, legal checklist items 3–7 and 14.
 
 Resolution:
-PENDING
+PARTIAL. The staged direction was approved on 2026-11-25 (https://github.com/shelterpawtners/LostPaws/issues/325#issuecomment-7175427307). The provider, merchant of record, charge model, tax liability, intermediary and fees are pending. Implementation also waits on OD-002, OD-004, OD-005 and OD-007, plus legal review.
 
-### OD-009 — Agent baton handoffs and the bounded continuous-execution contract
+### OD-009 — Baton handoffs and the bounded packet contract
 
 Status: BLOCKING
 Category: OTHER
-Introduced by: Claude Code (owner-directed proposal, pending owner + ChatGPT restart review)
+Introduced by: Claude Code (owner-directed proposal), reviewed by ChatGPT on Issue #325
 Date: 2026-11-25
-Review by: Before the next multi-agent dev session
+Review by: Before the Tier 0 governance packet
 
 Question:
-Adopt `docs/engineering/briefs/agent-baton-handoff.md`:
+Adopt `docs/engineering/briefs/agent-baton-handoff.md` and the "Bounded packet contract" in `AGENTS.md`:
 
-- Tier 0: `turn:*` labels, a handoff comment, and a notify-only workflow.
-- Tier 1: an owner-started local watcher that dispatches plan-billed `codex exec` / `claude -p` runs, with run, turn and hop caps and an `agents:paused` kill switch.
-- Tier 2: an optional Codex cloud review pilot.
-- Amend the continuous-execution contract so agents continue only on issues labeled for them.
+- Complete one explicitly approved packet, record evidence and stop.
+- A `turn:*` label is routing, never authorization.
+- Every handoff carries the required fields: repository, Issue, expected label, a link to the authorized assignment, scope and stopping condition, the next owner, and an execution ID for automated runs.
+- Tier 0 is notify-only.
+- Tier 1 and Tier 2 are experimental and not authorized.
+- There is no Copilot routing.
 
 Provisional assumption:
-N/A. Agents start only when the owner prompts them.
+Agents start only when the owner prompts them. Automated agent execution is disabled.
 
 Why safe to defer:
-Manual prompting continues to work.
+Manual prompting works.
 
 Affected areas:
-`AGENTS.md`, `docs/engineering/AGENT-BRIDGE-PROTOCOL.md`, `.github/workflows/`, `scripts/ai-dispatch.ps1`.
+`AGENTS.md`, `docs/engineering/AGENT-BRIDGE-PROTOCOL.md`, `docs/engineering/AGENT-OPERATIONS.md`, a future `.github/workflows/baton-notify.yml`, `scripts/ai-dispatch.ps1`.
 
 Resolution:
-PENDING
+PARTIAL. On 2026-11-25 (https://github.com/shelterpawtners/LostPaws/issues/325#issuecomment-7175427307) the owner approved the direction "Tier 0 only; automated agent execution disabled", plus the bounded-packet contract wording in this PR. Implementing Tier 0 is a separate packet that needs its own approval. Tier 1 and Tier 2 need separate approval and a measured pilot.
 
 ---
 
