@@ -37,6 +37,16 @@ Execute the smallest next bounded action from the controller and active Issue/PR
 Do not stop merely to ask for confirmation when the action is already authorized.
 ```
 
+## Baton turn (short form)
+
+When an Issue carries the `turn:chatgpt` label, the owner only needs to paste:
+
+```text
+Handle the open shelterpawtners/LostPaws Issue labeled turn:chatgpt. Follow its instructions, reply on the Issue, then move the label to the next turn:* owner.
+```
+
+The 2026-11-25 restart-plan review (OD-006 to OD-009, `docs/business/*`, `docs/engineering/briefs/agent-baton-handoff.md`) is the first Issue to use this.
+
 ## When not to use
 
 Do not paste this into a coding-agent task that already has a narrower issue-specific implementation prompt. Use it for ChatGPT controller/operator sessions that need to recover the current project state and decide/execute the next action.

@@ -131,6 +131,116 @@ Meta Business/Developer verification, legal pages (`docs/legal/*`), banking, ven
 Resolution:
 PENDING. Recommended sequence when the owner is ready to resolve this (from the original draft): confirm the legal operating entity name; form/confirm the Michigan LLC through the official State of Michigan/LARA process; obtain/confirm an EIN through the official IRS process; assemble a verification packet (Articles of Organization, EIN confirmation, legal name/address/phone, domain, owner/authorized-representative information); then normalize the name/address/contact information everywhere it appears (Meta settings, website legal pages, Supabase/project business records, vendor onboarding, future banking/payment/giving-provider records) before Meta submission. A qualified attorney/CPA should review the intended structure (separate mission entity vs. technology/platform entity) before formal filings multiply.
 
+### OD-006 — Separate pet marketplace, RAVE Shelter marketplace, and Store
+
+Status: BLOCKING
+Category: PRODUCT
+Introduced by: Claude Code (owner-directed proposal, pending owner + ChatGPT restart review)
+Date: 2026-11-25
+Review by: Before further marketplace navigation, onboarding, or impact-copy work
+
+Question:
+Confirm three distinct surfaces: the ShelterPawtners (pet) Marketplace and the RAVE Shelter Marketplace, both third-party vendor offers on one shared offer engine and `channel` model but with separate routes, navigation, branding, vendor eligibility, onboarding copy, impact rules and metrics; and Store/Swag as a separate first-party business that ShelterPawtners sells directly. Also decide: separate domains or subdomains; whether one vendor account can list in both marketplaces.
+
+Provisional assumption:
+N/A. The current shared-platform, two-storefront model (`docs/product/DUAL-MARKETPLACE-RAVE-SHELTER-EXECUTION-PLAN.md`) stays as built until this is approved.
+
+Why safe to defer:
+No schema change is proposed; this is product definition first.
+
+Affected areas:
+Marketplace routes and navigation, vendor onboarding, Store, `docs/business/REVENUE-STREAMS.md`.
+
+Resolution:
+PENDING
+
+### OD-007 — Donation basis, discount separation, and tax-deductibility wording
+
+Status: BLOCKING
+Category: FINANCIAL
+Introduced by: Claude Code (owner-directed proposal, pending owner + ChatGPT restart review)
+Date: 2026-11-25
+Review by: Before any public donation, Hero Vendor, or tax wording
+
+Question:
+Approve the formulas and framing in `docs/business/DONATION-ECONOMICS.md` §1–2:
+
+- discounts are never deductible;
+- a vendor pledge is the vendor's gift;
+- only a separate optional customer donation through a receipting intermediary may be called tax-deductible, and only for itemizers;
+- the Hero basis is after discount, excluding tax and shipping, net of refunds, attributed sales only.
+
+These answer `docs/product/OWNER-DECISIONS-NEXT-SPRINT.md` #2 and #5. A CPA must confirm.
+
+Provisional assumption:
+N/A. Existing copy rules stay in force (no deductibility claims; pledged is shown separately from settled).
+
+Why safe to defer:
+Stage 0 shows intent only.
+
+Affected areas:
+Hero Vendor copy, `partner_contribution_commitments` basis, the business giving docs.
+
+Resolution:
+PENDING
+
+### OD-008 — On-site checkout with vendor self-service and a donation intermediary
+
+Status: BLOCKING
+Category: FINANCIAL
+Introduced by: Claude Code (owner-directed proposal, pending owner + ChatGPT restart review)
+Date: 2026-11-25
+Review by: Before any payment design or Phase 3 planning (also gated by OD-002, OD-004, OD-005)
+
+Question:
+Adopt the staged verification path in `docs/business/DONATION-ECONOMICS.md` §3–4:
+
+- Stage 0: intent only.
+- Stage 1: vendor-POS promo codes plus attestation, using the existing evidence review.
+- Stage 2: on-site checkout via Stripe Connect Express, where vendors configure products, discounts, pledges and fulfillment from their own profile; Stripe Tax handles sales tax; pledges route to a receipting intermediary; ShelterPawtners never holds charitable funds.
+
+Also decide who absorbs processing fees, and whether to charge a platform fee.
+
+Provisional assumption:
+N/A. Phase 3 is not authorized, so no payment code is written.
+
+Why safe to defer:
+Stages 0 and 1 need no new money movement.
+
+Affected areas:
+A future payments design, vendor profile settings, `donation_transactions`, legal checklist items 3–7.
+
+Resolution:
+PENDING
+
+### OD-009 — Agent baton handoffs and the bounded continuous-execution contract
+
+Status: BLOCKING
+Category: OTHER
+Introduced by: Claude Code (owner-directed proposal, pending owner + ChatGPT restart review)
+Date: 2026-11-25
+Review by: Before the next multi-agent dev session
+
+Question:
+Adopt `docs/engineering/briefs/agent-baton-handoff.md`:
+
+- Tier 0: `turn:*` labels, a handoff comment, and a notify-only workflow.
+- Tier 1: an owner-started local watcher that dispatches plan-billed `codex exec` / `claude -p` runs, with run, turn and hop caps and an `agents:paused` kill switch.
+- Tier 2: an optional Codex cloud review pilot.
+- Amend the continuous-execution contract so agents continue only on issues labeled for them.
+
+Provisional assumption:
+N/A. Agents start only when the owner prompts them.
+
+Why safe to defer:
+Manual prompting continues to work.
+
+Affected areas:
+`AGENTS.md`, `docs/engineering/AGENT-BRIDGE-PROTOCOL.md`, `.github/workflows/`, `scripts/ai-dispatch.ps1`.
+
+Resolution:
+PENDING
+
 ---
 
 ## Architecture and implementation decisions (D-)
